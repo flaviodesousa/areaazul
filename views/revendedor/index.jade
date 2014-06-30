@@ -1,0 +1,32 @@
+extends ../layout
+
+block optionuser
+	div#corpooptionuser
+		div#filhooptionuser
+			a(href="/")
+				img(src= "../images/icons/back.png" id="imgoptionuser")
+
+block content
+	table#tabelatitulopagina
+		tr
+			td
+				table
+					tr
+						td &nbsp;
+					tr
+						td
+							label#tituloPagina Cadastro de revendedor
+	table#tabelatitulopagina
+		tr
+			td
+				table
+					tr
+						td &nbsp;
+					tr
+						td
+							div#menu8
+								ul
+									li
+										a(href="/revendedor/pf" title="Pessoa Física") Pessoa Física
+									li
+										a(href="/revendedor/pj" title="Pessoa Jurídica") Pessoa Jurídica

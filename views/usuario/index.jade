@@ -1,0 +1,72 @@
+extends ../layout
+
+block optionuser
+	div#corpooptionuser
+		div#filhooptionuser
+			a(href="/")
+				img(src= "../images/icons/back.png" id="imgoptionuser")
+
+block content
+	table#tabelatitulopagina
+		tr
+			td
+				table
+					tr
+						td &nbsp;
+					tr
+						td
+							label#tituloPagina Cadastro de Usuário
+					tr
+						td &nbsp;
+
+	div
+		table
+			tr
+				td(colspan="3")
+					label#textoFormulario Nome Completo
+			tr
+				td(colspan="3")
+					input(type="text" maxlength="14" size="1" style="background-color:  #e2e9ee; width: 99.5%;")
+			tr
+				td
+					label#textoFormulario CPF
+				td
+					label#textoFormulario Dt. Nasc.
+				td
+					label#textoFormulario Nº Celular
+			tr
+				td
+					input(type="text" maxlength="14" size="1" style="background-color:  #e2e9ee; width: 84px;")
+				td
+					input(type="text" maxlength="14" size="1" style="background-color:  #e2e9ee; width: 60px;")
+				td
+					input(type="text" maxlength="14" size="1" style="background-color:  #e2e9ee; width: 80px;")
+			tr
+				td
+					label#textoFormulario RG
+				td
+					label#textoFormulario Sexo
+			tr
+				td
+					input(type="text" maxlength="14" size="1" style="background-color:  #e2e9ee; width: 84px;")
+				td(colspan="2")
+					select(style="background-color:  #e2e9ee; width: 75px;")
+						option(value="") 
+						option(value="volvo") Masculino
+						option(value="saab") Feminino
+			tr
+				td(colspan="3")
+					label#textoFormulario E-mail
+			tr
+				td(colspan="3")
+					input(type="text" maxlength="14" size="1" style="background-color:  #e2e9ee; width: 99.5%;")
+			tr
+				td(colspan="3")
+					input(type="checkbox")
+					label#textoFormulario  Aceito os 
+					a(href="#" id="textoFormulario" title="Termos de Serviço" target="_blank") Termos de Serviço
+			tr
+				td &nbsp;
+			tr
+				td
+					button(id="buttonSave" name="buttonSave") Salvar

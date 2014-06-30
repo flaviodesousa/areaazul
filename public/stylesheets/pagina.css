@@ -1,0 +1,141 @@
+/*generico*/
+body{
+	background-color: #E6E6E6;
+}
+
+#container{
+	background-color: white;
+	margin-top: 30px;
+	width: 900px;
+	height: auto;
+	margin-left: auto;
+	margin-right: auto;
+	border: solid thick #E6E8FA;
+	border-width: 0.15em;
+}
+
+#topo{
+	background-image: url('../images/Banner_solutions.jpg');
+	background-repeat: no-repeat;
+	width:900px;
+	height: 95px;
+}
+
+#corpo{
+	width: auto;
+	min-height: 450px;
+}
+
+#rodape{
+	background-color: #CDC9C9;
+	text-align: center;
+	bottom:0;
+}
+
+
+#mesagem{
+	color:red;
+	font-family:'Tahoma', 'MS Trebuchet', 'Arial', 'Verdana';
+	font-size:14px;
+}
+
+#espacotop{
+	height:20px;
+}
+
+#espacofooter{
+	height:20px;
+}
+
+#textorodape{
+	color: #808080;
+	font-size: 12px;
+	font-family: 'Book Antiqua';
+}
+
+#tabelatitulopagina{
+	margin: 0 auto;
+}
+
+#tituloPagina{
+	margin: 0 auto;
+	font-size: x-large;
+	font-family: Calibri;
+	color: #808080;
+	background-color: #ffffff;
+}
+
+#textoFormulario{
+	font-family: Calibri;
+	font-size: 12px;
+}
+
+#buttonSave{
+	width: 70px;
+	height: 30px;
+}
+
+/* Página de Login */
+#corpologin{
+	width:320px; font-size: 20px;
+	margin: 0 auto;
+	color: rgb(192, 192, 192);
+	background-color: rgb(243, 242, 242);
+	border-width: 1px;
+	border-style: solid;
+	padding: 1px;
+	color: rgb(192, 192, 192);
+}
+
+#titulologin{
+	background-color: rgb(74, 117, 181);
+	border-color: rgb(74, 117, 181);
+	font-size: 11px;
+	color: rgb(255, 255, 255);
+	font-weight: bold;
+	font-family: Arial,Verdana,sans-serif;
+	padding: 2px;
+	border-width: 1px;
+	border-style: solid;
+	background-position: left top;
+	background-repeat: repeat-x;
+	background-image: url("../imagens/fundo.png");
+}
+
+#textologin{
+	font-size: 11px;
+	color: rgb(0, 0, 0);
+	font-family: Arial,Verdana,sans-serif;
+	padding: 10px;
+}
+
+#loginerro{
+	color:red;
+}
+
+#esqueceusenha{
+	text-decoration:none;
+	color:#00aff0;
+	font-weight:bold;
+}
+
+#lock{
+	position: relative;
+	top: -8px;
+}
+
+/* OptionUser*/
+#corpooptionuser{
+	height: 20px;
+	background-color: #E6E8FA;
+}
+
+#filhooptionuser{
+	float: right;
+	margin-top: 4px;
+}
+
+#imgoptionuser{
+	margin-right: 10px;
+	border: 0;
+}

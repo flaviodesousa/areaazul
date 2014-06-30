@@ -1,0 +1,39 @@
+extends ../layout
+
+block optionuser
+	div#corpooptionuser
+		div#filhooptionuser
+			a(href="/")
+				img(src= "../images/icons/back.png" id="imgoptionuser")
+
+block content
+	table#tabelatitulopagina
+		tr
+			td
+				table
+					tr
+						td &nbsp;
+					tr
+						td
+							label#tituloPagina Cadastro de Credenciado
+					tr
+						td &nbsp;
+
+	table
+		tr
+			td
+				label#textoFormulario CNPJ
+		tr
+			td
+				input(id="cnpj" type="text" name="cnpj" class="tabela" maxlength="18" onblur="cnpjMask(this);validateCnpj(this);" onkeydown="" onkeypress="" onkeyup="cnpjMask(this);" size="1" style=" width: 114px;")
+		tr
+			td
+				label#textoFormulario Email
+		tr
+			td
+				input(id="email" type="text" name="email" class="tabela" maxlength="100" size="1" style=" width: 114px;")
+		tr
+			td &nbsp;
+		tr
+			td
+				button(id="buttonSave" name="buttonSave") Enviar
