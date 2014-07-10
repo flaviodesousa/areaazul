@@ -1,0 +1,13 @@
+export.models.configuracao = require('./models/configuracao');
+export.models.consumo = require('./models/consumo');
+export.models.contrato = require('./models/conta');
+export.models.credenciado = require('./models/contrato');
+export.models.fiscal = require('./models/credenciado');
+export.models.funcionario = require('./models/fiscal');
+export.models.movimentacaoconta = require('./models/funcionario');
+export.models.pessoa = require('./models/movimentacaoconta');
+export.models.pessoafisica = require('./models/pessoa');
+export.models.pessoajuridica = require('./models/pessoajuridica');
+export.models.revendedor = require('./models/revendedor');
+export.models.usuario = require('./models/usuario');
+export.models.veiculo = require('./models/veiculo');
