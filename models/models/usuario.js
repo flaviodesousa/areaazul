@@ -17,7 +17,7 @@ exports.getById = function(id) {
     });
 }
 
-exports.search(entidade) {
+exports.search = function(entidade) {
 
     entidade.fetch().then(function(model) {
         return model;
