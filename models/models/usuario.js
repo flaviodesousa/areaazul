@@ -9,7 +9,7 @@ exports.Usuario = Usuario;
 
 exports.getById = function(id) {
     new Usuario({
-        id: id;
+        id: id
     }).fetch().then(function(model) {
         return model;
     }, function(error) {
