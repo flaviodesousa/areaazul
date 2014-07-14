@@ -1,2 +1,2 @@
-export.models.models = require('./models');
-export.models.models = require('./collections');
+module.exports.models = require('./models');
+module.exports.collections = require('./collections');
