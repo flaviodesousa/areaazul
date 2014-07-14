@@ -7,6 +7,26 @@ var Usuario = Bookshelf.Model.extend({
 
 exports.Usuario = Usuario;
 
+exports.getById = function(id) {
+    new Usuario({
+        id: id;
+    }).fetch().then(function(model) {
+        return model;
+    }, function(error) {
+        return null;
+    });
+}
+
+exports.search(entidade) {
+
+    entidade.fetch().then(function(model) {
+        return model;
+    }, function(error) {
+        return null;
+    });
+}
+
+
 exports.validate = function(user) {
 
     if (user.attributes.nome == null || user.attributes.nome == '') {
