@@ -22,6 +22,7 @@ exports.getById = function(id) {
 exports.search = function(entidade) {
     entidade.fetch().then(function(model) {
         var retorno = model.attributes;
+        console.log(retorno);
         return retorno;
     }, function(error) {
         return null;
