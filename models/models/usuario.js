@@ -12,21 +12,16 @@ exports.getById = function(id) {
     new Usuario({
         id: id
     }).fetch().then(function(model) {
-        console.log(model);
-        return model;
+        return model.attributes;
     }, function(error) {
-        console.log("error");
         return null;
     });
 }
 
 exports.search = function(entidade) {
-    console.log('search summoned');
     entidade.fetch().then(function(model) {
-        console.log(model);
-        return model;
+        return model.attributes;
     }, function(error) {
-        console.log("error");
         return null;
     });
 }
