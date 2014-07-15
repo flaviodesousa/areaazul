@@ -8,6 +8,7 @@ var Usuario = Bookshelf.Model.extend({
 exports.Usuario = Usuario;
 
 exports.getById = function(id) {
+    console.log('getById');
     new Usuario({
         id: id
     }).fetch().then(function(model) {
@@ -20,7 +21,7 @@ exports.getById = function(id) {
 }
 
 exports.search = function(entidade) {
-
+    console.log('search summoned');
     entidade.fetch().then(function(model) {
         console.log(model);
         return model;
