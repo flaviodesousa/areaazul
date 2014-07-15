@@ -13,6 +13,7 @@ exports.getById = function(id) {
     }).fetch().then(function(model) {
         return model;
     }, function(error) {
+        console.log("error");
         return null;
     });
 }
@@ -22,6 +23,7 @@ exports.search = function(entidade) {
     entidade.fetch().then(function(model) {
         return model;
     }, function(error) {
+        console.log("error");
         return null;
     });
 }
