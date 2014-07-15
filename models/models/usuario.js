@@ -11,6 +11,7 @@ exports.getById = function(id) {
     new Usuario({
         id: id
     }).fetch().then(function(model) {
+        console.log(model);
         return model;
     }, function(error) {
         console.log("error");
@@ -21,6 +22,7 @@ exports.getById = function(id) {
 exports.search = function(entidade) {
 
     entidade.fetch().then(function(model) {
+        console.log(model);
         return model;
     }, function(error) {
         console.log("error");
