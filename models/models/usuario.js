@@ -12,7 +12,8 @@ exports.getById = function(id) {
     new Usuario({
         id: id
     }).fetch().then(function(model) {
-        return model.attributes;
+        var retorno = model.attributes;
+        return retorno;
     }, function(error) {
         return null;
     });
@@ -20,7 +21,8 @@ exports.getById = function(id) {
 
 exports.search = function(entidade) {
     entidade.fetch().then(function(model) {
-        return model.attributes;
+        var retorno = model.attributes;
+        return retorno;
     }, function(error) {
         return null;
     });
