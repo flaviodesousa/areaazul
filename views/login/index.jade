@@ -24,7 +24,8 @@ block content
 			label Sistema - Área Azul
 		div#textologin
 			center
-				span#loginerro Usuário ou senha incorretos!
+				if error == "true"
+					span#loginerro Usuário ou senha incorretos!
 			form(name="login", action="", method="post")
 				table
 					tr

@@ -25,11 +25,11 @@ module.exports = function(passport) {
         }, function(username, password, done) {
             var user = Usuario.search(new Usuario.Usuario({
                 'login': username,
-            })).then(function(retorno) {
-                console.log('cheguei aqui 2');
-                console.log(username);
-                console.log(retorno);
-                var pwd = retorno.get('senha');
+            }), function(retorno) {
+                var pwd = '';
+                if (retorno != null) {
+                    var pwd = retorno['senha'];
+                }
                 var teste = false;
                 var teste = bcrypt.compareSync(password, pwd);
 

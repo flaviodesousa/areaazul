@@ -10,19 +10,18 @@ module.exports = function(app) {
         },
         autenticar: function(req, res, next) {
             passport.authenticate('local', function(err, user, info) {
-                console.log("autenticate method")
-                console.log(user);
                 if (err || !user) {
-                    console.log("erro1");
-                    return res.redirect('/revendedor/pf');
+                    return res.render('login/index', {
+                        error: 'true'
+                    });
                 }
                 req.logIn(user, function(err) {
                     if (err) {
-                        console.log("erro2");
-                        return res.redirect('/revendedor/pf');
+                        return res.render('login/index', {
+                            error: 'true'
+                        });
                     }
-                    console.log("erro3");
-                    return res.redirect('/revendedor/pj');
+                    return res.redirect('/revendedor/pj ');
                 });
             })(req, res, next);
 
