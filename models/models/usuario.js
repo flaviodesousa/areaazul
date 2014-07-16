@@ -7,15 +7,17 @@ var Usuario = Bookshelf.Model.extend({
 
 exports.Usuario = Usuario;
 
-exports.getById = function(id) {
+exports.getById = function(id, func) {
     console.log('getById');
     new Usuario({
         id: id
-    }).fetch().then(function(model) {
-        var retorno = model.attributes;
-        return retorno;
-    }, function(error) {
-        return null;
+    }).fetch().then(function(model, err) {
+        if (model != null)
+            var retorno = model.attributes;
+        if (err) {
+            return func(null);
+        }
+        func(retorno);
     });
 }
 
