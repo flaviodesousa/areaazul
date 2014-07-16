@@ -19,13 +19,14 @@ exports.getById = function(id) {
     });
 }
 
-exports.search = function(entidade) {
-    entidade.fetch().then(function(model) {
-        var retorno = model.attributes;
-        console.log(retorno);
-        return retorno;
-    }, function(error) {
-        return null;
+exports.search = function(entidade, func) {
+    entidade.fetch().then(function(model, err) {
+        if (model != null)
+            var retorno = model.attributes;
+        if (err) {
+            return func(null);
+        }
+        func(retorno);
     });
 }
 
