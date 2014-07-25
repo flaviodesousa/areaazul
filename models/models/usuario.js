@@ -51,29 +51,20 @@ exports.validate = function(user) {
     }
     return true;
 }
-
-exports.cadastrar = function(user) {
-    var usuario = new Usuario.Usuario({
-        'nome': 'usuario_nome',
-        'senha': 'usuario_senha',
-        'autorizacao': '1'
-    });
-    var pessoa = new Pessoa.Pessoa({
-        nome: req.param('nome'),
-        email: req.param('email'),
-        telefone: req.param('telefone')
-    });
-    var pessoa_fisica = new PessoaFisica.PessoaFisica({
-        cpf: req.param('cpf'),
-        data_nascimento: req.param('data_nascimento')
-    });
+exports.cadastrar = function(user, pessoa, pessoaFisica) {
+    console.log(user);
+    console.log(pessoa);
+    console.log(pessoaFisica);
 
     var erro = false;
-
-    if (Usuario.validate(usuario) == true && Pessoa.validate(pessoa) == true && PessoaFisica.validate(pessoa_fisica) == true) {
+    var teste = true; //Usuario.validate(usuario)
+    if (teste == true) { //} && Pessoa.validate(pessoa) == true && PessoaFisica.validate(pessoa_fisica) == true) {
         Bookshelf.transaction(function(t) {
+            console.log("Cheguei ate aq");
             pessoa.save(null, {
+
                 transacting: t
+
             }).then(function(model, err) {
                 usuario.attributes.pessoa_id = model.id;
                 pessoa_fisica.attributes.pessoa_id = model.id;
@@ -90,23 +81,25 @@ exports.cadastrar = function(user) {
                         console.log(err);
                         res.statusCode = 500;
                         t.rollback();
+
+                    }).
+                    catch(function(err) {
+
+                        console.log(err);
+                        res.statusCode = 500;
+                        t.rollback();
                     });
                 }).
                 catch(function(err) {
-
+                    t.rollback();
                     console.log(err);
                     res.statusCode = 500;
-                    t.rollback();
                 });
-            }).
-            catch(function(err) {
-                t.rollback();
-                console.log(err);
-                res.statusCode = 500;
+                console.log("Ocorreu tudo certo");
             });
+
         });
-        res.json();
-        console.log("Ocorreu tudo certo");
+
     } else {
         console.log("Erros");
     }
