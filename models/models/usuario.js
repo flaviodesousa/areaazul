@@ -1,4 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
+var Pessoa = require('./pessoa');
+var PessoaFisica = require('./pessoafisica');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -51,27 +53,37 @@ exports.validate = function(user) {
     }
     return true;
 }
-exports.cadastrar = function(user, pessoa, pessoaFisica) {
-    console.log(user);
-    console.log(pessoa);
-    console.log(pessoaFisica);
+exports.cadastrar = function(user, then, fail) {
 
-    var erro = false;
     var teste = true; //Usuario.validate(usuario)
     if (teste == true) { //} && Pessoa.validate(pessoa) == true && PessoaFisica.validate(pessoa_fisica) == true) {
+        console.log(Bookshelf);
         Bookshelf.transaction(function(t) {
-            console.log("Cheguei ate aq");
-            pessoa.save(null, {
+            console.log("Cheguei aqui!");
+            pessoa({
+                'nome': user.nome,
+                'email': user.email,
+                'telefone': user.telefone
+            }).save(null, {
 
                 transacting: t
 
             }).then(function(model, err) {
                 usuario.attributes.pessoa_id = model.id;
                 pessoa_fisica.attributes.pessoa_id = model.id;
-                usuario.save(null, {
+                usuario({
+                    'login': 'user.atr',
+                    'senha': 'usuario_senha',
+                    'autorizacao': '1'
+                }).save(null, {
                     transacting: t
                 }).then(function(model, err) {
-                    pessoa_fisica.save(null, {
+                    pessoa_fisica({
+                        'cpf': user.cpf,
+                        'data_nascimento': user.data_nascimento,
+                        'rg': user.rg,
+                        'sexo': user.sexo,
+                    }).save(null, {
                         transacting: t
                     }).then(function(model, err) {
                         res.statusCode = 201;
@@ -95,12 +107,14 @@ exports.cadastrar = function(user, pessoa, pessoaFisica) {
                     console.log(err);
                     res.statusCode = 500;
                 });
-                console.log("Ocorreu tudo certo");
+                return then(true);
             });
 
         });
-
+        return then(true);
     } else {
-        console.log("Erros");
+
+        return fail(false);
     }
+
 }
