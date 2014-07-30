@@ -58,7 +58,7 @@ exports.cadastrar = function(user, then, fail) {
 
         'login': user.cpf,
         'autorizacao': '1',
-        'primeiro_acesso': 'true'
+        'primeiro_acesso': '1'
     });
 
 
