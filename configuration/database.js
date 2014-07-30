@@ -94,9 +94,9 @@ bspg.knex.schema.hasTable('usuario').then(function(exists) {
             .createTable('usuario', function(table) {
                 table.increments('id');
                 table.string('login').notNullable();
-                table.string('senha').notNullable();
+                table.string('senha');
                 table.integer('autorizacao').notNullable();
-                table.integer('primeiro_acesso').notNullable();
+                table.boolean('primeiro_acesso').notNullable();
                 table.bigInteger('pessoa_id').references('id').inTable('pessoa');
             }).then(function() {
                 console.log('tabela usuarios criada')
