@@ -37,16 +37,16 @@ exports.search = function(entidade, func) {
 
 exports.validate = function(user) {
 
-    if (user.attributes.nome == null || user.attributes.nome == '') {
+    if (user.attributes.login == null || user.attributes.login == '') {
         console.log("Nome obrigatório");
         return false;
     }
-
+    /*
     if (user.attributes.senha == null || user.attributes.senha == '') {
         console.log("Senha obrigatório");
         return false;
     }
-
+*/
     if (user.attributes.autorizacao == null || user.attributes.autorizacao == '') {
         console.log("Autorizacao obrigatório");
         return false;
@@ -54,66 +54,63 @@ exports.validate = function(user) {
     return true;
 }
 exports.cadastrar = function(user, then, fail) {
+    var usuario = new this.Usuario({
 
-    var teste = true; //Usuario.validate(usuario)
-    if (teste == true) { //} && Pessoa.validate(pessoa) == true && PessoaFisica.validate(pessoa_fisica) == true) {
-        console.log(Bookshelf);
+        'login': user.cpf,
+        'autorizacao': '1',
+        'primeiro_acesso': 'true'
+    });
+
+
+    var pessoa = new Pessoa.Pessoa({
+        'nome': user.nome,
+        'email': user.email,
+        'telefone': user.telefone
+    });
+
+
+    var pessoaFisica = new PessoaFisica.PessoaFisica({
+
+        'cpf': user.cpf,
+        'data_nascimento': user.data_nascimento,
+        'sexo': user.sexo
+    });
+
+    if ((this.validate(usuario) == true) && (Pessoa.validate(pessoa) == true) && (PessoaFisica.validate(pessoaFisica) == true)) {
+
         Bookshelf.transaction(function(t) {
-            console.log("Cheguei aqui!");
-            pessoa({
-                'nome': user.nome,
-                'email': user.email,
-                'telefone': user.telefone
-            }).save(null, {
-
+            pessoa.save(null, {
                 transacting: t
-
-            }).then(function(model, err) {
-                usuario.attributes.pessoa_id = model.id;
-                pessoa_fisica.attributes.pessoa_id = model.id;
-                usuario({
-                    'login': 'user.atr',
-                    'senha': 'usuario_senha',
-                    'autorizacao': '1'
-                }).save(null, {
+            }).
+            then(function(pessoa) {
+                usuario.save({
+                    pessoa_id: pessoa.id,
+                }, {
                     transacting: t
                 }).then(function(model, err) {
-                    pessoa_fisica({
-                        'cpf': user.cpf,
-                        'data_nascimento': user.data_nascimento,
-                        'rg': user.rg,
-                        'sexo': user.sexo,
-                    }).save(null, {
+                    pessoaFisica.save({
+                        pessoa_id: pessoa.id,
+
+                    }, {
                         transacting: t
                     }).then(function(model, err) {
-                        res.statusCode = 201;
                         t.commit();
-                    }).
-                    catch(function(err) {
-                        console.log(err);
-                        res.statusCode = 500;
-                        t.rollback();
+                    }),
+                    function() {
 
-                    }).
-                    catch(function(err) {
-
-                        console.log(err);
-                        res.statusCode = 500;
                         t.rollback();
-                    });
-                }).
-                catch(function(err) {
-                    t.rollback();
-                    console.log(err);
-                    res.statusCode = 500;
+                        return fail(false);
+                    }
                 });
-                return then(true);
             });
-
+        }).then(function(result) {
+            console.log(result);
+            return then(true);
+        }, function() {
+            console.log("Ocorreu erro");
+            return fail(false);
         });
-        return then(true);
     } else {
-
         return fail(false);
     }
 

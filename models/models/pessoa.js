@@ -18,6 +18,10 @@ exports.validate = function(person) {
     } else if (person.attributes.telefone == null || person.attributes.telefone == '') {
         console.log("Telefone obrigatório");
         return false;
+    } else if (existsPhone(person.attributes.telefone) == false) {
+        console.log("Telefone já cadastrado");
+        return false;
+
     } else if (person.attributes.email == null || person.attributes.email == '') {
         console.log("Email obrigatório: " + person.attributes.email);
         return false;
@@ -25,8 +29,27 @@ exports.validate = function(person) {
         console.log("Email inválido");
         return false;
     }
+
     return true;
 }
+
+function existsPhone(telefonePessoa) {
+    new PesquisaPessoa.Pessoa({
+        telefone: telefonePessoa
+    }).fetch().then(function(model, err) {
+        if (err) {
+            console.log(err);
+            return false;
+        }
+        if (model != null) {
+            console.log('Telefone já foi cadastrado');
+            return true;
+        }
+        return false;
+
+    })
+}
+
 
 function existsName(nomePessoa) {
     new PesquisaPessoa.Pessoa({
