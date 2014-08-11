@@ -1,10 +1,9 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa');
 var PessoaFisica = require('./pessoafisica');
-
-var PessoaCollection = require('collections/pessoa');
-var UsuarioCollection = require('collections/usuario');
-var PessoaFisicaCollection = require('collections/pessoafisica');
+var PessoaCollection = require('../collections/pessoa');
+var UsuarioCollection = require('../collections/usuario');
+var PessoaFisicaCollection = require('../collections/pessoafisica');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -116,12 +115,14 @@ exports.cadastrar = function(user, then, fail) {
 
 
 
-exports.listartodos= function(then, fail)
+exports.listartodos= function(fail,then)
  {
     var usuarios = new UsuarioCollection.Usuario().fetch().then(function(collection, err) {
         if (err) {
+             console.log(500);
             fail(500);
         } else {
+            console.log(collection.models);
            then(collection.models);
         }
     });
