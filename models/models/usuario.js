@@ -41,12 +41,6 @@ exports.validate = function(user) {
         console.log("Nome obrigatório");
         return false;
     }
-    /*
-    if (user.attributes.senha == null || user.attributes.senha == '') {
-        console.log("Senha obrigatório");
-        return false;
-    }
-*/
     if (user.attributes.autorizacao == null || user.attributes.autorizacao == '') {
         console.log("Autorizacao obrigatório");
         return false;
@@ -115,3 +109,76 @@ exports.cadastrar = function(user, then, fail) {
     }
 
 }
+
+
+
+exports.listartodos= function(req, res)
+ {
+    var pessoafisicas = new PessoaFisicaCollection.PessoaFisica().fetch().then(function(collection, err) {
+        if (err) {
+            res.statusCode = 500;
+        } else {
+            res.statusCode = 200;
+            res.send(collection.models);
+        }
+    });
+}
+exports.procurar = function(req, res) {
+    new PessoaFisica.PessoaFisica({
+        id: req.params.id
+    }).fetch().then(function(model, err) {
+        if (err) {
+            res.statusCode = 500;
+        }
+        if (model != null) {
+            res.statusCode = 200;
+            res.send(model.attributes);
+        } else {
+            res.statusCode = 404;
+            res.json();
+        }
+    });
+}
+exports.editar = function(req, res) {
+            new PessoaFisica.PessoaFisica({
+                id: req.params.id
+            }).fetch().then(function(model) {
+                model.save(req.body).then(function(model, err) {
+                    if (err) {
+                        res.statusCode = 500;
+                        res.json();
+                    }
+                    res.statusCode = 200;
+                    res.json();
+                });
+
+            });
+}
+exports.desativar = function(req, res) {
+            new PessoaFisica.PessoaFisica({
+                id: req.params.id
+            }).fetch().then(function(model, err) {
+                if (err) {
+                    res.statusCode = 500;
+                } else {
+                    if (model == null) {
+                        res.statusCode = 404;
+                    } else {
+                        model.destroy({
+                            id: req.params.id
+                        }).then(function(model, err) {
+                            if (err) {
+                                res.statusCode = 500;
+                                ///retornar mensagem de erro json
+                            } else {
+                                res.statusCode = 200;
+                            }
+
+                        });
+                    }
+                }
+                res.json();
+            });
+
+        }
+    
