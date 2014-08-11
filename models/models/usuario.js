@@ -2,9 +2,9 @@ var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa');
 var PessoaFisica = require('./pessoafisica');
 
-var PessoaCollection = require('./collections/pessoa');
-var UsuarioCollection = require('./collections/usuario');
-var PessoaFisicaCollection = require('./collections/pessoafisica');
+var PessoaCollection = require('collections/pessoa');
+var UsuarioCollection = require('collections/usuario');
+var PessoaFisicaCollection = require('collections/pessoafisica');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
