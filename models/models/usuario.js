@@ -115,7 +115,7 @@ exports.cadastrar = function(user, then, fail) {
 
 
 
-exports.listartodos= function(fail,then)
+exports.listartodos= function(fail, then)
  {
     var usuarios = new UsuarioCollection.Usuario().fetch().then(function(collection, err) {
         if (err) {
@@ -124,6 +124,7 @@ exports.listartodos= function(fail,then)
         } else {
             console.log(collection.models);
            then(collection.models);
+             return collection;
         }
     });
 }
