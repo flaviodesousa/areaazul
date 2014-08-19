@@ -7,10 +7,15 @@ var PessoaFisicaCollection = require('../collections/pessoafisica');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
-    idAttribute: 'id'
+    idAttribute: 'idusuario'
 });
 
 exports.Usuario = Usuario;
+
+
+var UsuarioCollection =  Bookshelf.Collection.extend({
+    model: Usuario
+});
 
 exports.getById = function(id, func) {
     console.log('getById');
@@ -52,17 +57,18 @@ exports.validate = function(user) {
 }
 exports.cadastrar = function(user, then, fail) {
     var usuario = new this.Usuario({
-
         'login': user.cpf,
         'autorizacao': '1',
-        'primeiro_acesso': '1'
+        'primeiro_acesso': '1',
+        'status': 'true'
     });
 
 
     var pessoa = new Pessoa.Pessoa({
         'nome': user.nome,
         'email': user.email,
-        'telefone': user.telefone
+        'telefone': user.telefone,
+        'status': 'true'
     });
 
 
@@ -70,16 +76,18 @@ exports.cadastrar = function(user, then, fail) {
 
         'cpf': user.cpf,
         'data_nascimento': user.data_nascimento,
-        'sexo': user.sexo
+        'sexo': user.sexo,
+        'status': 'true'
     });
 
-    if ((this.validate(usuario) == true) && (Pessoa.validate(pessoa) == true) && (PessoaFisica.validate(pessoaFisica) == true)) {
+   // if ((this.validate(usuario) == true) && (Pessoa.validate(pessoa) == true) && (PessoaFisica.validate(pessoaFisica) == true)) {
 
         Bookshelf.transaction(function(t) {
             pessoa.save(null, {
                 transacting: t
             }).
             then(function(pessoa) {
+                console.log(pessoa);
                 usuario.save({
                     pessoa_id: pessoa.id,
                 }, {
@@ -107,98 +115,67 @@ exports.cadastrar = function(user, then, fail) {
             console.log("Ocorreu erro");
             return fail(false);
         });
-    } else {
+ /*   } else {
         return fail(false);
-    }
+    }*/
 
 }
 
-
-
-exports.listartodos= function(fail, then)
+exports.listar = function(func)
  {
-    var usuarios = new UsuarioCollection.Usuario().fetch().then(function(collection, err) {
-        if (err) {
-             console.log(500);
-            fail(500);
-        } else {
-            console.log(collection.models);
-           then(collection.models);
-             return collection;
-        }
-    });
-}
-exports.procurar = function(req, res) {
-    new PessoaFisica.PessoaFisica({
-        id: req.params.id
-    }).fetch().then(function(model, err) {
-        if (err) {
-            res.statusCode = 500;
-        }
-        if (model != null) {
-            res.statusCode = 200;
-            res.send(model.attributes);
-        } else {
-            res.statusCode = 404;
-            res.json();
-        }
-    });
+    UsuarioCollection.forge().query(function(qb){
+         qb.join('pessoa', 'pessoa.idpessoa','=','usuario.pessoa_id');
+         qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.idpessoa');
+         qb.select('usuario.*')
+         qb.select('pessoa.*');
+         qb.select('pessoa_fisica.*');
+    }).fetch().then(function(collection) {
+        console.log(collection.models);
+        func(collection);
+    }); 
 }
 
-exports.editar = function(req, res) {
-      /*      new PessoaFisica.PessoaFisica({
-                id: req.params.id
-            }).fetch().then(function(model) {
-                model.save(req.body).then(function(model, err) {
-                    if (err) {
-                        res.statusCode = 500;
-                        res.json();
-                    }
-                    res.statusCode = 200;
-                    res.json();
-                });
-
-            });*/
-var usuario = new this.Usuario({
-
-        'login': user.cpf,
-        'autorizacao': '1',
-        'primeiro_acesso': '1'
-    });
-
-
-    var pessoa = new Pessoa.Pessoa({
-        'nome': user.nome,
-        'email': user.email,
-        'telefone': user.telefone
-    });
-
-
-    var pessoaFisica = new PessoaFisica.PessoaFisica({
-
-        'cpf': user.cpf,
-        'data_nascimento': user.data_nascimento,
-        'sexo': user.sexo
-    });
-
-    if ((this.validate(usuario) == true) && (Pessoa.validate(pessoa) == true) && (PessoaFisica.validate(pessoaFisica) == true)) {
-
+exports.editar = function(user, then, fail) {
+        console.log(user);
+        var usuario = new this.Usuario({
+            'idusuario': user.idusuario,
+            'login': user.cpf,
+            'autorizacao': '1',
+            'primeiro_acesso': '1',
+            'status': 'true'
+        });
+        var pessoa = new Pessoa.Pessoa({
+            'idpessoa':user.pessoa_id,
+            'nome': user.nome,
+            'email': user.email,
+            'telefone': user.telefone,
+            'status': 'true'
+        });
+        var pessoaFisica = new PessoaFisica.PessoaFisica({
+            'idpessoa_fisica': user.idpessoa_fisica,
+            'cpf': user.cpf,
+            'data_nascimento': user.data_nascimento,
+            'sexo': user.sexo,
+            'status': 'true'
+        });
         Bookshelf.transaction(function(t) {
             pessoa.save(null, {
                 transacting: t
-            }).
+            }, {patch: true}).
             then(function(pessoa) {
                 usuario.save({
                     pessoa_id: pessoa.id,
                 }, {
                     transacting: t
-                }).then(function(model, err) {
+                }, {patch: true}).then(function(model, err) {
+                  
+              
                     pessoaFisica.save({
                         pessoa_id: pessoa.id,
 
                     }, {
                         transacting: t
-                    }).then(function(model, err) {
+                    }, {patch: true}).then(function(model, err) {
                         t.commit();
                     }),
                     function() {
@@ -215,36 +192,75 @@ var usuario = new this.Usuario({
             console.log("Ocorreu erro");
             return fail(false);
         });
-    } else {
-        return fail(false);
-    }
-
 }
-exports.desativar = function(req, res) {
-            new PessoaFisica.PessoaFisica({
-                id: req.params.id
-            }).fetch().then(function(model, err) {
-                if (err) {
-                    res.statusCode = 500;
-                } else {
-                    if (model == null) {
-                        res.statusCode = 404;
-                    } else {
-                        model.destroy({
-                            id: req.params.id
-                        }).then(function(model, err) {
-                            if (err) {
-                                res.statusCode = 500;
-                                ///retornar mensagem de erro json
-                            } else {
-                                res.statusCode = 200;
-                            }
 
-                        });
+
+
+
+exports.procurar = function(user, func){
+     Usuario.forge().query(function(qb){
+        qb.join('pessoa', 'pessoa.idpessoa','=','usuario.pessoa_id');
+        qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.idpessoa');
+        qb.where('usuario.idusuario', user.idusuario);
+        qb.select('usuario.*','pessoa.*','pessoa_fisica.*');
+
+    }).fetch().then(function(model) {
+        console.log(model);
+        func(model);
+    });
+}
+
+
+
+exports.desativar = function(user, then, fail) {
+     this.procurar({idusuario: user.idusuario},
+        function(result){
+        var pessoa = new Pessoa.Pessoa({
+            'idpessoa':result.attributes.pessoa_id,
+            'status': 'false'
+        });
+        var pessoaFisica = new PessoaFisica.PessoaFisica({
+            'idpessoa_fisica': result.attributes.idpessoa_fisica,
+            'status': 'false'
+        });
+
+        var usuario = new Usuario({
+             'idusuario': result.attributes.idusuario,
+            'status': 'false'
+        });
+        Bookshelf.transaction(function(t) {
+            pessoa.save(null, {
+                transacting: t
+            }, {patch: true}).
+            then(function(pessoa) {
+                usuario.save({
+                    pessoa_id: pessoa.id,
+                }, {
+                    transacting: t
+                }, {patch: true}).then(function(model, err) {
+                  
+              
+                    pessoaFisica.save({
+                        pessoa_id: pessoa.id,
+
+                    }, {
+                        transacting: t
+                    }, {patch: true}).then(function(model, err) {
+                        t.commit();
+                    }),
+                    function() {
+
+                        t.rollback();
+                        return fail(false);
                     }
-                }
-                res.json();
+                });
             });
-
-        }
-    
+        }).then(function(result) {
+            console.log(result);
+            return then(true);
+        }, function() {
+            console.log("Ocorreu erro");
+            return fail(false);
+        })
+        })
+}
