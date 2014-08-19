@@ -213,7 +213,7 @@ exports.procurar = function(user, func){
 
 
 exports.desativar = function(user, then, fail) {
-     this.procurar({idusuario: user.idusuario},
+     this.procurar({id_usuario: user.id_usuario},
         function(result){
         var pessoa = new Pessoa.Pessoa({
             'id_pessoa':result.attributes.pessoa_id,
