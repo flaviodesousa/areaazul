@@ -3,7 +3,7 @@ var PesquisaPessoa = require("./pessoa");
 
 var Pessoa = Bookshelf.Model.extend({
     tableName: 'pessoa',
-    idAttribute: 'id'
+    idAttribute: 'id_pessoa'
 });
 
 exports.Pessoa = Pessoa;

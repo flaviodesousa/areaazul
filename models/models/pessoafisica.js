@@ -2,7 +2,7 @@ var Bookshelf = require('bookshelf').conexaoMain;
 
 var PessoaFisica = Bookshelf.Model.extend({
     tableName: 'pessoa_fisica',
-    idAttribute: 'id'
+    idAttribute: 'id_pessoa_fisica'
 });
 
 exports.PessoaFisica = PessoaFisica;

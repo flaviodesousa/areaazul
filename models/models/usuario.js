@@ -7,7 +7,7 @@ var PessoaFisicaCollection = require('../collections/pessoafisica');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
-    idAttribute: 'idusuario'
+    idAttribute: 'id_usuario'
 });
 
 exports.Usuario = Usuario;
@@ -124,8 +124,8 @@ exports.cadastrar = function(user, then, fail) {
 exports.listar = function(func)
  {
     UsuarioCollection.forge().query(function(qb){
-         qb.join('pessoa', 'pessoa.idpessoa','=','usuario.pessoa_id');
-         qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.idpessoa');
+         qb.join('pessoa', 'pessoa.id_pessoa','=','usuario.pessoa_id');
+         qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
          qb.select('usuario.*')
          qb.select('pessoa.*');
          qb.select('pessoa_fisica.*');
@@ -138,21 +138,21 @@ exports.listar = function(func)
 exports.editar = function(user, then, fail) {
         console.log(user);
         var usuario = new this.Usuario({
-            'idusuario': user.idusuario,
+            'id_usuario': user.id_usuario,
             'login': user.cpf,
             'autorizacao': '1',
             'primeiro_acesso': '1',
             'status': 'true'
         });
         var pessoa = new Pessoa.Pessoa({
-            'idpessoa':user.pessoa_id,
+            'id_pessoa':user.pessoa_id,
             'nome': user.nome,
             'email': user.email,
             'telefone': user.telefone,
             'status': 'true'
         });
         var pessoaFisica = new PessoaFisica.PessoaFisica({
-            'idpessoa_fisica': user.idpessoa_fisica,
+            'id_pessoa_fisica': user.id_pessoa_fisica,
             'cpf': user.cpf,
             'data_nascimento': user.data_nascimento,
             'sexo': user.sexo,
@@ -199,9 +199,9 @@ exports.editar = function(user, then, fail) {
 
 exports.procurar = function(user, func){
      Usuario.forge().query(function(qb){
-        qb.join('pessoa', 'pessoa.idpessoa','=','usuario.pessoa_id');
-        qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.idpessoa');
-        qb.where('usuario.idusuario', user.idusuario);
+        qb.join('pessoa', 'pessoa.id_pessoa','=','usuario.pessoa_id');
+        qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
+        qb.where('usuario.id_usuario', user.id_usuario);
         qb.select('usuario.*','pessoa.*','pessoa_fisica.*');
 
     }).fetch().then(function(model) {
@@ -216,16 +216,16 @@ exports.desativar = function(user, then, fail) {
      this.procurar({idusuario: user.idusuario},
         function(result){
         var pessoa = new Pessoa.Pessoa({
-            'idpessoa':result.attributes.pessoa_id,
+            'id_pessoa':result.attributes.pessoa_id,
             'status': 'false'
         });
         var pessoaFisica = new PessoaFisica.PessoaFisica({
-            'idpessoa_fisica': result.attributes.idpessoa_fisica,
+            'id_pessoa_fisica': result.attributes.id_pessoa_fisica,
             'status': 'false'
         });
 
         var usuario = new Usuario({
-             'idusuario': result.attributes.idusuario,
+             'id_usuario': result.attributes.id_usuario,
             'status': 'false'
         });
         Bookshelf.transaction(function(t) {
