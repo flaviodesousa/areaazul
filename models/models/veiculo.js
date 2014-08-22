@@ -18,7 +18,7 @@ exports.cadastrar = function(vehicle, fail, then){
        'cor': vehicle.cor,
        'ano_fabricado': vehicle.ano_fabricacao,
        'ano_modelo': vehicle.ano_modelo,
-       'status': 'true'
+       'ativo': 'true'
 	});
 
 	veiculo.save().then(function(model, err){

@@ -60,7 +60,7 @@ exports.cadastrar = function(user, then, fail) {
         'login': user.cpf,
         'autorizacao': '1',
         'primeiro_acesso': '1',
-        'status': 'true'
+        'ativo': 'true'
     });
 
 
@@ -68,7 +68,7 @@ exports.cadastrar = function(user, then, fail) {
         'nome': user.nome,
         'email': user.email,
         'telefone': user.telefone,
-        'status': 'true'
+        'ativo': 'true'
     });
 
 
@@ -77,7 +77,7 @@ exports.cadastrar = function(user, then, fail) {
         'cpf': user.cpf,
         'data_nascimento': user.data_nascimento,
         'sexo': user.sexo,
-        'status': 'true'
+        'ativo': 'true'
     });
 
    // if ((this.validate(usuario) == true) && (Pessoa.validate(pessoa) == true) && (PessoaFisica.validate(pessoaFisica) == true)) {
@@ -142,21 +142,21 @@ exports.editar = function(user, then, fail) {
             'login': user.cpf,
             'autorizacao': '1',
             'primeiro_acesso': '1',
-            'status': 'true'
+            'ativo': 'true'
         });
         var pessoa = new Pessoa.Pessoa({
             'id_pessoa':user.pessoa_id,
             'nome': user.nome,
             'email': user.email,
             'telefone': user.telefone,
-            'status': 'true'
+            'ativo': 'true'
         });
         var pessoaFisica = new PessoaFisica.PessoaFisica({
             'id_pessoa_fisica': user.id_pessoa_fisica,
             'cpf': user.cpf,
             'data_nascimento': user.data_nascimento,
             'sexo': user.sexo,
-            'status': 'true'
+            'ativo': 'true'
         });
         Bookshelf.transaction(function(t) {
             pessoa.save(null, {
@@ -217,16 +217,16 @@ exports.desativar = function(user, then, fail) {
         function(result){
         var pessoa = new Pessoa.Pessoa({
             'id_pessoa':result.attributes.pessoa_id,
-            'status': 'false'
+            'ativo': 'false'
         });
         var pessoaFisica = new PessoaFisica.PessoaFisica({
             'id_pessoa_fisica': result.attributes.id_pessoa_fisica,
-            'status': 'false'
+            'ativo': 'false'
         });
 
         var usuario = new Usuario({
              'id_usuario': result.attributes.id_usuario,
-            'status': 'false'
+            'ativo': 'false'
         });
         Bookshelf.transaction(function(t) {
             pessoa.save(null, {
