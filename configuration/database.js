@@ -220,7 +220,6 @@ bspg.knex.schema.hasTable('veiculo').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('veiculo', function(table) {
             table.increments('id_veiculo').primary();
-            table.string('cep').notNullable();
             table.string('placa').notNullable();;
             table.bigInteger('placa_numero').notNullable();
             table.string('marca').notNullable();
