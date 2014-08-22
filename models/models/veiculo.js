@@ -10,6 +10,7 @@ exports.Veiculo = Veiculo;
 exports.cadastrar = function(vehicle, fail, then){
 
 	var veiculo = new this.veiculo({
+	   'placa_numero': vehicle.placa_numero,
        'placa': vehicle.placa,
        'estado': vehicle.estado,
        'marca': vehicle.marca,
