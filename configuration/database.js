@@ -11,7 +11,7 @@ bspg.knex.schema.hasTable('estado').then(function(exists) {
             table.increments('id_estado').primary();
             table.string('nome').notNullable();
             table.string('uf').notNullable();
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
         }).then(function() {
             console.log('tabela estado criada')
         }).
@@ -26,7 +26,7 @@ bspg.knex.schema.hasTable('cidade').then(function(exists) {
         bspg.knex.schema.createTable('cidade', function(table) {
             table.increments('id_cidade').primary();
             table.string('nome').notNullable();
-             table.boolean('status').notNullable();
+             table.boolean('ativo').notNullable();
             table.bigInteger('estado_id').notNullable().references('id_estado').inTable('estado');
         }).then(function() {
             console.log('tabela cidade criada')
@@ -42,7 +42,7 @@ bspg.knex.schema.hasTable('bairro').then(function(exists) {
         bspg.knex.schema.createTable('bairro', function(table) {
             table.increments('id_bairro').primary();
             table.string('nome').notNullable();
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('cidade_id').notNullable().references('id_cidade').inTable('cidade');
         }).then(function() {
             console.log('tabela bairro criada')
@@ -63,7 +63,7 @@ bspg.knex.schema.hasTable('endereco').then(function(exists) {
             table.string('numero');
             table.string('quadra');
             table.string('logradouro').notNullable();
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('cidade_id').notNullable().references('id_cidade').inTable('cidade');
             table.bigInteger('bairro_id').notNullable().references('id_bairro').inTable('bairro');
         }).then(function() {
@@ -83,7 +83,7 @@ bspg.knex.schema.hasTable('pessoa').then(function(exists) {
             table.string('email').notNullable();
             table.string('telefone');
             table.string('observacao');
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
         }).then(function() {
             console.log('tabela pessoa criada')
         }).
@@ -102,7 +102,7 @@ bspg.knex.schema.hasTable('usuario').then(function(exists) {
                 table.string('senha');
                 table.integer('autorizacao').notNullable();
                 table.boolean('primeiro_acesso').notNullable();
-                table.boolean('status').notNullable();
+                table.boolean('ativo').notNullable();
                 table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
             }).then(function() {
                 console.log('tabela usuarios criada')
@@ -120,7 +120,7 @@ bspg.knex.schema.hasTable('pessoa_fisica').then(function(exists) {
             table.string('cpf').notNullable();
             table.date('data_nascimento').notNullable();
             table.string('sexo');
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
         }).then(function() {
             console.log('tabela pessoa_fisica criada')
@@ -141,7 +141,7 @@ bspg.knex.schema.hasTable('pessoa_juridica').then(function(exists) {
             table.string('incricao_estadual').notNullable();
             table.string('contato').notNullable();
             table.string('ramo_atividade').notNullable();
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
         }).then(function() {
             console.log('tabela pessoa_juridica criada')
@@ -157,7 +157,7 @@ bspg.knex.schema.hasTable('revendedor').then(function(exists) {
         bspg.knex.schema
             .createTable('revendedor', function(table) {
                 table.increments('id_revendedor').primary();
-                table.boolean('status').notNullable();
+                table.boolean('ativo').notNullable();
                 table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
             }).then(function() {
                 console.log('tabela revendedor criada')
@@ -174,7 +174,7 @@ bspg.knex.schema.hasTable('credenciado').then(function(exists) {
             table.increments('id_credenciado').primary();
             table.boolean('contrato_de_servico_valido').notNullable();
             table.boolean('inadiplente').notNullable();
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
         }).then(function() {
             console.log('tabela credenciado criada')
@@ -189,7 +189,7 @@ bspg.knex.schema.hasTable('funcionario').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('funcionario', function(table) {
             table.increments('id_funcionario').primary();
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('empregador_id').notNullable();
             table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
         }).then(function() {
@@ -205,7 +205,7 @@ bspg.knex.schema.hasTable('fiscal').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('fiscal', function(table) {
             table.increments('id_fiscal').primary();
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
         }).then(function() {
             console.log('tabela fiscal criada')
@@ -226,7 +226,7 @@ bspg.knex.schema.hasTable('veiculo').then(function(exists) {
             table.string('modelo').notNullable();
             table.string('ano_fabricado').notNullable();
             table.string('ano_modelo').notNullable();
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
         }).then(function() {
             console.log('tabela veiculo criada')
         }).
@@ -243,7 +243,7 @@ bspg.knex.schema.hasTable('contrato').then(function(exists) {
             table.bigInteger('numero').notNullable();
             table.date('data_inicio').notNullable;
             table.date('data_termino');
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('pessoa_id').notNullable().references('id_pessoa').inTable('pessoa');
         }).then(function() {
             console.log('tabela contrato criada')
@@ -264,7 +264,7 @@ bspg.knex.schema.hasTable('configuracao').then(function(exists) {
             table.decimal('valor_unitario');
             table.decimal('comissao_credenciado');
             table.decimal('comissao_revendedor');
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
         }).then(function() {
             console.log('tabela configuracao criada')
         }).
@@ -281,7 +281,7 @@ bspg.knex.schema.hasTable('conta').then(function(exists) {
             table.date('data_abertura').notNullable();
             table.date('data_fechamento');
             table.decimal('saldo').notNullable();
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('pessoa_id').notNullable().references('id_pessoa').inTable('pessoa');
         }).then(function() {
             console.log('tabela configuracao criada')
@@ -300,7 +300,7 @@ bspg.knex.schema.hasTable('movimentacao_conta').then(function(exists) {
             table.date('data_estorno');
             table.string('tipo').notNullable();
             table.decimal('valor').notNullable();
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('conta_id').notNullable().references('id_conta').inTable('conta');
             table.bigInteger('pessoa_id').notNullable().references('id_pessoa').inTable('pessoa');
         }).then(function() {
@@ -319,7 +319,7 @@ bspg.knex.schema.hasTable('consumo').then(function(exists) {
             table.date('data_ativacao').notNullable();
             table.date('data_desativacao');
             table.decimal('valor').notNullable();
-            table.boolean('status').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('veiculo_id').notNullable().references('id_veiculo').inTable('veiculo');
             table.bigInteger('pessoa_id').notNullable().references('id_pessoa').inTable('pessoa');
         }).then(function() {
