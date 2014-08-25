@@ -224,8 +224,9 @@ bspg.knex.schema.hasTable('veiculo').then(function(exists) {
             table.bigInteger('placa_numero').notNullable();
             table.string('marca').notNullable();
             table.string('modelo').notNullable();
-            table.string('ano_fabricado').notNullable();
-            table.string('ano_modelo').notNullable();
+            table.string('cor').notNullable();
+            table.date('ano_fabricado').notNullable();
+            table.date('ano_modelo').notNullable();
             table.boolean('ativo').notNullable();
         }).then(function() {
             console.log('tabela veiculo criada')
