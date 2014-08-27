@@ -11,3 +11,4 @@ module.exports.pessoajuridica = require('./models/pessoajuridica');
 module.exports.revendedor = require('./models/revendedor');
 module.exports.usuario = require('./models/usuario');
 module.exports.veiculo = require('./models/veiculo');
+module.exports.estado = require('./models/estado');
