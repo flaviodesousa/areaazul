@@ -228,7 +228,7 @@ bspg.knex.schema.hasTable('veiculo').then(function(exists) {
             table.date('ano_fabricado').notNullable();
             table.date('ano_modelo').notNullable();
             table.boolean('ativo').notNullable();
-         //   table.bigInteger('estado_id').notNullable().references('id_estado').inTable('estado');
+            table.bigInteger('estado_id').notNullable().references('id_estado').inTable('estado');
         }).then(function() {
             console.log('tabela veiculo criada')
         }).
