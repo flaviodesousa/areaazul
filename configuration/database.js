@@ -113,6 +113,25 @@ bspg.knex.schema.hasTable('usuario').then(function(exists) {
     }
 });
 
+
+bspg.knex.schema.hasTable('usuario_has_veiculo').then(function(exists) {
+    if (!exists) {
+        bspg.knex.schema
+            .createTable('usuario_has_veiculo', function(table) {
+                table.increments('id_usuario_has_veiculo');
+                table.bigInteger('usuario_id').references('id_usuario').inTable('usuario');
+                table.bigInteger('veiculo_id').references('id_veiculo').inTable('veiculo');
+            }).then(function() {
+                console.log('tabela usuario_has_veiculo criada')
+            }).
+        catch(function(err) {
+            console.log('erro: ' + err)
+        });
+    }
+});
+
+
+
 bspg.knex.schema.hasTable('pessoa_fisica').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('pessoa_fisica', function(table) {
