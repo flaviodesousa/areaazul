@@ -4,6 +4,10 @@ var PessoaFisica = require('./pessoafisica');
 var PessoaCollection = require('../collections/pessoa');
 var UsuarioCollection = require('../collections/usuario');
 var PessoaFisicaCollection = require('../collections/pessoafisica');
+var bcrypt = require('bcrypt');
+var Pessoa = AreaAzul.models.pessoa,
+var Areaazul_mailer = require('areaazul-mailer');
+
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -55,15 +59,44 @@ exports.validate = function(user) {
     }
     return true;
 }
-exports.cadastrar = function(user, then, fail) {
-    var usuario = new this.Usuario({
-        'login': user.cpf,
-        'autorizacao': '1',
-        'primeiro_acesso': '1',
-        'ativo': 'true'
+
+
+exports.newPassword = function(user, func){
+
+    var pass = 
+    Usuario.forge().query(function(qb){
+        qb.where('usuario.senha', password);
+        qb.select('usuario.*');
+    }).fecth().then(function(model){
+        console.log(model);
+        func(model);
     });
+}
 
+/*
+function decriptografa(password){
+     var pwd = model.get('password');
+        var teste = bcrypt.compareSync(cpw, pwd);
+}
+*/
+function criptografa(password){
+    var salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync("B4c0/\/", salt);
+}
 
+exports.cadastrar = function(user, then, fail) {
+
+    var senhaGerada = generate();
+    var senha = criptografa(senhaGerada);
+            
+    var usuario = new this.Usuario({
+            'login': user.cpf,
+            'autorizacao': '1',
+            'primeiro_acesso': '1',
+            'senha': senha,
+            'ativo': 'true'
+    });
+    
     var pessoa = new Pessoa.Pessoa({
         'nome': user.nome,
         'email': user.email,
@@ -108,9 +141,18 @@ exports.cadastrar = function(user, then, fail) {
                     }
                 });
             });
-        }).then(function(result) {
+        }).then(function(result, model) {
             console.log(result);
-            return then(true);
+            var message = {
+                from: 'AreaAzul <jeffersonarar@hotmail.com>', 
+                to:  user.email,
+                cc: 'jeffersonarar@hotmail.com',
+                subject: 'AreaAzul confirmação de cadastro', 
+                html: '<p><b></b>  Por favor '+ user.nome +',' +' clique no link abaixo para confirmação do cadastro. </br> Sua senha é'+senhaGerada,
+            }
+            console.log(Areaazul_mailer);
+            Areaazul_mailer.enviar.emailer(message);
+            then(true);
         }, function() {
             console.log("Ocorreu erro");
             return fail(false);
@@ -263,4 +305,42 @@ exports.desativar = function(user, then, fail) {
             return fail(false);
         })
         })
+}
+
+var teste1 = generate();
+console.log(teste1);
+
+var teste2 = generate();
+console.log(teste2);
+
+
+var teste3 = generate();
+console.log(teste3);
+
+
+var teste4 = generate();
+console.log(teste4);
+
+
+var teste5 = generate();
+console.log(teste5);
+
+
+var teste6 = generate();
+console.log(teste6);
+
+
+function generate(){
+        this.pass = "";
+        var chars = 6;
+
+        for (var i= 0; i<chars; i++) {
+            this.pass += getRandomChar();
+        }
+        return this.pass;
+}
+function getRandomChar() {
+        var ascii = [[48, 57],[64,90],[97,122]];
+        var i = Math.floor(Math.random()*ascii.length);
+        return String.fromCharCode(Math.floor(Math.random()*(ascii[i][1]-ascii[i][0]))+ascii[i][0]);
 }
