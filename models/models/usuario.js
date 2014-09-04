@@ -4,8 +4,7 @@ var PessoaFisica = require('./pessoafisica');
 var PessoaCollection = require('../collections/pessoa');
 var UsuarioCollection = require('../collections/usuario');
 var PessoaFisicaCollection = require('../collections/pessoafisica');
-var bcrypt = require('bcrypt'),
-var Pessoa = AreaAzul.models.pessoa,
+var bcrypt = require('bcrypt');
 var Areaazul_mailer = require('areaazul-mailer');
 
 
