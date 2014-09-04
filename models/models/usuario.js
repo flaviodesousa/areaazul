@@ -4,7 +4,7 @@ var PessoaFisica = require('./pessoafisica');
 var PessoaCollection = require('../collections/pessoa');
 var UsuarioCollection = require('../collections/usuario');
 var PessoaFisicaCollection = require('../collections/pessoafisica');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt'),
 var Pessoa = AreaAzul.models.pessoa,
 var Areaazul_mailer = require('areaazul-mailer');
 
@@ -148,7 +148,7 @@ exports.cadastrar = function(user, then, fail) {
                 to:  user.email,
                 cc: 'jeffersonarar@hotmail.com',
                 subject: 'AreaAzul confirmação de cadastro', 
-                html: '<p><b></b>  Por favor '+ user.nome +',' +' clique no link abaixo para confirmação do cadastro. </br> Sua senha é'+senhaGerada,
+               html: '<p><b></b>  Por favor '+ user.nome +',' +' clique no link abaixo para confirmação do cadastro. </br> </br>  Sua senha é '+ '<h4>'+ senhaGerada +'</h4>',
             }
             console.log(Areaazul_mailer);
             Areaazul_mailer.enviar.emailer(message);
