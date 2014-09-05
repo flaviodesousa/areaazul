@@ -23,7 +23,7 @@ var UsuarioCollection =  Bookshelf.Collection.extend({
 exports.getById = function(id, func) {
     console.log('getById');
     new Usuario({
-        id: id
+        id_usuario: id
     }).fetch().then(function(model, err) {
         if (model != null)
             var retorno = model.attributes;
@@ -59,7 +59,7 @@ exports.validate = function(user) {
     return true;
 }
 
-
+/*
 exports.newPassword = function(user, func){
 
     var pass = 
@@ -70,7 +70,7 @@ exports.newPassword = function(user, func){
         console.log(model);
         func(model);
     });
-}
+}*/
 
 /*
 function decriptografa(password){
@@ -80,7 +80,8 @@ function decriptografa(password){
 */
 function criptografa(password){
     var salt = bcrypt.genSaltSync(10);
-    return bcrypt.hashSync("B4c0/\/", salt);
+    return bcrypt.hashSync(password, salt);
+
 }
 
 exports.cadastrar = function(user, then, fail) {
@@ -235,9 +236,6 @@ exports.editar = function(user, then, fail) {
         });
 }
 
-
-
-
 exports.procurar = function(user, func){
      Usuario.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','usuario.pessoa_id');
@@ -250,8 +248,6 @@ exports.procurar = function(user, func){
         func(model);
     });
 }
-
-
 
 exports.desativar = function(user, then, fail) {
      this.procurar({id_usuario: user.id_usuario},
@@ -306,29 +302,6 @@ exports.desativar = function(user, then, fail) {
         })
 }
 
-var teste1 = generate();
-console.log(teste1);
-
-var teste2 = generate();
-console.log(teste2);
-
-
-var teste3 = generate();
-console.log(teste3);
-
-
-var teste4 = generate();
-console.log(teste4);
-
-
-var teste5 = generate();
-console.log(teste5);
-
-
-var teste6 = generate();
-console.log(teste6);
-
-
 function generate(){
         this.pass = "";
         var chars = 6;
@@ -338,6 +311,7 @@ function generate(){
         }
         return this.pass;
 }
+
 function getRandomChar() {
         var ascii = [[48, 57],[64,90],[97,122]];
         var i = Math.floor(Math.random()*ascii.length);
