@@ -3,13 +3,12 @@ var bcrypt = require('bcrypt'),
     AreaAzul = require('areaazul'),
     Usuario = AreaAzul.models.usuario;
 
-
 module.exports = function(passport) {
 
     passport.serializeUser(function(user, done) {
-        done(null, user.id);
+        console.log(user)
+        done(null, user.id_usuario);
     });
-
 
     passport.deserializeUser(function(user_id, done) {
         var user = Usuario.getById(user_id);
@@ -18,7 +17,6 @@ module.exports = function(passport) {
         return done(error);
     });
 
-
     passport.use(new LocalStrategy({
             usernameField: 'login',
             passwordField: 'senha'
@@ -26,14 +24,18 @@ module.exports = function(passport) {
             var user = Usuario.search(new Usuario.Usuario({
                 'login': username,
             }), function(retorno) {
-                var pwd = '';
                 if (retorno != null) {
                     var pwd = retorno['senha'];
+                    var acesso = retorno['primeiro_acesso'];
                 }
-                var teste = false;
-                var teste = bcrypt.compareSync(password, pwd);
+                var hash = bcrypt.compareSync(password, pwd);
 
-                if (pwd != null && teste != false) {
+                if (pwd != null && hash != false) {
+                    console.log("Passei aq");
+                    if(acesso == true){
+                        console.log('Primeiro acesso.');
+                        return done(null, retorno);
+                    }
                     return done(null, retorno);
                 }
                 return done(null, false, {

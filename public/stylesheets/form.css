@@ -1,0 +1,60 @@
+
+.content{
+ width:960px;
+ margin:20px auto;
+ }
+ 
+.main{
+ float:left;
+ width: 650px;
+ margin-top:80px;
+ }
+ 
+#progressbar{
+ margin:0;
+ padding:0;
+ font-size:18px;
+ }
+ 
+#active1{
+ color:red;
+ }
+ 
+fieldset{
+ display:none;
+ width: 350px;
+ padding:20px;
+ margin-top:15px;
+ margin-left: 85px;
+ 
+ }
+ 
+#first{
+ display:block;
+ width: 350px;
+ padding:20px;
+ margin-top:15px;
+ margin-left: 85px;
+
+ }
+
+
+input[type=submit],
+input[type=button]{
+	width: 70px;
+	height: 30px;
+}
+
+h2,p{
+ text-align:center;
+ font-family: 'Droid Serif', serif;
+ }
+ 
+li{
+ margin-right:52px;
+ display:inline;
+ color:#c1c5cc;
+ font-family: 'Droid Serif', serif;
+ 
+ }
+
