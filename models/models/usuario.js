@@ -59,40 +59,55 @@ exports.validate = function(user) {
     return true;
 }
 
-/*
-exports.newPassword = function(user, func){
 
-    var pass = 
-    Usuario.forge().query(function(qb){
-        qb.where('usuario.senha', password);
-        qb.select('usuario.*');
-    }).fecth().then(function(model){
-        console.log(model);
-        func(model);
-    });
-}*/
-
-/*
-function decriptografa(password){
-     var pwd = model.get('password');
-        var teste = bcrypt.compareSync(cpw, pwd);
+exports.alterarSenha = function(user, then, fail){
+    new this.Usuario({
+            id_usuario: user.id_usuario
+        }).fetch().then(function(model) { 
+            if (model != null) {                                                                                                                                                             
+                var pwd = model.attributes.senha;
+            }
+            if(validateSenha(user) == true){
+                var hash = bcrypt.compareSync(user.senha, pwd);
+                console.log(hash);
+            if(hash != false){
+                var new_senha = criptografa(user.nova_senha);
+            
+            model.save({
+             primeiro_acesso: 'false',
+             senha : new_senha,
+             ativo : 'true'
+        }).then(function(model, err) {
+            if (err) {
+                console.log("Houve erro ao alterar");
+                return fail(false);
+            } else {
+                console.log("Alterado com sucesso!");
+                return then(true);
+            }
+        });
+     } else {
+         console.log("Houve erro ao alterar");
+         return fail(false);
+     } 
+     } else {
+         console.log("Houve erro ao alterar");
+         return fail(false);
+     }
+ });
 }
-*/
-function criptografa(password){
-    var salt = bcrypt.genSaltSync(10);
-    return bcrypt.hashSync(password, salt);
 
-}
 
 exports.cadastrar = function(user, then, fail) {
 
     var senhaGerada = generate();
     var senha = criptografa(senhaGerada);
-            
+    console.log("Senha gerada: "+senhaGerada);
+
     var usuario = new this.Usuario({
             'login': user.cpf,
             'autorizacao': '1',
-            'primeiro_acesso': '1',
+            'primeiro_acesso': 'true',
             'senha': senha,
             'ativo': 'true'
     });
@@ -183,7 +198,7 @@ exports.editar = function(user, then, fail) {
             'id_usuario': user.id_usuario,
             'login': user.cpf,
             'autorizacao': '1',
-            'primeiro_acesso': '1',
+            'primeiro_acesso': 'true',
             'ativo': 'true'
         });
         var pessoa = new Pessoa.Pessoa({
@@ -316,4 +331,33 @@ function getRandomChar() {
         var ascii = [[48, 57],[64,90],[97,122]];
         var i = Math.floor(Math.random()*ascii.length);
         return String.fromCharCode(Math.floor(Math.random()*(ascii[i][1]-ascii[i][0]))+ascii[i][0]);
+}
+
+    
+function criptografa(password){
+    var salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync(password, salt);
+
+}
+
+
+function validateSenha(user){
+    console.log(user);
+    if(user.nova_senha == null || user.nova_senha == ''){
+        console.log("Campo obrigatório");
+        return false;
+    }
+    if(user.senha == null || user.senha == ''){
+        console.log("Campo obrigatório");
+        return false;
+    }
+    if(user.conf_senha == null || user.conf_senha == ''){
+        console.log("Campo obrigatório");
+        return false;
+    }
+    if(user.nova_senha  != user.conf_senha){
+        console.log("Senhas diferentes"); 
+        return false;                                                 
+    }
+    return true;
 }
