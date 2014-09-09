@@ -9,6 +9,9 @@ module.exports = function(app) {
             res.render('login/index');
         },
 
+        home: function(req, res){
+            res.render('login/home', {value:user.attributes});
+        },
         autenticar: function(req, res, next) {
             passport.authenticate('local', function(err, user, info) {
                 if (err || !user) {
@@ -24,19 +27,18 @@ module.exports = function(app) {
                         });
                     }
                     if(user.primeiro_acesso == true){
-                        return res.render('/usuario/home', {value:user.id_usuario});
-                      /* console.log(user.id_usuario);
-                        return res.render('usuario/home', function(user){
-                            vvalor = 
-                        });*/
-                }
+
+                        console.log(user.id_usuario);
+                       return res.render('usuario/home', {value:user});
+                      }
                     
-                    return res.redirect('/revendedor/pj ');
+                    return res.redirect('/revendedor/pj');
                 });
             })(req, res, next);
 
 
         }
-    }
+}
+    
     return loginController;
 }

@@ -7,31 +7,25 @@ module.exports = function(app) {
         index: function(req, res) {
             res.render('usuario/index');
         },
-        home: function(req, res) {
-        
-            Usuario.procurar({ id_usuario: value.id_usuario},
-            function(result){
 
-                res.render("usuario/home", {value:result.attributes});
-                console.log(result.attributes);
-                return result;
-            })
-
-        },    
+        home: function(req, res){
+            res.render('usuario/home', {value:user.attributes});
+        },   
     	alterarSenha: function(req, res){
             Usuario.alterarSenha({
                 id_usuario: req.body.id_usuario,
+                login: req.body.login,
                 senha: req.body.senha,
                 nova_senha: req.body.nova_senha,
                 conf_senha: req.body.conf_senha
             },
             function(result) {
                 console.log("Alterado com sucesso!!!");
-                res.redirect('/usuario');
+                res.redirect('usuario/index');
             },
             function(result) {
                 console.log("Erro ao salvar!!!");
-                res.redirect('/usuario');
+                res.redirect('usuario/index');
             });
     }
 }
