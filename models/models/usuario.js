@@ -6,7 +6,7 @@ var UsuarioCollection = require('../collections/usuario');
 var PessoaFisicaCollection = require('../collections/pessoafisica');
 var bcrypt = require('bcrypt');
 var Areaazul_mailer = require('areaazul-mailer');
-var dateutil = require('dateutil');
+var Moment = require('moment');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -103,7 +103,7 @@ exports.cadastrar = function(user, then, fail) {
     var senhaGerada = generate();
     var senha = criptografa(senhaGerada);
 
-    var data = dateutil.parse(user.data_nascimento);
+    var data = Moment.moment(user.data_nascimento, ["DD-MM-YYYY","YYYY-MM-DD"]);
     console.log(data);
 
     console.log("Senha gerada: "+senhaGerada);
