@@ -6,7 +6,7 @@ var UsuarioCollection = require('../collections/usuario');
 var PessoaFisicaCollection = require('../collections/pessoafisica');
 var bcrypt = require('bcrypt');
 var Areaazul_mailer = require('areaazul-mailer');
-
+var dateutil = require('dateutil');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -102,6 +102,10 @@ exports.cadastrar = function(user, then, fail) {
 
     var senhaGerada = generate();
     var senha = criptografa(senhaGerada);
+
+    var data = dateutil.parse(user.data_nascimento);
+    console.log(data);
+
     console.log("Senha gerada: "+senhaGerada);
 
     var usuario = new this.Usuario({
@@ -123,7 +127,7 @@ exports.cadastrar = function(user, then, fail) {
     var pessoaFisica = new PessoaFisica.PessoaFisica({
 
         'cpf': user.cpf,
-        'data_nascimento': user.data_nascimento,
+        'data_nascimento': data,
         'sexo': user.sexo,
         'ativo': 'true'
     });
