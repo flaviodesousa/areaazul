@@ -20,7 +20,6 @@
         "knex": "0.6.x",
         "moment": "*",
         "util": "*",
-        "moment":"*",
         "bcrypt": "*",
         "areaazul-mailer":"git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git"
     }
