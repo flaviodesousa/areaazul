@@ -15,7 +15,6 @@ var Usuario = Bookshelf.Model.extend({
 
 exports.Usuario = Usuario;
 
-
 var UsuarioCollection =  Bookshelf.Collection.extend({
     model: Usuario
 });
@@ -211,7 +210,7 @@ exports.editar = function(user, then, fail) {
         var pessoaFisica = new PessoaFisica.PessoaFisica({
             'id_pessoa_fisica': user.id_pessoa_fisica,
             'cpf': user.cpf,
-            'data_nascimento': user.dat_nascimento,
+            'data_nascimento': dat_nascimento,
             'sexo': user.sexo,
             'ativo': 'true'
         });
