@@ -100,7 +100,7 @@ exports.alterarSenha = function(user, then, fail){
 exports.cadastrar = function(user, then, fail) {
     var senhaGerada = generate();
     var senha = criptografa(senhaGerada);
-    var dat_nascimento =  moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");
+    var dat_nascimento =  converteData(user.data_nascimento);
            
     var usuario = new this.Usuario({
             'login': user.cpf,
@@ -191,8 +191,9 @@ exports.listar = function(func)
 
 exports.editar = function(user, then, fail) {
         console.log(user);
-        var dat_nascimento =  moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");
-
+        var dat_nascimento = converteData(user.data_nascimento);
+        console.log("Nasc: "+user.data_nascimento);
+        console.log("Data: "+dat_nascimento);
         var usuario = new this.Usuario({
             'id_usuario': user.id_usuario,
             'login': user.cpf,
@@ -223,9 +224,7 @@ exports.editar = function(user, then, fail) {
                     pessoa_id: pessoa.id,
                 }, {
                     transacting: t
-                }, {patch: true}).then(function(model, err) {
-                  
-              
+                }, {patch: true}).then(function(model, err) {              
                     pessoaFisica.save({
                         pessoa_id: pessoa.id,
 
@@ -357,4 +356,9 @@ function validateSenha(user){
         return false;                                                 
     }
     return true;
+}
+
+function converteData(data){
+    console.log(data);
+    return moment(Date.parse(data)).format("YYYY-MM-DD");
 }
