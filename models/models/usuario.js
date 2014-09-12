@@ -6,7 +6,7 @@ var UsuarioCollection = require('../collections/usuario');
 var PessoaFisicaCollection = require('../collections/pessoafisica');
 var bcrypt = require('bcrypt');
 var Areaazul_mailer = require('areaazul-mailer');
-var Moment = require('moment');
+var moment = require('moment');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -99,15 +99,10 @@ exports.alterarSenha = function(user, then, fail){
 
 
 exports.cadastrar = function(user, then, fail) {
-
     var senhaGerada = generate();
     var senha = criptografa(senhaGerada);
-
-    var data = Moment.moment(user.data_nascimento, ["DD-MM-YYYY","YYYY-MM-DD"]);
-    console.log(data);
-
-    console.log("Senha gerada: "+senhaGerada);
-
+    var dat_nascimento =  moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");
+           
     var usuario = new this.Usuario({
             'login': user.cpf,
             'autorizacao': '1',
@@ -123,11 +118,10 @@ exports.cadastrar = function(user, then, fail) {
         'ativo': 'true'
     });
 
-
     var pessoaFisica = new PessoaFisica.PessoaFisica({
 
         'cpf': user.cpf,
-        'data_nascimento': data,
+        'data_nascimento': dat_nascimento,
         'sexo': user.sexo,
         'ativo': 'true'
     });
@@ -198,6 +192,8 @@ exports.listar = function(func)
 
 exports.editar = function(user, then, fail) {
         console.log(user);
+        var dat_nascimento =  moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");
+
         var usuario = new this.Usuario({
             'id_usuario': user.id_usuario,
             'login': user.cpf,
@@ -215,7 +211,7 @@ exports.editar = function(user, then, fail) {
         var pessoaFisica = new PessoaFisica.PessoaFisica({
             'id_pessoa_fisica': user.id_pessoa_fisica,
             'cpf': user.cpf,
-            'data_nascimento': user.data_nascimento,
+            'data_nascimento': user.dat_nascimento,
             'sexo': user.sexo,
             'ativo': 'true'
         });
@@ -305,7 +301,6 @@ exports.desativar = function(user, then, fail) {
                         t.commit();
                     }),
                     function() {
-
                         t.rollback();
                         return fail(false);
                     }
@@ -343,7 +338,6 @@ function criptografa(password){
     return bcrypt.hashSync(password, salt);
 
 }
-
 
 function validateSenha(user){
     console.log(user);
