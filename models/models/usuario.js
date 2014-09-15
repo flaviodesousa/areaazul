@@ -100,7 +100,7 @@ exports.alterarSenha = function(user, then, fail){
 exports.cadastrar = function(user, then, fail) {
     var senhaGerada = generate();
     var senha = criptografa(senhaGerada);
-    var dat_nascimento =  converteData(user.data_nascimento);
+    var dat_nascimento = moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");
            
     var usuario = new this.Usuario({
             'login': user.cpf,

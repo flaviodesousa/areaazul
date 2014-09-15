@@ -21,6 +21,7 @@
         "moment": "*",
         "util": "*",
         "bcrypt": "*",
+        "async": "*",
         "areaazul-mailer":"git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git"
     }
 }
