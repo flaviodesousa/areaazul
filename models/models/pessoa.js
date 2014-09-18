@@ -1,36 +1,88 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var PesquisaPessoa = require("./pessoa");
+var validator = require("validator");
+var async = require("async");
+
 
 var Pessoa = Bookshelf.Model.extend({
     tableName: 'pessoa',
     idAttribute: 'id_pessoa'
 });
 
+
 exports.Pessoa = Pessoa;
 
 exports.validate = function(person) {
-    if (person.attributes.nome == null || person.attributes.nome == '') {
+
+    if (validator.isNull(person.attributes.nome) == true || person.attributes.nome == '') {
         console.log("Nome obrigatório");
         return false;
-    } else if (existsName(person.attributes.nome) == true) {
-        console.log("Nome já cadastrado");
-        return false;
-    } else if (person.attributes.telefone == null || person.attributes.telefone == '') {
+    } else if (validator.isNull(person.attributes.telefone) == true || person.attributes.telefone == '') {
         console.log("Telefone obrigatório");
         return false;
-    } else if (existsPhone(person.attributes.telefone) == false) {
-        console.log("Telefone já cadastrado");
-        return false;
-
-    } else if (person.attributes.email == null || person.attributes.email == '') {
+    } else if (validator.isNull(person.attributes.email) == true || person.attributes.email == '') {
         console.log("Email obrigatório: " + person.attributes.email);
         return false;
-    } else if (checkEmail(person.attributes.email) == false) {
+    } else if (validator.isEmail(person.attributes.email) == false) {
         console.log("Email inválido");
         return false;
     }
-
     return true;
+}
+
+/*
+exports.valida = function(param, func){
+    if(this.validate(param.person) == true)
+     {
+        new PesquisaPessoa.Pessoa({
+            nome: param.person.attributes.nome
+        }).fetch().then(function(model, err) {
+         if (model == null) {
+                new PesquisaPessoa.Pessoa({
+                    telefone: param.person.attributes.telefone
+                }).fetch().then(function(model, err) {
+                    if (model == null) {
+                        console.log("Telefone não existe");
+                        func(true);
+                    }else{
+                        console.log("Telefone existe");
+                        func(false);
+                    }
+                    if (err) {
+                        console.log('Erro');
+                        func(false);
+                    }
+                })
+                if (err) {
+                    console.log('Erro');
+                    func(false);
+                }
+        } else {
+            console.log('Nome já cadastrado!');
+            func(false);
+        }
+        if (err) {
+            console.log('Erro');
+            func(false);
+        }
+        })
+    }else{
+        console.log("Campos obrigatorios não preenchidos");
+        func(false);
+    }
+}
+
+
+
+exports.search = function(entidade, func) {
+    entidade.fetch().then(function(model, err) {
+        var retorno = model.attributes;
+        if (err) {
+            func(err);
+        }else{
+            func(null, retorno);
+        }
+    });
 }
 
 function existsPhone(telefonePessoa) {
@@ -50,23 +102,21 @@ function existsPhone(telefonePessoa) {
     })
 }
 
-
-function existsName(nomePessoa) {
-    new PesquisaPessoa.Pessoa({
+function existsName(nomePessoa, func) {
+ new PesquisaPessoa.Pessoa({
         nome: nomePessoa
     }).fetch().then(function(model, err) {
         if (err) {
-            console.log(err);
-            return false;
+            func(err);
         }
         if (model != null) {
-            console.log('Pessoa já Existente');
-            return true;
+           func(model);
         }
-        return false;
+       
     });
+   
 }
-
+/*
 function checkEmail(emailAddress) {
     var sQtext = '[^\\x0d\\x22\\x5c\\x80-\\xff]';
     var sDtext = '[^\\x0d\\x5b-\\x5d\\x80-\\xff]';
@@ -88,3 +138,4 @@ function checkEmail(emailAddress) {
     }
     return false;
 }
+*/

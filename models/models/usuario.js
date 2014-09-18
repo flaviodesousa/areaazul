@@ -7,6 +7,7 @@ var PessoaFisicaCollection = require('../collections/pessoafisica');
 var bcrypt = require('bcrypt');
 var Areaazul_mailer = require('areaazul-mailer');
 var moment = require('moment');
+var async = require('async');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -46,9 +47,9 @@ exports.search = function(entidade, func) {
 
 
 exports.validate = function(user) {
-
+    console.log(user.login);
     if (user.attributes.login == null || user.attributes.login == '') {
-        console.log("Nome obrigatório");
+        console.log("CPF obrigatório");
         return false;
     }
     if (user.attributes.autorizacao == null || user.attributes.autorizacao == '') {
@@ -100,8 +101,7 @@ exports.alterarSenha = function(user, then, fail){
 exports.cadastrar = function(user, then, fail) {
     var senhaGerada = generate();
     var senha = criptografa(senhaGerada);
-    var dat_nascimento = moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");
-           
+    var dat_nascimento = moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");       
     var usuario = new this.Usuario({
             'login': user.cpf,
             'autorizacao': '1',
@@ -109,70 +109,69 @@ exports.cadastrar = function(user, then, fail) {
             'senha': senha,
             'ativo': 'true'
     });
-    
     var pessoa = new Pessoa.Pessoa({
         'nome': user.nome,
         'email': user.email,
         'telefone': user.telefone,
         'ativo': 'true'
     });
-
     var pessoaFisica = new PessoaFisica.PessoaFisica({
-
         'cpf': user.cpf,
         'data_nascimento': dat_nascimento,
         'sexo': user.sexo,
         'ativo': 'true'
     });
 
-   // if ((this.validate(usuario) == true) && (Pessoa.validate(pessoa) == true) && (PessoaFisica.validate(pessoaFisica) == true)) {
-
-        Bookshelf.transaction(function(t) {
-            pessoa.save(null, {
-                transacting: t
-            }).
-            then(function(pessoa) {
-                console.log(pessoa);
-                usuario.save({
-                    pessoa_id: pessoa.id,
-                }, {
-                    transacting: t
-                }).then(function(model, err) {
-                    pessoaFisica.save({
-                        pessoa_id: pessoa.id,
-
-                    }, {
+    if((this.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
+            console.log(usuario.login);
+            new this.Usuario({
+                'login': user.cpf,
+            }).fetch().then(function(model) { 
+              if(model == null){
+                    Bookshelf.transaction(function(t) {
+                    pessoa.save(null, {
                         transacting: t
-                    }).then(function(model, err) {
-                        t.commit();
-                    }),
-                    function() {
+                    }).
+                    then(function(pessoa) {
+                        console.log(pessoa);
+                        usuario.save({
+                            pessoa_id: pessoa.id,
+                        }, {
+                            transacting: t
+                        }).then(function(model, err) {
+                            pessoaFisica.save({
+                                pessoa_id: pessoa.id,
+                            }, {
+                                transacting: t
+                            }).then(function(model, err) {
+                                  console.log("Commit");
+                                t.commit();
+                            }),
+                            function() {
+                                t.rollback();
+                                   console.log("rollback");
+                                fail(false);
 
-                        t.rollback();
-                        return fail(false);
-                    }
+                            }
+                        });
+                    });
+                }).then(function(model) {
+                    enviarEmail(user, senhaGerada);
+                     console.log("Passei aq");
+                    then(true);
+                }, function() {
+                    console.log("Ocorreu erro");
+                    fail(false);
                 });
-            });
-        }).then(function(result, model) {
-            console.log(result);
-            var message = {
-                from: 'AreaAzul <jeffersonarar@hotmail.com>', 
-                to:  user.email,
-                cc: 'jeffersonarar@hotmail.com',
-                subject: 'AreaAzul confirmação de cadastro', 
-               html: '<p><b></b>  Por favor '+ user.nome +',' +' clique no link abaixo para confirmação do cadastro. </br> </br>  Sua senha é '+ '<h4>'+ senhaGerada +'</h4>',
+             } else {
+                    console.log("CPF já existe!");
+                    fail(false);
             }
-            console.log(Areaazul_mailer);
-            Areaazul_mailer.enviar.emailer(message);
-            then(true);
-        }, function() {
-            console.log("Ocorreu erro");
-            return fail(false);
-        });
- /*   } else {
-        return fail(false);
-    }*/
-
+            });
+    }else{
+        console.log("Campos obrigatorios!");
+        fail(false);
+    }
 }
 
 exports.listar = function(func)
@@ -180,6 +179,7 @@ exports.listar = function(func)
     UsuarioCollection.forge().query(function(qb){
          qb.join('pessoa', 'pessoa.id_pessoa','=','usuario.pessoa_id');
          qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
+         qb.where('usuario.ativo','=','true');
          qb.select('usuario.*')
          qb.select('pessoa.*');
          qb.select('pessoa_fisica.*');
@@ -187,6 +187,21 @@ exports.listar = function(func)
         console.log(collection.models);
         func(collection);
     }); 
+}
+
+
+function enviarEmail(user, senha){
+     console.log(user.email);
+    var message = {
+        from: 'AreaAzul <jeffersonarar@hotmail.com>', 
+        to:  user.email,
+        cc: 'jeffersonarar@hotmail.com',
+        subject: 'AreaAzul confirmação de cadastro', 
+        html: '<p><b></b>  Por favor   '+ user.nome + ' clique no link abaixo para confirmação do cadastro. </br> </br>  Sua senha é '+ '<h4>'+ senha +'</h4>',
+    }
+    console.log(Areaazul_mailer);
+    Areaazul_mailer.enviar.emailer(message);
+
 }
 
 exports.editar = function(user, then, fail) {

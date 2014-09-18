@@ -1,4 +1,5 @@
 var Bookshelf = require('bookshelf').conexaoMain;
+var validator = require("validator");
 
 var PessoaFisica = Bookshelf.Model.extend({
     tableName: 'pessoa_fisica',
@@ -9,7 +10,7 @@ exports.PessoaFisica = PessoaFisica;
 
 exports.validate = function(individuals) {
 
-    if (individuals.attributes.cpf == null || individuals.attributes.cpf == '') {
+    if (validator.isNull(individuals.attributes.cpf) == true || individuals.attributes.cpf == '') {
         console.log("Cpf obrigatório");
         return false;
     }
@@ -19,7 +20,7 @@ exports.validate = function(individuals) {
         return false;
     }
 
-    if (individuals.attributes.data_nascimento == '' || individuals.attributes.data_nascimento == '') {
+    if (individuals.attributes.data_nascimento == '') {
         console.log("Data Nascimento obrigatório");
         return false;
     }
