@@ -34,10 +34,7 @@ exports.cadastrar = function(vehicle, fail, then){
           return then(true)
         }
   })
-
-
 }
-
 
 exports.listar = function(func)
  {
