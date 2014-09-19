@@ -8,6 +8,8 @@ var bcrypt = require('bcrypt');
 var Areaazul_mailer = require('areaazul-mailer');
 var moment = require('moment');
 var async = require('async');
+var validator = require("validator");
+
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -48,55 +50,16 @@ exports.search = function(entidade, func) {
 
 exports.validate = function(user) {
     console.log(user.login);
-    if (user.attributes.login == null || user.attributes.login == '') {
+    if (validator.isNull(user.attributes.login) == true || user.attributes.login == '') {
         console.log("CPF obrigatório");
         return false;
     }
-    if (user.attributes.autorizacao == null || user.attributes.autorizacao == '') {
+    if (validator.isNull(user.attributes.autorizacao) == null || user.attributes.autorizacao == '') {
         console.log("Autorizacao obrigatório");
         return false;
     }
     return true;
 }
-
-
-exports.alterarSenha = function(user, then, fail){
-    new this.Usuario({
-            id_usuario: user.id_usuario
-        }).fetch().then(function(model) { 
-            if (model != null) {                                                                                                                                                             
-                var pwd = model.attributes.senha;
-            }
-            if(validateSenha(user) == true){
-                var hash = bcrypt.compareSync(user.senha, pwd);
-                console.log(hash);
-            if(hash != false){
-                var new_senha = criptografa(user.nova_senha);
-            
-            model.save({
-             primeiro_acesso: 'false',
-             senha : new_senha,
-             ativo : 'true'
-        }).then(function(model, err) {
-            if (err) {
-                console.log("Houve erro ao alterar");
-                return fail(false);
-            } else {
-                console.log("Alterado com sucesso!");
-                return then(true);
-            }
-        });
-     } else {
-         console.log("Houve erro ao alterar");
-         return fail(false);
-     } 
-     } else {
-         console.log("Houve erro ao alterar");
-         return fail(false);
-     }
- });
-}
-
 
 exports.cadastrar = function(user, then, fail) {
     var senhaGerada = generate();
@@ -187,6 +150,49 @@ exports.listar = function(func)
         console.log(collection.models);
         func(collection);
     }); 
+}
+
+
+
+exports.alterarSenha = function(user, then, fail){
+    console.log("Tamanho: " + verificaTamanhoDasSenhas(user));
+    if((validateSenha(user) == true) && (verificaTamanhoDasSenhas(user) == true)){
+    new this.Usuario({
+            id_usuario: user.id_usuario
+        }).fetch().then(function(model) { 
+            if (model != null) {                                                                                                                                                             
+                var pwd = model.attributes.senha;
+            }
+          
+            var hash = bcrypt.compareSync(user.senha, pwd);
+            console.log(hash);
+            if(hash != false){
+                var new_senha = criptografa(user.nova_senha);
+            
+        model.save({
+            primeiro_acesso: 'false',
+            senha : new_senha,
+            ativo : 'true'
+        }).then(function(model, err) {
+            if (err) {
+                console.log("Houve erro ao alterar");
+                fail(false);
+            } else {
+                console.log("Alterado com sucesso!");
+                then(true);
+            }
+        });
+ 
+     } else {
+         console.log("Houve erro ao alterar");
+         fail(false);
+     }
+ });
+
+ }else{
+    console.log("Campos obrigatorios não preenchidos");
+    fail(false);
+ }
 }
 
 
@@ -331,7 +337,7 @@ exports.desativar = function(user, then, fail) {
 
 function generate(){
         this.pass = "";
-        var chars = 6;
+        var chars = 4;
 
         for (var i= 0; i<chars; i++) {
             this.pass += getRandomChar();
@@ -353,7 +359,6 @@ function criptografa(password){
 }
 
 function validateSenha(user){
-    console.log(user);
     if(user.nova_senha == null || user.nova_senha == ''){
         console.log("Campo obrigatório");
         return false;
@@ -369,6 +374,23 @@ function validateSenha(user){
     if(user.nova_senha  != user.conf_senha){
         console.log("Senhas diferentes"); 
         return false;                                                 
+    }
+    return true;
+}
+
+
+function verificaTamanhoDasSenhas(user){
+    if(user.senha.length < 4 && user.senha.length > 8 ){
+        console.log("A senha deve conter no minimo 4 a 8 caracteres");
+        return false;
+    }
+    if(user.conf_senha.length < 4 && user.conf_senha.length > 8 ){
+        console.log("A senha deve conter no minimo 4 a 8caracteres");
+        return false;
+    }
+    if(user.nova_senha.length < 4 && user.nova_senha.length  > 8 ){
+        console.log("A senha deve conter no minimo 4 a 8 caracteres");
+        return false;
     }
     return true;
 }
