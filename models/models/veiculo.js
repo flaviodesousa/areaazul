@@ -1,4 +1,7 @@
 var Bookshelf = require('bookshelf').conexaoMain;
+var validator = require('validator');
+
+
 
 var Veiculo = Bookshelf.Model.extend({
     tableName: 'veiculo',
@@ -18,7 +21,6 @@ exports.cadastrar = function(vehicle, fail, then){
   var vehicle = new this.Veiculo({
        'estado_id': vehicle.estado_id,
        'placa': vehicle.placa,
-       'placa_numero': vehicle.placa_numero,
        'marca': vehicle.marca,
        'modelo': vehicle.modelo,
        'cor': vehicle.cor,
@@ -26,14 +28,33 @@ exports.cadastrar = function(vehicle, fail, then){
        'ano_modelo': vehicle.ano_modelo,
        'ativo': 'true'
   });
-  console.log(vehicle);
-  vehicle.save().then(function(model, err){
-        if(err){
-          return fail(false);
-        } else {
-          return then(true)
-        }
-  })
+  console.log(validator.isNumeric(vehicle.attributes.ano_modelo));
+  if(this.validate(vehicle) == true){
+    console.log(vehicle.attributes.placa);
+    new this.Veiculo({
+      'placa' : vehicle.attributes.placa
+    }).fetch().then(function(result, err){
+      if (result == null) {
+      vehicle.save().then(function(model, err){
+          if(err){
+            fail(false);
+          } else {
+            then(true);
+          }
+        });
+      }else{
+        console.log("Veiculo já existe");
+        fail(false);
+      }
+      if(err){
+         console.log(err);
+         fail(false);
+      }
+    })
+  }else{
+    console.log("Campos obrigatorios não foram preenchidos");
+     fail(false);
+  }
 }
 
 exports.listar = function(func)
@@ -84,10 +105,63 @@ exports.desativar = function(vehicle, fail, then){
       if(err){
           return fail(false);
         } else {
-             console.log(model);
-          return then(true);
+             console.log(model);l
         }
-    });
-
+  });
   });
 }
+
+function validaPlaca(vehicle)
+{
+  var er = /[a-z]{3}-?\d{4}/gim;
+  er.lastIndex = 0;
+  return er.test(vehicle.attributes.placa);
+}
+
+exports.validate = function(vehicle){
+
+  if(validator.isNull(vehicle.attributes.estado_id) == true || vehicle.attributes.estado_id == ''){
+    console.log("Estado é  obrigatório!");
+    return false;
+  }
+    if(validator.isNull(vehicle.attributes.placa) == true || vehicle.attributes.placa == ''){
+    console.log("Placa é  obrigatório!");
+    return false;
+  }
+  if(validator.isNull(vehicle.attributes.modelo) == true || vehicle.attributes.modelo == ''){
+    console.log("Modelo é  obrigatório!");
+    return false;
+  }
+  if(validator.isNull(vehicle.attributes.marca) == true || vehicle.attributes.modelo == ''){
+    console.log("Modelo é  obrigatório!");
+    return false;
+  }
+  if(validator.isNull(vehicle.attributes.cor) == true || vehicle.attributes.cor == ''){
+    console.log("Cor é  obrigatório!");
+    return false;
+  }
+  if(validator.isNull(vehicle.attributes.ano_fabricado) == true || vehicle.attributes.ano_fabricado == ''){
+    console.log("Ano de fabricação é  obrigatório!");
+    return false;
+  }
+
+  if(validator.isNull(vehicle.attributes.ano_modelo) == true || vehicle.attributes.ano_modelo == ''){
+    console.log("Ano do modelo é  obrigatório!");
+    return false;
+  }
+ if(validator.isNumeric(vehicle.attributes.ano_fabricado) == false && ){
+    console.log("Campo invalido!");
+    return false;
+  }
+   if(validator.isNumeric(vehicle.attributes.ano_modelo) == false && ){
+    console.log("Campo invalido!");
+    return false;
+  }
+  if(validaPlaca(vehicle) == false){
+    console.log("Placa invalida!");
+    return false;
+  }
+  return true;
+}
+
+
