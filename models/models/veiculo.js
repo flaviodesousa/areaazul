@@ -149,11 +149,11 @@ exports.validate = function(vehicle){
     console.log("Ano do modelo é  obrigatório!");
     return false;
   }
- if(validator.isNumeric(vehicle.attributes.ano_fabricado) == false && ){
+ if(validator.isNumeric(vehicle.attributes.ano_fabricado) == false){
     console.log("Campo invalido!");
     return false;
   }
-   if(validator.isNumeric(vehicle.attributes.ano_modelo) == false && ){
+   if(validator.isNumeric(vehicle.attributes.ano_modelo) == false){
     console.log("Campo invalido!");
     return false;
   }
