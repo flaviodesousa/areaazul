@@ -97,6 +97,7 @@ exports.editar = function(vehicle, fail, then){
 
   });
 }
+
 exports.desativar = function(vehicle, fail, then){
   new this.Veiculo({
        id_veiculo : vehicle.id_veiculo,
@@ -111,12 +112,6 @@ exports.desativar = function(vehicle, fail, then){
   });
 }
 
-function validaPlaca(vehicle)
-{
-  var er = /[a-z]{3}-?\d{4}/gim;
-  er.lastIndex = 0;
-  return er.test(vehicle.attributes.placa);
-}
 
 exports.validate = function(vehicle){
 
