@@ -10,7 +10,6 @@ var PessoaFisicaCollection = require('../collections/pessoafisica');
 var Areaazul_mailer = require('areaazul-mailer');
 var validation = require('areaazul/helpers/validation');
 var util = require('areaazul/helpers/utils');
-var Crud = require('./crud');
 var validator = require("validator");
 
 var RevendedorCollection =  Bookshelf.Collection.extend({
