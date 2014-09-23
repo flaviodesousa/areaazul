@@ -7,9 +7,9 @@ var PessoaFisicaCollection = require('../collections/pessoafisica');
 var bcrypt = require('bcrypt');
 var Areaazul_mailer = require('areaazul-mailer');
 var moment = require('moment');
-var async = require('async');
 var validator = require("validator");
-
+var validation = require('areaazul/helpers/validation');
+var util = require('areaazul/helpers/utils');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -57,13 +57,13 @@ exports.validate = function(user) {
     if (validator.isNull(user.attributes.autorizacao) == null || user.attributes.autorizacao == '') {
         console.log("Autorizacao obrigatório");
         return false;
-    }
+    } 
     return true;
 }
 
 exports.cadastrar = function(user, then, fail) {
-    var senhaGerada = generate();
-    var senha = criptografa(senhaGerada);
+    var senhaGerada = util.generate();
+    var senha = util.criptografa(senhaGerada);
     var dat_nascimento = moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");       
     var usuario = new this.Usuario({
             'login': user.cpf,
@@ -91,41 +91,14 @@ exports.cadastrar = function(user, then, fail) {
                 'login': user.cpf,
             }).fetch().then(function(model) { 
               if(model == null){
-                    Bookshelf.transaction(function(t) {
-                    pessoa.save(null, {
-                        transacting: t
-                    }).
-                    then(function(pessoa) {
-                        console.log(pessoa);
-                        usuario.save({
-                            pessoa_id: pessoa.id,
-                        }, {
-                            transacting: t
-                        }).then(function(model, err) {
-                            pessoaFisica.save({
-                                pessoa_id: pessoa.id,
-                            }, {
-                                transacting: t
-                            }).then(function(model, err) {
-                                  console.log("Commit");
-                                t.commit();
-                            }),
-                            function() {
-                                t.rollback();
-                                   console.log("rollback");
-                                fail(false);
-
-                            }
-                        });
-                    });
-                }).then(function(model) {
-                    enviarEmail(user, senhaGerada);
-                     console.log("Passei aq");
-                    then(true);
-                }, function() {
-                    console.log("Ocorreu erro");
-                    fail(false);
-                });
+                Pessoa.saveTransaction(pessoa, usuario, pessoaFisica, function(result, err){
+                if(result == true){
+                    util.enviarEmail(user, senhaGerada);
+                    then(result);
+                }else{
+                    fail(result);
+                }
+                if(err) fail(err);})
              } else {
                     console.log("CPF já existe!");
                     fail(false);
@@ -155,8 +128,8 @@ exports.listar = function(func)
 
 
 exports.alterarSenha = function(user, then, fail){
-    console.log("Tamanho: " + verificaTamanhoDasSenhas(user));
-    if((validateSenha(user) == true) && (verificaTamanhoDasSenhas(user) == true)){
+    console.log("Tamanho: " + validation.verificaTamanhoDasSenhas(user));
+    if((validation.validateSenha(user) == true) && (validation.verificaTamanhoDasSenhas(user) == true)){
     new this.Usuario({
             id_usuario: user.id_usuario
         }).fetch().then(function(model) { 
@@ -167,7 +140,7 @@ exports.alterarSenha = function(user, then, fail){
             var hash = bcrypt.compareSync(user.senha, pwd);
             console.log(hash);
             if(hash != false){
-                var new_senha = criptografa(user.nova_senha);
+                var new_senha = util.criptografa(user.nova_senha);
             
         model.save({
             primeiro_acesso: 'false',
@@ -195,24 +168,9 @@ exports.alterarSenha = function(user, then, fail){
  }
 }
 
-
-function enviarEmail(user, senha){
-     console.log(user.email);
-    var message = {
-        from: 'AreaAzul <jeffersonarar@hotmail.com>', 
-        to:  user.email,
-        cc: 'jeffersonarar@hotmail.com',
-        subject: 'AreaAzul confirmação de cadastro', 
-        html: '<p><b></b>  Por favor   '+ user.nome + ' clique no link abaixo para confirmação do cadastro. </br> </br>  Sua senha é '+ '<h4>'+ senha +'</h4>',
-    }
-    console.log(Areaazul_mailer);
-    Areaazul_mailer.enviar.emailer(message);
-
-}
-
 exports.editar = function(user, then, fail) {
         console.log(user);
-        var dat_nascimento = converteData(user.data_nascimento);
+        var dat_nascimento = util.converteData(user.data_nascimento);
         console.log("Nasc: "+user.data_nascimento);
         console.log("Data: "+dat_nascimento);
         var usuario = new this.Usuario({
@@ -236,38 +194,14 @@ exports.editar = function(user, then, fail) {
             'sexo': user.sexo,
             'ativo': 'true'
         });
-        Bookshelf.transaction(function(t) {
-            pessoa.save(null, {
-                transacting: t
-            }, {patch: true}).
-            then(function(pessoa) {
-                usuario.save({
-                    pessoa_id: pessoa.id,
-                }, {
-                    transacting: t
-                }, {patch: true}).then(function(model, err) {              
-                    pessoaFisica.save({
-                        pessoa_id: pessoa.id,
-
-                    }, {
-                        transacting: t
-                    }, {patch: true}).then(function(model, err) {
-                        t.commit();
-                    }),
-                    function() {
-
-                        t.rollback();
-                        return fail(false);
-                    }
-                });
-            });
-        }).then(function(result) {
-            console.log(result);
-            return then(true);
-        }, function() {
-            console.log("Ocorreu erro");
-            return fail(false);
-        });
+        Pessoa.saveTransaction(pessoa, usuario, pessoaFisica, function(result, err){
+            if(result == true){
+                    then(result);
+            }else{
+                    fail(result);
+            }
+                if(err) fail(err);}
+        )
 }
 
 exports.procurar = function(user, func){
@@ -299,103 +233,12 @@ exports.desativar = function(user, then, fail) {
              'id_usuario': result.attributes.id_usuario,
             'ativo': 'false'
         });
-        Bookshelf.transaction(function(t) {
-            pessoa.save(null, {
-                transacting: t
-            }, {patch: true}).
-            then(function(pessoa) {
-                usuario.save({
-                    pessoa_id: pessoa.id,
-                }, {
-                    transacting: t
-                }, {patch: true}).then(function(model, err) {
-                  
-              
-                    pessoaFisica.save({
-                        pessoa_id: pessoa.id,
-
-                    }, {
-                        transacting: t
-                    }, {patch: true}).then(function(model, err) {
-                        t.commit();
-                    }),
-                    function() {
-                        t.rollback();
-                        return fail(false);
-                    }
-                });
-            });
-        }).then(function(result) {
-            console.log(result);
-            return then(true);
-        }, function() {
-            console.log("Ocorreu erro");
-            return fail(false);
+        Pessoa.saveTransaction(pessoa, usuario, pessoaFisica, function(result, err){
+            if(result == true){
+                    then(result);
+            }else{
+                    fail(result);
+            }
+            if(err) fail(err);})
         })
-        })
-}
-
-function generate(){
-        this.pass = "";
-        var chars = 4;
-
-        for (var i= 0; i<chars; i++) {
-            this.pass += getRandomChar();
-        }
-        return this.pass;
-}
-
-function getRandomChar() {
-        var ascii = [[48, 57],[64,90],[97,122]];
-        var i = Math.floor(Math.random()*ascii.length);
-        return String.fromCharCode(Math.floor(Math.random()*(ascii[i][1]-ascii[i][0]))+ascii[i][0]);
-}
-
-    
-function criptografa(password){
-    var salt = bcrypt.genSaltSync(10);
-    return bcrypt.hashSync(password, salt);
-
-}
-
-function validateSenha(user){
-    if(user.nova_senha == null || user.nova_senha == ''){
-        console.log("Campo obrigatório");
-        return false;
-    }
-    if(user.senha == null || user.senha == ''){
-        console.log("Campo obrigatório");
-        return false;
-    }
-    if(user.conf_senha == null || user.conf_senha == ''){
-        console.log("Campo obrigatório");
-        return false;
-    }
-    if(user.nova_senha  != user.conf_senha){
-        console.log("Senhas diferentes"); 
-        return false;                                                 
-    }
-    return true;
-}
-
-
-function verificaTamanhoDasSenhas(user){
-    if(user.senha.length < 4 && user.senha.length > 8 ){
-        console.log("A senha deve conter no minimo 4 a 8 caracteres");
-        return false;
-    }
-    if(user.conf_senha.length < 4 && user.conf_senha.length > 8 ){
-        console.log("A senha deve conter no minimo 4 a 8caracteres");
-        return false;
-    }
-    if(user.nova_senha.length < 4 && user.nova_senha.length  > 8 ){
-        console.log("A senha deve conter no minimo 4 a 8 caracteres");
-        return false;
-    }
-    return true;
-}
-
-function converteData(data){
-    console.log(data);
-    return moment(Date.parse(data)).format("YYYY-MM-DD");
 }
