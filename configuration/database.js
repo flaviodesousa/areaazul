@@ -137,7 +137,7 @@ bspg.knex.schema.hasTable('pessoa_fisica').then(function(exists) {
         bspg.knex.schema.createTable('pessoa_fisica', function(table) {
             table.increments('id_pessoa_fisica');
             table.string('cpf').notNullable();
-            table.date('data_nascimento').notNullable();
+            table.date('data_nascimento');
             table.string('sexo');
             table.boolean('ativo').notNullable();
             table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
