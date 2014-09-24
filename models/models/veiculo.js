@@ -1,5 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var validator = require('validator');
+var validation = require('areaazul/helpers/validation');
 
 
 
@@ -152,7 +153,7 @@ exports.validate = function(vehicle){
     console.log("Campo invalido!");
     return false;
   }
-  if(validaPlaca(vehicle) == false){
+  if(validation.validaPlaca(vehicle) == false){
     console.log("Placa invalida!");
     return false;
   }
