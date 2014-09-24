@@ -8,8 +8,8 @@ var bcrypt = require('bcrypt');
 var Areaazul_mailer = require('areaazul-mailer');
 var moment = require('moment');
 var validator = require("validator");
-var validation = require('areaazul/helpers/validation');
-var util = require('areaazul/helpers/utils');
+var validation = require('./validation');
+var util = require('./util');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',

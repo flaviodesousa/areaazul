@@ -8,8 +8,8 @@ var PessoaCollection = require('../collections/pessoa');
 var RevendedorCollection = require('../collections/revendedor');
 var PessoaFisicaCollection = require('../collections/pessoafisica');
 var Areaazul_mailer = require('areaazul-mailer');
-var validation = require('areaazul/helpers/validation');
-var util = require('areaazul/helpers/utils');
+var validation = require('./validation');
+var util = require('./util');
 var validator = require("validator");
 
 var RevendedorCollection =  Bookshelf.Collection.extend({
@@ -46,6 +46,7 @@ exports.cadastrar = function(dealer, then, fail) {
     }else{
         login = dealer.cnpj;
     }
+
    var usuario = new Usuario.Usuario({
             'login': login,
             'autorizacao': '1',
@@ -57,6 +58,7 @@ exports.cadastrar = function(dealer, then, fail) {
     var revendedor = new this.Revendedor({
             'ativo': 'true'
     });
+
     var pessoa = new Pessoa.Pessoa({
         'nome': dealer.nome,
         'email': dealer.email,
@@ -65,7 +67,7 @@ exports.cadastrar = function(dealer, then, fail) {
     });
 
     var pessoaJuridica = new PessoaJuridica. PessoaJuridica({
-    	   'cnpj': dealer.cnpj,
+           'cnpj': dealer.cnpj,
            'nome_fantasia': dealer.nome,
            'razao_social': dealer.razao_social,
            'contato': dealer.contato,
@@ -77,6 +79,8 @@ exports.cadastrar = function(dealer, then, fail) {
         'ativo': 'true'
     });
  
+
+
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
 
             if((PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
@@ -88,6 +92,7 @@ exports.cadastrar = function(dealer, then, fail) {
                 Pessoa.transaction(pessoa, revendedor, usuario, pessoaFisica, 
                     function(result, err){
                         if(result == true){
+                            util.enviarEmail(dealer, senhaGerada);
                             then(result);
                         }else{
                             fail(result);
@@ -113,9 +118,10 @@ exports.cadastrar = function(dealer, then, fail) {
             'cnpj': dealer.cnpj,
         }).fetch().then(function(model) { 
         if(model == null){
-                Pessoa.transaction(pessoa, usuario,revendedor, pessoaJuridica, 
+                Pessoa.transaction(pessoa, usuario, revendedor, pessoaJuridica, 
                     function(result, err){
                         if(result == true){
+                            util.enviarEmail(dealer, senhaGerada);
                             then(result);
                         }else{
                             fail(result);

@@ -1,6 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var validator = require('validator');
-var validation = require('areaazul/helpers/validation');
+var validation = require('./validation');
 
 
 
