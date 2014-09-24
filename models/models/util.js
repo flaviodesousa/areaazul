@@ -3,14 +3,14 @@ var Areaazul_mailer = require('areaazul-mailer');
 var moment = require('moment');
 
 
-exports.enviarEmail = function(user, senha){
-    console.log(user.email);
+exports.enviarEmail = function(entidade, login, senha){
+    console.log(entidade.email);
     var message = {
-        from: 'AreaAzul <jeffersonarar@hotmail.com>', 
-        to:  user.email,
+        from: 'Stiket <jeffersonarar@hotmail.com>', 
+        to:  entidade.email,
         cc: 'jeffersonarar@hotmail.com',
         subject: 'AreaAzul confirmação de cadastro', 
-        html: '<p><b></b>  Por favor   '+ user.nome + ' clique no link abaixo para confirmação do cadastro. </br> </br>  Sua senha é '+ '<h4>'+ senha +'</h4>',
+        html: '<p><b></b>  Por favor   '+ entidade.nome + ' clique no link abaixo para confirmação do cadastro. </br> Usuario:  '+ login +' </br>  Senha é:  '+ senha + '.',
     }
     console.log(Areaazul_mailer);
     Areaazul_mailer.enviar.emailer(message);

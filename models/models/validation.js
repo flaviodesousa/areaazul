@@ -133,7 +133,7 @@ exports.validarData = function(dataNascimento) {
     }
 }
 
-function validateSenha(user){
+exports.validateSenha = function(user){
     if(user.nova_senha == null || user.nova_senha == ''){
         console.log("Campo obrigatório");
         return false;
@@ -154,7 +154,7 @@ function validateSenha(user){
 }
 
 
-function verificaTamanhoDasSenhas(user){
+exports.verificaTamanhoDasSenhas = function(user){
     if(user.senha.length < 4 && user.senha.length > 8 ){
         console.log("A senha deve conter no minimo 4 a 8 caracteres");
         return false;
