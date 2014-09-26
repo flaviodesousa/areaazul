@@ -210,7 +210,6 @@ exports.procurar = function(user, func){
         qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
         qb.where('usuario.id_usuario', user.id_usuario);
         qb.select('usuario.*','pessoa.*','pessoa_fisica.*');
-
     }).fetch().then(function(model) {
         console.log(model);
         func(model);
@@ -233,7 +232,7 @@ exports.desativar = function(user, then, fail) {
              'id_usuario': result.attributes.id_usuario,
             'ativo': 'false'
         });
-        Pessoa.saveTransaction(pessoa, usuario, pessoaFisica, function(result, err){
+        Pessoa.updateTransaction(pessoa, usuario, pessoaFisica, function(result, err){
             if(result == true){
                     then(result);
             }else{
