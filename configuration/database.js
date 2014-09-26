@@ -157,9 +157,9 @@ bspg.knex.schema.hasTable('pessoa_juridica').then(function(exists) {
             table.string('cnpj').notNullable();
             table.string('nome_fantasia').notNullable();
             table.string('razao_social').notNullable();
-            table.string('incricao_estadual').notNullable();
+            table.string('incricao_estadual')
             table.string('contato').notNullable();
-            table.string('ramo_atividade').notNullable();
+            table.string('ramo_atividade');
             table.boolean('ativo').notNullable();
             table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
         }).then(function() {

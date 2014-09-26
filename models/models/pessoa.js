@@ -145,3 +145,52 @@ exports.transaction = function(entidade1, entidade2, entidade3, entidade4, func)
             func(false);
         });
 }
+
+exports.transactionUpdate = function(entidade1, entidade2, entidade3, entidade4, func){
+ 
+        Bookshelf.transaction(function(t) {
+            entidade1.save(null, {
+                transacting: t
+            }).
+            then(function(entidade1) 
+            {
+                console.log(entidade1);
+                entidade2.save({
+                    pessoa_id: entidade1.id,
+                }, {
+                    transacting: t
+                }, {patch: true}).then(function(model, err) {
+
+                    console.log("Model"+model);
+                    entidade3.save({
+                        pessoa_id: entidade1.id,
+                    }, {
+                        transacting: t
+                    }, {patch: true}).then(function(model, err) {
+
+
+                        entidade4.save({
+                            pessoa_id: entidade1.id,
+                        }, {
+                            transacting: t
+                        }, {patch: true}).then(function(model, err) {
+                              console.log("Commit");
+                              t.commit();
+                        }),
+                        function() {
+                            t.rollback();
+                               console.log("rollback");
+                            func(false);
+                        }
+                    });
+                });
+            });
+
+        }).then(function(model) {
+             console.log("Passei aq");
+             func(true);
+        }, function() {
+            console.log("Ocorreu erro");
+            func(false);
+        });
+}
