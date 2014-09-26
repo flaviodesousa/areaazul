@@ -64,38 +64,43 @@ exports.saveTransaction = function(entidade1, entidade2, entidade3, func){
         });
 }
 
-
 exports.updateTransaction = function(entidade1, entidade2, entidade3, func){
-    Bookshelf.transaction(function(t) {
-    pessoa.save(null, {
-        transacting: t
-    }, {patch: true}).
-    then(function(pessoa) {
-        usuario.save({
-            pessoa_id: pessoa.id,
-        }, {
-            transacting: t
-        }, {patch: true}).then(function(model, err) {              
-            pessoaFisica.save({
-                pessoa_id: pessoa.id,
-            }, {
+  Bookshelf.transaction(function(t) {
+            entidade1.save(null, {
                 transacting: t
-            }, {patch: true}).then(function(model, err) {
-                t.commit();
-            }),
-            function() {
-                t.rollback();
-                return fail(false);
-            }
+            }).
+            then(function(entidade1) {
+                console.log(entidade1);
+                entidade2.save({
+                    pessoa_id: entidade1.id,
+                }, {
+                    transacting: t
+                },{patch: true}
+                ).then(function(model, err) {
+                    console.log("Model"+model);
+                    entidade3.save({
+                        pessoa_id: entidade1.id,
+                    }, {
+                        transacting: t
+                    }, {patch: true}
+                    ).then(function(model, err) {
+                          console.log("Commit");
+                        t.commit();
+                    }),
+                    function() {
+                        t.rollback();
+                           console.log("rollback");
+                        func(false);
+                    }
+                });
+            });
+        }).then(function(model) {
+             console.log("Passei aq");
+             func(true);
+        }, function() {
+            console.log("Ocorreu erro");
+            func(false);
         });
-    });
-}).then(function(result) {
-    console.log(result);
-    return then(true);
-}, function() {
-    console.log("Ocorreu erro");
-    return fail(false);
-});
 }
 
 exports.transaction = function(entidade1, entidade2, entidade3, entidade4, func){
