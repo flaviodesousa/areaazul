@@ -20,15 +20,15 @@ var Credenciado = Bookshelf.Model.extend({
 exports.Credenciado = Credenciado;
 
 
-exports.cadastrar = function(dealer, then, fail) {
+exports.cadastrar = function(accredited, then, fail) {
     var senhaGerada = util.generate();
     var senha = util.criptografa(senhaGerada);
 
     var login;
-     if(dealer.cpf != null){
-        login = dealer.cpf;
+     if(accredited.cpf != null){
+        login = accredited.cpf;
     }else{
-        login = dealer.cnpj;
+        login = accredited.cnpj;
     }
 
    var usuario = new Usuario.Usuario({
@@ -44,22 +44,22 @@ exports.cadastrar = function(dealer, then, fail) {
     });
 
     var pessoa = new Pessoa.Pessoa({
-        'nome': dealer.nome,
-        'email': dealer.email,
-        'telefone': dealer.telefone,
+        'nome': accredited.nome,
+        'email': accredited.email,
+        'telefone': accredited.telefone,
         'ativo': 'true'
     });
 
     var pessoaJuridica = new PessoaJuridica. PessoaJuridica({
-           'cnpj': dealer.cnpj,
-           'nome_fantasia': dealer.nome,
-           'razao_social': dealer.razao_social,
-           'contato': dealer.contato,
+           'cnpj': accredited.cnpj,
+           'nome_fantasia': accredited.nome,
+           'razao_social': accredited.razao_social,
+           'contato': accredited.contato,
            'ativo': 'true'
     });
 
     var pessoaFisica = new PessoaFisica.PessoaFisica({
-        'cpf': dealer.cpf,
+        'cpf': accredited.cpf,
         'ativo': 'true'
     });
 
@@ -69,13 +69,13 @@ exports.cadastrar = function(dealer, then, fail) {
             if((PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
                 console.log("Pessoa Fisica");
              new PessoaFisica.PessoaFisica({
-                'cpf': dealer.cpf,
+                'cpf': accredited.cpf,
             }).fetch().then(function(model) { 
               if(model == null){
                 Pessoa.transaction(pessoa, credenciado, usuario, pessoaFisica, 
                     function(result, err){
                         if(result == true){
-                            util.enviarEmail(dealer, login, senhaGerada);
+                            util.enviarEmail(accredited, login, senhaGerada);
                             then(result);
                         }else{
                             fail(result);
@@ -98,13 +98,13 @@ exports.cadastrar = function(dealer, then, fail) {
 
     if((Pessoa.validate(pessoa) == true) && (PessoaJuridica.validate(pessoaJuridica) == true)){
         new PessoaJuridica.PessoaJuridica({
-            'cnpj': dealer.cnpj,
+            'cnpj': accredited.cnpj,
         }).fetch().then(function(model) { 
         if(model == null){
                 Pessoa.transaction(pessoa, credenciado, usuario, pessoaJuridica, 
                     function(result, err){
                         if(result == true){
-                            util.enviarEmail(dealer, login, senhaGerada);
+                            util.enviarEmail(accredited, login, senhaGerada);
                             then(result);
                         }else{
                             fail(result);
