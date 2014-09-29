@@ -191,8 +191,8 @@ bspg.knex.schema.hasTable('credenciado').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('credenciado', function(table) {
             table.increments('id_credenciado').primary();
-            table.boolean('contrato_de_servico_valido').notNullable();
-            table.boolean('inadiplente').notNullable();
+            table.boolean('contrato_de_servico_valido');
+            table.boolean('inadiplente');
             table.boolean('ativo').notNullable();
             table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
         }).then(function() {

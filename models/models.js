@@ -1,10 +1,11 @@
 module.exports.configuracao = require('./models/configuracao');
 module.exports.consumo = require('./models/consumo');
-module.exports.contrato = require('./models/conta');
-module.exports.credenciado = require('./models/contrato');
-module.exports.fiscal = require('./models/credenciado');
-module.exports.funcionario = require('./models/fiscal');
-module.exports.movimentacaoconta = require('./models/funcionario');
+module.exports.conta = require('./models/conta');
+module.exports.contrato = require('./models/contrato');
+module.exports.credenciado = require('./models/credenciado');
+module.exports.fiscal = require('./models/fiscal');
+module.exports.funcionario = require('./models/funcionario');
+module.exports.movimentacaoconta = require('./models/movimentacaoconta');
 module.exports.pessoa = require('./models/pessoa');
 module.exports.pessoafisica = require('./models/pessoafisica');
 module.exports.pessoajuridica = require('./models/pessoajuridica');
