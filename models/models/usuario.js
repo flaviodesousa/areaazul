@@ -61,6 +61,19 @@ exports.validate = function(user) {
     return true;
 }
 
+exports.validateNomeUsuario = function(user) {
+    console.log("Login: " + user.attributes.login);
+    if (validator.isNull(user.attributes.login) == true || user.attributes.login == '') {
+        console.log("Login obrigatório");
+        return false;
+    }
+
+     if((user.attributes.login.length > 4) && (user.attributes.login.length < 8)){
+        console.log("O nome do login deve conter no minimo 4 a 8 caracteres");
+        return false;
+    }
+    return true;
+}
 exports.cadastrar = function(user, then, fail) {
     var senhaGerada = util.generate();
     var senha = util.criptografa(senhaGerada);
