@@ -207,7 +207,7 @@ exports.editar = function(user, then, fail) {
             'sexo': user.sexo,
             'ativo': 'true'
         });
-        Pessoa.saveTransaction(pessoa, usuario, pessoaFisica, function(result, err){
+        Pessoa.updateTransaction(pessoa, usuario, pessoaFisica, function(result, err){
             if(result == true){
                     then(result);
             }else{
