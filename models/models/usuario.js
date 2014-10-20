@@ -77,10 +77,20 @@ exports.validateNomeUsuario = function(user) {
 exports.cadastrar = function(user, then, fail) {
     var senhaGerada = util.generate();
     var senha = util.criptografa(senhaGerada);
-    var dat_nascimento = moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");       
+    var dat_nascimento = moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");  
+
+    var login;
+     if(user.cpf != null){
+        login = user.cpf;
+    }else{
+        login = user.cnpj;
+    }
+
+    console.log("Login: "+login);
+
     var usuario = new this.Usuario({
             'login': user.cpf,
-            'autorizacao': '1',
+            'autorizacao': '6',
             'primeiro_acesso': 'true',
             'senha': senha,
             'ativo': 'true'
@@ -106,7 +116,7 @@ exports.cadastrar = function(user, then, fail) {
               if(model == null){
                 Pessoa.saveTransaction(pessoa, usuario, pessoaFisica, function(result, err){
                 if(result == true){
-                    util.enviarEmail(user, senhaGerada);
+                    util.enviarEmail(user, login, senhaGerada);
                     then(result);
                 }else{
                     fail(result);
@@ -189,7 +199,7 @@ exports.editar = function(user, then, fail) {
         var usuario = new this.Usuario({
             'id_usuario': user.id_usuario,
             'login': user.cpf,
-            'autorizacao': '1',
+            'autorizacao': '6',
             'primeiro_acesso': 'true',
             'ativo': 'true'
         });
