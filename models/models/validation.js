@@ -1,5 +1,5 @@
 var validator = require("validator");
-
+var util = require('./util');
 
 
 exports.validarData = function(dataNascimento) {
@@ -23,14 +23,14 @@ exports.validarData = function(dataNascimento) {
 exports.isCPF = function(CPF) {
     var cpf = CPF;
 
-    console.log("1: " + cpf);
+    util.log("1: " + cpf);
     for (var i = 0; i <= cpf.length; i++) {
         cpf = cpf.replace('.', ''); //onde há ponto coloca espaço
         cpf = cpf.replace('/', ''); //onde há barra coloca espaço
         cpf = cpf.replace('-', ''); //onde há traço coloca espaço
         cpf = cpf.replace(' ', ''); //onde há ponto coloca espaço
     }
-    console.log("2: " + cpf);
+    util.log("2: " + cpf);
 
     var digitoDigitado = eval(cpf.charAt(9) + cpf.charAt(10));
     var soma1 = 0,
@@ -58,8 +58,8 @@ exports.isCPF = function(CPF) {
 exports.isCNPJ = function(CNPJ){
 
    var cnpj = CNPJ;
-   console.log(cnpj);
-   console.log(cnpj.length);
+   util.log(cnpj);
+   util.log(cnpj.length);
 
    if (cnpj != '') {
         cnpj = cnpj.replace(/[.\-\/]/g, "");
@@ -135,19 +135,19 @@ exports.validarData = function(dataNascimento) {
 
 exports.validateSenha = function(user){
     if(user.nova_senha == null || user.nova_senha == ''){
-        console.log("Campo obrigatório");
+        util.log("Campo obrigatório");
         return false;
     }
     if(user.senha == null || user.senha == ''){
-        console.log("Campo obrigatório");
+        util.log("Campo obrigatório");
         return false;
     }
     if(user.conf_senha == null || user.conf_senha == ''){
-        console.log("Campo obrigatório");
+        util.log("Campo obrigatório");
         return false;
     }
     if(user.nova_senha  != user.conf_senha){
-        console.log("Senhas diferentes"); 
+        util.log("Senhas diferentes"); 
         return false;                                                 
     }
     return true;
@@ -156,15 +156,15 @@ exports.validateSenha = function(user){
 
 exports.verificaTamanhoDasSenhas = function(user){
     if(user.senha.length < 4 && user.senha.length > 8 ){
-        console.log("A senha deve conter no minimo 4 a 8 caracteres");
+        util.log("A senha deve conter no minimo 4 a 8 caracteres");
         return false;
     }
     if(user.conf_senha.length < 4 && user.conf_senha.length > 8 ){
-        console.log("A senha deve conter no minimo 4 a 8caracteres");
+        util.log("A senha deve conter no minimo 4 a 8caracteres");
         return false;
     }
     if(user.nova_senha.length < 4 && user.nova_senha.length  > 8 ){
-        console.log("A senha deve conter no minimo 4 a 8 caracteres");
+        util.log("A senha deve conter no minimo 4 a 8 caracteres");
         return false;
     }
     return true;

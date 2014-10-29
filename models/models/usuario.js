@@ -23,7 +23,7 @@ var UsuarioCollection =  Bookshelf.Collection.extend({
 });
 
 exports.getById = function(id, func) {
-    console.log('getById');
+    util.log('getById');
     new Usuario({
         id_usuario: id
     }).fetch().then(function(model, err) {
@@ -49,27 +49,27 @@ exports.search = function(entidade, func) {
 
 
 exports.validate = function(user) {
-    console.log(user.login);
+    util.log(user.login);
     if (validator.isNull(user.attributes.login) == true || user.attributes.login == '') {
-        console.log("CPF obrigatório");
+        util.log("CPF obrigatório");
         return false;
     }
     if (validator.isNull(user.attributes.autorizacao) == null || user.attributes.autorizacao == '') {
-        console.log("Autorizacao obrigatório");
+        util.log("Autorizacao obrigatório");
         return false;
     } 
     return true;
 }
 
 exports.validateNomeUsuario = function(user) {
-    console.log("Login: " + user.attributes.login);
+    util.log("Login: " + user.attributes.login);
     if (validator.isNull(user.attributes.login) == true || user.attributes.login == '') {
-        console.log("Login obrigatório");
+        util.log("Login obrigatório");
         return false;
     }
 
      if((user.attributes.login.length > 4) && (user.attributes.login.length < 8)){
-        console.log("O nome do login deve conter no minimo 4 a 8 caracteres");
+        util.log("O nome do login deve conter no minimo 4 a 8 caracteres");
         return false;
     }
     return true;
@@ -86,7 +86,7 @@ exports.cadastrar = function(user, then, fail) {
         login = user.cnpj;
     }
 
-    console.log("Login: "+login);
+    util.log("Login: "+login);
 
     var usuario = new this.Usuario({
             'login': user.cpf,
@@ -109,7 +109,7 @@ exports.cadastrar = function(user, then, fail) {
     });
 
     if((this.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-            console.log(usuario.login);
+            util.log(usuario.login);
             new this.Usuario({
                 'login': user.cpf,
             }).fetch().then(function(model) { 
@@ -123,12 +123,12 @@ exports.cadastrar = function(user, then, fail) {
                 }
                 if(err) fail(err);})
              } else {
-                    console.log("CPF já existe!");
+                    util.log("CPF já existe!");
                     fail(false);
             }
             });
     }else{
-        console.log("Campos obrigatorios!");
+        util.log("Campos obrigatorios!");
         fail(false);
     }
 }
@@ -143,7 +143,7 @@ exports.listar = function(func)
          qb.select('pessoa.*');
          qb.select('pessoa_fisica.*');
     }).fetch().then(function(collection) {
-        console.log(collection.models);
+        util.log(collection.models);
         func(collection);
     }); 
 }
@@ -151,7 +151,7 @@ exports.listar = function(func)
 
 
 exports.alterarSenha = function(user, then, fail){
-    console.log("Tamanho: " + validation.verificaTamanhoDasSenhas(user));
+    util.log("Tamanho: " + validation.verificaTamanhoDasSenhas(user));
     if((validation.validateSenha(user) == true) && (validation.verificaTamanhoDasSenhas(user) == true)){
     new this.Usuario({
             id_usuario: user.id_usuario
@@ -161,7 +161,7 @@ exports.alterarSenha = function(user, then, fail){
             }
           
             var hash = bcrypt.compareSync(user.senha, pwd);
-            console.log(hash);
+            util.log(hash);
             if(hash != false){
                 var new_senha = util.criptografa(user.nova_senha);
             
@@ -171,31 +171,31 @@ exports.alterarSenha = function(user, then, fail){
             ativo : 'true'
         }).then(function(model, err) {
             if (err) {
-                console.log("Houve erro ao alterar");
+                util.log("Houve erro ao alterar");
                 fail(false);
             } else {
-                console.log("Alterado com sucesso!");
+                util.log("Alterado com sucesso!");
                 then(true);
             }
         });
  
      } else {
-         console.log("Houve erro ao alterar");
+         util.log("Houve erro ao alterar");
          fail(false);
      }
  });
 
  }else{
-    console.log("Campos obrigatorios não preenchidos");
+    util.log("Campos obrigatorios não preenchidos");
     fail(false);
  }
 }
 
 exports.editar = function(user, then, fail) {
-        console.log(user);
+        util.log(user);
         var dat_nascimento = util.converteData(user.data_nascimento);
-        console.log("Nasc: "+user.data_nascimento);
-        console.log("Data: "+dat_nascimento);
+        util.log("Nasc: "+user.data_nascimento);
+        util.log("Data: "+dat_nascimento);
         var usuario = new this.Usuario({
             'id_usuario': user.id_usuario,
             'login': user.cpf,
@@ -234,7 +234,7 @@ exports.procurar = function(user, func){
         qb.where('usuario.id_usuario', user.id_usuario);
         qb.select('usuario.*','pessoa.*','pessoa_fisica.*');
     }).fetch().then(function(model) {
-        console.log(model);
+        util.log(model);
         func(model);
     });
 }

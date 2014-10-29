@@ -69,7 +69,7 @@ exports.cadastrar = function(accredited, then, fail) {
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
 
             if((PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-                console.log("Pessoa Fisica");
+                util.log("Pessoa Fisica");
              new PessoaFisica.PessoaFisica({
                 'cpf': accredited.cpf,
             }).fetch().then(function(model) { 
@@ -88,12 +88,12 @@ exports.cadastrar = function(accredited, then, fail) {
                     }
                 )
                 } else {
-                    console.log("CPF já existe!");
+                    util.log("CPF já existe!");
                     fail(false);
                 }
             });
         }else{
-            console.log("Campos obrigatórios!");
+            util.log("Campos obrigatórios!");
             fail(false);
         }
     } else {
@@ -117,12 +117,12 @@ exports.cadastrar = function(accredited, then, fail) {
                     }
                 )
             } else {
-                console.log("CNPJ já existe!");
+                util.log("CNPJ já existe!");
                 fail(false);
             }
             });
             }else{
-                console.log("Campos obrigatórios!");
+                util.log("Campos obrigatórios!");
                 fail(false);
             }
     }
@@ -137,7 +137,7 @@ exports.listarpj = function(func)
          qb.where('credenciado.ativo','=','true');
          qb.select('usuario.*','pessoa.*','pessoa_juridica.*','credenciado.*');
     }).fetch().then(function(collection) {
-        console.log(collection.models);
+        util.log(collection.models);
         func(collection);
     }); 
 }
@@ -151,7 +151,7 @@ exports.listarpf = function(func)
          qb.where('credenciado.ativo','=','true');
          qb.select('usuario.*','pessoa.*','pessoa_fisica.*','credenciado.*');
     }).fetch().then(function(collection) {
-        console.log(collection.models);
+        util.log(collection.models);
         func(collection);
     }); 
 }
@@ -164,14 +164,14 @@ exports.procurarpf = function(accredited, func){
         qb.where('credenciado.id_credenciado', accredited.id_credenciado);
         qb.select('credenciado.*','usuario.*','pessoa.*','pessoa_fisica.*');
     }).fetch().then(function(model) {
-        console.log(model);
+        util.log(model);
         func(model);
     });
 }
 
 exports.procurarpj = function(accredited, func){
-    console.log(accredited.id_credenciado);
-    console.log(accredited);
+    util.log(accredited.id_credenciado);
+    util.log(accredited);
      Credenciado.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','credenciado.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
@@ -179,14 +179,14 @@ exports.procurarpj = function(accredited, func){
         qb.where('credenciado.id_credenciado', accredited.id_credenciado);
         qb.select('credenciado.*','usuario.*','pessoa.*','pessoa_juridica.*');
     }).fetch().then(function(model) {
-        console.log(model);
+        util.log(model);
         func(model);
     });
 }
 
 exports.procurar = function(accredited, func){
-    console.log(accredited.id_credenciado);
-    console.log(accredited);
+    util.log(accredited.id_credenciado);
+    util.log(accredited);
      Credenciado.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','credenciado.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
@@ -195,7 +195,7 @@ exports.procurar = function(accredited, func){
         qb.where('credenciado.id_credenciado', accredited.id_credenciado);
         qb.select('credenciado.*','usuario.*','pessoa.*','pessoa_juridica.*');
     }).fetch().then(function(model) {
-        console.log(model);
+        util.log(model);
         func(model);
     });
 }
@@ -203,7 +203,7 @@ exports.procurar = function(accredited, func){
 
 exports.editar = function(accredited, then, fail) {
 
-    console.log(accredited);
+    util.log(accredited);
     var login;
      if(accredited.cpf != null){
         login = accredited.cpf;
@@ -247,12 +247,12 @@ exports.editar = function(accredited, then, fail) {
         'cpf': accredited.cpf,
         'ativo': 'true'
     });
-    console.log(validator.isNull(pessoaFisica.attributes.cpf));
+    util.log(validator.isNull(pessoaFisica.attributes.cpf));
 
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
 
             if((PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-                console.log("Pessoa Fisica");
+                util.log("Pessoa Fisica");
                 Pessoa.transactionUpdate(pessoa, credenciado, usuario, pessoaFisica, 
                     function(result, err){
                         if(result == true){
@@ -267,14 +267,14 @@ exports.editar = function(accredited, then, fail) {
                     }
                 )
         }else{
-            console.log("Campos obrigatórios!");
+            util.log("Campos obrigatórios!");
             fail(false);
         }
     } else {
 
     if((Pessoa.validate(pessoa) == true) && (PessoaJuridica.validate(pessoaJuridica) == true)){
-        console.log("Pessoa Juridica");
-           console.log(pessoa, credenciado, usuario, pessoaJuridica);
+        util.log("Pessoa Juridica");
+           util.log(pessoa, credenciado, usuario, pessoaJuridica);
                 Pessoa.transactionUpdate(pessoa, credenciado, usuario, pessoaJuridica, 
                     function(result, err){
                         if(result == true){
@@ -288,14 +288,14 @@ exports.editar = function(accredited, then, fail) {
                     }
                 )
             }else{
-                console.log("Campos obrigatórios!");
+                util.log("Campos obrigatórios!");
                 fail(false);
             }
     }
 }
 
 exports.desativarpf = function(accredited, then, fail) {
-    console.log(accredited);
+    util.log(accredited);
     this.procurarpf({id_credenciado: accredited.id_credenciado},
         function(result){
         var pessoa = new Pessoa.Pessoa({
@@ -327,7 +327,7 @@ exports.desativarpf = function(accredited, then, fail) {
 }
 
 exports.desativarpj = function(accredited, then, fail) {
-    console.log(accredited);
+    util.log(accredited);
     this.procurarpj({id_credenciado: accredited.id_credenciado},
         function(result){
         var pessoa = new Pessoa.Pessoa({

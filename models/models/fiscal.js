@@ -78,9 +78,9 @@ exports.cadastrar = function(tax, then, fail) {
         'sexo': tax.sexo,
         'ativo': 'true'
     });
-    console.log("Validate:" +(Usuario.validateNomeUsuario(usuario1)));
+    util.log("Validate:" +(Usuario.validateNomeUsuario(usuario1)));
     if((Usuario.validateNomeUsuario(usuario1) == true) && (Usuario.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-            console.log(usuario.login);
+            util.log(usuario.login);
             new Usuario.Usuario({
                 'login': tax.cpf,
             }).fetch().then(function(model) { 
@@ -94,12 +94,12 @@ exports.cadastrar = function(tax, then, fail) {
                 }
                 if(err) fail(err);})
              } else {
-                    console.log("CPF já existe!");
+                    util.log("CPF já existe!");
                     fail(false);
             }
             });
     }else{
-        console.log("Campos obrigatorios!");
+        util.log("Campos obrigatorios!");
         fail(false);
     }
 }
@@ -133,10 +133,10 @@ exports.procurar = function(tax, func){
 }
 
 exports.editar = function(tax, then, fail) {
-        console.log(tax);
+        util.log(tax);
         var dat_nascimento = util.converteData(tax.data_nascimento);
-        console.log("Nasc: "+tax.data_nascimento);
-        console.log("Data: "+dat_nascimento);
+        util.log("Nasc: "+tax.data_nascimento);
+        util.log("Data: "+dat_nascimento);
         
         var usuario = new Usuario.Usuario({
             'id_usuario': tax.id_usuario,
@@ -186,11 +186,11 @@ exports.editar = function(tax, then, fail) {
 }
 
 exports.desativar = function(tax, then, fail) {
-    console.log('Tax: '+tax);
+    util.log('Tax: '+tax);
      this.procurar({id_fiscal: tax.id_fiscal},
         function(model){
 
-             console.log(model.attributes);
+             util.log(model.attributes);
         var pessoa = new Pessoa.Pessoa({
             'id_pessoa':model.attributes.pessoa_id,
             'ativo': 'false'
