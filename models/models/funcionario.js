@@ -81,9 +81,9 @@ exports.cadastrar = function(functionary, then, fail) {
         'sexo': functionary.sexo,
         'ativo': 'true'
     });
-    console.log("Validate:" +(Usuario.validateNomeUsuario(usuario1)));
+    util.log("Validate:" +(Usuario.validateNomeUsuario(usuario1)));
     if((Usuario.validateNomeUsuario(usuario1) == true) && (Usuario.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-            console.log(usuario.login);
+            util.log(usuario.login);
             new Usuario.Usuario({
                 'login': functionary.cpf,
             }).fetch().then(function(model) { 
@@ -97,12 +97,12 @@ exports.cadastrar = function(functionary, then, fail) {
                 }
                 if(err) fail(err);})
              } else {
-                    console.log("CPF já existe!");
+                    util.log("CPF já existe!");
                     fail(false);
             }
             });
     }else{
-        console.log("Campos obrigatorios!");
+        util.log("Campos obrigatorios!");
         fail(false);
     }
 }
@@ -135,10 +135,10 @@ exports.procurar = function(functionary, func){
 }
 
 exports.editar = function(functionary, then, fail) {
-        console.log(functionary);
+        util.log(functionary);
         var dat_nascimento = util.converteData(functionary.data_nascimento);
-        console.log("Nasc: "+functionary.data_nascimento);
-        console.log("Data: "+dat_nascimento);
+        util.log("Nasc: "+functionary.data_nascimento);
+        util.log("Data: "+dat_nascimento);
         
         var usuario = new Usuario.Usuario({
             'id_usuario': functionary.id_usuario,
@@ -189,7 +189,7 @@ exports.editar = function(functionary, then, fail) {
 exports.desativar = function(functionary, then, fail) {
      this.procurar({id_funcionario: functionary.id_funcionario},
         function(model){
-            console.log("Resultado: "+model);
+            util.log("Resultado: "+model);
         
             var pessoa = new Pessoa.Pessoa({
                 'id_pessoa':model.attributes.pessoa_id,

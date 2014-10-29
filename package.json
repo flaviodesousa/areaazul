@@ -23,6 +23,8 @@
         "bcrypt": "*",
         "async": "*",
         "validator":"*",
+        "winston": "*",
+        "winston-loggly": "*",
         "areaazul-mailer":"git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git"
     }
 }

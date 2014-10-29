@@ -1,6 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var validator = require('validator');
-
+var util = require('./util');
 var validation = require('./validation');
 
 
@@ -14,22 +14,22 @@ var PessoaJuridica = Bookshelf.Model.extend({
 exports.validate = function(pessoaJuridica){
 
    if (validator.isNull(pessoaJuridica.attributes.cnpj) == true || pessoaJuridica.attributes.cnpj == '') {
-        console.log("Cnpj obrigatório!");
+        util.log("Cnpj obrigatório!");
         return false;
     }
 
     if(validation.isCNPJ(pessoaJuridica.attributes.cnpj) != true){
-        console.log("Cnpj inválido!");
+        util.log("Cnpj inválido!");
         return false;
     }
 
    if (validator.isNull(pessoaJuridica.attributes.razao_social) == true || pessoaJuridica.attributes.razao_social == '') {
-        console.log("Cnpj razao social!");
+        util.log("Cnpj razao social!");
         return false;
     }
 
    if (validator.isNull(pessoaJuridica.attributes.contato) == true || pessoaJuridica.attributes.contato == '') {
-        console.log("Contato obrigatório!");
+        util.log("Contato obrigatório!");
         return false;
     }
     return true;

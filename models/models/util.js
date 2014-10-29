@@ -1,10 +1,11 @@
 var bcrypt = require('bcrypt');
 var Areaazul_mailer = require('areaazul-mailer');
 var moment = require('moment');
-
+var winston = require('winston');
+var Loggly = require('winston-loggly').Loggly;
 
 exports.enviarEmail = function(entidade, login, senha){
-    console.log(entidade.email);
+    log(entidade.email);
     var message = {
         from: 'Stiket <jeffersonarar@hotmail.com>', 
         to:  entidade.email,
@@ -12,7 +13,7 @@ exports.enviarEmail = function(entidade, login, senha){
         subject: 'AreaAzul confirmação de cadastro', 
         html: '<p><b></b>  Por favor   '+ entidade.nome + ' clique no link abaixo para confirmação do cadastro. </br> Usuario:  '+ login +' </br>  Senha é:  '+ senha + '.',
     }
-    console.log(Areaazul_mailer);
+    log(Areaazul_mailer);
     Areaazul_mailer.enviar.emailer(message);
 
 }
@@ -39,6 +40,18 @@ exports.criptografa = function(password){
 
 }
 exports.converteData = function(data){
-    console.log(data);
+    log(data);
     return moment(Date.parse(data)).format("YYYY-MM-DD");
+}
+
+exports.log = function(log, type) {
+    var logger = new(winston.Logger)({
+        transports: [
+            new(winston.transports.Console)(),
+            new(winston.transports.File)({
+                filename: 'logging.log'
+            })
+        ]
+    });
+    logger.info(log);
 }

@@ -24,7 +24,7 @@ var RevendedorCollection =  Bookshelf.Collection.extend({
 
 
 exports.getById = function(id, func) {
-    console.log('getById');
+    util.log('getById');
     new Revendedor({
         id_revendedor: id 
     }).fetch().then(function(model, err) {
@@ -84,7 +84,7 @@ exports.cadastrar = function(dealer, then, fail) {
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
 
             if((PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-                console.log("Pessoa Fisica");
+                util.log("Pessoa Fisica");
              new PessoaFisica.PessoaFisica({
                 'cpf': dealer.cpf,
             }).fetch().then(function(model) { 
@@ -103,12 +103,12 @@ exports.cadastrar = function(dealer, then, fail) {
                     }
                 )
                 } else {
-                    console.log("CPF já existe!");
+                    util.log("CPF já existe!");
                     fail(false);
                 }
             });
         }else{
-            console.log("Campos obrigatórios!");
+            util.log("Campos obrigatórios!");
             fail(false);
         }
     } else {
@@ -132,12 +132,12 @@ exports.cadastrar = function(dealer, then, fail) {
                     }
                 )
             } else {
-                console.log("CNPJ já existe!");
+                util.log("CNPJ já existe!");
                 fail(false);
             }
             });
             }else{
-                console.log("Campos obrigatórios!");
+                util.log("Campos obrigatórios!");
                 fail(false);
             }
     }
@@ -152,7 +152,7 @@ exports.listarpj = function(func)
          qb.where('revendedor.ativo','=','true');
          qb.select('usuario.*','pessoa.*','pessoa_juridica.*','revendedor.*');
     }).fetch().then(function(collection) {
-        console.log(collection.models);
+        util.log(collection.models);
         func(collection);
     }); 
 }
@@ -166,7 +166,7 @@ exports.listarpf = function(func)
          qb.where('revendedor.ativo','=','true');
          qb.select('usuario.*','pessoa.*','pessoa_fisica.*','revendedor.*');
     }).fetch().then(function(collection) {
-        console.log(collection.models);
+        util.log(collection.models);
         func(collection);
     }); 
 }
@@ -179,14 +179,14 @@ exports.procurarpf = function(dealer, func){
         qb.where('revendedor.id_revendedor', dealer.id_revendedor);
         qb.select('revendedor.*','usuario.*','pessoa.*','pessoa_fisica.*');
     }).fetch().then(function(model) {
-        console.log(model);
+        util.log(model);
         func(model);
     });
 }
 
 exports.procurarpj = function(dealer, func){
-    console.log(dealer.id_revendedor);
-    console.log(dealer);
+    util.log(dealer.id_revendedor);
+    util.log(dealer);
      Revendedor.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','revendedor.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
@@ -194,14 +194,14 @@ exports.procurarpj = function(dealer, func){
         qb.where('revendedor.id_revendedor', dealer.id_revendedor);
         qb.select('revendedor.*','usuario.*','pessoa.*','pessoa_juridica.*');
     }).fetch().then(function(model) {
-        console.log(model);
+        util.log(model);
         func(model);
     });
 }
 
 exports.procurar = function(dealer, func){
-    console.log(dealer.id_revendedor);
-    console.log(dealer);
+    util.log(dealer.id_revendedor);
+    util.log(dealer);
      Revendedor.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','revendedor.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
@@ -210,7 +210,7 @@ exports.procurar = function(dealer, func){
         qb.where('revendedor.id_revendedor', dealer.id_revendedor);
         qb.select('revendedor.*','usuario.*','pessoa.*','pessoa_juridica.*');
     }).fetch().then(function(model) {
-        console.log(model);
+        util.log(model);
         func(model);
     });
 }
@@ -218,7 +218,7 @@ exports.procurar = function(dealer, func){
 
 exports.editar = function(dealer, then, fail) {
 
-    console.log(dealer);
+    util.log(dealer);
     var login;
      if(dealer.cpf != null){
         login = dealer.cpf;
@@ -262,12 +262,12 @@ exports.editar = function(dealer, then, fail) {
         'cpf': dealer.cpf,
         'ativo': 'true'
     });
-    console.log(validator.isNull(pessoaFisica.attributes.cpf));
+    util.log(validator.isNull(pessoaFisica.attributes.cpf));
 
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
 
             if((PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-                console.log("Pessoa Fisica");
+                util.log("Pessoa Fisica");
                 Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaFisica, 
                     function(result, err){
                         if(result == true){
@@ -282,14 +282,14 @@ exports.editar = function(dealer, then, fail) {
                     }
                 )
         }else{
-            console.log("Campos obrigatórios!");
+            util.log("Campos obrigatórios!");
             fail(false);
         }
     } else {
 
     if((Pessoa.validate(pessoa) == true) && (PessoaJuridica.validate(pessoaJuridica) == true)){
-        console.log("Pessoa Juridica");
-           console.log(pessoa, revendedor, usuario, pessoaJuridica);
+        util.log("Pessoa Juridica");
+           util.log(pessoa, revendedor, usuario, pessoaJuridica);
                 Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaJuridica, 
                     function(result, err){
                         if(result == true){
@@ -303,14 +303,14 @@ exports.editar = function(dealer, then, fail) {
                     }
                 )
             }else{
-                console.log("Campos obrigatórios!");
+                util.log("Campos obrigatórios!");
                 fail(false);
             }
     }
 }
 
 exports.desativarpf = function(dealer, then, fail) {
-    console.log(dealer);
+    util.log(dealer);
     this.procurarpf({id_revendedor: dealer.id_revendedor},
         function(result){
         var pessoa = new Pessoa.Pessoa({
@@ -342,7 +342,7 @@ exports.desativarpf = function(dealer, then, fail) {
 }
 
 exports.desativarpj = function(dealer, then, fail) {
-    console.log(dealer);
+    util.log(dealer);
     this.procurarpj({id_revendedor: dealer.id_revendedor},
         function(result){
         var pessoa = new Pessoa.Pessoa({

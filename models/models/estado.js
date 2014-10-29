@@ -1,5 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var validator = require('validator');
+var util = require('./util');
 
 var Estado = Bookshelf.Model.extend({
     tableName: 'estado',
@@ -18,7 +19,7 @@ exports.cadastrar = function(state, fail, then){
        'uf': state.uf,
        'ativo': 'true'
   });
-  console.log(state);
+  util.log(state);
   if(this.validate(state) == true){
     new this.Estado({
          nome : state.nome,
@@ -28,18 +29,18 @@ exports.cadastrar = function(state, fail, then){
             if(err){
               fail(false);
             } else {
-              console.log(model);
+              util.log(model);
               then(true);
             }
           })
 
       }else{
-          console.log("Estado já existe!");
+          util.log("Estado já existe!");
           fail(false);
       }
     }) 
   }else{
-      console.log("Campos obrigatórios!");
+      util.log("Campos obrigatórios!");
        fail(false);
   }
   
@@ -50,7 +51,7 @@ exports.listar = function(func)
     EstadoCollection.forge().query(function(qb){
          qb.select('estado.*')
     }).fetch().then(function(collection) {
-        console.log(collection.models);
+        util.log(collection.models);
         func(collection);
     }); 
 }
@@ -60,13 +61,13 @@ exports.procurar = function(state, func){
         qb.where('estado.id_estado', state.id_estado);
         qb.select('estado.*');
     }).fetch().then(function(model) {
-        console.log(model);
+        util.log(model);
         func(model);
     });
 }
 
 exports.editar = function(state, fail, then){
-  console.log(state); 
+  util.log(state); 
   var estado = new this.Estado({
        'id_estado': state.id_estado,
        'nome': state.nome,
@@ -82,7 +83,7 @@ exports.editar = function(state, fail, then){
       if(err){
            fail(false);
         } else {
-           console.log(model);
+           util.log(model);
            then(true);
         }
 
@@ -90,7 +91,7 @@ exports.editar = function(state, fail, then){
 
   });
   }else{
-      console.log("Campos obrigatórios!");
+      util.log("Campos obrigatórios!");
       fail(false);
   }
 }
@@ -102,7 +103,7 @@ exports.desativar = function(state, fail, then){
       if(err){
           return fail(false);
         } else {
-             console.log(model);
+             util.log(model);
           return then(true);
         }
     });
@@ -113,11 +114,11 @@ exports.desativar = function(state, fail, then){
 
 exports.validate = function(state){
     if(validator.isNull(state.attributes.nome) == true || state.attributes.nome == ''){
-      console.log("Nome é  obrigatório!");
+      util.log("Nome é  obrigatório!");
       return false;
     }
     if(validator.isNull(state.attributes.uf) == true || state.attributes.uf == ''){
-      console.log("Uf é  obrigatório!");
+      util.log("Uf é  obrigatório!");
       return false;
     }
     return true;
