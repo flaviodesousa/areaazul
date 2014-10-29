@@ -5,7 +5,6 @@ var winston = require('winston');
 var Loggly = require('winston-loggly').Loggly;
 
 exports.enviarEmail = function(entidade, login, senha){
-    log(entidade.email);
     var message = {
         from: 'Stiket <jeffersonarar@hotmail.com>', 
         to:  entidade.email,
@@ -13,9 +12,7 @@ exports.enviarEmail = function(entidade, login, senha){
         subject: 'AreaAzul confirmação de cadastro', 
         html: '<p><b></b>  Por favor   '+ entidade.nome + ' clique no link abaixo para confirmação do cadastro. </br> Usuario:  '+ login +' </br>  Senha é:  '+ senha + '.',
     }
-    log(Areaazul_mailer);
     Areaazul_mailer.enviar.emailer(message);
-
 }
 
 exports.generate = function(){
