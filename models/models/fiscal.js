@@ -78,31 +78,43 @@ exports.cadastrar = function(tax, then, fail) {
         'sexo': tax.sexo,
         'ativo': 'true'
     });
-    util.log("Validate:" +(Usuario.validateNomeUsuario(usuario1)));
+    console.log("Validate:" +(Usuario.validateNomeUsuario(usuario1)));
     if((Usuario.validateNomeUsuario(usuario1) == true) && (Usuario.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-            util.log(usuario.login);
+            console.log(usuario.login);
             new Usuario.Usuario({
                 'login': tax.cpf,
             }).fetch().then(function(model) { 
-              if(model == null){
-                Pessoa.fiveSaveTransaction(pessoa, fiscal, usuario, usuario1, pessoaFisica, function(result, err){
-                if(result == true){
-                    util.enviarEmail(tax,login + " Nome de usuario: "+tax.nome_usuario ,senhaGerada);
-                    then(result);
-                }else{
-                    fail(result);
-                }
-                if(err) fail(err);})
+            if(model == null){
+
+                new Usuario.Usuario({
+                'login': tax.nome_usuario, 
+                }).fetch().then(function(model) { 
+                    if(model == null){
+                    Pessoa.fiveSaveTransaction(pessoa, fiscal, usuario, usuario1, pessoaFisica, function(result, err){
+                    if(result == true){
+                        util.enviarEmailConfirmacao(tax,login + " Nome de usuario: "+tax.nome_usuario ,senhaGerada);
+                        then(result);
+                    }else{
+                        fail(result);
+                    }
+                    if(err) fail(err);})
+
+                    } else {
+                            console.log("Nome usuario já existe!");
+                            fail(false);
+                    }
+             });
              } else {
-                    util.log("CPF já existe!");
+                    console.log("CPF já existe!");
                     fail(false);
             }
             });
     }else{
-        util.log("Campos obrigatorios!");
+        console.log("Campos obrigatorios!");
         fail(false);
     }
 }
+
 
 exports.listar = function(func)
  {

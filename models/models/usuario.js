@@ -62,18 +62,25 @@ exports.validate = function(user) {
 }
 
 exports.validateNomeUsuario = function(user) {
-    util.log("Login: " + user.attributes.login);
+    console.log("Login: " + user.attributes.login);
     if (validator.isNull(user.attributes.login) == true || user.attributes.login == '') {
         util.log("Login obrigatório");
         return false;
     }
-
-     if((user.attributes.login.length > 4) && (user.attributes.login.length < 8)){
-        util.log("O nome do login deve conter no minimo 4 a 8 caracteres");
+    if((user.attributes.login.length) >= 6){
+          if((user.attributes.login.length) <= 8){
+                return true;
+          } else{
+            util.log("O nome do login deve conter no minimo 6 a 8 caracteres");
+            return false;
+          }
+     }else{
+        util.log("O nome do login deve conter no minimo 6 a 8 caracteres");
         return false;
-    }
+     }
     return true;
 }
+
 exports.cadastrar = function(user, then, fail) {
     var senhaGerada = util.generate();
     var senha = util.criptografa(senhaGerada);
@@ -116,7 +123,7 @@ exports.cadastrar = function(user, then, fail) {
               if(model == null){
                 Pessoa.saveTransaction(pessoa, usuario, pessoaFisica, function(result, err){
                 if(result == true){
-                    util.enviarEmail(user, login, senhaGerada);
+                    util.enviarEmailConfirmacao(user, login, senhaGerada);
                     then(result);
                 }else{
                     fail(result);

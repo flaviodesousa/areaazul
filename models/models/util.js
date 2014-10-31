@@ -4,7 +4,7 @@ var moment = require('moment');
 var winston = require('winston');
 var Loggly = require('winston-loggly').Loggly;
 
-exports.enviarEmail = function(entidade, login, senha){
+exports.enviarEmailConfirmacao = function(entidade, login, senha){
     var message = {
         from: 'Stiket <jeffersonarar@hotmail.com>', 
         to:  entidade.email,
