@@ -92,7 +92,7 @@ exports.cadastrar = function(dealer, then, fail) {
                 Pessoa.transaction(pessoa, revendedor, usuario, pessoaFisica, 
                     function(result, err){
                         if(result == true){
-                            util.enviarEmail(dealer, login, senhaGerada);
+                            util.enviarEmailConfirmacao(dealer, login, senhaGerada);
                             then(result);
                         }else{
                             fail(result);

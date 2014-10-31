@@ -77,7 +77,7 @@ exports.cadastrar = function(accredited, then, fail) {
                 Pessoa.transaction(pessoa, credenciado, usuario, pessoaFisica, 
                     function(result, err){
                         if(result == true){
-                            util.enviarEmail(accredited, login, senhaGerada);
+                            util.enviarEmailConfirmacao(accredited, login, senhaGerada);
                             then(result);
                         }else{
                             fail(result);

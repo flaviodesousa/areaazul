@@ -40,7 +40,6 @@ exports.cadastrar = function(functionary, then, fail) {
     var senha = util.criptografa(senhaGerada);
     var dat_nascimento = moment(Date.parse(functionary.data_nascimento)).format("YYYY-MM-DD");       
 
-
     var login;
      if(functionary.cpf != null){
         login = functionary.cpf;
@@ -81,28 +80,43 @@ exports.cadastrar = function(functionary, then, fail) {
         'sexo': functionary.sexo,
         'ativo': 'true'
     });
-    util.log("Validate:" +(Usuario.validateNomeUsuario(usuario1)));
+   console.log("Log: "+Usuario.validateNomeUsuario(usuario1));
     if((Usuario.validateNomeUsuario(usuario1) == true) && (Usuario.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-            util.log(usuario.login);
+            console.log(usuario.login);
             new Usuario.Usuario({
                 'login': functionary.cpf,
+           
             }).fetch().then(function(model) { 
-              if(model == null){
-                Pessoa.fiveSaveTransaction(pessoa, funcionario, usuario, usuario1, pessoaFisica, function(result, err){
-                if(result == true){
-                    util.enviarEmail(functionary,login + " Nome de usuario: "+functionary.nome_usuario ,senhaGerada);
-                    then(result);
-                }else{
-                    fail(result);
-                }
-                if(err) fail(err);})
-             } else {
-                    util.log("CPF já existe!");
-                    fail(false);
+                if(model == null){
+
+                new Usuario.Usuario({
+                'login': functionary.nome_usuario, 
+                }).fetch().then(function(model) { 
+
+                  if(model == null){
+
+                        Pessoa.fiveSaveTransaction(pessoa, funcionario, usuario, usuario1, pessoaFisica, function(result, err){
+                        if(result == true){
+                            util.enviarEmailConfirmacao(functionary,login + " Nome de usuario: "+functionary.nome_usuario ,senhaGerada);
+                            console.log("Resutl"+result);
+                            then(result);
+                        }else{
+                            fail(result);
+                        }
+                        if(err) fail(err);})
+                  } else {
+                        console.log("Nome usuario já existe!");
+                        fail(false);
+                  }
+
+             });
+            } else {
+                console.log("CPF já existe!");
+                fail(false);
             }
             });
     }else{
-        util.log("Campos obrigatorios!");
+        console.log("Campos obrigatorios!");
         fail(false);
     }
 }
