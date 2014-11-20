@@ -49,38 +49,47 @@ exports.search = function(entidade, func) {
 
 
 exports.validate = function(user) {
-    util.log(user.login);
-    if (validator.isNull(user.attributes.login) == true || user.attributes.login == '') {
+    if (validator.isNull(user.cpf) == true || user.cpf == '') {
         util.log("CPF obrigatório");
-        return false;
+       return false;
     }
-    if (validator.isNull(user.attributes.autorizacao) == null || user.attributes.autorizacao == '') {
-        util.log("Autorizacao obrigatório");
-        return false;
-    } 
+
+    if (validator.isNull(user.nome) == true || user.nome == '') {
+        util.log("Nome obrigatório");
+       return false;
+    }
+        if (validator.isNull(user.email) == true || user.email == '') {
+        util.log("Email obrigatório");
+       return false;
+    }
+    if (validator.isNull(user.telefone) == true || user.telefone == '') {
+        util.log("Telefone obrigatório");
+       return false;
+    }
+  if (validator.isNull(user.data_nascimento) == true || user.data_nascimento == '') {
+        util.log("Data de nascimento obrigatório");
+       return false;
+    }
+    if (validator.isNull(user.sexo) == true || user.sexo == '') {
+        util.log("Sexo obrigatório");
+       return false;
+    }
     return true;
 }
 
 exports.validateNomeUsuario = function(user) {
-    console.log("Login: " + user.attributes.login);
+    util.log("Login: " + user.attributes.login);
     if (validator.isNull(user.attributes.login) == true || user.attributes.login == '') {
         util.log("Login obrigatório");
         return false;
     }
-    if((user.attributes.login.length) >= 6){
-          if((user.attributes.login.length) <= 8){
-                return true;
-          } else{
-            util.log("O nome do login deve conter no minimo 6 a 8 caracteres");
-            return false;
-          }
-     }else{
-        util.log("O nome do login deve conter no minimo 6 a 8 caracteres");
+
+     if((user.attributes.login.length > 4) && (user.attributes.login.length < 8)){
+        util.log("O nome do login deve conter no minimo 4 a 8 caracteres");
         return false;
-     }
+    }
     return true;
 }
-
 exports.cadastrar = function(user, then, fail) {
     var senhaGerada = util.generate();
     var senha = util.criptografa(senhaGerada);
@@ -115,7 +124,7 @@ exports.cadastrar = function(user, then, fail) {
         'ativo': 'true'
     });
 
-    if((this.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
+   // if((this.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
             util.log(usuario.login);
             new this.Usuario({
                 'login': user.cpf,
@@ -123,7 +132,7 @@ exports.cadastrar = function(user, then, fail) {
               if(model == null){
                 Pessoa.saveTransaction(pessoa, usuario, pessoaFisica, function(result, err){
                 if(result == true){
-                    util.enviarEmailConfirmacao(user, login, senhaGerada);
+                    util.enviarEmail(user, login, senhaGerada);
                     then(result);
                 }else{
                     fail(result);
@@ -134,10 +143,10 @@ exports.cadastrar = function(user, then, fail) {
                     fail(false);
             }
             });
-    }else{
-        util.log("Campos obrigatorios!");
-        fail(false);
-    }
+  //  }else{
+     //   util.log("Campos obrigatorios!");
+   //     fail(false);
+   // }
 }
 
 exports.listar = function(func)
