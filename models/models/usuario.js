@@ -100,13 +100,6 @@ exports.validateNomeUsuario = function(user) {
         return false;
     }
 
-
-     if((user.attributes.login.length > 4) && (user.attributes.login.length < 8)){
-        util.log("O nome do login deve conter no minimo 4 a 8 caracteres");
-        return false;
-    }
-
-
     if((user.attributes.login.length) >= 6){
           if((user.attributes.login.length) <= 8){
                 return true;
