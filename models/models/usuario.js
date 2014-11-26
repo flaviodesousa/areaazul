@@ -76,16 +76,6 @@ exports.validate = function(user) {
        return false;
     }
 
-    util.log(user.login);
-    if (validator.isNull(user.attributes.login) == true || user.attributes.login == '') {
-        util.log("CPF obrigatório");
-        return false;
-    }
-    if (validator.isNull(user.attributes.autorizacao) == null || user.attributes.autorizacao == '') {
-        util.log("Autorizacao obrigatório");
-        return false;
-    } 
-
     return true;
 }
 

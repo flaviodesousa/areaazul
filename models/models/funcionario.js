@@ -11,11 +11,14 @@ var moment = require('moment');
 var validator = require("validator");
 var validation = require('./validation');
 var util = require('./util');
+var crud = require('./crud');
 
 var Funcionario = Bookshelf.Model.extend({
     tableName: 'funcionario',
     idAttribute: 'id_funcionario'
 });
+
+exports.extend(crud);
 
 exports.Funcionario = Funcionario;
 
@@ -36,6 +39,7 @@ exports.search = function(entidade, func) {
 }
 
 exports.cadastrar = function(functionary, then, fail) {
+    metodoGenerico();
     var senhaGerada = util.generate();
     var senha = util.criptografa(senhaGerada);
     var dat_nascimento = moment(Date.parse(functionary.data_nascimento)).format("YYYY-MM-DD");       
