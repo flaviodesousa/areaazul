@@ -1,4 +1,4 @@
-exports.module = return function(){
+exports.module = function(){
 	var mixin = {};
 
 	mixin.metodoGenerico = function(){

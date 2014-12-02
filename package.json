@@ -25,6 +25,9 @@
         "validator":"*",
         "winston": "*",
         "winston-loggly": "*",
+        "bcrypt": "*",
+        "passport": "latest",
+        "passport-local": "latest",
         "areaazul-mailer":"git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git"
     }
 }

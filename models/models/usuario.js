@@ -1,5 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa');
+var Usuario = require('./usuario');
 var PessoaFisica = require('./pessoafisica');
 var PessoaCollection = require('../collections/pessoa');
 var UsuarioCollection = require('../collections/usuario');
@@ -10,31 +11,23 @@ var moment = require('moment');
 var validator = require("validator");
 var validation = require('./validation');
 var util = require('./util');
+var crud = require('./crud');
 
-var Usuario = Bookshelf.Model.extend({
-    tableName: 'usuario',
-    idAttribute: 'id_usuario'
+var Funcionario = Bookshelf.Model.extend({
+    tableName: 'funcionario',
+    idAttribute: 'id_funcionario'
 });
 
-exports.Usuario = Usuario;
+function teste(){}
+teste = function(){};
+exports.extend(teste);
 
-var UsuarioCollection =  Bookshelf.Collection.extend({
-    model: Usuario
+exports.Funcionario = Funcionario;
+
+var FuncionarioCollection =  Bookshelf.Collection.extend({
+    model: Funcionario
 });
 
-exports.getById = function(id, func) {
-    util.log('getById');
-    new Usuario({
-        id_usuario: id
-    }).fetch().then(function(model, err) {
-        if (model != null)
-            var retorno = model.attributes;
-        if (err) {
-            return func(null);
-        }
-        func(retorno);
-    });
-}
 
 exports.search = function(entidade, func) {
     entidade.fetch().then(function(model, err) {
@@ -47,211 +40,163 @@ exports.search = function(entidade, func) {
     });
 }
 
-
-exports.validate = function(user) {
-
-    if (validator.isNull(user.cpf) == true || user.cpf == '') {
-        util.log("CPF obrigatório");
-       return false;
-    }
-
-    if (validator.isNull(user.nome) == true || user.nome == '') {
-        util.log("Nome obrigatório");
-       return false;
-    }
-        if (validator.isNull(user.email) == true || user.email == '') {
-        util.log("Email obrigatório");
-       return false;
-    }
-    if (validator.isNull(user.telefone) == true || user.telefone == '') {
-        util.log("Telefone obrigatório");
-       return false;
-    }
-  if (validator.isNull(user.data_nascimento) == true || user.data_nascimento == '') {
-        util.log("Data de nascimento obrigatório");
-       return false;
-    }
-    if (validator.isNull(user.sexo) == true || user.sexo == '') {
-        util.log("Sexo obrigatório");
-       return false;
-    }
-
-    return true;
-}
-
-exports.validateNomeUsuario = function(user) {
-
-    util.log("Login: " + user.attributes.login);
-
-    console.log("Login: " + user.attributes.login);
-
-    if (validator.isNull(user.attributes.login) == true || user.attributes.login == '') {
-        util.log("Login obrigatório");
-        return false;
-    }
-
-    if((user.attributes.login.length) >= 6){
-          if((user.attributes.login.length) <= 8){
-                return true;
-          } else{
-            util.log("O nome do login deve conter no minimo 6 a 8 caracteres");
-            return false;
-          }
-     }else{
-        util.log("O nome do login deve conter no minimo 6 a 8 caracteres");
-        return false;
-     }
-    return true;
-}
-
-
-exports.cadastrar = function(user, then, fail) {
+exports.cadastrar = function(functionary, then, fail) {
+    metodoGenerico();
     var senhaGerada = util.generate();
     var senha = util.criptografa(senhaGerada);
-    var dat_nascimento = moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");  
+    var dat_nascimento = moment(Date.parse(functionary.data_nascimento)).format("YYYY-MM-DD");       
 
     var login;
-     if(user.cpf != null){
-        login = user.cpf;
+     if(functionary.cpf != null){
+        login = functionary.cpf;
     }else{
-        login = user.cnpj;
+        login = functionary.cnpj;
     }
 
-    util.log("Login: "+login);
-
-    var usuario = new this.Usuario({
-            'login': user.cpf,
+    var usuario = new Usuario.Usuario({
+            'login': functionary.cpf,
             'autorizacao': '6',
             'primeiro_acesso': 'true',
             'senha': senha,
             'ativo': 'true'
     });
+
+    var usuario1 = new Usuario.Usuario({
+            'login': functionary.nome_usuario,
+            'autorizacao': '7',
+            'primeiro_acesso': 'true',
+            'senha': senha,
+            'ativo': 'true'
+    });
+
+    var funcionario = new this.Funcionario({
+        'ativo': 'true',
+        'empregador_id':'1'
+    });
+
     var pessoa = new Pessoa.Pessoa({
-        'nome': user.nome,
-        'email': user.email,
-        'telefone': user.telefone,
+        'nome': functionary.nome,
+        'email': functionary.email,
+        'telefone': functionary.telefone,
         'ativo': 'true'
     });
     var pessoaFisica = new PessoaFisica.PessoaFisica({
-        'cpf': user.cpf,
+        'cpf': functionary.cpf,
         'data_nascimento': dat_nascimento,
-        'sexo': user.sexo,
+        'sexo': functionary.sexo,
         'ativo': 'true'
     });
-
-    if((this.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-
-            util.log(usuario.login);
-            new this.Usuario({
-                'login': user.cpf,
+   console.log("Log: "+Usuario.validateNomeUsuario(usuario1));
+    if((Usuario.validateNomeUsuario(usuario1) == true) && (Usuario.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
+            console.log(usuario.login);
+            new Usuario.Usuario({
+                'login': functionary.cpf,
+           
             }).fetch().then(function(model) { 
-              if(model == null){
-                Pessoa.saveTransaction(pessoa, usuario, pessoaFisica, function(result, err){
-                if(result == true){
-                    util.enviarEmail(user, login, senhaGerada);
-                    util.enviarEmailConfirmacao(user, login, senhaGerada);
-                    then(result);
-                }else{
-                    fail(result);
-                }
-                if(err) fail(err);})
-             } else {
-                    util.log("CPF já existe!");
-                    fail(false);
+                if(model == null){
+
+                new Usuario.Usuario({
+                'login': functionary.nome_usuario, 
+                }).fetch().then(function(model) { 
+
+                  if(model == null){
+
+                        Pessoa.fiveSaveTransaction(pessoa, funcionario, usuario, usuario1, pessoaFisica, function(result, err){
+                        if(result == true){
+                            util.enviarEmailConfirmacao(functionary,login + " Nome de usuario: "+functionary.nome_usuario ,senhaGerada);
+                            console.log("Resutl"+result);
+                            then(result);
+                        }else{
+                            fail(result);
+                        }
+                        if(err) fail(err);})
+                  } else {
+                        console.log("Nome usuario já existe!");
+                        fail(false);
+                  }
+
+             });
+            } else {
+                console.log("CPF já existe!");
+                fail(false);
             }
             });
     }else{
-        util.log("Campos obrigatorios!");
+        console.log("Campos obrigatorios!");
         fail(false);
     }
-
 }
 
 exports.listar = function(func)
  {
-    UsuarioCollection.forge().query(function(qb){
-         qb.join('pessoa', 'pessoa.id_pessoa','=','usuario.pessoa_id');
+    FuncionarioCollection.forge().query(function(qb){
+         qb.join('pessoa', 'pessoa.id_pessoa','=','funcionario.pessoa_id');
+         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
          qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
-         qb.where('usuario.ativo','=','true');
-         qb.select('usuario.*')
-         qb.select('pessoa.*');
-         qb.select('pessoa_fisica.*');
+         qb.where('funcionario.ativo','=','true');
+         qb.where('usuario.autorizacao','=','7');
+         qb.select('usuario.*','pessoa.*','pessoa_fisica.*','funcionario.*');
     }).fetch().then(function(collection) {
-        util.log(collection.models);
         func(collection);
     }); 
 }
 
-
-
-exports.alterarSenha = function(user, then, fail){
-    util.log("Tamanho: " + validation.verificaTamanhoDasSenhas(user));
-    if((validation.validateSenha(user) == true) && (validation.verificaTamanhoDasSenhas(user) == true)){
-    new this.Usuario({
-            id_usuario: user.id_usuario
-        }).fetch().then(function(model) { 
-            if (model != null) {                                                                                                                                                             
-                var pwd = model.attributes.senha;
-            }
-          
-            var hash = bcrypt.compareSync(user.senha, pwd);
-            util.log(hash);
-            if(hash != false){
-                var new_senha = util.criptografa(user.nova_senha);
-            
-        model.save({
-            primeiro_acesso: 'false',
-            senha : new_senha,
-            ativo : 'true'
-        }).then(function(model, err) {
-            if (err) {
-                util.log("Houve erro ao alterar");
-                fail(false);
-            } else {
-                util.log("Alterado com sucesso!");
-                then(true);
-            }
-        });
- 
-     } else {
-         util.log("Houve erro ao alterar");
-         fail(false);
-     }
- });
-
- }else{
-    util.log("Campos obrigatorios não preenchidos");
-    fail(false);
- }
+exports.procurar = function(functionary, func){
+    Funcionario.forge().query(function(qb){
+         qb.join('pessoa', 'pessoa.id_pessoa','=','funcionario.pessoa_id');
+         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
+         qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
+         qb.where('funcionario.id_funcionario', functionary.id_funcionario);
+         qb.where('usuario.autorizacao','=','7');
+         qb.select('usuario.*','pessoa.*','pessoa_fisica.*','funcionario.*');
+    }).fetch().then(function(model) {
+        func(model);
+    }); 
 }
 
-exports.editar = function(user, then, fail) {
-        util.log(user);
-        var dat_nascimento = util.converteData(user.data_nascimento);
-        util.log("Nasc: "+user.data_nascimento);
+exports.editar = function(functionary, then, fail) {
+        util.log(functionary);
+        var dat_nascimento = util.converteData(functionary.data_nascimento);
+        util.log("Nasc: "+functionary.data_nascimento);
         util.log("Data: "+dat_nascimento);
-        var usuario = new this.Usuario({
-            'id_usuario': user.id_usuario,
-            'login': user.cpf,
-            'autorizacao': '6',
+        
+        var usuario = new Usuario.Usuario({
+            'id_usuario': functionary.id_usuario,
+            'login': functionary.cpf,
+            'autorizacao': '1',
             'primeiro_acesso': 'true',
             'ativo': 'true'
         });
+
+        var usuario1 = new Usuario.Usuario({
+            'id_usuario': functionary.id_usuario,
+            'login': functionary.nome_usuario,
+            'autorizacao': '1',
+            'primeiro_acesso': 'true',
+            'ativo': 'true'
+        });
+
+        var funcionario = new this.Funcionario({
+            'id_funcionario': functionary.id_funcionario,
+            'ativo': 'true'
+        });
+
         var pessoa = new Pessoa.Pessoa({
-            'id_pessoa':user.pessoa_id,
-            'nome': user.nome,
-            'email': user.email,
-            'telefone': user.telefone,
+            'id_pessoa':functionary.pessoa_id,
+            'nome': functionary.nome,
+            'email': functionary.email,
+            'telefone': functionary.telefone,
             'ativo': 'true'
         });
         var pessoaFisica = new PessoaFisica.PessoaFisica({
-            'id_pessoa_fisica': user.id_pessoa_fisica,
-            'cpf': user.cpf,
+            'id_pessoa_fisica': functionary.id_pessoa_fisica,
+            'cpf': functionary.cpf,
             'data_nascimento': dat_nascimento,
-            'sexo': user.sexo,
+            'sexo': functionary.sexo,
             'ativo': 'true'
         });
-        Pessoa.updateTransaction(pessoa, usuario, pessoaFisica, function(result, err){
+
+        Pessoa. Pessoa.fiveUpdateTransaction(pessoa, funcionario, usuario, usuario1, pessoaFisica, function(result, err){
             if(result == true){
                     then(result);
             }else{
@@ -261,40 +206,34 @@ exports.editar = function(user, then, fail) {
         )
 }
 
-exports.procurar = function(user, func){
-     Usuario.forge().query(function(qb){
-        qb.join('pessoa', 'pessoa.id_pessoa','=','usuario.pessoa_id');
-        qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
-        qb.where('usuario.id_usuario', user.id_usuario);
-        qb.select('usuario.*','pessoa.*','pessoa_fisica.*');
-    }).fetch().then(function(model) {
-        util.log(model);
-        func(model);
-    });
-}
+exports.desativar = function(functionary, then, fail) {
+     this.procurar({id_funcionario: functionary.id_funcionario},
+        function(model){
+            util.log("Resultado: "+model);
+        
+            var pessoa = new Pessoa.Pessoa({
+                'id_pessoa':model.attributes.pessoa_id,
+                'ativo': 'false'
+            });
+            var pessoaFisica = new PessoaFisica.PessoaFisica({
+                'id_pessoa_fisica': model.attributes.id_pessoa_fisica,
+                'ativo': 'false'
+            });
 
-exports.desativar = function(user, then, fail) {
-     this.procurar({id_usuario: user.id_usuario},
-        function(result){
-        var pessoa = new Pessoa.Pessoa({
-            'id_pessoa':result.attributes.pessoa_id,
-            'ativo': 'false'
-        });
-        var pessoaFisica = new PessoaFisica.PessoaFisica({
-            'id_pessoa_fisica': result.attributes.id_pessoa_fisica,
-            'ativo': 'false'
-        });
-
-        var usuario = new Usuario({
-             'id_usuario': result.attributes.id_usuario,
-            'ativo': 'false'
-        });
-        Pessoa.updateTransaction(pessoa, usuario, pessoaFisica, function(result, err){
-            if(result == true){
-                    then(result);
-            }else{
-                    fail(result);
-            }
-            if(err) fail(err);})
-        })
+            var usuario = new Usuario.Usuario({
+                 'id_usuario': model.attributes.id_usuario,
+                'ativo': 'false'
+            });
+            var funcionario = new Funcionario({
+                'id_funcionario': model.attributes.id_funcionario,
+                'ativo': 'false'
+            });
+            Pessoa.transactionUpdate(pessoa, funcionario, usuario, pessoaFisica, function(model, err){
+                if(model == true){
+                        then(model);
+                }else{
+                        fail(model);
+                }
+                if(err) fail(err);})
+            })
 }
