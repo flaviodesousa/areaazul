@@ -21,30 +21,28 @@ module.exports = function(passport) {
             usernameField: 'login',
             passwordField: 'senha'
         }, function(username, password, done) {
-
-            console.log(username);
-
             var user = Usuario.search(new Usuario.Usuario({
                 'login': username,
             }), function(retorno) {
-                console.log(retorno);
                 if (retorno != null) {
                     var pwd = retorno['senha'];
                     var acesso = retorno['primeiro_acesso'];
-                }
-                var hash = bcrypt.compareSync(password, pwd);
+                    var hash = bcrypt.compareSync(password, pwd);
 
-                if (pwd != null && hash != false) {
-                    console.log("Passei aq");
-                    if(acesso == true){
-                        console.log('Primeiro acesso.');
+                    if (pwd != null && hash != false) {
+                        console.log("Passei aq");
+                        if(acesso == true){
+                            console.log('Primeiro acesso.');
+                            return done(null, retorno);
+                        }
                         return done(null, retorno);
                     }
-                    return done(null, retorno);
-                }
-                return done(null, false, {
+     
+                }else{
+                    return done(null, false, {
                     'message': 'Senha invalida!'
-                });
+                    });
+                }
             })
         },
         function(error) {
