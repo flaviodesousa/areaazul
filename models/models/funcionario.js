@@ -18,8 +18,6 @@ var Funcionario = Bookshelf.Model.extend({
     idAttribute: 'id_funcionario'
 });
 
-exports.extend(crud);
-
 exports.Funcionario = Funcionario;
 
 var FuncionarioCollection =  Bookshelf.Collection.extend({
@@ -39,7 +37,6 @@ exports.search = function(entidade, func) {
 }
 
 exports.cadastrar = function(functionary, then, fail) {
-    metodoGenerico();
     var senhaGerada = util.generate();
     var senha = util.criptografa(senhaGerada);
     var dat_nascimento = moment(Date.parse(functionary.data_nascimento)).format("YYYY-MM-DD");       
