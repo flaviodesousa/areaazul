@@ -11,10 +11,15 @@ module.exports = function(passport) {
     });
 
     passport.deserializeUser(function(user_id, done) {
-        var user = Usuario.getById(user_id);
-        return done(null, user);
-    }, function(error) {
-        return done(error);
+ 
+        new Usuario.getById(user_id, function(result, error){
+        //    console.log("user"+user.has_thing);
+            var user = [ result['login'], result['id_usuario'], result['senha'], result['autorizacao'], result['primeiro_acesso'], result['ativo'], result['pessoa_id']];
+            if(user != null){
+                return done(null, user);
+            }
+             return done(error);
+        });
     });
 
     passport.use(new LocalStrategy({
