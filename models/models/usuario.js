@@ -22,19 +22,6 @@ var UsuarioCollection =  Bookshelf.Collection.extend({
     model: Usuario
 });
 
-exports.getById = function(id, func) {
-    util.log('getById');
-    new Usuario({
-        id_usuario: id
-    }).fetch().then(function(model, err) {
-        if (model != null)
-            var retorno = model.attributes;
-        if (err) {
-            return func(null);
-        }
-        func(retorno);
-    });
-}
 
 exports.search = function(entidade, func) {
     entidade.fetch().then(function(model, err) {
@@ -131,12 +118,16 @@ exports.listar = function(func)
     }); 
 }
 
+exports.validarSenha = function(user){
+      if((validation.validateSenha(user) == true) && (validation.verificaTamanhoDasSenhas(user) == true)){
+        return true;
+      }else{
+        return false;
+      }
+}
 
-
-exports.alterarSenha = function(user, then, fail){
-    util.log("Tamanho: " + validation.verificaTamanhoDasSenhas(user));
-    if((validation.validateSenha(user) == true) && (validation.verificaTamanhoDasSenhas(user) == true)){
-    new this.Usuario({
+exports.alterarSenha = function(user, then, fail){  
+        new this.Usuario({
             id_usuario: user.id_usuario
         }).fetch().then(function(model) { 
             if (model != null) {                                                                                                                                                             
@@ -148,30 +139,26 @@ exports.alterarSenha = function(user, then, fail){
             if(hash != false){
                 var new_senha = util.criptografa(user.nova_senha);
             
-        model.save({
-            primeiro_acesso: 'false',
-            senha : new_senha,
-            ativo : 'true'
-        }).then(function(model, err) {
-            if (err) {
-                util.log("Houve erro ao alterar");
-                fail(false);
-            } else {
-                util.log("Alterado com sucesso!");
-                then(true);
-            }
-        });
- 
-     } else {
-         util.log("Houve erro ao alterar");
-         fail(false);
-     }
+                model.save({
+                    primeiro_acesso: 'false',
+                    senha : new_senha,
+                    ativo : 'true'
+                }).then(function(model, err) {
+                    if (err) {
+                        util.log("Houve erro ao alterar");
+                        util.log("Model: "+model.attributes);
+                        fail(model.attributes);
+                    } else {
+                        util.log("Alterado com sucesso!");
+                        then(true);
+                    }
+                });
+             } else {
+                 util.log("Houve erro ao alterar");
+                 util.log(model.attributes);
+                 fail(model);
+             }
  });
-
- }else{
-    util.log("Campos obrigatorios não preenchidos");
-    fail(false);
- }
 }
 
 exports.editar = function(user, then, fail) {
