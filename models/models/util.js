@@ -6,11 +6,11 @@ var Loggly = require('winston-loggly').Loggly;
 
 exports.enviarEmailConfirmacao = function(entidade, login, senha){
     var message = {
-        from: 'Stiket <jeffersonarar@hotmail.com>', 
+        from: 'Stiket <cadastro@areaazul.org>', 
         to:  entidade.email,
-        cc: 'jeffersonarar@hotmail.com',
+        cc: 'cadastro@areaazul.org',
         subject: 'AreaAzul confirmação de cadastro', 
-        html: '<p><b></b>  Por favor   '+ entidade.nome + ' clique no link abaixo para confirmação do cadastro. </br> Usuario:  '+ login +' </br>  Senha é:  '+ senha + '.',
+        html: '<p><b></b>  Por favor   '+ entidade.nome + ' clique no link abaixo para confirmação do cadastro. </br> http://demo.areaazul.org/login </br> Usuario:  '+ login +' </br>  Senha é:  '+ senha + '.',
     }
     Areaazul_mailer.enviar.emailer(message);
 }
