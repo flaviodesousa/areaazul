@@ -37,7 +37,6 @@ exports.criptografa = function(password){
 
 }
 exports.converteData = function(data){
-    log(data);
     return moment(Date.parse(data)).format("YYYY-MM-DD");
 }
 
