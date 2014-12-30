@@ -235,3 +235,8 @@ exports.desativar = function(tax, then, fail) {
             if(err) fail(err);})
         })
 }
+
+exports.validate = function(fiscal){
+
+
+}

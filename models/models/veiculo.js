@@ -18,44 +18,29 @@ var VeiculoCollection =  Bookshelf.Collection.extend({
 });
 
 exports.cadastrar = function(vehicle, fail, then){
-
-  var vehicle = new this.Veiculo({
-       'estado_id': vehicle.estado_id,
-       'placa': vehicle.placa,
-       'marca': vehicle.marca,
-       'modelo': vehicle.modelo,
-       'cor': vehicle.cor,
-       'ano_fabricado': vehicle.ano_fabricado,
-       'ano_modelo': vehicle.ano_modelo,
-       'ativo': 'true'
-  });
-  util.log(validator.isNumeric(vehicle.attributes.ano_modelo));
-  if(this.validate(vehicle) == true){
-    util.log(vehicle.attributes.placa);
+    var veiculo = new this.Veiculo({
+         'estado_id': vehicle.estado_id,
+         'placa': vehicle.placa,
+         'marca': vehicle.marca,
+         'modelo': vehicle.modelo,
+         'cor': vehicle.cor,
+         'ano_fabricado': vehicle.ano_fabricado,
+         'ano_modelo': vehicle.ano_modelo,
+         'ativo': 'true'
+    });
+  
     new this.Veiculo({
-      'placa' : vehicle.attributes.placa
-    }).fetch().then(function(result, err){
+      'placa' : vehicle.placa
+    }).fetch().then(function(result){
       if (result == null) {
-      vehicle.save().then(function(model, err){
-          if(err){
-            fail(false);
-          } else {
-            then(true);
-          }
+           veiculo.save().then(function(model){
+           then(true);
         });
       }else{
         util.log("Veiculo já existe");
         fail(false);
       }
-      if(err){
-         util.log(err);
-         fail(false);
-      }
     })
-  }else{
-    util.log("Campos obrigatorios não foram preenchidos");
-     fail(false);
-  }
 }
 
 exports.listar = function(func)
@@ -88,10 +73,10 @@ exports.editar = function(vehicle, fail, then){
   }).fetch().then(function(model){
     model.save(vehicle).then(function(model, err){
       if(err){
-           return fail(false);
+          fail(false);
         } else {
-             util.log(model);
-           return then(true);
+          util.log(model);
+          then(true);
         }
 
     });
@@ -105,9 +90,9 @@ exports.desativar = function(vehicle, fail, then){
   }).fetch().then(function(model){
     model.save(vehicle).then(function(model, err){
       if(err){
-          return fail(false);
+          fail(false);
         } else {
-             util.log(model);l
+             util.log(model);
         }
   });
   });
@@ -116,40 +101,40 @@ exports.desativar = function(vehicle, fail, then){
 
 exports.validate = function(vehicle){
 
-  if(validator.isNull(vehicle.attributes.estado_id) == true || vehicle.attributes.estado_id == ''){
+  if(validator.isNull(vehicle.estado_id) == true || vehicle.estado_id == ''){
     util.log("Estado é  obrigatório!");
     return false;
   }
-    if(validator.isNull(vehicle.attributes.placa) == true || vehicle.attributes.placa == ''){
+    if(validator.isNull(vehicle.placa) == true || vehicle.placa == ''){
     util.log("Placa é  obrigatório!");
     return false;
   }
-  if(validator.isNull(vehicle.attributes.modelo) == true || vehicle.attributes.modelo == ''){
+  if(validator.isNull(vehicle.modelo) == true || vehicle.modelo == ''){
     util.log("Modelo é  obrigatório!");
     return false;
   }
-  if(validator.isNull(vehicle.attributes.marca) == true || vehicle.attributes.modelo == ''){
+  if(validator.isNull(vehicle.marca) == true || vehicle.modelo == ''){
     util.log("Modelo é  obrigatório!");
     return false;
   }
-  if(validator.isNull(vehicle.attributes.cor) == true || vehicle.attributes.cor == ''){
+  if(validator.isNull(vehicle.cor) == true || vehicle.cor == ''){
     util.log("Cor é  obrigatório!");
     return false;
   }
-  if(validator.isNull(vehicle.attributes.ano_fabricado) == true || vehicle.attributes.ano_fabricado == ''){
+  if(validator.isNull(vehicle.ano_fabricado) == true || vehicle.ano_fabricado == ''){
     util.log("Ano de fabricação é  obrigatório!");
     return false;
   }
 
-  if(validator.isNull(vehicle.attributes.ano_modelo) == true || vehicle.attributes.ano_modelo == ''){
+  if(validator.isNull(vehicle.ano_modelo) == true || vehicle.ano_modelo == ''){
     util.log("Ano do modelo é  obrigatório!");
     return false;
   }
-  if(validator.isNumeric(vehicle.attributes.ano_fabricado) == false){
+  if(validator.isNumeric(vehicle.ano_fabricado) == false){
     util.log("Campo invalido!");
     return false;
   }
-   if(validator.isNumeric(vehicle.attributes.ano_modelo) == false){
+   if(validator.isNumeric(vehicle.ano_modelo) == false){
     util.log("Campo invalido!");
     return false;
   }

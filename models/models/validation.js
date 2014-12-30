@@ -174,5 +174,5 @@ exports.validaPlaca = function(vehicle)
 {
   var er = /[a-z]{3}-?\d{4}/gim;
   er.lastIndex = 0;
-  return er.test(vehicle.attributes.placa);
+  return er.test(vehicle.placa);
 }

@@ -113,7 +113,7 @@ exports.listar = function(func)
          qb.select('pessoa.*');
          qb.select('pessoa_fisica.*');
     }).fetch().then(function(collection) {
-        util.log(collection.models);
+       // util.log(collection.models);
         func(collection);
     }); 
 }
@@ -230,6 +230,32 @@ exports.validate = function(user){
     return true;
 }
 
+
+exports.validateAlteracao = function(user){
+  util.log(user.login);
+    if (validator.isNull(user.nome) == true || user.nome == '') {
+        util.log("Nome obrigatório");
+        return false;
+    }
+    if (validator.isNull(user.sexo) == true || user.sexo == '') {
+        util.log("Sexo obrigatório");
+        return false;
+    }
+    if (validator.isNull(user.email) == true || user.email == '') {
+        util.log("Email obrigatório!");
+        return false;
+    }
+    if(validator.isEmail(user.email) == false){
+        util.log("Email Inválido");
+        return false;
+    }
+    if (user.data_nascimento == '') {
+        util.log("Data Nascimento obrigatório");
+        return false;
+    }
+    return true;
+}
+
 exports.procurar = function(user, func){
      Usuario.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','usuario.pessoa_id');
@@ -237,7 +263,7 @@ exports.procurar = function(user, func){
         qb.where('usuario.id_usuario', user.id_usuario);
         qb.select('usuario.*','pessoa.*','pessoa_fisica.*');
     }).fetch().then(function(model) {
-        util.log(model);
+       // util.log(model);
         func(model);
     });
 }

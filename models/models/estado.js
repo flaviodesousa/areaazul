@@ -14,18 +14,17 @@ var EstadoCollection =  Bookshelf.Collection.extend({
 exports.Estado = Estado;
 
 exports.cadastrar = function(state, fail, then){
-  var state = new this.Estado({
+  var estado = new this.Estado({
        'nome': state.nome,
        'uf': state.uf,
        'ativo': 'true'
   });
-  util.log(state);
-  if(this.validate(state) == true){
     new this.Estado({
          nome : state.nome,
     }).fetch().then(function(model){
+      console.log("12"+model);
       if(model == null){
-           state.save().then(function(model, err){
+           estado.save().then(function(model, err){
             if(err){
               fail(false);
             } else {
@@ -39,11 +38,6 @@ exports.cadastrar = function(state, fail, then){
           fail(false);
       }
     }) 
-  }else{
-      util.log("Campos obrigatórios!");
-       fail(false);
-  }
-  
 }
 
 exports.listar = function(func)
@@ -74,8 +68,6 @@ exports.editar = function(state, fail, then){
        'uf': state.uf,
        'ativo': state.ativo
   }); 
-
-  if(this.validate(estado) == true){
   new this.Estado({
        id_estado : state.id_estado,
   }).fetch().then(function(model){
@@ -88,12 +80,7 @@ exports.editar = function(state, fail, then){
         }
 
     });
-
   });
-  }else{
-      util.log("Campos obrigatórios!");
-      fail(false);
-  }
 }
 exports.desativar = function(state, fail, then){
   new this.Estado({
@@ -101,10 +88,10 @@ exports.desativar = function(state, fail, then){
   }).fetch().then(function(model){
     model.save(state).then(function(model, err){
       if(err){
-          return fail(false);
+            fail(false);
         } else {
-             util.log(model);
-          return then(true);
+            util.log(model);
+            then(true);
         }
     });
 
@@ -113,11 +100,11 @@ exports.desativar = function(state, fail, then){
 
 
 exports.validate = function(state){
-    if(validator.isNull(state.attributes.nome) == true || state.attributes.nome == ''){
+    if(validator.isNull(state.nome) == true || state.nome == ''){
       util.log("Nome é  obrigatório!");
       return false;
     }
-    if(validator.isNull(state.attributes.uf) == true || state.attributes.uf == ''){
+    if(validator.isNull(state.uf) == true || state.uf == ''){
       util.log("Uf é  obrigatório!");
       return false;
     }
