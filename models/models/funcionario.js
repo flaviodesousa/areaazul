@@ -12,6 +12,7 @@ var validator = require("validator");
 var validation = require('./validation');
 var util = require('./util');
 var crud = require('./crud');
+var Conta = require('./conta');
 
 var Funcionario = Bookshelf.Model.extend({
     tableName: 'funcionario',
@@ -64,6 +65,12 @@ exports.cadastrar = function(functionary, then, fail) {
             'ativo': 'true'
     });
 
+    var conta = new Conta.Conta({
+        'data_abertura': new Date(),
+        'saldo': '10.0',
+        'ativo': 'true'
+    });
+
     var funcionario = new this.Funcionario({
         'ativo': 'true',
         'empregador_id':'1'
@@ -81,45 +88,81 @@ exports.cadastrar = function(functionary, then, fail) {
         'sexo': functionary.sexo,
         'ativo': 'true'
     });
-   console.log("Log: "+Usuario.validateNomeUsuario(usuario1));
-    if((Usuario.validateNomeUsuario(usuario1) == true) && (Usuario.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-            console.log(usuario.login);
-            new Usuario.Usuario({
-                'login': functionary.cpf,
-           
-            }).fetch().then(function(model) { 
-                if(model == null){
 
-                new Usuario.Usuario({
-                'login': functionary.nome_usuario, 
-                }).fetch().then(function(model) { 
+    new Usuario.Usuario({
+        'login': functionary.cpf,
+    }).fetch().then(function(model) { 
+        if(model == null){
+        new Usuario.Usuario({
+        'login': functionary.nome_usuario, 
+        }).fetch().then(function(model) { 
 
-                  if(model == null){
+          if(model == null){
 
-                        Pessoa.fiveSaveTransaction(pessoa, funcionario, usuario, usuario1, pessoaFisica, function(result, err){
-                        if(result == true){
-                            util.enviarEmailConfirmacao(functionary,login + " Nome de usuario: "+functionary.nome_usuario ,senhaGerada);
-                            console.log("Resutl"+result);
-                            then(result);
-                        }else{
-                            fail(result);
-                        }
-                        if(err) fail(err);})
-                  } else {
-                        console.log("Nome usuario já existe!");
-                        fail(false);
-                  }
-
-             });
-            } else {
-                console.log("CPF já existe!");
+                Pessoa.sixSaveTransaction(pessoa, funcionario, usuario, usuario1, conta, pessoaFisica, function(result, err){
+                if(result == true){
+                    util.enviarEmailConfirmacao(functionary,login + " Nome de usuario: "+functionary.nome_usuario ,senhaGerada);
+                    then(result);
+                }else{
+                    fail(result);
+                }
+                if(err) fail(err);})
+          } else {
+                console.log("Nome usuario já existe!");
                 fail(false);
-            }
-            });
-    }else{
-        console.log("Campos obrigatorios!");
+          }
+     });
+    } else {
+        console.log("CPF já existe!");
         fail(false);
     }
+    });
+
+}
+
+
+exports.validateFuncionario = function(functionary){
+
+    var usuario = new Usuario.Usuario({
+            'login': functionary.cpf,
+            'autorizacao': '6',
+            'primeiro_acesso': 'true',
+            'senha': senha,
+            'ativo': 'true'
+    });
+
+    var pessoa = new Pessoa.Pessoa({
+        'nome': functionary.nome,
+        'email': functionary.email,
+        'telefone': functionary.telefone,
+        'ativo': 'true'
+    });
+    var pessoaFisica = new PessoaFisica.PessoaFisica({
+        'cpf': functionary.cpf,
+        'data_nascimento': dat_nascimento,
+        'sexo': functionary.sexo,
+        'ativo': 'true'
+    });
+
+
+
+    if(Usuario.validateNomeUsuario(functionary) != true){
+        return false;
+    }
+
+    if(Usuario.validate(usuario) != true){
+        return false;
+    }
+    if(PessoaFisica.validate(pessoaFisica) != true){
+        return false;
+    }
+
+    if(Pessoa.validate(pessoa) != true){
+        return false;
+    }
+
+    return true;
+
 }
 
 exports.listar = function(func)
@@ -141,9 +184,10 @@ exports.procurar = function(functionary, func){
          qb.join('pessoa', 'pessoa.id_pessoa','=','funcionario.pessoa_id');
          qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
          qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
+         qb.join('conta','pessoa.id_pessoa','=','conta.pessoa_id');
          qb.where('funcionario.id_funcionario', functionary.id_funcionario);
          qb.where('usuario.autorizacao','=','7');
-         qb.select('usuario.*','pessoa.*','pessoa_fisica.*','funcionario.*');
+         qb.select('usuario.*','pessoa.*','pessoa_fisica.*','funcionario.*', 'conta.*');
     }).fetch().then(function(model) {
         func(model);
     }); 
@@ -203,27 +247,32 @@ exports.editar = function(functionary, then, fail) {
 
 exports.desativar = function(functionary, then, fail) {
      this.procurar({id_funcionario: functionary.id_funcionario},
-        function(model){
-            util.log("Resultado: "+model);
+        function(result){
         
             var pessoa = new Pessoa.Pessoa({
-                'id_pessoa':model.attributes.pessoa_id,
+                'id_pessoa': result.attributes.pessoa_id,
                 'ativo': 'false'
             });
             var pessoaFisica = new PessoaFisica.PessoaFisica({
-                'id_pessoa_fisica': model.attributes.id_pessoa_fisica,
+                'id_pessoa_fisica': result.attributes.id_pessoa_fisica,
                 'ativo': 'false'
             });
 
             var usuario = new Usuario.Usuario({
-                 'id_usuario': model.attributes.id_usuario,
+                 'id_usuario': result.attributes.id_usuario,
                 'ativo': 'false'
             });
             var funcionario = new Funcionario({
-                'id_funcionario': model.attributes.id_funcionario,
+                'id_funcionario': result.attributes.id_funcionario,
                 'ativo': 'false'
             });
-            Pessoa.transactionUpdate(pessoa, funcionario, usuario, pessoaFisica, function(model, err){
+            var conta = new Conta.Conta({
+                'id_conta' : result.attributes.id_conta,
+                'data_fechamento': new Date(),
+                'ativo': 'false'
+            });
+
+            Pessoa.fiveUpdateTransaction(pessoa, funcionario, usuario, pessoaFisica, conta, function(model, err){
                 if(model == true){
                         then(model);
                 }else{

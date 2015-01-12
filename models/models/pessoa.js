@@ -308,3 +308,119 @@ exports.fiveUpdateTransaction= function(entidade1, entidade2, entidade3, entidad
             func(false);
         });
 }
+
+exports.sixSaveTransaction = function(entidade1, entidade2, entidade3, entidade4, entidade5, entidade6, func){
+        Bookshelf.transaction(function(t) {
+            entidade1.save(null, {
+                transacting: t
+            }).
+            then(function(entidade1) 
+            {
+                util.log(entidade1);
+                entidade2.save({
+                    pessoa_id: entidade1.id,
+                }, {
+                    transacting: t
+                }).then(function(model, err) {
+
+                    util.log("Model"+model);
+                    entidade3.save({
+                        pessoa_id: entidade1.id,
+                    }, {
+                        transacting: t
+                    }).then(function(model, err) {
+                        entidade4.save({
+                            pessoa_id: entidade1.id,
+                        }, {
+                            transacting: t
+                        }).then(function(model, err) {
+                            entidade5.save({
+                                pessoa_id: entidade1.id,
+                            }, {
+                                transacting: t
+                            }).then(function(model, err) {
+                                  entidade6.save({
+                                    pessoa_id: entidade1.id,
+                                  }, {
+                                    transacting: t
+                                  }).then(function(model, err) {
+                                    util.log("Commit");
+                                    t.commit();
+                                  }),
+                                function() {
+                                    t.rollback();
+                                    util.log("rollback");
+                                    func(false);
+                                }
+                             });
+                        });
+                    });
+                });
+            });
+
+        }).then(function(model) {
+             util.log("Passei aq");
+             func(true);
+        }, function() {
+            util.log("Ocorreu erro");
+            func(false);
+        });
+}
+
+exports.sixUpdateTransaction = function(entidade1, entidade2, entidade3, entidade4, entidade5, entidade6, func){
+        Bookshelf.transaction(function(t) {
+            entidade1.save(null, {
+                transacting: t
+            },{patch: true}).
+            then(function(entidade1) 
+            {
+                util.log(entidade1);
+                entidade2.save({
+                    pessoa_id: entidade1.id,
+                }, {
+                    transacting: t
+                },{patch: true}).then(function(model, err) {
+
+                    util.log("Model"+model);
+                    entidade3.save({
+                        pessoa_id: entidade1.id,
+                    }, {
+                        transacting: t
+                    },{patch: true}).then(function(model, err) {
+                        entidade4.save({
+                            pessoa_id: entidade1.id,
+                        }, {
+                            transacting: t
+                        },{patch: true}).then(function(model, err) {
+                            entidade5.save({
+                                pessoa_id: entidade1.id,
+                            }, {
+                                transacting: t
+                            },{patch: true}).then(function(model, err) {
+                                  entidade6.save({
+                                    pessoa_id: entidade1.id,
+                                  }, {
+                                    transacting: t
+                                  },{patch: true}).then(function(model, err) {
+                                    util.log("Commit");
+                                    t.commit();
+                                  }),
+                                function() {
+                                    t.rollback();
+                                    util.log("rollback");
+                                    func(false);
+                                }
+                             });
+                        });
+                    });
+                });
+            });
+
+        }).then(function(model) {
+             util.log("Passei aq");
+             func(true);
+        }, function() {
+            util.log("Ocorreu erro");
+            func(false);
+        });
+}

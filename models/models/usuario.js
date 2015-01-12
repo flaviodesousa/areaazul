@@ -10,6 +10,7 @@ var moment = require('moment');
 var validator = require("validator");
 var validation = require('./validation');
 var util = require('./util');
+var Conta = require('./conta');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -32,21 +33,6 @@ exports.search = function(entidade, func) {
         }
         func(retorno);
     });
-}
-
-
-exports.validateNomeUsuario = function(user) {
-    util.log("Login: " + user.attributes.login);
-    if (validator.isNull(user.attributes.login) == true || user.attributes.login == '') {
-        util.log("Login obrigatório");
-        return false;
-    }
-
-     if((user.attributes.login.length > 4) && (user.attributes.login.length < 8)){
-        util.log("O nome do login deve conter no minimo 4 a 8 caracteres");
-        return false;
-    }
-    return true;
 }
 
 
@@ -84,11 +70,18 @@ exports.cadastrar = function(user, then, fail) {
         'ativo': 'true'
     });
 
+
+    var conta = new Conta.Conta({
+        'data_abertura': new Date(),
+        'saldo': '10.0',
+        'ativo': 'true'
+    });
+
     new this.Usuario({
         'login': user.cpf,
     }).fetch().then(function(model) { 
       if(model == null){
-        Pessoa.saveTransaction(pessoa, usuario, pessoaFisica, function(result, err){
+        Pessoa.transaction(pessoa, usuario, conta, pessoaFisica, function(result, err){
         if(result == true){
             util.enviarEmailConfirmacao(user, login, senhaGerada);
             then(result);
@@ -103,6 +96,22 @@ exports.cadastrar = function(user, then, fail) {
     });
 }
 
+
+exports.validateNomeUsuario = function(user) {
+    util.log("Login: " + user.login);
+    if (validator.isNull(user.login) == true || user.login == '') {
+        util.log("Login obrigatório");
+        return false;
+    }
+
+     if((user.login.length > 4) && (user.login.length < 8)){
+        util.log("O nome do login deve conter no minimo 4 a 8 caracteres");
+        return false;
+    }
+    return true;
+}
+
+
 exports.listar = function(func)
  {
     UsuarioCollection.forge().query(function(qb){
@@ -113,7 +122,7 @@ exports.listar = function(func)
          qb.select('pessoa.*');
          qb.select('pessoa_fisica.*');
     }).fetch().then(function(collection) {
-       // util.log(collection.models);
+        util.log(collection.models);
         func(collection);
     }); 
 }
@@ -197,8 +206,33 @@ exports.editar = function(user, then, fail) {
         )
 }
 
+exports,validateAlteracao = function(user){
+  util.log(user.login);
+    if (validator.isNull(user.nome) == true || user.nome == '') {
+        util.log("Nome obrigatório");
+        return false;
+    }
+    if (validator.isNull(user.sexo) == true || user.sexo == '') {
+        util.log("Sexo obrigatório");
+        return false;
+    }
+    if (validator.isNull(user.email) == true || user.email == '') {
+        util.log("Email obrigatório!");
+        return false;
+    }
+    if(validator.isEmail(user.email) == false){
+        util.log("Email Inválido");
+        return false;
+    }
+    if (user.data_nascimento == '') {
+        util.log("Data Nascimento obrigatório");
+        return false;
+    }
+    return true;
+}
+
 exports.validate = function(user){
-    util.log(user.login);
+    util.log(user);
     if (validator.isNull(user.nome) == true || user.nome == '') {
         util.log("Nome obrigatório");
         return false;
@@ -230,40 +264,15 @@ exports.validate = function(user){
     return true;
 }
 
-
-exports.validateAlteracao = function(user){
-  util.log(user.login);
-    if (validator.isNull(user.nome) == true || user.nome == '') {
-        util.log("Nome obrigatório");
-        return false;
-    }
-    if (validator.isNull(user.sexo) == true || user.sexo == '') {
-        util.log("Sexo obrigatório");
-        return false;
-    }
-    if (validator.isNull(user.email) == true || user.email == '') {
-        util.log("Email obrigatório!");
-        return false;
-    }
-    if(validator.isEmail(user.email) == false){
-        util.log("Email Inválido");
-        return false;
-    }
-    if (user.data_nascimento == '') {
-        util.log("Data Nascimento obrigatório");
-        return false;
-    }
-    return true;
-}
-
 exports.procurar = function(user, func){
      Usuario.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','usuario.pessoa_id');
         qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
+        qb.join('conta','pessoa.id_pessoa','=','conta.pessoa_id');
         qb.where('usuario.id_usuario', user.id_usuario);
-        qb.select('usuario.*','pessoa.*','pessoa_fisica.*');
+        qb.select('usuario.*','pessoa.*','pessoa_fisica.*', 'conta.*');
     }).fetch().then(function(model) {
-       // util.log(model);
+        util.log(model);
         func(model);
     });
 }
@@ -284,7 +293,14 @@ exports.desativar = function(user, then, fail) {
              'id_usuario': result.attributes.id_usuario,
             'ativo': 'false'
         });
-        Pessoa.updateTransaction(pessoa, usuario, pessoaFisica, function(result, err){
+
+        var conta = new Conta.Conta({
+            'id_conta' : result.attributes.id_conta,
+            'data_fechamento': new Date(),
+            'ativo': 'false'
+        });
+
+        Pessoa.updateTransaction(pessoa, usuario, conta, pessoaFisica, function(result, err){
             if(result == true){
                     then(result);
             }else{

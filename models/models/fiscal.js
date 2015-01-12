@@ -11,6 +11,7 @@ var moment = require('moment');
 var validator = require("validator");
 var validation = require('./validation');
 var util = require('./util');
+var Conta = require('./conta');
 
 var Fiscal = Bookshelf.Model.extend({
     tableName: 'fiscal',
@@ -55,7 +56,7 @@ exports.cadastrar = function(tax, then, fail) {
     });
 
     var usuario1 = new Usuario.Usuario({
-            'login': tax.nome_usuario,
+            'login': tax.login,
             'autorizacao': '5',
             'primeiro_acesso': 'true',
             'senha': senha,
@@ -78,9 +79,14 @@ exports.cadastrar = function(tax, then, fail) {
         'sexo': tax.sexo,
         'ativo': 'true'
     });
-    console.log("Validate:" +(Usuario.validateNomeUsuario(usuario1)));
-    if((Usuario.validateNomeUsuario(usuario1) == true) && (Usuario.validate(usuario) == true) && (PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-            console.log(usuario.login);
+
+    var conta = new Conta.Conta({
+        'data_abertura': new Date(),
+        'saldo': '10.0',
+        'ativo': 'true'
+    });
+
+ 
             new Usuario.Usuario({
                 'login': tax.cpf,
             }).fetch().then(function(model) { 
@@ -90,7 +96,7 @@ exports.cadastrar = function(tax, then, fail) {
                 'login': tax.nome_usuario, 
                 }).fetch().then(function(model) { 
                     if(model == null){
-                    Pessoa.fiveSaveTransaction(pessoa, fiscal, usuario, usuario1, pessoaFisica, function(result, err){
+                    Pessoa.sixSaveTransaction(pessoa, fiscal, usuario, usuario1, conta, pessoaFisica, function(result, err){
                     if(result == true){
                         util.enviarEmailConfirmacao(tax,login + " Nome de usuario: "+tax.nome_usuario ,senhaGerada);
                         then(result);
@@ -109,12 +115,38 @@ exports.cadastrar = function(tax, then, fail) {
                     fail(false);
             }
             });
-    }else{
-        console.log("Campos obrigatorios!");
-        fail(false);
-    }
 }
 
+exports.validateFiscal = function(tax){
+
+    var pessoa = new Pessoa.Pessoa({
+        'nome': tax.nome,
+        'email': tax.email,
+        'telefone': tax.telefone,
+        'ativo': 'true'
+    });
+    var pessoaFisica = new PessoaFisica.PessoaFisica({
+        'cpf': tax.cpf,
+        'data_nascimento': tax.data_nascimento,
+        'sexo': tax.sexo,
+        'ativo': 'true'
+    });
+
+    if(Usuario.validateNomeUsuario(tax) != true){
+        return false;
+    }
+
+    if(PessoaFisica.validate(pessoaFisica) != true){
+        return false;
+    }
+
+    if(Pessoa.validate(pessoa) != true){
+        return false;
+    }
+
+    return true;
+
+}
 
 exports.listar = function(func)
  {
@@ -135,10 +167,11 @@ exports.procurar = function(tax, func){
         qb.join('pessoa', 'pessoa.id_pessoa','=','fiscal.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
         qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
+        qb.join('conta','pessoa.id_pessoa','=','conta.pessoa_id');
         qb.where('fiscal.id_fiscal', tax.id_fiscal);
         qb.where('usuario.autorizacao','=','5');
         qb.where('fiscal.ativo','=','true');
-        qb.select('fiscal.*','usuario.*','pessoa.*','pessoa_fisica.*');
+        qb.select('fiscal.*','usuario.*','pessoa.*','pessoa_fisica.*','conta.*');
     }).fetch().then(function(model) {
         func(model);
     });
@@ -200,32 +233,37 @@ exports.editar = function(tax, then, fail) {
 exports.desativar = function(tax, then, fail) {
     util.log('Tax: '+tax);
      this.procurar({id_fiscal: tax.id_fiscal},
-        function(model){
-
-             util.log(model.attributes);
+        function(result){
         var pessoa = new Pessoa.Pessoa({
-            'id_pessoa':model.attributes.pessoa_id,
+            'id_pessoa': result.attributes.pessoa_id,
             'ativo': 'false'
         });
         var pessoaFisica = new PessoaFisica.PessoaFisica({
-            'id_pessoa_fisica': model.attributes.id_pessoa_fisica,
+            'id_pessoa_fisica': result.attributes.id_pessoa_fisica,
             'ativo': 'false'
         });
 
         var usuario = new Usuario.Usuario({
-             'id_usuario': model.attributes.id_usuario,
+             'id_usuario': result.attributes.id_usuario,
             'ativo': 'false'
         });
         var usuario1 = new Usuario.Usuario({
-            'id_usuario': model.attributes.id_usuario,
+            'id_usuario': result.attributes.id_usuario,
             'ativo': 'false'
         });
 
         var fiscal = new Fiscal({
-            'id_fiscal': model.attributes.id_fiscal,
+            'id_fiscal': result.attributes.id_fiscal,
             'ativo': 'false'
         });
-        Pessoa.fiveUpdateTransaction(pessoa, fiscal, usuario, usuario1, pessoaFisica, 
+
+        var conta = new Conta.Conta({
+            'id_conta' : result.attributes.id_conta,
+            'data_fechamento': new Date(),
+            'ativo': 'false'
+        });
+
+        Pessoa.sixUpdateTransaction(pessoa, fiscal, usuario, usuario1, conta, pessoaFisica, 
         function(model, err){
             if(model == true){
                     then(model);
@@ -234,9 +272,4 @@ exports.desativar = function(tax, then, fail) {
             }
             if(err) fail(err);})
         })
-}
-
-exports.validate = function(fiscal){
-
-
 }

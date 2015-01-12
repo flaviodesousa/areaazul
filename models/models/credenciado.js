@@ -12,6 +12,7 @@ var Areaazul_mailer = require('areaazul-mailer');
 var validation = require('./validation');
 var util = require('./util');
 var validator = require("validator");
+var Conta = require('./conta');
 
 var Credenciado = Bookshelf.Model.extend({
     tableName: 'credenciado',
@@ -65,6 +66,12 @@ exports.cadastrar = function(accredited, then, fail) {
         'ativo': 'true'
     });
 
+    var conta = new Conta.Conta({
+        'data_abertura': new Date(),
+        'saldo': '10.0',
+        'ativo': 'true'
+    });
+
 
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
 
@@ -74,7 +81,7 @@ exports.cadastrar = function(accredited, then, fail) {
                 'cpf': accredited.cpf,
             }).fetch().then(function(model) { 
               if(model == null){
-                Pessoa.transaction(pessoa, credenciado, usuario, pessoaFisica, 
+                Pessoa.fiveSaveTransaction(pessoa, credenciado, usuario, conta, pessoaFisica, 
                     function(result, err){
                         if(result == true){
                             util.enviarEmailConfirmacao(accredited, login, senhaGerada);
@@ -103,10 +110,10 @@ exports.cadastrar = function(accredited, then, fail) {
             'cnpj': accredited.cnpj,
         }).fetch().then(function(model) { 
         if(model == null){
-                Pessoa.transaction(pessoa, credenciado, usuario, pessoaJuridica, 
+                Pessoa.fiveSaveTransaction(pessoa, credenciado, usuario, conta, pessoaJuridica, 
                     function(result, err){
                         if(result == true){
-                            util.enviarEmail(accredited, login, senhaGerada);
+                            util.enviarEmailConfirmacao(accredited, login, senhaGerada);
                             then(result);
                         }else{
                             fail(result);
@@ -161,8 +168,9 @@ exports.procurarpf = function(accredited, func){
         qb.join('pessoa', 'pessoa.id_pessoa','=','credenciado.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
         qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
+        qb.join('conta','pessoa.id_pessoa','=','conta.pessoa_id');
         qb.where('credenciado.id_credenciado', accredited.id_credenciado);
-        qb.select('credenciado.*','usuario.*','pessoa.*','pessoa_fisica.*');
+        qb.select('credenciado.*','usuario.*','pessoa.*','pessoa_fisica.*','conta.*');
     }).fetch().then(function(model) {
         util.log(model);
         func(model);
@@ -176,8 +184,9 @@ exports.procurarpj = function(accredited, func){
         qb.join('pessoa', 'pessoa.id_pessoa','=','credenciado.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
         qb.join('pessoa_juridica','pessoa_juridica.pessoa_id','=','pessoa.id_pessoa');
+        qb.join('conta','pessoa.id_pessoa','=','conta.pessoa_id');
         qb.where('credenciado.id_credenciado', accredited.id_credenciado);
-        qb.select('credenciado.*','usuario.*','pessoa.*','pessoa_juridica.*');
+        qb.select('credenciado.*','usuario.*','pessoa.*','pessoa_juridica.*','conta.*');
     }).fetch().then(function(model) {
         util.log(model);
         func(model);
@@ -316,7 +325,14 @@ exports.desativarpf = function(accredited, then, fail) {
              'id_usuario': result.attributes.id_usuario,
             'ativo': 'false'
         });
-        Pessoa.transactionUpdate(pessoa, credenciado, usuario, pessoaFisica, function(result, err){
+
+        var conta = new Conta.Conta({
+            'id_conta' : result.attributes.id_conta,
+            'data_fechamento': new Date(),
+            'ativo': 'false'
+        });
+
+        Pessoa.fiveUpdateTransaction(pessoa, credenciado, usuario, conta, pessoaFisica, function(result, err){
             if(result == true){
                     then(result);
             }else{
@@ -348,7 +364,13 @@ exports.desativarpj = function(accredited, then, fail) {
             'ativo': 'false'
         });
 
-        Pessoa.transactionUpdate(pessoa, credenciado, usuario, pessoaJuridica, function(result, err){
+        var conta = new Conta.Conta({
+            'id_conta' : result.attributes.id_conta,
+            'data_fechamento': new Date(),
+            'ativo': 'false'
+        });
+
+        Pessoa.fiveUpdateTransaction(pessoa, credenciado, usuario, conta, pessoaJuridica, function(result, err){
             if(result == true){
                     then(result);
             }else{

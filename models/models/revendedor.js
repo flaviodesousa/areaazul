@@ -12,6 +12,7 @@ var Areaazul_mailer = require('areaazul-mailer');
 var validation = require('./validation');
 var util = require('./util');
 var validator = require("validator");
+var Conta = require('./conta');
 
 var Revendedor = Bookshelf.Model.extend({
     tableName: 'revendedor',
@@ -60,6 +61,12 @@ exports.cadastrar = function(dealer, then, fail) {
             'ativo': 'true'
     });
 
+    var conta = new Conta.Conta({
+        'data_abertura': new Date(),
+        'saldo': '10.0',
+        'ativo': 'true'
+    });
+
     var pessoa = new Pessoa.Pessoa({
         'nome': dealer.nome,
         'email': dealer.email,
@@ -89,7 +96,7 @@ exports.cadastrar = function(dealer, then, fail) {
                 'cpf': dealer.cpf,
             }).fetch().then(function(model) { 
               if(model == null){
-                Pessoa.transaction(pessoa, revendedor, usuario, pessoaFisica, 
+                Pessoa.fiveSaveTransaction(pessoa, revendedor, usuario, conta, pessoaFisica, 
                     function(result, err){
                         if(result == true){
                             util.enviarEmailConfirmacao(dealer, login, senhaGerada);
@@ -118,10 +125,10 @@ exports.cadastrar = function(dealer, then, fail) {
             'cnpj': dealer.cnpj,
         }).fetch().then(function(model) { 
         if(model == null){
-                Pessoa.transaction(pessoa, revendedor, usuario, pessoaJuridica, 
+                Pessoa.fiveSaveTransaction(pessoa, revendedor, usuario, conta, pessoaJuridica, 
                     function(result, err){
                         if(result == true){
-                            util.enviarEmail(dealer, login, senhaGerada);
+                            util.enviarEmailConfirmacao(dealer, login, senhaGerada);
                             then(result);
                         }else{
                             fail(result);
@@ -176,10 +183,11 @@ exports.procurarpf = function(dealer, func){
         qb.join('pessoa', 'pessoa.id_pessoa','=','revendedor.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
         qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
+        qb.join('conta','pessoa.id_pessoa','=','conta.pessoa_id');
         qb.where('revendedor.id_revendedor', dealer.id_revendedor);
-        qb.select('revendedor.*','usuario.*','pessoa.*','pessoa_fisica.*');
+        qb.select('revendedor.*','usuario.*','pessoa.*','pessoa_fisica.*','conta.*');
     }).fetch().then(function(model) {
-        util.log(model);
+        util.log("model"+model);
         func(model);
     });
 }
@@ -191,8 +199,9 @@ exports.procurarpj = function(dealer, func){
         qb.join('pessoa', 'pessoa.id_pessoa','=','revendedor.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
         qb.join('pessoa_juridica','pessoa_juridica.pessoa_id','=','pessoa.id_pessoa');
+        qb.join('conta','pessoa.id_pessoa','=','conta.pessoa_id');
         qb.where('revendedor.id_revendedor', dealer.id_revendedor);
-        qb.select('revendedor.*','usuario.*','pessoa.*','pessoa_juridica.*');
+        qb.select('revendedor.*','usuario.*','pessoa.*','pessoa_juridica.*','conta.*');
     }).fetch().then(function(model) {
         util.log(model);
         func(model);
@@ -313,6 +322,7 @@ exports.desativarpf = function(dealer, then, fail) {
     util.log(dealer);
     this.procurarpf({id_revendedor: dealer.id_revendedor},
         function(result){
+            console.log(result);
         var pessoa = new Pessoa.Pessoa({
             'id_pessoa':result.attributes.pessoa_id,
             'ativo': 'false'
@@ -331,7 +341,15 @@ exports.desativarpf = function(dealer, then, fail) {
              'id_usuario': result.attributes.id_usuario,
             'ativo': 'false'
         });
-        Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaFisica, function(result, err){
+
+            
+        var conta = new Conta.Conta({
+            'id_conta' : result.attributes.id_conta,
+            'data_fechamento': new Date(),
+            'ativo': 'false'
+        });
+
+        Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaFisica, function(result, err){
             if(result == true){
                     then(result);
             }else{
@@ -363,7 +381,13 @@ exports.desativarpj = function(dealer, then, fail) {
             'ativo': 'false'
         });
 
-        Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaJuridica, function(result, err){
+        var conta = new Conta.Conta({
+            'id_conta' : result.attributes.id_conta,
+            'data_fechamento': new Date(),
+            'ativo': 'false'
+        });
+
+        Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaJuridica, function(result, err){
             if(result == true){
                     then(result);
             }else{
