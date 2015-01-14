@@ -241,7 +241,7 @@ bspg.knex.schema.hasTable('veiculo').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('veiculo', function(table) {
             table.increments('id_veiculo').primary();
-            table.string('placa').notNullable();;
+            table.string('placa').notNullable();
             table.bigInteger('placa_numero').notNullable();
             table.string('marca').notNullable();
             table.string('modelo').notNullable();
@@ -255,6 +255,22 @@ bspg.knex.schema.hasTable('veiculo').then(function(exists) {
         }).
         catch(function(err) {
             util.log('erro: ' + err)
+        });
+    }
+});
+
+bspg.knex.schema.hasTable('fiscalizacao').then(function(exists) {
+    if (!exists) {
+        bspg.knex.schema.createTable('fiscalizacao', function(table) {
+            table.increments('id_fiscalizacao').primary();
+            table.string('placa').notNullable();
+            table.bigInteger('veiculo_id').nullable().references('id_veiculo').inTable('veiculo');
+            table.timestamp('timestamp').notNullable();
+            table.bigInteger('fiscal_id').notNullable().references('id_fiscal').inTable('fiscal');
+        }).then(function() {
+            util.log('tabela fiscalizacao criada');
+        }).catch(function(err) {
+            util.log('erro: ' + err);
         });
     }
 });
