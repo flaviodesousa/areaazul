@@ -12,3 +12,5 @@ module.exports.revendedor = require('./collections/revendedor');
 module.exports.usuario = require('./collections/usuario');
 module.exports.veiculo = require('./collections/veiculo');
 module.exports.estado = require('./collections/estado');
+module.exports.ativacao = require('./collections/ativacao');
+module.exports.fiscalizacao = require('./collections/fiscalizacao');
