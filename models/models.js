@@ -13,3 +13,4 @@ module.exports.revendedor = require('./models/revendedor');
 module.exports.usuario = require('./models/usuario');
 module.exports.veiculo = require('./models/veiculo');
 module.exports.estado = require('./models/estado');
+module.exports.ativacao = require('./models/ativacao');

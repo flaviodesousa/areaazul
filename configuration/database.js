@@ -11,8 +11,8 @@ bspg.knex.schema.hasTable('estado').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('estado', function(table) {
             table.increments('id_estado').primary();
-            table.string('nome').notNullable();
-            table.string('uf').notNullable();
+            table.string('nome').unique().notNullable();
+            table.string('uf').unique().notNullable();
             table.boolean('ativo').notNullable();
         }).then(function() {
             util.log('tabela estado criada')
@@ -81,7 +81,7 @@ bspg.knex.schema.hasTable('pessoa').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('pessoa', function(table) {
             table.increments('id_pessoa').primary();
-            table.string('nome').notNullable();
+            table.string('nome').unique().notNullable();
             table.string('email').notNullable();
             table.string('telefone');
             table.string('observacao');
@@ -99,8 +99,8 @@ bspg.knex.schema.hasTable('usuario').then(function(exists) {
     if (!exists) {
         bspg.knex.schema
             .createTable('usuario', function(table) {
-                table.increments('id_usuario');
-                table.string('login').notNullable();
+                table.increments('id_usuario').primary();
+                table.string('login').unique().notNullable();
                 table.string('senha');
                 table.integer('autorizacao').notNullable();
                 table.boolean('primeiro_acesso').notNullable();
@@ -120,7 +120,7 @@ bspg.knex.schema.hasTable('usuario_has_veiculo').then(function(exists) {
     if (!exists) {
         bspg.knex.schema
             .createTable('usuario_has_veiculo', function(table) {
-                table.increments('id_usuario_has_veiculo');
+                table.increments('id_usuario_has_veiculo').primary(['usuario_id','veiculo_id']);
                 table.bigInteger('usuario_id').references('id_usuario').inTable('usuario');
                 table.bigInteger('veiculo_id').references('id_veiculo').inTable('veiculo');
             }).then(function() {
@@ -137,8 +137,8 @@ bspg.knex.schema.hasTable('usuario_has_veiculo').then(function(exists) {
 bspg.knex.schema.hasTable('pessoa_fisica').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('pessoa_fisica', function(table) {
-            table.increments('id_pessoa_fisica');
-            table.string('cpf').notNullable();
+            table.increments('id_pessoa_fisica').primary();
+            table.string('cpf').unique().notNullable();
             table.date('data_nascimento');
             table.string('sexo');
             table.boolean('ativo').notNullable();
@@ -156,7 +156,7 @@ bspg.knex.schema.hasTable('pessoa_juridica').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('pessoa_juridica', function(table) {
             table.increments('id_pessoa_juridica').primary();
-            table.string('cnpj').notNullable();
+            table.string('cnpj').unique().notNullable();
             table.string('nome_fantasia').notNullable();
             table.string('razao_social').notNullable();
             table.string('incricao_estadual')
@@ -350,6 +350,25 @@ bspg.knex.schema.hasTable('consumo').then(function(exists) {
         }).
         catch(function(err) {
             util.log('erro: ' + err)
+        });
+    }
+});
+
+bspg.knex.schema.hasTable('ativacao').then({function(exists)
+    if(!exists){
+        bspg.knex.schema.createTable('ativacao', function(table){
+            table.increments('id_ativacao').primary();
+            table.timestamp('data_ativacao').notNullable();
+            table.decimal('latitude');
+            table.decimal('longitude');
+            table.decimal('altitude');
+            table.boolean('ativo').notNullable();
+            table.bigInteger('usuario_id').references('id_usuario').inTable('usuario');
+            table.bigInteger('veiculo_id').references('id_veiculo').inTable('veiculo');
+        }).then(function(){
+            util.log('tabela ativação criada')
+        }).catch(function(err){
+            util.log('erro: ' + erro)
         });
     }
 });
