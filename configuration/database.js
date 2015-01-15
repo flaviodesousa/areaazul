@@ -81,7 +81,7 @@ bspg.knex.schema.hasTable('pessoa').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('pessoa', function(table) {
             table.increments('id_pessoa').primary();
-            table.string('nome').unique().notNullable();
+            table.string('nome').notNullable();
             table.string('email').notNullable();
             table.string('telefone');
             table.string('observacao');
