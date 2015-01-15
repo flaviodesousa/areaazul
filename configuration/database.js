@@ -120,14 +120,14 @@ bspg.knex.schema.hasTable('usuario_has_veiculo').then(function(exists) {
     if (!exists) {
         bspg.knex.schema
             .createTable('usuario_has_veiculo', function(table) {
-                table.increments('id_usuario_has_veiculo').primary(['usuario_id','veiculo_id']);
+                table.primary(['usuario_id','veiculo_id']);
                 table.bigInteger('usuario_id').references('id_usuario').inTable('usuario');
                 table.bigInteger('veiculo_id').references('id_veiculo').inTable('veiculo');
             }).then(function() {
                 util.log('tabela usuario_has_veiculo criada')
             }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('Erro tabela usuario_has_veiculo: ' + err)
         });
     }
 });
