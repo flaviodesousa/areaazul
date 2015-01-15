@@ -370,7 +370,7 @@ bspg.knex.schema.hasTable('consumo').then(function(exists) {
     }
 });
 
-bspg.knex.schema.hasTable('ativacao').then(function(exists)
+bspg.knex.schema.hasTable('ativacao').then(function(exists){
     if(!exists){
         bspg.knex.schema.createTable('ativacao', function(table){
             table.increments('id_ativacao').primary();
