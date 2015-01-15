@@ -4,6 +4,7 @@ module.exports.conta = require('./models/conta');
 module.exports.contrato = require('./models/contrato');
 module.exports.credenciado = require('./models/credenciado');
 module.exports.fiscal = require('./models/fiscal');
+module.exports.fiscalizacao = require('./models/fiscalizacao');
 module.exports.funcionario = require('./models/funcionario');
 module.exports.movimentacaoconta = require('./models/movimentacaoconta');
 module.exports.pessoa = require('./models/pessoa');
