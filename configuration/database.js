@@ -264,9 +264,14 @@ bspg.knex.schema.hasTable('fiscalizacao').then(function(exists) {
         bspg.knex.schema.createTable('fiscalizacao', function(table) {
             table.increments('id_fiscalizacao').primary();
             table.string('placa').notNullable();
-            table.bigInteger('veiculo_id').nullable().references('id_veiculo').inTable('veiculo');
+            table.bigInteger('veiculo_id').nullable()
+                .references('id_veiculo').inTable('veiculo');
             table.timestamp('timestamp').notNullable();
-            table.bigInteger('fiscal_id').notNullable().references('id_fiscal').inTable('fiscal');
+            table.bigInteger('fiscal_id').notNullable()
+                .references('id_fiscal').inTable('fiscal');
+            table.decimal('latitude');
+            table.decimal('longitude');
+            table.decimal('altitude');
         }).then(function() {
             util.log('tabela fiscalizacao criada');
         }).catch(function(err) {
