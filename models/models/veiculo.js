@@ -2,6 +2,7 @@ var Bookshelf = require('bookshelf').conexaoMain;
 var validator = require('validator');
 var validation = require('./validation');
 var util = require('./util');
+var Usuario_has_Veiculo = require('./usuario_has_veiculo');
 
 
 var Veiculo = Bookshelf.Model.extend({
@@ -17,31 +18,60 @@ var VeiculoCollection =  Bookshelf.Collection.extend({
     model: Veiculo
 });
 
-exports.cadastrar = function(vehicle, fail, then){
-    var veiculo = new this.Veiculo({
-         'estado_id': vehicle.estado_id,
-         'placa': vehicle.placa,
-         'marca': vehicle.marca,
-         'modelo': vehicle.modelo,
-         'cor': vehicle.cor,
-         'ano_fabricado': vehicle.ano_fabricado,
-         'ano_modelo': vehicle.ano_modelo,
-         'ativo': 'true'
-    });
-  
-    new this.Veiculo({
-      'placa' : vehicle.placa
-    }).fetch().then(function(result){
-      if (result == null) {
-           veiculo.save().then(function(model){
-           then(true);
+
+exports.cadastrar  = function(vehicle, fail, then){
+
+        var veiculo = new this.Veiculo({
+             'estado_id': vehicle.estado_id,
+             'placa': vehicle.placa,
+             'placa_numero': vehicle.placa_numero,
+             'marca': vehicle.marca,
+             'modelo': vehicle.modelo,
+             'cor': vehicle.cor,
+             'ano_fabricado': vehicle.ano_fabricado,
+             'ano_modelo': vehicle.ano_modelo,
+             'ativo': 'true'
         });
-      }else{
-        util.log("Veiculo já existe");
-        fail(false);
-      }
-    })
+
+        var usuario_has_veiculo = new Usuario_has_Veiculo.Usuario_has_Veiculo({
+            'usuario_id' : vehicle.usuario_id
+        });
+
+        console.log("usuario_has_veiculo"+usuario_has_veiculo);
+        console.log("Id:"+vehicle.id);
+
+
+        Bookshelf.transaction(function(t) {
+            veiculo.save(null, {
+                transacting: t
+            }).
+            then(function(veiculo) {
+                console.log(veiculo.id);
+                usuario_has_veiculo.save({
+                    veiculo_id: veiculo.id,
+                }, {
+                    transacting: t
+                }).then(function(model, err) {
+                          util.log("Commit");
+                        t.commit();
+                    }),
+                    function() {
+                        t.rollback();
+                           util.log("rollback");
+                        func(false);
+                    }
+                });
+        }).then(function(model) {
+             util.log("Passei aq");
+             then(true);
+        }, function(error) {
+            console.log(error);
+            util.log("Ocorreu erro");
+            fail(false);
+        });
+
 }
+
 
 exports.listar = function(func)
  {
@@ -54,6 +84,23 @@ exports.listar = function(func)
         func(collection);
     }); 
 }
+
+exports.listarVeiculosUsuario = function(user, func)
+ {
+      console.log('User: '+user.id_usuario);
+      VeiculoCollection.forge().query(function(qb){
+        qb.where('usuario_has_veiculo.usuario_id', user.id_usuario);
+        qb.join('estado', 'estado.id_estado','=','veiculo.estado_id');
+        qb.join('usuario_has_veiculo', 'veiculo.id_veiculo','=','usuario_has_veiculo.veiculo_id');
+        qb.select('veiculo.*');
+        qb.select('estado.*');
+       console.log('sql'+qb);
+    }).fetch().then(function(collection) {
+        util.log(collection.models);
+        func(collection);
+    }); 
+}
+
 
 exports.procurar = function(vehicle, func){
      Veiculo.forge().query(function(qb){
@@ -146,3 +193,33 @@ exports.validate = function(vehicle){
 }
 
 
+
+exports.saveTransaction = function(entidade1, entidade2, entidade3, func){
+        Bookshelf.transaction(function(t) {
+            entidade1.save(null, {
+                transacting: t
+            }).
+            then(function(entidade1) {
+                util.log(entidade1);
+                entidade2.save({
+                    pessoa_id: entidade1.id,
+                }, {
+                    transacting: t
+                }).then(function(model, err) {
+                          util.log("Commit");
+                        t.commit();
+                    }),
+                    function() {
+                        t.rollback();
+                           util.log("rollback");
+                        func(false);
+                    }
+                });
+        }).then(function(model) {
+             util.log("Passei aq");
+             func(true);
+        }, function() {
+            util.log("Ocorreu erro");
+            func(false);
+        });
+}

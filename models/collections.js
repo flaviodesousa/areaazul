@@ -14,3 +14,4 @@ module.exports.veiculo = require('./collections/veiculo');
 module.exports.estado = require('./collections/estado');
 module.exports.ativacao = require('./collections/ativacao');
 module.exports.fiscalizacao = require('./collections/fiscalizacao');
+module.exports.usuario_has_veiculo = require('./collections/usuario_has_veiculo');
