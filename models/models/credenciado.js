@@ -36,7 +36,7 @@ exports.cadastrar = function(accredited, then, fail) {
 
    var usuario = new Usuario.Usuario({
             'login': login,
-            'autorizacao': '1',
+            'autorizacao': '4',
             'primeiro_acesso': 'true',
             'senha': senha,
             'ativo': 'true'

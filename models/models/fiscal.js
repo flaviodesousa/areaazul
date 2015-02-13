@@ -49,7 +49,7 @@ exports.cadastrar = function(tax, then, fail) {
 
     var usuario = new Usuario.Usuario({
             'login': tax.cpf,
-            'autorizacao': '6',
+            'autorizacao': '3',
             'primeiro_acesso': 'true',
             'senha': senha,
             'ativo': 'true'
@@ -57,7 +57,7 @@ exports.cadastrar = function(tax, then, fail) {
 
     var usuario1 = new Usuario.Usuario({
             'login': tax.login,
-            'autorizacao': '5',
+            'autorizacao': '6',
             'primeiro_acesso': 'true',
             'senha': senha,
             'ativo': 'true'

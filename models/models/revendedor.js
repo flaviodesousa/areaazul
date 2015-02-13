@@ -51,7 +51,7 @@ exports.cadastrar = function(dealer, then, fail) {
 
    var usuario = new Usuario.Usuario({
             'login': login,
-            'autorizacao': '1',
+            'autorizacao': '5',
             'primeiro_acesso': 'true',
             'senha': senha,
             'ativo': 'true'

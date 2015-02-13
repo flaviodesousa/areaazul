@@ -51,7 +51,7 @@ exports.cadastrar = function(functionary, then, fail) {
 
     var usuario = new Usuario.Usuario({
             'login': functionary.cpf,
-            'autorizacao': '6',
+            'autorizacao': '3',
             'primeiro_acesso': 'true',
             'senha': senha,
             'ativo': 'true'

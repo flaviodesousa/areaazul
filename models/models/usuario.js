@@ -52,7 +52,7 @@ exports.cadastrar = function(user, then, fail) {
 
     var usuario = new this.Usuario({
             'login': user.cpf,
-            'autorizacao': '6',
+            'autorizacao': '3',
             'primeiro_acesso': 'true',
             'senha': senha,
             'ativo': 'true'
