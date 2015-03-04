@@ -13,11 +13,11 @@ module.exports = function(app) {
   				latitude: req.body.latitude,
   				longitude: req.body.longitude },
                 function(result) {
-                    console.log("Cadastrado com sucesso!!!");
+                    console.log("Cadastrado com sucesso!!! id=" + result.id);
                     res.status(200).end();
                 },
                 function(result) {
-                    console.log("Erro ao salvar!!!");
+                    console.log("Erro ao salvar: " + result);
                     res.status(400).end();
                 })
         }
