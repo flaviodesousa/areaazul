@@ -1,7 +1,10 @@
 module.exports = function(app) {
+	var AreaAzul = require('areaazul');
+    var Fiscalizacao = AreaAzul.models.fiscalizacao;
+
     return {
         registrar: function(req, res) {
-        	console.log('body');
+        	console.log('fiscalizacao-registrar-body');
         	console.dir(req.body);
             Fiscalizacao.cadastrar({
             	fiscal: req.body.fiscal,
