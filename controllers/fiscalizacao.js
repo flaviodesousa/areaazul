@@ -18,7 +18,7 @@ module.exports = function(app) {
                 },
                 function(result) {
                     console.log("Erro ao salvar: " + result);
-                    res.status(400).end();
+                    res.status(400).send("" + result).end();
                 })
         }
     }
