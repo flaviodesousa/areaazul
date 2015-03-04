@@ -19,12 +19,10 @@ exports.cadastrar = function(fiscalizacao_params, then, fail) {
 		timestamp: new Date(),
 		fiscal_id: 1
 	});
-	fiscalizacao.save().then(function(model, err) {
-		if (err) {
-			fail(false);
-		} else {
-			then(true);
-		}
+	fiscalizacao.save().then(function(model) {
+		then(model);
+	}).catch(function(err) {
+		fail(err);
 	});
 }
 
