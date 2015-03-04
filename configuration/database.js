@@ -302,9 +302,9 @@ bspg.knex.schema.hasTable('configuracao').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('configuracao', function(table) {
             table.increments('id_configuracao').primary();
-            table.bigInteger('tempo_limite_estacionamento').notNullable();
+            table.bigInteger('tempo_limite').notNullable();
             table.bigInteger('tempo_maximo');
-            table.bigInteger('tempo_vencimento');
+            table.bigInteger('tempo_tolerancia');
             table.decimal('valor_unitario');
             table.decimal('comissao_credenciado');
             table.decimal('comissao_revendedor');
@@ -317,6 +317,7 @@ bspg.knex.schema.hasTable('configuracao').then(function(exists) {
         });
     }
 });
+
 
 bspg.knex.schema.hasTable('conta').then(function(exists) {
     if (!exists) {

@@ -1,0 +1,1 @@
+module.exports.tipoVeiculo = require('./enum/tipoVeiculo');
