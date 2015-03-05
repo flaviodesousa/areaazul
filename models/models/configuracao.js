@@ -9,53 +9,82 @@ var Configuracao = Bookshelf.Model.extend({
 
 exports.Configuracao = Configuracao;
 
+var ConfiguracaoCollection =  Bookshelf.Collection.extend({
+    model: Configuracao
+});
+
 
 exports.cadastrar = function(configuration, then, fail){
-
-
     var configuracao = new this.Configuracao({
-    	 'tempo_limite': configuration.tempo_limite,
-     	 'tempo_maximo': configuration.tempo_maximo,
-     	 'tempo_tolerancia': configuration.tempo_tolerancia,
-     	 'valor_unitario': configuration.valor_unitario,
-     	 'comissao_credenciado': configuration.comissao_credenciado,
-     	 'comissao_revendedor': configuration.comissao_revendedor, 
+         'tempo_limite': configuration.tempo_limite,
+         'tempo_maximo': configuration.tempo_maximo,
+         'tempo_tolerancia': configuration.tempo_tolerancia,
+         'valor_unitario': configuration.valor_unitario,
+         'comissao_credenciado': configuration.comissao_credenciado,
+         'comissao_revendedor': configuration.comissao_revendedor, 
          'ativo': 'true'
     });
 
-    console.log(configuracao);
-    configuracao.save().then(
-    function(model)
-    {
-        if(model != null){
-            then(true);
-            util.log("Salvo com sucesso!!!");
-        }
-       
-    }, function(){
-        fail(false);
-        util.log("Erro ao salvar!!!"); 
+    configuracao.save().then(function(model){
+            then(model);
+    }).catch(function(err){
+            fail(err);
     });
 
 
 }
 
-exports.listar = function(func)
- {
-    ConfiguracaoCollection.forge().query(function(qb){
-         qb.where('configuracao.ativo','=','true');
-         qb.select('configuracao.*');
+exports.listar = function(then, fail) {
+    ConfiguracaoCollection.forge().query(function(qb) {
+        qb.select('configuracao.*')
     }).fetch().then(function(collection) {
         util.log(collection.models);
-        func(collection);
-    }); 
+        then(collection);
+    }).catch(function(err){
+        fail(err);
+    });
 }
-/*
-exports.listar =  function(func){
-	var configuracoes = ConfiguracaoCollection.Configuracao().fecth().then(
-		function(collection){
-    		util.log(collection.models);
-        	func(collection);
-		});
 
-}*/
+exports.procurar = function(configuration, then, fail){
+
+    Configuracao.forge().query(function(qb){
+        qb.where('configuracao.id_configuracao', configuration.id_configuracao);
+        qb.select('configuracao.*');
+    }).fetch().then(function(model) {
+        util.log(model);
+        then(model);
+    }).catch(function(err){
+        fail(err);
+    });
+}
+
+exports.editar = function(configuration, then, fail){
+
+  new this.Configuracao({
+       id_configuracao : configuration.id_configuracao,
+  }).fetch().then(function(model){
+    model.save(configuration).then(function(model){
+          util.log(model);
+          then(model);
+      }).catch(function(err){
+         fail(err);
+      });
+  }).catch(function(err){
+         fail(err);
+  });
+}
+
+exports.desativar = function(configuration, then, fail){
+  new this.Configuracao({
+       id_configuracao : configuration.id_configuracao,
+  }).fetch().then(function(model){
+    model.save(configuration).then(function(model){
+        then(model);
+    }).catch(function(err){
+        fail(err);
+    });
+  }).catch(function(err){
+        fail(err);
+  });
+}
+
