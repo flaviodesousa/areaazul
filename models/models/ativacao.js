@@ -42,18 +42,14 @@ exports.ativar = function(activation, then, fail){
     });
 
     console.log(ativacao);
-    ativacao.save().then(
-    function(model)
-    {
-        if(model != null){
-            then(true);
-            util.log("Salvo com sucesso!!!");
-        }
-       
-    }, function(){
-        fail(false);
-        util.log("Erro ao salvar!!!"); 
+    ativacao.save().then(function(model){
+            util.log("Salvo com sucesso!");
+            then(model);
+    }).catch(function(err){
+            util.log("Erro ao salvar!!!");
+            fail(err);
     });
+
 
 }
 
