@@ -3,7 +3,7 @@ var Fiscalizacao = AreaAzul.models.fiscalizacao;
 
 describe('model.fiscalizacao', function() {
 	describe('cadastrar()', function() {
-		it('requer placa', function(done) {
+		it('nao grava sem placa', function(done) {
 			var f = {
 				latitude: 33,
 				longitude: 44
@@ -24,6 +24,17 @@ describe('model.fiscalizacao', function() {
 			};
 			Fiscalizacao.cadastrar(f,
 				function(model) {
+					done();
+				},
+				function(err) {
+					done(err);
+				});
+		});
+	});
+	describe('listar()', function() {
+		it('retorna uma lista de fiscalizacoes', function(done) {
+			Fiscalizacao.listar(undefined,
+				function(collection) {
 					done();
 				},
 				function(err) {
