@@ -31,5 +31,7 @@ exports.listar = function(consulta_fiscalizacao_params, then, fail) {
 		qb.select('fiscalizacao.*')
 	}).fetch().then(function(collection) {
 		then(collection);
-	})
+	}).catch(function(err) {
+		fail(err);
+	});
 }
