@@ -4,7 +4,8 @@
     "private": true,
     "main": "areaazul.js",
     "scripts": {
-        "start": "node ./bin/www"
+        "start": "node ./bin/www",
+        "test": "mocha"
     },
     "dependencies": {
         "express": "~4.2.0",
@@ -29,5 +30,9 @@
         "passport": "latest",
         "passport-local": "latest",
         "areaazul-mailer":"git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git"
+    },
+    "devDependencies": {
+        "mocha": "*",
+        "should": "*"
     }
 }

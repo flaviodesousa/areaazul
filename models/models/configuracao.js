@@ -1,6 +1,5 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var util = require('./util');
-var ConfiguracaoCollection = require('../collections/configuracao');
 
 var Configuracao = Bookshelf.Model.extend({
     tableName: 'configuracao',
@@ -12,7 +11,6 @@ exports.Configuracao = Configuracao;
 var ConfiguracaoCollection =  Bookshelf.Collection.extend({
     model: Configuracao
 });
-
 
 exports.cadastrar = function(configuration, then, fail){
     var configuracao = new this.Configuracao({
@@ -30,8 +28,6 @@ exports.cadastrar = function(configuration, then, fail){
     }).catch(function(err){
             fail(err);
     });
-
-
 }
 
 exports.listar = function(then, fail) {
