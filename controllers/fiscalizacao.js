@@ -20,6 +20,16 @@ module.exports = function(app) {
                     console.log("Erro ao salvar: " + result);
                     res.status(400).send("" + result).end();
                 })
+        },
+        listar: function(req, res) {
+            Fiscalizacao.listar(undefined,
+                function(collection) {
+                    res.send(collection.toJSON()).end();
+                },
+                function(result) {
+                    console.log("Erro ao listar: " + result);
+                    res.status(400).send("" + result).end();
+                });
         }
     }
 }
