@@ -1,4 +1,5 @@
-var AreaAzul = require('../areaazul')
+var AreaAzul = require('../areaazul');
+var should = require('should');
 var Fiscalizacao = AreaAzul.models.fiscalizacao;
 
 describe('model.fiscalizacao', function() {
@@ -35,7 +36,9 @@ describe('model.fiscalizacao', function() {
 		it('retorna uma lista de fiscalizacoes', function(done) {
 			Fiscalizacao.listar(undefined,
 				function(collection) {
-					collection.toJSON({shallow: true});
+					collection.toJSON({shallow: true})
+						.should.be.Array
+						.and.not.empty;
 					done();
 				},
 				function(err) {
