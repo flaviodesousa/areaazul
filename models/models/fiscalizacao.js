@@ -1,4 +1,5 @@
 var Bookshelf = require('bookshelf').conexaoMain;
+var moment = require('moment');
 
 var Fiscalizacao = Bookshelf.Model.extend({
     tableName: 'fiscalizacao',
@@ -27,11 +28,12 @@ exports.cadastrar = function(fiscalizacao_params, then, fail) {
 }
 
 exports.listar = function(consulta_fiscalizacao_params, then, fail) {
-	FiscalizacaoCollection.forge().query(function(qb) {
-		qb.select('fiscalizacao.*')
-	}).fetch().then(function(collection) {
-		then(collection);
-	}).catch(function(err) {
-		fail(err);
-	});
+	FiscalizacaoCollection
+		.query('where', 'timestamp', '>=', moment().subtract(2, 'hours').calendar())
+		.fetch()
+		.then(function(c) {
+			then(c);
+		}).catch(function(err) {
+			fail(err);
+		});
 }

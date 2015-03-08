@@ -35,6 +35,7 @@ describe('model.fiscalizacao', function() {
 		it('retorna uma lista de fiscalizacoes', function(done) {
 			Fiscalizacao.listar(undefined,
 				function(collection) {
+					collection.toJSON({shallow: true});
 					done();
 				},
 				function(err) {
