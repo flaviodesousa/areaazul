@@ -6,8 +6,8 @@ describe('model.fiscalizacao', function() {
 	describe('cadastrar()', function() {
 		it('nao grava sem placa', function(done) {
 			var f = {
-				latitude: 33,
-				longitude: 44
+				latitude: 33.5,
+				longitude: 44.5
 			};
 			Fiscalizacao.cadastrar(f,
 				function(model) {
@@ -20,8 +20,8 @@ describe('model.fiscalizacao', function() {
 		it('grava com placa', function(done) {
 			var f = {
 				placa: 'xyz1234',
-				latitude: 33,
-				longitude: 34
+				latitude: 33.5,
+				longitude: 34.5
 			};
 			Fiscalizacao.cadastrar(f,
 				function(model) {
@@ -29,6 +29,20 @@ describe('model.fiscalizacao', function() {
 				},
 				function(err) {
 					done(err);
+				});
+		});
+		it('nao deve aceitar virgula decimal', function(done) {
+			var f = {
+				placa: 'xyz1234',
+				latitude: '33,5',
+				longitude: '34,5'
+			};
+			Fiscalizacao.cadastrar(f,
+				function(model) {
+					done('Should not have saved!')
+				},
+				function(err) {
+					done();
 				});
 		});
 	});
