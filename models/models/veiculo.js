@@ -151,6 +151,7 @@ exports.desativar = function(vehicle, then, fail){
         util.log("Ocorreu erro!");
         fail(err);
     });
+  });
 }
 
 
