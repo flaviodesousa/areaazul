@@ -82,19 +82,15 @@ exports.editar = function(state, fail, then){
     });
   });
 }
-exports.desativar = function(state, fail, then){
+exports.desativar = function(state,then, fail){
   new this.Estado({
        id_estado : state.id_estado,
   }).fetch().then(function(model){
-    model.save(state).then(function(model, err){
-      if(err){
-            fail(false);
-        } else {
-            util.log(model);
-            then(true);
-        }
-    });
-
+    model.save(state).then(function(model) {
+      then(model);
+    }).catch(function(err) {
+    fail(err);
+   });
   });
 }
 

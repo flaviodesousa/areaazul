@@ -19,7 +19,7 @@ var VeiculoCollection =  Bookshelf.Collection.extend({
 });
 
 
-exports.cadastrar  = function(vehicle, fail, then){
+exports.cadastrar  = function(vehicle, then, fail){
 
         var veiculo = new this.Veiculo({
              'estado_id': vehicle.estado_id,
@@ -37,10 +37,6 @@ exports.cadastrar  = function(vehicle, fail, then){
             'usuario_id' : vehicle.usuario_id
         });
 
-        console.log("usuario_has_veiculo"+usuario_has_veiculo);
-        console.log("Id:"+vehicle.id);
-
-
         Bookshelf.transaction(function(t) {
             veiculo.save(null, {
                 transacting: t
@@ -51,44 +47,49 @@ exports.cadastrar  = function(vehicle, fail, then){
                     veiculo_id: veiculo.id,
                 }, {
                     transacting: t
-                }).then(function(model, err) {
+                }).then(function(model) {
                           util.log("Commit");
                         t.commit();
                     }),
-                    function() {
+                    function(err) {
                         t.rollback();
                            util.log("rollback");
-                        func(false);
+                        fail(err);
                     }
                 });
         }).then(function(model) {
-             util.log("Passei aq");
-             then(true);
-        }, function(error) {
-            console.log(error);
-            util.log("Ocorreu erro");
-            fail(false);
+             util.log("Sucesso!");
+             then(model);
+        }, function(err) {
+            console.log(err);
+            util.log("Ocorreu erro!");
+            fail(err);
         });
 
 }
 
 
-exports.listar = function(func)
+exports.listar = function(then, fail)
  {
     VeiculoCollection.forge().query(function(qb){
          qb.join('estado', 'estado.id_estado','=','veiculo.estado_id');
          qb.select('veiculo.*');
          qb.select('estado.*');
     }).fetch().then(function(collection) {
-        util.log(collection.models);
-        func(collection);
-    }); 
+             util.log("Sucesso!");
+             then(collection);
+    }, function(err) {
+            console.log(err);
+            util.log("Ocorreu erro!");
+            fail(err);
+    });
+
 }
 
-exports.listarVeiculosUsuario = function(user, func)
+exports.listarVeiculosUsuario = function(user, then, fail)
  {
       console.log('User: '+user.id_usuario);
-      VeiculoCollection.forge().query(function(qb){
+    VeiculoCollection.forge().query(function(qb){
         qb.where('usuario_has_veiculo.usuario_id', user.id_usuario);
         qb.join('estado', 'estado.id_estado','=','veiculo.estado_id');
         qb.join('usuario_has_veiculo', 'veiculo.id_veiculo','=','usuario_has_veiculo.veiculo_id');
@@ -96,53 +97,60 @@ exports.listarVeiculosUsuario = function(user, func)
         qb.select('estado.*');
        console.log('sql'+qb);
     }).fetch().then(function(collection) {
-        util.log(collection.models);
-        func(collection);
-    }); 
+         util.log("Sucesso!");
+         then(collection);
+    }, function(err) {
+        console.log(err);
+        util.log("Ocorreu erro!");
+        fail(err);
+    });
+
 }
 
 
-exports.procurar = function(vehicle, func){
+exports.procurar = function(vehicle, then, fail){
      Veiculo.forge().query(function(qb){
         qb.where('veiculo.id_veiculo', vehicle.id_veiculo);
         qb.join('estado', 'estado.id_estado','=','veiculo.estado_id');
         qb.select('veiculo.*');
         qb.select('estado.*');
-    }).fetch().then(function(model) {
-        util.log(model);
-        func(model);
+    }).fetch().then(function(collection) {
+         util.log("Sucesso!");
+         then(collection);
+    }, function(err) {
+        console.log(err);
+        util.log("Ocorreu erro!");
+        fail(err);
     });
 }
 
-exports.editar = function(vehicle, fail, then){
+exports.editar = function(vehicle, then, fail){
   new this.Veiculo({
        id_veiculo : vehicle.id_veiculo,
   }).fetch().then(function(model){
-    model.save(vehicle).then(function(model, err){
-      if(err){
-          fail(false);
-        } else {
-          util.log(model);
-          then(true);
-        }
-
+    model.save(vehicle).then(function(model) {
+         util.log("Sucesso!");
+         then(model);
+    }, function(err) {
+        console.log(err);
+        util.log("Ocorreu erro!");
+        fail(err);
     });
-
   });
 }
 
-exports.desativar = function(vehicle, fail, then){
+exports.desativar = function(vehicle, then, fail){
   new this.Veiculo({
        id_veiculo : vehicle.id_veiculo,
   }).fetch().then(function(model){
-    model.save(vehicle).then(function(model, err){
-      if(err){
-          fail(false);
-        } else {
-             util.log(model);
-        }
-  });
-  });
+    model.save(vehicle).then(function(model) {
+         util.log("Sucesso!");
+         then(model);
+    }, function(err) {
+        console.log(err);
+        util.log("Ocorreu erro!");
+        fail(err);
+    });
 }
 
 
@@ -192,7 +200,7 @@ exports.validate = function(vehicle){
   return true;
 }
 
-
+/*
 
 exports.saveTransaction = function(entidade1, entidade2, entidade3, func){
         Bookshelf.transaction(function(t) {
@@ -223,3 +231,5 @@ exports.saveTransaction = function(entidade1, entidade2, entidade3, func){
             func(false);
         });
 }
+
+*/
