@@ -54,9 +54,9 @@ describe('model.fiscalizacao', function() {
 			Fiscalizacao.cadastrar(f,
 				function(model) {
 					model.attributes.latitude
-						.should.be.exactly('-89.9999999999');
+						.should.be.exactly('-89.9999999999', 'Latitude');
 					model.attributes.longitude
-						.should.be.exactly('-179.9999999999');
+						.should.be.exactly('-179.9999999999', 'Longitude');
 					done();
 				},
 				function(err) {
