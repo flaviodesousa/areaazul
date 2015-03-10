@@ -269,8 +269,8 @@ bspg.knex.schema.hasTable('fiscalizacao').then(function(exists) {
             table.timestamp('timestamp').notNullable();
             table.bigInteger('fiscal_id').notNullable()
                 .references('id_fiscal').inTable('fiscal');
-            table.decimal('latitude');
-            table.decimal('longitude');
+            table.decimal('latitude',14,10);
+            table.decimal('longitude',14,10);
             table.decimal('altitude');
         }).then(function() {
             util.log('tabela fiscalizacao criada');

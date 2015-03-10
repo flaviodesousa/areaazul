@@ -45,6 +45,24 @@ describe('model.fiscalizacao', function() {
 					done();
 				});
 		});
+		it("lat/lon devem ter ate' 10 casas decimais", function(done) {
+			var f = {
+				placa: 'lon9999',
+				latitude: '-89.9999999999',
+				longitude: '-179.9999999999'
+			};
+			Fiscalizacao.cadastrar(f,
+				function(model) {
+					model.attributes.latitude
+						.should.be.exactly('-89.9999999999');
+					model.attributes.longitude
+						.should.be.exactly('-179.9999999999');
+					done();
+				},
+				function(err) {
+					done(err);
+				})
+		});
 	});
 	describe('listar()', function() {
 		it('retorna uma lista de fiscalizacoes', function(done) {
