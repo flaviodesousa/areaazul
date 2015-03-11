@@ -115,11 +115,8 @@ exports.procurar = function(vehicle, then, fail){
         qb.select('veiculo.*');
         qb.select('estado.*');
     }).fetch().then(function(collection) {
-         util.log("Sucesso!");
          then(collection);
     }, function(err) {
-        console.log(err);
-        util.log("Ocorreu erro!");
         fail(err);
     });
 }

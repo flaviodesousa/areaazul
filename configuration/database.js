@@ -385,8 +385,8 @@ bspg.knex.schema.hasTable('ativacao').then(function(exists){
             table.decimal('longitude');
             table.decimal('altitude');
             table.boolean('ativo').notNullable();
-            table.bigInteger('usuario_id').references('id_usuario').inTable('usuario');
-            table.bigInteger('veiculo_id').references('id_veiculo').inTable('veiculo');
+            table.bigInteger('usuario_id').notNullable().references('id_usuario').inTable('usuario');
+            table.bigInteger('veiculo_id').notNullable().references('id_veiculo').inTable('veiculo');
         }).then(function(){
             util.log('tabela ativação criada')
         }).catch(function(err){

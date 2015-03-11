@@ -19,8 +19,6 @@ exports.ativar = function(activation, then, fail){
     var altitude = activation.longitude;
     var longitude = activation.altitude;
 
-
-    console.log('latitude: '+latitude);
     if(latitude == ""){
         latitude = 0;
     } 
@@ -41,13 +39,11 @@ exports.ativar = function(activation, then, fail){
          'ativo': 'true'
     });
 
-    console.log(ativacao);
-    ativacao.save().then(function(model){
-            util.log("Salvo com sucesso!");
-            then(model);
-    }).catch(function(err){
-            util.log("Erro ao salvar!!!");
-            fail(err);
+
+    ativacao.save().then(function(model) {
+        then(model);
+    }).catch(function(err) {
+        fail(err);
     });
 
 
