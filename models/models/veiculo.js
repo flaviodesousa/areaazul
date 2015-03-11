@@ -61,7 +61,6 @@ exports.cadastrar  = function(vehicle, then, fail){
              util.log("Sucesso!");
              then(model);
         }, function(err) {
-            console.log(err);
             util.log("Ocorreu erro!");
             fail(err);
         });
