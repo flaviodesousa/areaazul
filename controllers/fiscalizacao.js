@@ -24,6 +24,8 @@ module.exports = function(app) {
         listar: function(req, res) {
             Fiscalizacao.listar(undefined,
                 function(collection) {
+                    // TODO generalizar este header para todas chamadas
+                    res.setHeader('Access-Control-Allow-Origin','*');                    res.header('Access-Control-Allow-Origin', '*');
                     res.send(collection.toJSON()).end();
                 },
                 function(result) {
