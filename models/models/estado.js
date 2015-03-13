@@ -13,31 +13,17 @@ var EstadoCollection =  Bookshelf.Collection.extend({
 
 exports.Estado = Estado;
 
-exports.cadastrar = function(state, fail, then){
+exports.cadastrar = function(state, then, fail){
   var estado = new this.Estado({
        'nome': state.nome,
        'uf': state.uf,
        'ativo': 'true'
-  });
-    new this.Estado({
-         nome : state.nome,
-    }).fetch().then(function(model){
-      console.log("12"+model);
-      if(model == null){
-           estado.save().then(function(model, err){
-            if(err){
-              fail(false);
-            } else {
-              util.log(model);
-              then(true);
-            }
-          })
-
-      }else{
-          util.log("Estado já existe!");
-          fail(false);
-      }
-    }) 
+   });
+   estado.save().then(function(model){
+            then(model);
+   }).catch(function(err){
+            fail(err);
+   });
 }
 
 exports.listar = function(func)

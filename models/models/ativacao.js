@@ -40,7 +40,7 @@ exports.ativar = function(activation, then, fail){
     });
 
 
-    ativacao.save().then(function(model) {
+    ativacao.save().then(function(model) { 
         then(model);
     }).catch(function(err) {
         fail(err);

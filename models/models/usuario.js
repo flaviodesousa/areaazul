@@ -77,7 +77,7 @@ exports.cadastrar = function(user, then, fail) {
         'ativo': 'true'
     });
 
-    new this.Usuario({
+  /*  new this.Usuario({
         'login': user.cpf,
     }).fetch().then(function(model) { 
       if(model == null){
@@ -93,7 +93,17 @@ exports.cadastrar = function(user, then, fail) {
             util.log("Usuario já existe!");
             fail(false);
     }
-    });
+    });*/
+            Pessoa.transaction(pessoa, usuario, conta, pessoaFisica, function(model){
+                util.enviarEmailConfirmacao(user, login, senhaGerada);
+                then(model);
+            }, function(err) {
+                fail(err);
+            });
+
+   
+
+ 
 }
 
 
@@ -206,7 +216,7 @@ exports.editar = function(user, then, fail) {
         )
 }
 
-exports,validateAlteracao = function(user){
+exports.validateAlteracao = function(user){
   util.log(user.login);
     if (validator.isNull(user.nome) == true || user.nome == '') {
         util.log("Nome obrigatório");
@@ -232,36 +242,30 @@ exports,validateAlteracao = function(user){
 }
 
 exports.validate = function(user){
-    util.log(user);
+    var arr = [];
     if (validator.isNull(user.nome) == true || user.nome == '') {
-        util.log("Nome obrigatório");
-        return false;
+        arr.push("Nome obrigatório");
     }
     if (validator.isNull(user.sexo) == true || user.sexo == '') {
-        util.log("Sexo obrigatório");
-        return false;
+        arr.push("Sexo obrigatório");
     }
     if (validator.isNull(user.cpf) == true || user.cpf == '') {
-        util.log("CPF obrigatório!");
-        return false;
+        arr.push("CPF obrigatório");
     }
     if (validator.isNull(user.email) == true || user.email == '') {
-        util.log("Email obrigatório!");
-        return false;
+        arr.push("Email obrigatório");
     }
     if(validator.isEmail(user.email) == false){
-        util.log("Email Inválido");
-        return false;
+        arr.push("Email invalido");
     }
     if(validation.isCPF(user.cpf) == false){
-        util.log("Cpf Inválido");
-        return false;
+        arr.push('CPF invalido');
     }
     if (user.data_nascimento == '') {
-        util.log("Data Nascimento obrigatório");
-        return false;
+        arr.push("Data Nascimento obrigatório");
     }
-    return true;
+    return arr;
+
 }
 
 exports.procurar = function(user, func){
