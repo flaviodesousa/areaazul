@@ -82,13 +82,12 @@ exports.desativar = function(state,then, fail){
 
 
 exports.validate = function(state){
+    var message = [];
     if(validator.isNull(state.nome) == true || state.nome == ''){
-      util.log("Nome é  obrigatório!");
-      return false;
+        message.push({attribute : 'placa', problem : "Nome é obrigatório!"});
     }
     if(validator.isNull(state.uf) == true || state.uf == ''){
-      util.log("Uf é  obrigatório!");
-      return false;
+        message.push({attribute : 'placa', problem : "Uf é obrigatório!"});
     }
-    return true;
+    return message;
 }

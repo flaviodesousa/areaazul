@@ -48,8 +48,6 @@ exports.cadastrar = function(user, then, fail) {
         login = user.cnpj;
     }
 
-    util.log("Login: "+login);
-
     var usuario = new this.Usuario({
             'login': user.cpf,
             'autorizacao': '3',
@@ -69,60 +67,21 @@ exports.cadastrar = function(user, then, fail) {
         'sexo': user.sexo,
         'ativo': 'true'
     });
-
-
     var conta = new Conta.Conta({
         'data_abertura': new Date(),
         'saldo': '10.0',
         'ativo': 'true'
     });
 
-  /*  new this.Usuario({
-        'login': user.cpf,
-    }).fetch().then(function(model) { 
-      if(model == null){
-        Pessoa.transaction(pessoa, usuario, conta, pessoaFisica, function(result, err){
-        if(result == true){
-            util.enviarEmailConfirmacao(user, login, senhaGerada);
-            then(result);
-        }else{
-            fail(result);
-        }
-        if(err) fail(err);})
-     } else {
-            util.log("Usuario já existe!");
-            fail(false);
-    }
-    });*/
-            Pessoa.transaction(pessoa, usuario, conta, pessoaFisica, function(model){
-                util.enviarEmailConfirmacao(user, login, senhaGerada);
-                then(model);
-            }, function(err) {
-                fail(err);
-            });
-
-   
-
- 
+    Pessoa.transaction(pessoa, usuario, conta, pessoaFisica, function(model){
+        util.enviarEmailConfirmacao(user, login, senhaGerada);
+        then(model);
+    }, function(err) {
+        fail(err);
+    });
 }
 
-
-exports.validateNomeUsuario = function(user) {
-    util.log("Login: " + user.login);
-    if (validator.isNull(user.login) == true || user.login == '') {
-        util.log("Login obrigatório");
-        return false;
-    }
-
-     if((user.login.length > 4) && (user.login.length < 8)){
-        util.log("O nome do login deve conter no minimo 4 a 8 caracteres");
-        return false;
-    }
-    return true;
-}
-
-
-exports.listar = function(func)
+exports.listar = function(then, fail)
  {
     UsuarioCollection.forge().query(function(qb){
          qb.join('pessoa', 'pessoa.id_pessoa','=','usuario.pessoa_id');
@@ -132,18 +91,13 @@ exports.listar = function(func)
          qb.select('pessoa.*');
          qb.select('pessoa_fisica.*');
     }).fetch().then(function(collection) {
-        util.log(collection.models);
-        func(collection);
+        then(collection);
+    }).catch(function(err){
+        fail(err);
     }); 
 }
 
-exports.validarSenha = function(user){
-      if((validation.validateSenha(user) == true) && (validation.verificaTamanhoDasSenhas(user) == true)){
-        return true;
-      }else{
-        return false;
-      }
-}
+
 
 exports.alterarSenha = function(user, then, fail){  
         new this.Usuario({
@@ -152,9 +106,8 @@ exports.alterarSenha = function(user, then, fail){
             if (model != null) {                                                                                                                                                             
                 var pwd = model.attributes.senha;
             }
-          
             var hash = bcrypt.compareSync(user.senha, pwd);
-            util.log(hash);
+            console.log("hash"+hash);
             if(hash != false){
                 var new_senha = util.criptografa(user.nova_senha);
             
@@ -162,29 +115,26 @@ exports.alterarSenha = function(user, then, fail){
                     primeiro_acesso: 'false',
                     senha : new_senha,
                     ativo : 'true'
-                }).then(function(model, err) {
-                    if (err) {
-                        util.log("Houve erro ao alterar");
-                        util.log("Model: "+model.attributes);
-                        fail(model.attributes);
-                    } else {
-                        util.log("Alterado com sucesso!");
-                        then(true);
-                    }
+                }).then(function(model){
+                    util.log("Alterado com sucesso!");
+                    then(model);
+                }).catch(function(err){
+                    util.log("Houve erro ao alterar");
+                    util.log("Model: "+model.attributes);
+                    fail(model.attributes);
+                    fail(err);
                 });
              } else {
-                 util.log("Houve erro ao alterar");
-                 util.log(model.attributes);
-                 fail(model);
+                fail();
              }
- });
+     }).catch(function(err){
+        fail(err);
+     });
 }
 
 exports.editar = function(user, then, fail) {
-        util.log(user);
         var dat_nascimento = util.converteData(user.data_nascimento);
-        util.log("Nasc: "+user.data_nascimento);
-        util.log("Data: "+dat_nascimento);
+
         var usuario = new this.Usuario({
             'id_usuario': user.id_usuario,
             'login': user.cpf,
@@ -206,78 +156,27 @@ exports.editar = function(user, then, fail) {
             'sexo': user.sexo,
             'ativo': 'true'
         });
-        Pessoa.updateTransaction(pessoa, usuario, pessoaFisica, function(result, err){
-            if(result == true){
-                    then(result);
-            }else{
-                    fail(result);
-            }
-                if(err) fail(err);}
-        )
+
+        Pessoa.updateTransaction(pessoa, usuario, pessoaFisica, 
+        function(model){
+            then(model);
+        }, function(err){
+            fail(err);
+        });
 }
 
-exports.validateAlteracao = function(user){
-  util.log(user.login);
-    if (validator.isNull(user.nome) == true || user.nome == '') {
-        util.log("Nome obrigatório");
-        return false;
-    }
-    if (validator.isNull(user.sexo) == true || user.sexo == '') {
-        util.log("Sexo obrigatório");
-        return false;
-    }
-    if (validator.isNull(user.email) == true || user.email == '') {
-        util.log("Email obrigatório!");
-        return false;
-    }
-    if(validator.isEmail(user.email) == false){
-        util.log("Email Inválido");
-        return false;
-    }
-    if (user.data_nascimento == '') {
-        util.log("Data Nascimento obrigatório");
-        return false;
-    }
-    return true;
-}
 
-exports.validate = function(user){
-    var arr = [];
-    if (validator.isNull(user.nome) == true || user.nome == '') {
-        arr.push("Nome obrigatório");
-    }
-    if (validator.isNull(user.sexo) == true || user.sexo == '') {
-        arr.push("Sexo obrigatório");
-    }
-    if (validator.isNull(user.cpf) == true || user.cpf == '') {
-        arr.push("CPF obrigatório");
-    }
-    if (validator.isNull(user.email) == true || user.email == '') {
-        arr.push("Email obrigatório");
-    }
-    if(validator.isEmail(user.email) == false){
-        arr.push("Email invalido");
-    }
-    if(validation.isCPF(user.cpf) == false){
-        arr.push('CPF invalido');
-    }
-    if (user.data_nascimento == '') {
-        arr.push("Data Nascimento obrigatório");
-    }
-    return arr;
-
-}
-
-exports.procurar = function(user, func){
+exports.procurar = function(user, then, fail){
      Usuario.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','usuario.pessoa_id');
         qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
         qb.join('conta','pessoa.id_pessoa','=','conta.pessoa_id');
         qb.where('usuario.id_usuario', user.id_usuario);
         qb.select('usuario.*','pessoa.*','pessoa_fisica.*', 'conta.*');
-    }).fetch().then(function(model) {
-        util.log(model);
-        func(model);
+    }).fetch().then(function(model){
+        then(model);
+    }).catch(function(err){
+        fail(err);
     });
 }
 
@@ -292,24 +191,96 @@ exports.desativar = function(user, then, fail) {
             'id_pessoa_fisica': result.attributes.id_pessoa_fisica,
             'ativo': 'false'
         });
-
         var usuario = new Usuario({
              'id_usuario': result.attributes.id_usuario,
             'ativo': 'false'
         });
-
         var conta = new Conta.Conta({
             'id_conta' : result.attributes.id_conta,
             'data_fechamento': new Date(),
             'ativo': 'false'
         });
 
-        Pessoa.updateTransaction(pessoa, usuario, conta, pessoaFisica, function(result, err){
-            if(result == true){
-                    then(result);
-            }else{
-                    fail(result);
-            }
-            if(err) fail(err);})
-        })
+        Pessoa.updateTransaction(pessoa, usuario, conta, pessoaFisica, 
+        function(model){
+            then(model);
+        }, function(){
+            fail(err);
+        });
+
+    });
+}
+
+
+exports.validate = function(user){
+    var message = [];
+    if (validator.isNull(user.nome) == true || user.nome == '') {
+        message.push({attribute : 'nome', problem : "Nome obrigatório"});
+    }
+    if (validator.isNull(user.sexo) == true || user.sexo == '') {
+        message.push({attribute : "sexo", problem : "Nome obrigatório"});
+    }
+    if (validator.isNull(user.cpf) == true || user.cpf == '') {
+        message.push({attribute : "cpf", problem : "CPF é obrigatório"});
+    }
+    if (validator.isNull(user.email) == true || user.email == '') {
+       message.push({attribute : "email", problem : "Email obrigatório!"});
+    }
+    if(validator.isEmail(user.email) == false){
+       message.push({attribute: "email" , problem : "Email inválido!"});
+    }
+    if(validation.isCPF(user.cpf) == false){
+        message.push({attribute : "cpf", problem : "CPF inválido!"});
+    }
+    if (user.data_nascimento == '') {
+       message.push({attribute : "data_nascimento", problem : "Data de nascimento é obrigatório!"});
+    }
+
+    for(var i = 0; i<message.length;i++){
+        console.log("Atributo: "+message[i].attribute+" Problem: "+message[i].problem);
+    }
+    return message;
+}
+
+exports.validateNomeUsuario = function(user) {
+    var message = [];
+    if (validator.isNull(user.login) == true || user.login == '') {
+        message.push({attribute : 'nova_senha', problem : "Login é obrigatório!"});
+    }
+    if((user.login.length > 4) && (user.login.length < 8)){
+        message.push({attribute : 'login', problem : "O nome de login deve conter no minimo 4 a 8 caracteres"});
+    }
+    return message;
+}
+
+
+exports.validarSenha = function(user){
+    var message = [];
+    if(user.nova_senha == null || user.nova_senha == ''){
+        message.push({attribute : 'nova_senha', problem : "Nova senha é obrigatório!"});
+    }
+    if(user.senha == null || user.senha == ''){
+        message.push({attribute : 'senha', problem : "Senha é obrigatório!"});
+    }
+    if(user.conf_senha == null || user.conf_senha == ''){
+        message.push({attribute : 'conf_senha', problem : "Confirmação de senha é obrigatório!"});
+    }
+    if(user.nova_senha  != user.conf_senha){
+        message.push({attribute : 'nova_senha', problem : "As senhas devem ser iguais!"});                                               
+    }
+    if(user.senha.length < 4 && user.senha.length > 8 ){
+        message.push({attribute : 'senha', problem : "A senha deve conter no minimo 4 a 8 caracteres!"});  
+    }
+    if(user.conf_senha.length < 4 && user.conf_senha.length > 8 ){
+        message.push({attribute : 'conf_senha', problem : "A confirmação de senha deve conter no minimo 4 a 8caracteres!"});  
+    }
+    if(user.nova_senha.length < 4 && user.nova_senha.length  > 8 ){
+        message.push({attribute : 'nova_senha', problem : "A nova senha deve conter no minimo 4 a 8 caracteres!"});  
+    }
+
+    for(var i = 0; i<message.length;i++){
+        console.log("Atributo: "+message[i].attribute+" Problem: "+message[i].problem);
+    }
+
+    return message;
 }

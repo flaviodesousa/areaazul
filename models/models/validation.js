@@ -112,9 +112,6 @@ exports.isCNPJ = function(CNPJ){
 }
 }
 
-
-
-
 exports.validarData = function(dataNascimento) {
     var data = dataNascimento;
 
@@ -133,42 +130,6 @@ exports.validarData = function(dataNascimento) {
     }
 }
 
-exports.validateSenha = function(user){
-    if(user.nova_senha == null || user.nova_senha == ''){
-        util.log("Campo obrigatório");
-        return false;
-    }
-    if(user.senha == null || user.senha == ''){
-        util.log("Campo obrigatório");
-        return false;
-    }
-    if(user.conf_senha == null || user.conf_senha == ''){
-        util.log("Campo obrigatório");
-        return false;
-    }
-    if(user.nova_senha  != user.conf_senha){
-        util.log("Senhas diferentes"); 
-        return false;                                                 
-    }
-    return true;
-}
-
-
-exports.verificaTamanhoDasSenhas = function(user){
-    if(user.senha.length < 4 && user.senha.length > 8 ){
-        util.log("A senha deve conter no minimo 4 a 8 caracteres");
-        return false;
-    }
-    if(user.conf_senha.length < 4 && user.conf_senha.length > 8 ){
-        util.log("A senha deve conter no minimo 4 a 8caracteres");
-        return false;
-    }
-    if(user.nova_senha.length < 4 && user.nova_senha.length  > 8 ){
-        util.log("A senha deve conter no minimo 4 a 8 caracteres");
-        return false;
-    }
-    return true;
-}
 
 exports.validaPlaca = function(vehicle)
 {

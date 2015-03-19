@@ -89,64 +89,21 @@ exports.cadastrar = function(dealer, then, fail) {
 
 
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
-
-            if((PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-                util.log("Pessoa Fisica");
-             new PessoaFisica.PessoaFisica({
-                'cpf': dealer.cpf,
-            }).fetch().then(function(model) { 
-              if(model == null){
-                Pessoa.fiveSaveTransaction(pessoa, revendedor, usuario, conta, pessoaFisica, 
-                    function(result, err){
-                        if(result == true){
-                            util.enviarEmailConfirmacao(dealer, login, senhaGerada);
-                            then(result);
-                        }else{
-                            fail(result);
-                        }
-                        if(err){
-                            fail(err);  
-                        }
-                    }
-                )
-                } else {
-                    util.log("CPF já existe!");
-                    fail(false);
-                }
-            });
-        }else{
-            util.log("Campos obrigatórios!");
-            fail(false);
-        }
+        Pessoa.fiveSaveTransaction(pessoa, revendedor, usuario, conta, pessoaFisica, 
+            function(model){
+                util.enviarEmailConfirmacao(dealer, login, senhaGerada);
+                then(model);
+            }, function(err){
+                fail(err);
+        });
     } else {
-
-    if((Pessoa.validate(pessoa) == true) && (PessoaJuridica.validate(pessoaJuridica) == true)){
-        new PessoaJuridica.PessoaJuridica({
-            'cnpj': dealer.cnpj,
-        }).fetch().then(function(model) { 
-        if(model == null){
-                Pessoa.fiveSaveTransaction(pessoa, revendedor, usuario, conta, pessoaJuridica, 
-                    function(result, err){
-                        if(result == true){
-                            util.enviarEmailConfirmacao(dealer, login, senhaGerada);
-                            then(result);
-                        }else{
-                            fail(result);
-                        }
-                        if(err){
-                            fail(err);  
-                        }
-                    }
-                )
-            } else {
-                util.log("CNPJ já existe!");
-                fail(false);
-            }
-            });
-            }else{
-                util.log("Campos obrigatórios!");
-                fail(false);
-            }
+        Pessoa.fiveSaveTransaction(pessoa, revendedor, usuario, conta, pessoaJuridica, 
+            function(model){
+                util.enviarEmailConfirmacao(dealer, login, senhaGerada);
+                then(model);
+            }, function(err){
+                fail(err);
+        });
     }
 }
 
@@ -160,11 +117,13 @@ exports.listarpj = function(func)
          qb.select('usuario.*','pessoa.*','pessoa_juridica.*','revendedor.*');
     }).fetch().then(function(collection) {
         util.log(collection.models);
-        func(collection);
+        then(collection);
+    }).catch(function(err){
+        fail(err);
     }); 
 }
 
-exports.listarpf = function(func)
+exports.listarpf = function(then, fail)
  {
     RevendedorCollection.forge().query(function(qb){
          qb.join('pessoa', 'pessoa.id_pessoa','=','revendedor.pessoa_id');
@@ -173,12 +132,13 @@ exports.listarpf = function(func)
          qb.where('revendedor.ativo','=','true');
          qb.select('usuario.*','pessoa.*','pessoa_fisica.*','revendedor.*');
     }).fetch().then(function(collection) {
-        util.log(collection.models);
-        func(collection);
+        then(collection);
+    }).catch(function(err){
+        fail(err);
     }); 
 }
 
-exports.procurarpf = function(dealer, func){
+exports.procurarpf = function(dealer, then, fail){
      Revendedor.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','revendedor.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
@@ -187,14 +147,13 @@ exports.procurarpf = function(dealer, func){
         qb.where('revendedor.id_revendedor', dealer.id_revendedor);
         qb.select('revendedor.*','usuario.*','pessoa.*','pessoa_fisica.*','conta.*');
     }).fetch().then(function(model) {
-        util.log("model"+model);
-        func(model);
+        then(model);
+    }).catch(function(err){
+        fail(err);
     });
 }
 
-exports.procurarpj = function(dealer, func){
-    util.log(dealer.id_revendedor);
-    util.log(dealer);
+exports.procurarpj = function(dealer, then, fail){
      Revendedor.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','revendedor.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
@@ -203,24 +162,24 @@ exports.procurarpj = function(dealer, func){
         qb.where('revendedor.id_revendedor', dealer.id_revendedor);
         qb.select('revendedor.*','usuario.*','pessoa.*','pessoa_juridica.*','conta.*');
     }).fetch().then(function(model) {
-        util.log(model);
-        func(model);
+        then(model);
+    }).catch(function(err){
+        fail(err);
     });
 }
 
-exports.procurar = function(dealer, func){
-    util.log(dealer.id_revendedor);
-    util.log(dealer);
-     Revendedor.forge().query(function(qb){
+exports.procurar = function(dealer, then, fail){
+    Revendedor.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','revendedor.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
-     qb.join('pessoa_juridica','pessoa_juridica.pessoa_id','=','pessoa.id_pessoa');
+        qb.join('pessoa_juridica','pessoa_juridica.pessoa_id','=','pessoa.id_pessoa');
         qb.join('pessoa_juridica','pessoa_juridica.pessoa_id','=','pessoa.id_pessoa');
         qb.where('revendedor.id_revendedor', dealer.id_revendedor);
         qb.select('revendedor.*','usuario.*','pessoa.*','pessoa_juridica.*');
     }).fetch().then(function(model) {
-        util.log(model);
-        func(model);
+        then(model);
+    }).catch(function(err){
+        fail(err);
     });
 }
 
@@ -271,50 +230,21 @@ exports.editar = function(dealer, then, fail) {
         'cpf': dealer.cpf,
         'ativo': 'true'
     });
-    util.log(validator.isNull(pessoaFisica.attributes.cpf));
 
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
-
-            if((PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-                util.log("Pessoa Fisica");
-                Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaFisica, 
-                    function(result, err){
-                        if(result == true){
-        
-                            then(result);
-                        }else{
-                            fail(result);
-                        }
-                        if(err){
-                            fail(err);  
-                        }
-                    }
-                )
-        }else{
-            util.log("Campos obrigatórios!");
-            fail(false);
-        }
+        Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaFisica, 
+            function(model){
+                then(model);
+            }, function(err){
+                fail(err);
+        });
     } else {
-
-    if((Pessoa.validate(pessoa) == true) && (PessoaJuridica.validate(pessoaJuridica) == true)){
-        util.log("Pessoa Juridica");
-           util.log(pessoa, revendedor, usuario, pessoaJuridica);
-                Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaJuridica, 
-                    function(result, err){
-                        if(result == true){
-                            then(result);
-                        }else{
-                            fail(result);
-                        }
-                        if(err){
-                            fail(err);  
-                        }
-                    }
-                )
-            }else{
-                util.log("Campos obrigatórios!");
-                fail(false);
-            }
+        Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaJuridica, 
+            function(model){
+               then(model);
+            }, function(err){
+                fail(err);
+        });
     }
 }
 
@@ -349,14 +279,13 @@ exports.desativarpf = function(dealer, then, fail) {
             'ativo': 'false'
         });
 
-        Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaFisica, function(result, err){
-            if(result == true){
-                    then(result);
-            }else{
-                    fail(result);
-            }
-            if(err) fail(err);})
-        })
+        Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaFisica, 
+            function(model){
+                then(model);
+            }, function(err){
+                fail(err);
+        });
+    });
 }
 
 exports.desativarpj = function(dealer, then, fail) {
@@ -387,14 +316,21 @@ exports.desativarpj = function(dealer, then, fail) {
             'ativo': 'false'
         });
 
-        Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaJuridica, function(result, err){
-            if(result == true){
-                    then(result);
-            }else{
-                    fail(result);
-            }
-            if(err) fail(err);})
-        })
+        Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaJuridica, 
+            function(model){
+                then(model);
+            }, function(err){
+                fail(err);
+        });
+    });
+}
+
+
+exports.validateRevendedor = function(dealer){
+    var message = [];
+
+
+    return message;
 }
 
 exports.Revendedor = Revendedor;

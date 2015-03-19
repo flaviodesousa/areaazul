@@ -87,7 +87,6 @@ exports.listar = function(then, fail)
 
 exports.listarVeiculosUsuario = function(user, then, fail)
  {
-      console.log('User: '+user.id_usuario);
     VeiculoCollection.forge().query(function(qb){
         qb.where('usuario_has_veiculo.usuario_id', user.id_usuario);
         qb.join('estado', 'estado.id_estado','=','veiculo.estado_id');
@@ -150,83 +149,37 @@ exports.desativar = function(vehicle, then, fail){
   });
 }
 
-
 exports.validate = function(vehicle){
-
+  var message = [];
   if(validator.isNull(vehicle.estado_id) == true || vehicle.estado_id == ''){
-    util.log("Estado é  obrigatório!");
-    return false;
+      message.push({attribute : 'estado', problem : "Estado é obrigatório!"});
   }
-    if(validator.isNull(vehicle.placa) == true || vehicle.placa == ''){
-    util.log("Placa é  obrigatório!");
-    return false;
+  if(validator.isNull(vehicle.placa) == true || vehicle.placa == ''){
+      message.push({attribute : 'placa', problem : "Estado é obrigatório!"});
   }
   if(validator.isNull(vehicle.modelo) == true || vehicle.modelo == ''){
-    util.log("Modelo é  obrigatório!");
-    return false;
+      message.push({attribute : 'modelo', problem : "Modelo é obrigatório!"});
   }
   if(validator.isNull(vehicle.marca) == true || vehicle.modelo == ''){
-    util.log("Modelo é  obrigatório!");
-    return false;
+      message.push({attribute : 'marca', problem : "Marca é obrigatório!"});
   }
   if(validator.isNull(vehicle.cor) == true || vehicle.cor == ''){
-    util.log("Cor é  obrigatório!");
-    return false;
+      message.push({attribute : 'cor', problem : "Cor é obrigatório!"});
   }
   if(validator.isNull(vehicle.ano_fabricado) == true || vehicle.ano_fabricado == ''){
-    util.log("Ano de fabricação é  obrigatório!");
-    return false;
+      message.push({attribute : 'ano_fabricado', problem : "Ano de fabricação é obrigatório!"});
   }
-
   if(validator.isNull(vehicle.ano_modelo) == true || vehicle.ano_modelo == ''){
-    util.log("Ano do modelo é  obrigatório!");
-    return false;
+      message.push({attribute : 'ano_modelo', problem : "Ano de modelo é obrigatório!"});
   }
   if(validator.isNumeric(vehicle.ano_fabricado) == false){
-    util.log("Campo invalido!");
-    return false;
+      message.push({attribute : 'ano_fabricado', problem : "Ano de fabricação é inválido!"});
   }
-   if(validator.isNumeric(vehicle.ano_modelo) == false){
-    util.log("Campo invalido!");
-    return false;
+  if(validator.isNumeric(vehicle.ano_modelo) == false){
+      message.push({attribute : 'ano_modelo', problem : "Ano de modelo é inválido!"});
   }
   if(validation.validaPlaca(vehicle) == false){
-    util.log("Placa invalida!");
-    return false;
+      message.push({attribute : 'placa', problem : "Placa é inválida!"});
   }
   return true;
 }
-
-/*
-
-exports.saveTransaction = function(entidade1, entidade2, entidade3, func){
-        Bookshelf.transaction(function(t) {
-            entidade1.save(null, {
-                transacting: t
-            }).
-            then(function(entidade1) {
-                util.log(entidade1);
-                entidade2.save({
-                    pessoa_id: entidade1.id,
-                }, {
-                    transacting: t
-                }).then(function(model, err) {
-                          util.log("Commit");
-                        t.commit();
-                    }),
-                    function() {
-                        t.rollback();
-                           util.log("rollback");
-                        func(false);
-                    }
-                });
-        }).then(function(model) {
-             util.log("Passei aq");
-             func(true);
-        }, function() {
-            util.log("Ocorreu erro");
-            func(false);
-        });
-}
-
-*/

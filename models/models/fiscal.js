@@ -86,35 +86,19 @@ exports.cadastrar = function(tax, then, fail) {
         'ativo': 'true'
     });
 
- 
-            new Usuario.Usuario({
-                'login': tax.cpf,
-            }).fetch().then(function(model) { 
-            if(model == null){
-
-                new Usuario.Usuario({
-                'login': tax.nome_usuario, 
-                }).fetch().then(function(model) { 
-                    if(model == null){
-                    Pessoa.sixSaveTransaction(pessoa, fiscal, usuario, usuario1, conta, pessoaFisica, function(result, err){
-                    if(result == true){
-                        util.enviarEmailConfirmacao(tax,login + " Nome de usuario: "+tax.nome_usuario ,senhaGerada);
-                        then(result);
-                    }else{
-                        fail(result);
-                    }
-                    if(err) fail(err);})
-
-                    } else {
-                            console.log("Nome usuario já existe!");
-                            fail(false);
-                    }
-             });
-             } else {
-                    console.log("CPF já existe!");
-                    fail(false);
-            }
-            });
+    new Usuario.Usuario({
+    'login': tax.nome_usuario, 
+    }).fetch().then(function(model) { 
+        Pessoa.sixSaveTransaction(pessoa, fiscal, usuario, usuario1, conta, pessoaFisica, 
+        function(model){    
+            util.enviarEmailConfirmacao(tax,login + " Nome de usuario: "+tax.nome_usuario ,senhaGerada);
+            then(model);
+        }, function(err){
+            fail(err);
+        });   
+     }).catch(function(){
+        fail(err);
+     })
 }
 
 exports.validateFiscal = function(tax){
@@ -148,7 +132,7 @@ exports.validateFiscal = function(tax){
 
 }
 
-exports.listar = function(func)
+exports.listar = function(then, fail)
  {
     FiscalCollection.forge().query(function(qb){
          qb.join('pessoa', 'pessoa.id_pessoa','=','fiscal.pessoa_id');
@@ -158,11 +142,13 @@ exports.listar = function(func)
          qb.where('usuario.autorizacao','=','5');
          qb.select('usuario.*','pessoa.*','pessoa_fisica.*','fiscal.*');
     }).fetch().then(function(collection) {
-        func(collection);
+        then(collection);
+    }).catch(function(err){
+        fail(err);
     }); 
 }
 
-exports.procurar = function(tax, func){
+exports.procurar = function(tax, then, fail){
      Fiscal.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','fiscal.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
@@ -173,15 +159,15 @@ exports.procurar = function(tax, func){
         qb.where('fiscal.ativo','=','true');
         qb.select('fiscal.*','usuario.*','pessoa.*','pessoa_fisica.*','conta.*');
     }).fetch().then(function(model) {
-        func(model);
+        then(model);
+    }).catch(function(err){
+        fail(err);
     });
 }
 
 exports.editar = function(tax, then, fail) {
-        util.log(tax);
+
         var dat_nascimento = util.converteData(tax.data_nascimento);
-        util.log("Nasc: "+tax.data_nascimento);
-        util.log("Data: "+dat_nascimento);
         
         var usuario = new Usuario.Usuario({
             'id_usuario': tax.id_usuario,
@@ -219,15 +205,12 @@ exports.editar = function(tax, then, fail) {
             'ativo': 'true'
         });
 
-        Pessoa. Pessoa.fiveUpdateTransaction(pessoa, fiscal, usuario, usuario1, pessoaFisica, 
-        function(result, err){
-            if(result == true){
-                    then(result);
-            }else{
-                    fail(result);
-            }
-                if(err) fail(err);}
-        )
+        Pessoa.fiveUpdateTransaction(pessoa, fiscal, usuario, usuario1, pessoaFisica, 
+        function(model){
+            then(model);
+        }, function(err){
+           fail(err);
+        });
 }
 
 exports.desativar = function(tax, then, fail) {
@@ -264,12 +247,10 @@ exports.desativar = function(tax, then, fail) {
         });
 
         Pessoa.sixUpdateTransaction(pessoa, fiscal, usuario, usuario1, conta, pessoaFisica, 
-        function(model, err){
-            if(model == true){
-                    then(model);
-            }else{
-                    fail(model);
-            }
-            if(err) fail(err);})
-        })
+            function(model){
+                then(err);
+            }, function(err){
+               fail(err);
+        });
+     });
 }

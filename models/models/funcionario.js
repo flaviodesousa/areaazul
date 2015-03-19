@@ -90,34 +90,18 @@ exports.cadastrar = function(functionary, then, fail) {
     });
 
     new Usuario.Usuario({
-        'login': functionary.cpf,
+    'login': functionary.nome_usuario, 
     }).fetch().then(function(model) { 
-        if(model == null){
-        new Usuario.Usuario({
-        'login': functionary.nome_usuario, 
-        }).fetch().then(function(model) { 
-
-          if(model == null){
-
-                Pessoa.sixSaveTransaction(pessoa, funcionario, usuario, usuario1, conta, pessoaFisica, function(result, err){
-                if(result == true){
-                    util.enviarEmailConfirmacao(functionary,login + " Nome de usuario: "+functionary.nome_usuario ,senhaGerada);
-                    then(result);
-                }else{
-                    fail(result);
-                }
-                if(err) fail(err);})
-          } else {
-                console.log("Nome usuario já existe!");
-                fail(false);
-          }
+        Pessoa.sixSaveTransaction(pessoa, funcionario, usuario, usuario1, conta, pessoaFisica, 
+            function(model){
+                util.enviarEmailConfirmacao(functionary,login + " Nome de usuario: "+functionary.nome_usuario ,senhaGerada);
+                then(result);
+        }, function(err){
+                fail(err);
+     }).catch(function(err){
+        fail(err);
      });
-    } else {
-        console.log("CPF já existe!");
-        fail(false);
-    }
     });
-
 }
 
 
@@ -165,7 +149,7 @@ exports.validateFuncionario = function(functionary){
 
 }
 
-exports.listar = function(func)
+exports.listar = function(then, fail)
  {
     FuncionarioCollection.forge().query(function(qb){
          qb.join('pessoa', 'pessoa.id_pessoa','=','funcionario.pessoa_id');
@@ -175,11 +159,13 @@ exports.listar = function(func)
          qb.where('usuario.autorizacao','=','7');
          qb.select('usuario.*','pessoa.*','pessoa_fisica.*','funcionario.*');
     }).fetch().then(function(collection) {
-        func(collection);
+        then(collection);
+    }).catch(function(err){
+        fail(err);
     }); 
 }
 
-exports.procurar = function(functionary, func){
+exports.procurar = function(functionary, then, fail){
     Funcionario.forge().query(function(qb){
          qb.join('pessoa', 'pessoa.id_pessoa','=','funcionario.pessoa_id');
          qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
@@ -189,15 +175,14 @@ exports.procurar = function(functionary, func){
          qb.where('usuario.autorizacao','=','7');
          qb.select('usuario.*','pessoa.*','pessoa_fisica.*','funcionario.*', 'conta.*');
     }).fetch().then(function(model) {
-        func(model);
+        then(model);
+    }).catch(function(err){
+        fail(err);
     }); 
 }
 
 exports.editar = function(functionary, then, fail) {
-        util.log(functionary);
         var dat_nascimento = util.converteData(functionary.data_nascimento);
-        util.log("Nasc: "+functionary.data_nascimento);
-        util.log("Data: "+dat_nascimento);
         
         var usuario = new Usuario.Usuario({
             'id_usuario': functionary.id_usuario,
@@ -235,14 +220,13 @@ exports.editar = function(functionary, then, fail) {
             'ativo': 'true'
         });
 
-        Pessoa. Pessoa.fiveUpdateTransaction(pessoa, funcionario, usuario, usuario1, pessoaFisica, function(result, err){
-            if(result == true){
-                    then(result);
-            }else{
-                    fail(result);
-            }
-                if(err) fail(err);}
-        )
+        Pessoa.fiveUpdateTransaction(pessoa, funcionario, usuario, usuario1, pessoaFisica, 
+            function(model){
+                then(model);
+            }, function(err){
+                fail(err);
+        });
+
 }
 
 exports.desativar = function(functionary, then, fail) {
@@ -272,12 +256,11 @@ exports.desativar = function(functionary, then, fail) {
                 'ativo': 'false'
             });
 
-            Pessoa.fiveUpdateTransaction(pessoa, funcionario, usuario, pessoaFisica, conta, function(model, err){
-                if(model == true){
-                        then(model);
-                }else{
-                        fail(model);
-                }
-                if(err) fail(err);})
-            })
+            Pessoa.fiveUpdateTransaction(pessoa, funcionario, usuario, pessoaFisica, conta, 
+                function(model){
+                    then(model);
+                }, function(){
+                    fail(err);
+            });
+        });
 }

@@ -74,68 +74,27 @@ exports.cadastrar = function(accredited, then, fail) {
 
 
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
-
-            if((PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-                util.log("Pessoa Fisica");
-             new PessoaFisica.PessoaFisica({
-                'cpf': accredited.cpf,
-            }).fetch().then(function(model) { 
-              if(model == null){
-                Pessoa.fiveSaveTransaction(pessoa, credenciado, usuario, conta, pessoaFisica, 
-                    function(result, err){
-                        if(result == true){
-                            util.enviarEmailConfirmacao(accredited, login, senhaGerada);
-                            then(result);
-                        }else{
-                            fail(result);
-                        }
-                        if(err){
-                            fail(err);  
-                        }
-                    }
-                )
-                } else {
-                    util.log("CPF já existe!");
-                    fail(false);
-                }
+        Pessoa.fiveSaveTransaction(pessoa, credenciado, usuario, conta, pessoaFisica, 
+            function(model){
+                util.enviarEmailConfirmacao(accredited, login, senhaGerada);
+                then(result);
+            },
+            function(err){
+                 fail(err);
             });
-        }else{
-            util.log("Campos obrigatórios!");
-            fail(false);
-        }
     } else {
-
-    if((Pessoa.validate(pessoa) == true) && (PessoaJuridica.validate(pessoaJuridica) == true)){
-        new PessoaJuridica.PessoaJuridica({
-            'cnpj': accredited.cnpj,
-        }).fetch().then(function(model) { 
-        if(model == null){
-                Pessoa.fiveSaveTransaction(pessoa, credenciado, usuario, conta, pessoaJuridica, 
-                    function(result, err){
-                        if(result == true){
-                            util.enviarEmailConfirmacao(accredited, login, senhaGerada);
-                            then(result);
-                        }else{
-                            fail(result);
-                        }
-                        if(err){
-                            fail(err);  
-                        }
-                    }
-                )
-            } else {
-                util.log("CNPJ já existe!");
-                fail(false);
-            }
+        Pessoa.fiveSaveTransaction(pessoa, credenciado, usuario, conta, pessoaJuridica, 
+            function(model){
+                util.enviarEmailConfirmacao(accredited, login, senhaGerada);
+                then(result);
+            },
+            function(err){
+                 fail(err);
             });
-            }else{
-                util.log("Campos obrigatórios!");
-                fail(false);
-            }
     }
 }
 
-exports.listarpj = function(func)
+exports.listarpj = function(then, fail)
  {
     CredenciadoCollection.forge().query(function(qb){
          qb.join('pessoa', 'pessoa.id_pessoa','=','credenciado.pessoa_id');
@@ -144,12 +103,13 @@ exports.listarpj = function(func)
          qb.where('credenciado.ativo','=','true');
          qb.select('usuario.*','pessoa.*','pessoa_juridica.*','credenciado.*');
     }).fetch().then(function(collection) {
-        util.log(collection.models);
-        func(collection);
+        then(collection);
+    }).catch(function(err){
+        fail(err);
     }); 
 }
 
-exports.listarpf = function(func)
+exports.listarpf = function(then, fail)
  {
     CredenciadoCollection.forge().query(function(qb){
          qb.join('pessoa', 'pessoa.id_pessoa','=','credenciado.pessoa_id');
@@ -158,12 +118,13 @@ exports.listarpf = function(func)
          qb.where('credenciado.ativo','=','true');
          qb.select('usuario.*','pessoa.*','pessoa_fisica.*','credenciado.*');
     }).fetch().then(function(collection) {
-        util.log(collection.models);
-        func(collection);
+        then(collection);
+    }).catch(function(err){
+        fail(err);
     }); 
 }
 
-exports.procurarpf = function(accredited, func){
+exports.procurarpf = function(accredited, then, fail){
      Credenciado.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','credenciado.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
@@ -172,14 +133,13 @@ exports.procurarpf = function(accredited, func){
         qb.where('credenciado.id_credenciado', accredited.id_credenciado);
         qb.select('credenciado.*','usuario.*','pessoa.*','pessoa_fisica.*','conta.*');
     }).fetch().then(function(model) {
-        util.log(model);
-        func(model);
+        then(model);
+    }).catch(function(err){
+        fail(err);
     });
 }
 
-exports.procurarpj = function(accredited, func){
-    util.log(accredited.id_credenciado);
-    util.log(accredited);
+exports.procurarpj = function(accredited, then, fail){
      Credenciado.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','credenciado.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
@@ -190,22 +150,23 @@ exports.procurarpj = function(accredited, func){
     }).fetch().then(function(model) {
         util.log(model);
         func(model);
+    }).catch(function(err){
+        fail(err);
     });
 }
 
-exports.procurar = function(accredited, func){
-    util.log(accredited.id_credenciado);
-    util.log(accredited);
+exports.procurar = function(accredited, then, fail){
      Credenciado.forge().query(function(qb){
         qb.join('pessoa', 'pessoa.id_pessoa','=','credenciado.pessoa_id');
         qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
-     qb.join('pessoa_juridica','pessoa_juridica.pessoa_id','=','pessoa.id_pessoa');
+        qb.join('pessoa_juridica','pessoa_juridica.pessoa_id','=','pessoa.id_pessoa');
         qb.join('pessoa_juridica','pessoa_juridica.pessoa_id','=','pessoa.id_pessoa');
         qb.where('credenciado.id_credenciado', accredited.id_credenciado);
         qb.select('credenciado.*','usuario.*','pessoa.*','pessoa_juridica.*');
     }).fetch().then(function(model) {
-        util.log(model);
-        func(model);
+        then(model);
+    }).catch(function(err){
+        fail(err);
     });
 }
 
@@ -256,55 +217,29 @@ exports.editar = function(accredited, then, fail) {
         'cpf': accredited.cpf,
         'ativo': 'true'
     });
-    util.log(validator.isNull(pessoaFisica.attributes.cpf));
+
 
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
-
-            if((PessoaFisica.validate(pessoaFisica) == true) &&(Pessoa.validate(pessoa) == true) ){
-                util.log("Pessoa Fisica");
-                Pessoa.transactionUpdate(pessoa, credenciado, usuario, pessoaFisica, 
-                    function(result, err){
-                        if(result == true){
-        
-                            then(result);
-                        }else{
-                            fail(result);
-                        }
-                        if(err){
-                            fail(err);  
-                        }
-                    }
-                )
-        }else{
-            util.log("Campos obrigatórios!");
-            fail(false);
-        }
+        Pessoa.transactionUpdate(pessoa, credenciado, usuario, pessoaFisica, 
+            function(model){
+                then(result);
+            }, 
+            function(err){
+                fail(err);
+        });
     } else {
-
-    if((Pessoa.validate(pessoa) == true) && (PessoaJuridica.validate(pessoaJuridica) == true)){
-        util.log("Pessoa Juridica");
-           util.log(pessoa, credenciado, usuario, pessoaJuridica);
-                Pessoa.transactionUpdate(pessoa, credenciado, usuario, pessoaJuridica, 
-                    function(result, err){
-                        if(result == true){
-                            then(result);
-                        }else{
-                            fail(result);
-                        }
-                        if(err){
-                            fail(err);  
-                        }
-                    }
-                )
-            }else{
-                util.log("Campos obrigatórios!");
-                fail(false);
-            }
+        Pessoa.transactionUpdate(pessoa, credenciado, usuario, pessoaJuridica, 
+            function(model){
+                then(result);
+            }, 
+            function(err){
+                fail(err);
+        });
     }
 }
 
 exports.desativarpf = function(accredited, then, fail) {
-    util.log(accredited);
+
     this.procurarpf({id_credenciado: accredited.id_credenciado},
         function(result){
         var pessoa = new Pessoa.Pessoa({
@@ -332,14 +267,14 @@ exports.desativarpf = function(accredited, then, fail) {
             'ativo': 'false'
         });
 
-        Pessoa.fiveUpdateTransaction(pessoa, credenciado, usuario, conta, pessoaFisica, function(result, err){
-            if(result == true){
-                    then(result);
-            }else{
-                    fail(result);
-            }
-            if(err) fail(err);})
-        })
+        Pessoa.fiveUpdateTransaction(pessoa, credenciado, usuario, conta, pessoaFisica, 
+            function(model){
+                then(result);
+            }, 
+            function(err){
+                fail(err);
+        });
+     });
 }
 
 exports.desativarpj = function(accredited, then, fail) {
@@ -370,14 +305,14 @@ exports.desativarpj = function(accredited, then, fail) {
             'ativo': 'false'
         });
 
-        Pessoa.fiveUpdateTransaction(pessoa, credenciado, usuario, conta, pessoaJuridica, function(result, err){
-            if(result == true){
-                    then(result);
-            }else{
-                    fail(result);
-            }
-            if(err) fail(err);})
-        })
+        Pessoa.fiveUpdateTransaction(pessoa, credenciado, usuario, conta, pessoaJuridica, 
+            function(model){
+                then(model);
+            },
+            function(err){
+                fail(err);
+        });
+     });
 }
 
 exports.Credenciado = Credenciado;
