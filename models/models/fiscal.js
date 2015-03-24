@@ -248,7 +248,7 @@ exports.desativar = function(tax, then, fail) {
 
         Pessoa.sixUpdateTransaction(pessoa, fiscal, usuario, usuario1, conta, pessoaFisica, 
             function(model){
-                then(err);
+                then(model);
             }, function(err){
                fail(err);
         });

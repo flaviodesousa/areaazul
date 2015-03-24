@@ -14,7 +14,7 @@ var ConfiguracaoCollection =  Bookshelf.Collection.extend({
 
 exports.cadastrar = function(configuration, then, fail){
     var configuracao = new this.Configuracao({
-         'tempo_limite': configuration.tempo_limite,
+         'tempo_limite_estacionamento': configuration.tempo_limite_estacionamento,
          'tempo_maximo': configuration.tempo_maximo,
          'tempo_tolerancia': configuration.tempo_tolerancia,
          'valor_unitario': configuration.valor_unitario,

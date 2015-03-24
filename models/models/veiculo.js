@@ -134,6 +134,21 @@ exports.editar = function(vehicle, then, fail){
   });
 }
 
+exports.procurarVeiculoPorPlaca = function(vehicle, then, fail){
+     Veiculo.forge().query(function(qb){
+        qb.where('veiculo.id_veiculo', vehicle.placa);
+        qb.join('estado', 'estado.id_estado','=','veiculo.estado_id');
+        qb.select('veiculo.*');
+        qb.select('estado.*');
+    }).fetch().then(function(collection) {
+         then(collection);
+    }, function(err) {
+        fail(err);
+    });
+
+}
+
+
 exports.desativar = function(vehicle, then, fail){
   new this.Veiculo({
        id_veiculo : vehicle.id_veiculo,

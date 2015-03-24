@@ -14,6 +14,7 @@ var util = require('./util');
 var validator = require("validator");
 var Conta = require('./conta');
 
+
 var Revendedor = Bookshelf.Model.extend({
     tableName: 'revendedor',
     idAttribute: 'id_revendedor'
@@ -332,5 +333,15 @@ exports.validateRevendedor = function(dealer){
 
     return message;
 }
+
+exports.ativar = function(car, then, fail){
+
+}
+
+
+
+
+
+
 
 exports.Revendedor = Revendedor;

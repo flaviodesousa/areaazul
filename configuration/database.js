@@ -23,7 +23,7 @@ bspg.knex.schema.hasTable('estado').then(function(exists) {
     }
 });
 
-bspg.knex.schema.hasTable('cidade').then(function(exists) {
+bspg.knex.schema.hasTable('cidade').then(function(exists) 
     if (!exists) {
         bspg.knex.schema.createTable('cidade', function(table) {
             table.increments('id_cidade').primary();
@@ -242,7 +242,6 @@ bspg.knex.schema.hasTable('veiculo').then(function(exists) {
         bspg.knex.schema.createTable('veiculo', function(table) {
             table.increments('id_veiculo').primary();
             table.string('placa').notNullable();
-            table.bigInteger('placa_numero').notNullable();
             table.string('marca').notNullable();
             table.string('modelo').notNullable();
             table.string('cor').notNullable();
@@ -302,7 +301,7 @@ bspg.knex.schema.hasTable('configuracao').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('configuracao', function(table) {
             table.increments('id_configuracao').primary();
-            table.bigInteger('tempo_limite').notNullable();
+            table.bigInteger('tempo_limite_estacionamento').notNullable();
             table.bigInteger('tempo_maximo');
             table.bigInteger('tempo_tolerancia');
             table.decimal('valor_unitario');
@@ -343,6 +342,7 @@ bspg.knex.schema.hasTable('movimentacao_conta').then(function(exists) {
             table.increments('id_movimentacao_conta').primary();
             table.timestamp('data_deposito').notNullable();
             table.timestamp('data_estorno');
+            table.string('historico').notNullable();
             table.string('tipo').notNullable();
             table.decimal('valor').notNullable();
             table.boolean('ativo').notNullable();
