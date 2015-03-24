@@ -23,7 +23,7 @@ bspg.knex.schema.hasTable('estado').then(function(exists) {
     }
 });
 
-bspg.knex.schema.hasTable('cidade').then(function(exists) 
+bspg.knex.schema.hasTable('cidade').then(function(exists){ 
     if (!exists) {
         bspg.knex.schema.createTable('cidade', function(table) {
             table.increments('id_cidade').primary();
