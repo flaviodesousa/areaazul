@@ -241,14 +241,14 @@ bspg.knex.schema.hasTable('veiculo').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('veiculo', function(table) {
             table.increments('id_veiculo').primary();
-            table.string('placa').notNullable();
-            table.string('marca').notNullable();
-            table.string('modelo').notNullable();
-            table.string('cor').notNullable();
-            table.bigInteger('ano_fabricado').notNullable();
-            table.bigInteger('ano_modelo').notNullable();
-            table.boolean('ativo').notNullable();
-            table.bigInteger('estado_id').notNullable().references('id_estado').inTable('estado');
+            table.string('placa').unique().notNullable();
+            table.string('marca');
+            table.string('modelo');
+            table.string('cor');
+            table.bigInteger('ano_fabricado');
+            table.bigInteger('ano_modelo');
+            table.boolean('ativo');
+            table.bigInteger('estado_id').references('id_estado').inTable('estado');
         }).then(function() {
             util.log('tabela veiculo criada')
         }).

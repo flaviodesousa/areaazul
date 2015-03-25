@@ -41,5 +41,19 @@ describe('model.veiculo', function() {
 				});
 		});
 	});
+	describe('procurarVeiculoPorPlaca()', function() {
+		it('retorna um veiculo', function(done) {
+			var v = { placa: 'bbe1244'}
+			Veiculo.procurarVeiculoPorPlaca(v,
+				function(model) {
+					model.should.not.empty;
+					done();
+				},
+				function(err) {
+					console.log(err);
+					done(err);
+				});
+		});
+	});
 
 });

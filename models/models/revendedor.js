@@ -334,14 +334,22 @@ exports.validateRevendedor = function(dealer){
     return message;
 }
 
-exports.ativar = function(car, then, fail){
-
+exports.buscarRevendedor = function(user, then, fail){
+    Revendedor.forge().query(function(qb){
+        qb.join('pessoa', 'pessoa.id_pessoa','=','revendedor.pessoa_id');
+        qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
+        qb.join('conta','conta.pessoa_id','=','pessoa.id_pessoa');
+        qb.where('usuario.id_usuario', user.id_usuario);
+        qb.select('revendedor.*','usuario.*','pessoa.*','conta.*');
+        console.log("sql: "+qb);
+    }).fetch().then(function(model) {
+        console.log("model"+model);
+        then(model);
+    }).catch(function(err){
+        console.log("err"+err);
+        fail(err);
+    });
 }
-
-
-
-
-
 
 
 exports.Revendedor = Revendedor;

@@ -21,10 +21,11 @@ var VeiculoCollection =  Bookshelf.Collection.extend({
 
 exports.cadastrar  = function(vehicle, then, fail){
 
+
+
         var veiculo = new this.Veiculo({
              'estado_id': vehicle.estado_id,
              'placa': vehicle.placa,
-             'placa_numero': vehicle.placa_numero,
              'marca': vehicle.marca,
              'modelo': vehicle.modelo,
              'cor': vehicle.cor,
@@ -136,12 +137,15 @@ exports.editar = function(vehicle, then, fail){
 
 exports.procurarVeiculoPorPlaca = function(vehicle, then, fail){
      Veiculo.forge().query(function(qb){
-        qb.where('veiculo.id_veiculo', vehicle.placa);
+        qb.where('veiculo.placa', vehicle.placa);
         qb.join('estado', 'estado.id_estado','=','veiculo.estado_id');
         qb.select('veiculo.*');
         qb.select('estado.*');
-    }).fetch().then(function(collection) {
-         then(collection);
+    }).fetch().then(function(model) {
+       if(model == null){
+          throw new Error('Não existe veiculo');
+       }
+         then(model);
     }, function(err) {
         fail(err);
     });

@@ -2,6 +2,7 @@ var Bookshelf = require('bookshelf').conexaoMain;
 var Veiculo = require('./veiculo');
 var Usuario = require('./usuario');
 var util = require('./util');
+var Revendedor = require('./revendedor');
 
 
 
@@ -48,6 +49,36 @@ exports.ativar = function(activation, then, fail){
 
 
 }
+
+exports.ativarPelaRevenda = function(car, then, fail){
+
+ 
+    var ativacao = new this.Ativacao({
+         'data_ativacao': new Date(),
+         'usuario_id': car.usuario_id,
+         'veiculo_id': car.veiculo_id,
+         'ativo': 'true'
+    });
+
+    var usuario = new Usuario.Usuario({
+        'id_usuario': car.usuario_id
+    });
+
+    Revendedor.buscarRevendedor(usuario,
+        function(result){
+            ativacao.save().then(function(model) {
+                then(model);
+            }).catch(function(err) {
+                fail(err);
+            });
+        }, 
+        function(result){
+            fail(result);
+        }
+    );
+
+}
+
 
 
   
