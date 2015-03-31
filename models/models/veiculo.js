@@ -43,31 +43,27 @@ exports.cadastrar  = function(vehicle, then, fail){
                 transacting: t
             }).
             then(function(veiculo) {
-                console.log(veiculo.id);
                 usuario_has_veiculo.save({
                     veiculo_id: veiculo.id,
                 }, {
                     transacting: t
                 }).then(function(model) {
-                          util.log("Commit");
                         t.commit();
-                    }),
-                    function(err) {
+                        console.log("commit");
+                        then(model);
+                    }).catch(function(err) {
                         t.rollback();
-                           util.log("rollback");
+                        util.log("rollback"+err);
                         fail(err);
-                    }
-                });
-        }).then(function(model) {
-             util.log("Sucesso!");
-             then(model);
-        }, function(err) {
+                    });
+          });
+        }).catch(function(err) {
             util.log("Ocorreu erro!");
             fail(err);
         });
 
-}
 
+}
 
 exports.listar = function(then, fail)
  {
@@ -78,7 +74,7 @@ exports.listar = function(then, fail)
     }).fetch().then(function(collection) {
              util.log("Sucesso!");
              then(collection);
-    }, function(err) {
+    }).catch(function(err) {
             console.log(err);
             util.log("Ocorreu erro!");
             fail(err);
@@ -98,7 +94,7 @@ exports.listarVeiculosUsuario = function(user, then, fail)
     }).fetch().then(function(collection) {
          util.log("Sucesso!");
          then(collection);
-    }, function(err) {
+    }).catch(function(err) {
         console.log(err);
         util.log("Ocorreu erro!");
         fail(err);
@@ -115,7 +111,7 @@ exports.procurar = function(vehicle, then, fail){
         qb.select('estado.*');
     }).fetch().then(function(collection) {
          then(collection);
-    }, function(err) {
+    }).catch(function(err) {
         fail(err);
     });
 }
@@ -127,7 +123,7 @@ exports.editar = function(vehicle, then, fail){
     model.save(vehicle).then(function(model) {
          util.log("Sucesso!");
          then(model);
-    }, function(err) {
+    }).catch(function(err) {
         console.log(err);
         util.log("Ocorreu erro!");
         fail(err);
@@ -138,15 +134,15 @@ exports.editar = function(vehicle, then, fail){
 exports.procurarVeiculoPorPlaca = function(vehicle, then, fail){
      Veiculo.forge().query(function(qb){
         qb.where('veiculo.placa', vehicle.placa);
-        qb.join('estado', 'estado.id_estado','=','veiculo.estado_id');
+     //   qb.join('estado', 'estado.id_estado','=','veiculo.estado_id');
         qb.select('veiculo.*');
-        qb.select('estado.*');
+       // qb.select('estado.*');
+        console.log("sql: "+qb);
     }).fetch().then(function(model) {
-       if(model == null){
-          throw new Error('Não existe veiculo');
-       }
+      console.log("passei aq");
          then(model);
-    }, function(err) {
+    }).catch(function(err) {
+      console.log("err"+err);
         fail(err);
     });
 
@@ -160,7 +156,7 @@ exports.desativar = function(vehicle, then, fail){
     model.save(vehicle).then(function(model) {
          util.log("Sucesso!");
          then(model);
-    }, function(err) {
+    }).catch(function(err) {
         console.log(err);
         util.log("Ocorreu erro!");
         fail(err);

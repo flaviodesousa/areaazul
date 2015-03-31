@@ -52,23 +52,28 @@ exports.ativar = function(activation, then, fail){
 
 exports.ativarPelaRevenda = function(car, then, fail){
 
- 
+    console.log("usuario"+car.usuario_id);
+     console.log("veiculo"+car.veiculo_id);
     var ativacao = new this.Ativacao({
          'data_ativacao': new Date(),
          'usuario_id': car.usuario_id,
          'veiculo_id': car.veiculo_id,
-         'ativo': 'true'
+         'ativo': 'true'  
     });
 
     var usuario = new Usuario.Usuario({
         'id_usuario': car.usuario_id
     });
 
+    console.log(usuario);
+
     Revendedor.buscarRevendedor(usuario,
         function(result){
             ativacao.save().then(function(model) {
+                console.log("sucesso");
                 then(model);
             }).catch(function(err) {
+                console.log("erro"+err);
                 fail(err);
             });
         }, 
@@ -78,7 +83,3 @@ exports.ativarPelaRevenda = function(car, then, fail){
     );
 
 }
-
-
-
-  
