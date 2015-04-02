@@ -18,19 +18,20 @@ module.exports = function(app) {
                 },
                 function(result) {
                     console.log("Erro ao salvar: " + result);
-                    res.status(400).send("" + result).end();
+                    res.status(400).send("" + result);
                 })
         },
         listar: function(req, res) {
             Fiscalizacao.listar(undefined,
                 function(collection) {
                     // TODO generalizar este header para todas chamadas
-                    res.setHeader('Access-Control-Allow-Origin','*');                    res.header('Access-Control-Allow-Origin', '*');
-                    res.send(collection.toJSON()).end();
+                    res.setHeader('Access-Control-Allow-Origin','*');
+                    res.header('Access-Control-Allow-Origin', '*');
+                    res.send(collection.toJSON());
                 },
                 function(result) {
                     console.log("Erro ao listar: " + result);
-                    res.status(400).send("" + result).end();
+                    res.status(400).send("" + result);
                 });
         }
     }
