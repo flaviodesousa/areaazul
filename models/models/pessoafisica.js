@@ -34,7 +34,7 @@ exports.validate = function(pessoaFisica) {
 }
 
 
-exports.buscarCPF = function(person, then, fail){
+exports.CPFnovo = function(person, then, fail){
 
     PessoaFisica.forge().query(function(qb){
         qb.where('pessoa_fisica.cpf', person.cpf);
