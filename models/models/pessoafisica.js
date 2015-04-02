@@ -32,3 +32,19 @@ exports.validate = function(pessoaFisica) {
     }*/
     return true;
 }
+
+
+exports.buscarCPF = function(person, then, fail){
+
+    PessoaFisica.forge().query(function(qb){
+        qb.where('pessoa_fisica.cpf', person.cpf);
+        qb.select('pessoa_fisica.*');
+    }).fetch().then(function(model) {
+        if(model != null){
+            throw new Error("Cpf já existe!!!");
+        }
+        then(model);
+    }).catch(function(err){
+        fail(err);
+    });
+}
