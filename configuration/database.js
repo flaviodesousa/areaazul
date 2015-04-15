@@ -394,3 +394,22 @@ bspg.knex.schema.hasTable('ativacao').then(function(exists){
         });
     }
 });
+
+bspg.knex.schema.hasTable('usuario_revendedor').then(function(exists) {
+    if (!exists) {
+        bspg.knex.schema
+            .createTable('usuario_revendedor', function(table) {
+                table.increments('id_usuario_revendedor').primary();
+                table.string('login').unique().notNullable();
+                table.string('senha');
+                table.boolean('primeiro_acesso').notNullable();
+                table.boolean('ativo').notNullable();
+                table.bigInteger('revendedor_id').references('id_revendedor').inTable('revendedor');
+            }).then(function() {
+                util.log('tabela revendedor criada')
+            }).
+        catch(function(err) {
+            util.log('erro: ' + err)
+        });
+    }
+});

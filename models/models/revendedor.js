@@ -90,7 +90,7 @@ exports.cadastrar = function(dealer, then, fail) {
 
 
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
-        Pessoa.fiveSaveTransaction(pessoa, revendedor, usuario, conta, pessoaFisica, 
+        this.inserir(pessoa, revendedor, usuario, conta, pessoaFisica, 
             function(model){
                 util.enviarEmailConfirmacao(dealer, login, senhaGerada);
                 then(model);
@@ -98,7 +98,7 @@ exports.cadastrar = function(dealer, then, fail) {
                 fail(err);
         });
     } else {
-        Pessoa.fiveSaveTransaction(pessoa, revendedor, usuario, conta, pessoaJuridica, 
+        this.inserir(pessoa, revendedor, usuario, conta, pessoaJuridica, 
             function(model){
                 util.enviarEmailConfirmacao(dealer, login, senhaGerada);
                 then(model);
@@ -350,6 +350,59 @@ exports.buscarRevendedor = function(user, then, fail){
         console.log("err"+err);
         fail(err);
     });
+}
+
+exports.inserir = function(entidade1, entidade2, entidade3, entidade4, entidade5, func){
+        Bookshelf.transaction(function(t) {
+            entidade1.save(null, {
+                transacting: t
+            }).
+            then(function(entidade1) 
+            {
+                util.log(entidade1);
+                entidade2.save({
+                    pessoa_id: entidade1.id,
+                }, {
+                    transacting: t
+                }).then(function(model, err) {
+
+                    util.log("Model"+model);
+                    entidade3.save({
+                        revendedor_id: entidade2.id,
+                    }, {
+                        transacting: t
+                    }).then(function(model, err) {
+                        entidade4.save({
+                            pessoa_id: entidade1.id,
+                        }, {
+                            transacting: t
+                        }).then(function(model, err) {
+                            entidade5.save({
+                                pessoa_id: entidade1.id,
+                            }, {
+                                transacting: t
+                            }).then(function(model, err) {
+                                  util.log("Commit");
+                                  t.commit();
+                             }),
+                      
+                        function() {
+                            t.rollback();
+                               util.log("rollback");
+                            func(false);
+                        }
+                        });
+                    });
+                });
+            });
+
+        }).then(function(model) {
+             util.log("Passei aq");
+             func(true);
+        }, function() {
+            util.log("Ocorreu erro");
+            func(false);
+        });
 }
 
 

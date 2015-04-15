@@ -16,3 +16,4 @@ module.exports.veiculo = require('./models/veiculo');
 module.exports.estado = require('./models/estado');
 module.exports.ativacao = require('./models/ativacao');
 module.exports.usuario_has_veiculo = require('./models/usuario_has_veiculo');
+module.exports.usuario_revendedor = require('./models/usuario_revendedor');
