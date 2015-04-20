@@ -1,8 +1,12 @@
-var Bookshelf = require('bookshelf').conexaoMain;
+var Bookshelf = require('bookshelf').conexaoMain,
+    bcrypt = require('bcrypt'),
+    util = require('./util');
 
 var Usuario_Revendedor = Bookshelf.Model.extend({
     tableName: 'usuario_revendedor',
-    idAttribute: 'id_usuario_revendedor',
+    idAttribute: 'pessoa_fisica_pessoa_id',
+
+  //  idAttribute: 'pessoa_fisica_id'
 });
 
 exports.search = function(entidade, func) {
@@ -21,11 +25,16 @@ exports.alterarSenha = function(user, then, fail){
         new this.Usuario_Revendedor({
             id_usuario_revendedor: user.id_usuario_revendedor
         }).fetch().then(function(model) { 
-            if (model != null) {                                                                                                                                                             
+         //   console.log("model"+model.attributes);
+            console.log("model"+model);
+            if (model != null) {       
+                console.log("model.attributes.senha"+model.attributes.senha);                                                                                                                                                      
                 var pwd = model.attributes.senha;
             }
+            console.log("user.senha"+user.senha);
+            console.log("pwd"+pwd);
             var hash = bcrypt.compareSync(user.senha, pwd);
-            console.log("hash"+hash);
+       
             if(hash != false){
                 var new_senha = util.criptografa(user.nova_senha);
             
@@ -38,8 +47,6 @@ exports.alterarSenha = function(user, then, fail){
                     then(model);
                 }).catch(function(err){
                     util.log("Houve erro ao alterar");
-                    util.log("Model: "+model.attributes);
-                    fail(model.attributes);
                     fail(err);
                 });
              } else {
@@ -79,6 +86,15 @@ exports.validarSenha = function(user){
     }
 
     return message;
+}
+
+
+exports.compareSenha = function(password, pwd){
+    console.log("password"+password);
+    console.log("pwd"+pwd);
+    var hash = bcrypt.compareSync(password, pwd);
+    console.log("hash2"+hash);
+    return hash;
 }
 
 exports.Usuario_Revendedor = Usuario_Revendedor;

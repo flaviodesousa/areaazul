@@ -18,7 +18,7 @@ bspg.knex.schema.hasTable('estado').then(function(exists) {
             util.log('tabela estado criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro estado: ' + err)
         });
     }
 });
@@ -28,13 +28,13 @@ bspg.knex.schema.hasTable('cidade').then(function(exists){
         bspg.knex.schema.createTable('cidade', function(table) {
             table.increments('id_cidade').primary();
             table.string('nome').notNullable();
-             table.boolean('ativo').notNullable();
+            table.boolean('ativo').notNullable();
             table.bigInteger('estado_id').notNullable().references('id_estado').inTable('estado');
         }).then(function() {
             util.log('tabela cidade criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro cidade: ' + err)
         });
     }
 });
@@ -50,7 +50,7 @@ bspg.knex.schema.hasTable('bairro').then(function(exists) {
             util.log('tabela bairro criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro bairro: ' + err)
         });
     }
 });
@@ -72,7 +72,7 @@ bspg.knex.schema.hasTable('endereco').then(function(exists) {
             util.log('tabela endereco criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro endereco: ' + err)
         });
     }
 });
@@ -90,54 +90,15 @@ bspg.knex.schema.hasTable('pessoa').then(function(exists) {
             util.log('tabela pessoa criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro pessoa: ' + err)
         });
     }
 });
-
-bspg.knex.schema.hasTable('usuario').then(function(exists) {
-    if (!exists) {
-        bspg.knex.schema
-            .createTable('usuario', function(table) {
-                table.increments('id_usuario').primary();
-                table.string('login').unique().notNullable();
-                table.string('senha');
-                table.integer('autorizacao').notNullable();
-                table.boolean('primeiro_acesso').notNullable();
-                table.boolean('ativo').notNullable();
-                table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
-            }).then(function() {
-                util.log('tabela usuarios criada')
-            }).
-        catch(function(err) {
-            util.log('erro: ' + err)
-        });
-    }
-});
-
-
-bspg.knex.schema.hasTable('usuario_has_veiculo').then(function(exists) {
-    if (!exists) {
-        bspg.knex.schema
-            .createTable('usuario_has_veiculo', function(table) {
-                table.primary(['usuario_id','veiculo_id']);
-                table.bigInteger('usuario_id').references('id_usuario').inTable('usuario');
-                table.bigInteger('veiculo_id').references('id_veiculo').inTable('veiculo');
-            }).then(function() {
-                util.log('tabela usuario_has_veiculo criada')
-            }).
-        catch(function(err) {
-            util.log('Erro tabela usuario_has_veiculo: ' + err)
-        });
-    }
-});
-
-
 
 bspg.knex.schema.hasTable('pessoa_fisica').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('pessoa_fisica', function(table) {
-            table.increments('id_pessoa_fisica').primary();
+            table.primary('pessoa_id');
             table.string('cpf').unique().notNullable();
             table.date('data_nascimento');
             table.string('sexo');
@@ -147,7 +108,7 @@ bspg.knex.schema.hasTable('pessoa_fisica').then(function(exists) {
             util.log('tabela pessoa_fisica criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro pessoa_fisica: ' + err)
         });
     }
 });
@@ -155,7 +116,7 @@ bspg.knex.schema.hasTable('pessoa_fisica').then(function(exists) {
 bspg.knex.schema.hasTable('pessoa_juridica').then(function(exists) {
     if (!exists) {
         bspg.knex.schema.createTable('pessoa_juridica', function(table) {
-            table.increments('id_pessoa_juridica').primary();
+            table.primary('pessoa_id');
             table.string('cnpj').unique().notNullable();
             table.string('nome_fantasia').notNullable();
             table.string('razao_social').notNullable();
@@ -168,7 +129,7 @@ bspg.knex.schema.hasTable('pessoa_juridica').then(function(exists) {
             util.log('tabela pessoa_juridica criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro pessoa_juridica: ' + err)
         });
     }
 });
@@ -184,7 +145,7 @@ bspg.knex.schema.hasTable('revendedor').then(function(exists) {
                 util.log('tabela revendedor criada')
             }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro revendedor: ' + err)
         });
     }
 });
@@ -201,7 +162,7 @@ bspg.knex.schema.hasTable('credenciado').then(function(exists) {
             util.log('tabela credenciado criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro credenciado: ' + err)
         });
     }
 });
@@ -217,7 +178,7 @@ bspg.knex.schema.hasTable('funcionario').then(function(exists) {
             util.log('tabela funcionario criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro funcionario: ' + err)
         });
     }
 });
@@ -232,7 +193,7 @@ bspg.knex.schema.hasTable('fiscal').then(function(exists) {
             util.log('tabela fiscal criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro fiscal: ' + err)
         });
     }
 });
@@ -253,31 +214,13 @@ bspg.knex.schema.hasTable('veiculo').then(function(exists) {
             util.log('tabela veiculo criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro veiculo: ' + err)
         });
     }
 });
 
-bspg.knex.schema.hasTable('fiscalizacao').then(function(exists) {
-    if (!exists) {
-        bspg.knex.schema.createTable('fiscalizacao', function(table) {
-            table.increments('id_fiscalizacao').primary();
-            table.string('placa').notNullable();
-            table.bigInteger('veiculo_id').nullable()
-                .references('id_veiculo').inTable('veiculo');
-            table.timestamp('timestamp').notNullable();
-            table.bigInteger('fiscal_id').notNullable()
-                .references('id_fiscal').inTable('fiscal');
-            table.decimal('latitude',14,10);
-            table.decimal('longitude',14,10);
-            table.decimal('altitude');
-        }).then(function() {
-            util.log('tabela fiscalizacao criada');
-        }).catch(function(err) {
-            util.log('erro: ' + err);
-        });
-    }
-});
+
+
 
 bspg.knex.schema.hasTable('contrato').then(function(exists) {
     if (!exists) {
@@ -292,7 +235,7 @@ bspg.knex.schema.hasTable('contrato').then(function(exists) {
             util.log('tabela contrato criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro contrato: ' + err)
         });
     }
 });
@@ -312,7 +255,7 @@ bspg.knex.schema.hasTable('configuracao').then(function(exists) {
             util.log('tabela configuracao criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro configuracao: ' + err)
         });
     }
 });
@@ -331,7 +274,7 @@ bspg.knex.schema.hasTable('conta').then(function(exists) {
             util.log('tabela conta criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro conta: ' + err)
         });
     }
 });
@@ -352,7 +295,7 @@ bspg.knex.schema.hasTable('movimentacao_conta').then(function(exists) {
             util.log('tabela movimentacao_conta criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro movimentacao_conta: ' + err)
         });
     }
 });
@@ -371,11 +314,70 @@ bspg.knex.schema.hasTable('consumo').then(function(exists) {
             util.log('tabela consumo criada')
         }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro consumo: ' + err)
         });
     }
 });
 
+
+
+bspg.knex.schema.hasTable('usuario').then(function(exists) {
+    if (!exists) {
+        bspg.knex.schema
+            .createTable('usuario', function(table) {
+                table.primary('pessoa_id');
+                table.string('login').unique().notNullable();
+                table.string('senha');
+                table.integer('autorizacao').notNullable();
+                table.boolean('primeiro_acesso').notNullable();
+                table.boolean('ativo').notNullable();
+                table.bigInteger('pessoa_fisica_pessoa_id').references('pessoa_id').inTable('pessoa_fisica');
+                table.bigInteger('pessoa_id').references('id_pessoa').inTable('pessoa');
+            }).then(function() {
+                util.log('tabela usuarios criada')
+            }).
+        catch(function(err) {
+            util.log('erro usuario: ' + err)
+        });
+    }
+});
+
+
+bspg.knex.schema.hasTable('fiscalizacao').then(function(exists) {
+    if (!exists) {
+        bspg.knex.schema.createTable('fiscalizacao', function(table) {
+            table.increments('id_fiscalizacao').primary();
+            table.string('placa').notNullable();
+            table.bigInteger('veiculo_id').nullable()
+                .references('id_veiculo').inTable('veiculo');
+            table.timestamp('timestamp').notNullable();
+            table.bigInteger('fiscal_id').notNullable()
+                .references('id_fiscal').inTable('fiscal');
+            table.decimal('latitude',14,10);
+            table.decimal('longitude',14,10);
+            table.decimal('altitude');
+        }).then(function() {
+            util.log('tabela fiscalizacao criada');
+        }).catch(function(err) {
+            util.log('erro fiscalizacao: ' + err);
+        });
+    }
+});
+bspg.knex.schema.hasTable('usuario_has_veiculo').then(function(exists) {
+    if (!exists) {
+        bspg.knex.schema
+            .createTable('usuario_has_veiculo', function(table) {
+                table.primary(['usuario_pessoa_id','veiculo_id']);
+                table.bigInteger('usuario_pessoa_id').references('pessoa_id').inTable('usuario');
+                table.bigInteger('veiculo_id').references('id_veiculo').inTable('veiculo');
+            }).then(function() {
+                util.log('tabela usuario_has_veiculo criada')
+            }).
+        catch(function(err) {
+            util.log('Erro tabela usuario_has_veiculo: ' + err)
+        });
+    }
+});
 bspg.knex.schema.hasTable('ativacao').then(function(exists){
     if(!exists){
         bspg.knex.schema.createTable('ativacao', function(table){
@@ -385,31 +387,89 @@ bspg.knex.schema.hasTable('ativacao').then(function(exists){
             table.decimal('longitude');
             table.decimal('altitude');
             table.boolean('ativo').notNullable();
-            table.bigInteger('usuario_id').notNullable().references('id_usuario').inTable('usuario');
+            table.bigInteger('usuario_pessoa_id').notNullable().references('pessoa_id').inTable('usuario');
             table.bigInteger('veiculo_id').notNullable().references('id_veiculo').inTable('veiculo');
         }).then(function(){
             util.log('tabela ativação criada')
         }).catch(function(err){
-            util.log('erro: ' + erro)
+            util.log('erro ativação: ' + err)
         });
     }
 });
-
 bspg.knex.schema.hasTable('usuario_revendedor').then(function(exists) {
     if (!exists) {
         bspg.knex.schema
             .createTable('usuario_revendedor', function(table) {
-                table.increments('id_usuario_revendedor').primary();
+                table.primary('pessoa_fisica_pessoa_id');
+                table.bigInteger('pessoa_fisica_pessoa_id').references('pessoa_id').inTable('pessoa_fisica');
+                table.string('login').unique().notNullable();
+                table.string('senha');
+                table.boolean('primeiro_acesso').notNullable();
+                table.string('autorizacao').notNullable();
+                table.boolean('ativo').notNullable();
+                table.bigInteger('revendedor_id').references('id_revendedor').inTable('revendedor');
+            }).then(function() {
+                util.log('tabela usuario_revendedor criada')
+            }).
+        catch(function(err) {
+            util.log('erro usuario_revendedor: ' + err)
+        });
+    }
+});
+
+bspg.knex.schema.hasTable('usuario_administrativo').then(function(exists) {
+    if (!exists) {
+        bspg.knex.schema
+            .createTable('usuario_administrativo', function(table) {
+                table.primary('pessoa_fisica_pessoa_id');
                 table.string('login').unique().notNullable();
                 table.string('senha');
                 table.boolean('primeiro_acesso').notNullable();
                 table.boolean('ativo').notNullable();
-                table.bigInteger('revendedor_id').references('id_revendedor').inTable('revendedor');
+                table.bigInteger('pessoa_fisica_pessoa_id').references('pessoa_id').inTable('pessoa_fisica');
             }).then(function() {
-                util.log('tabela revendedor criada')
+                util.log('tabela usuario_administrativo criada')
             }).
         catch(function(err) {
-            util.log('erro: ' + err)
+            util.log('erro usuario_administrativo: ' + err)
+        });
+    }
+});
+
+bspg.knex.schema.hasTable('usuario_credenciado').then(function(exists) {
+    if (!exists) {
+        bspg.knex.schema
+            .createTable('usuario_credenciado', function(table) {
+                table.primary('pessoa_fisica_pessoa_id');
+                table.string('login').unique().notNullable();
+                table.string('senha');
+                table.boolean('primeiro_acesso').notNullable();
+                table.boolean('ativo').notNullable();
+                table.bigInteger('pessoa_fisica_pessoa_id').references('pessoa_id').inTable('pessoa_fisica');
+            }).then(function() {
+                util.log('tabela usuario_credenciado criada')
+            }).
+        catch(function(err) {
+            util.log('erro usuario_credenciado: ' + err)
+        });
+    }
+});
+
+bspg.knex.schema.hasTable('usuario_fiscal').then(function(exists) {
+    if (!exists) {
+        bspg.knex.schema
+            .createTable('usuario_fiscal', function(table) {
+                table.primary('pessoa_fisica_pessoa_id');
+                table.string('login').unique().notNullable();
+                table.string('senha');
+                table.boolean('primeiro_acesso').notNullable();
+                table.boolean('ativo').notNullable();
+                table.bigInteger('pessoa_fisica_pessoa_id').references('pessoa_id').inTable('pessoa_fisica');
+            }).then(function() {
+                util.log('tabela usuario_fiscal criada')
+            }).
+        catch(function(err) {
+            util.log('erro usuario_fical: ' + err)
         });
     }
 });

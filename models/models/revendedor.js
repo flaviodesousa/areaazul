@@ -1,6 +1,7 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa');
 var PessoaFisica = require('./pessoafisica');
+var Usuario_Revendedor = require('./usuario_revendedor');
 var Usuario = require('./usuario');
 var UsuarioCollection = require('../collections/usuario');
 var PessoaJuridica = require('./pessoajuridica');
@@ -50,9 +51,8 @@ exports.cadastrar = function(dealer, then, fail) {
         login = dealer.cnpj;
     }
 
-   var usuario = new Usuario.Usuario({
+   var usuario_revendedor = new Usuario_Revendedor.Usuario_Revendedor({
             'login': login,
-            'autorizacao': '5',
             'primeiro_acesso': 'true',
             'senha': senha,
             'ativo': 'true'
@@ -90,7 +90,7 @@ exports.cadastrar = function(dealer, then, fail) {
 
 
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
-        this.inserir(pessoa, revendedor, usuario, conta, pessoaFisica, 
+        this.inserir(pessoa, revendedor, usuario_revendedor, conta, pessoaFisica, 
             function(model){
                 util.enviarEmailConfirmacao(dealer, login, senhaGerada);
                 then(model);
@@ -98,7 +98,7 @@ exports.cadastrar = function(dealer, then, fail) {
                 fail(err);
         });
     } else {
-        this.inserir(pessoa, revendedor, usuario, conta, pessoaJuridica, 
+        Pessoa.fiveSaveTransaction(pessoa, revendedor, usuario_revendedor, conta, pessoaJuridica, 
             function(model){
                 util.enviarEmailConfirmacao(dealer, login, senhaGerada);
                 then(model);
@@ -107,6 +107,64 @@ exports.cadastrar = function(dealer, then, fail) {
         });
     }
 }
+
+exports.inserir = function(entidade1, entidade2, entidade3, entidade4, entidade5, func){
+        Bookshelf.transaction(function(t) {
+            entidade1.save(null, {
+                transacting: t
+            }).
+            then(function(entidade1) 
+            {
+                util.log(entidade1);
+                entidade2.save({
+                    pessoa_id: entidade1.id,
+                }, {
+                    transacting: t
+                }).then(function(model, err) {
+
+                    util.log("Model"+model);
+                    entidade3.save({
+                        revendedor_id: entidade2.id,
+                    }, {
+                        transacting: t
+                    }).then(function(model, err) {
+                        entidade4.save({
+                            pessoa_id: entidade1.id,
+                        }, {
+                            transacting: t
+                        }).then(function(model, err) {
+                            entidade5.save({
+                                pessoa_id: entidade1.id,
+                            }, {
+                                transacting: t
+                            }).then(function(model, err) {
+                                  util.log("Commit");
+                                  t.commit();
+                             }),
+                      
+                        function() {
+                            t.rollback();
+                               util.log("rollback");
+                            func(false);
+                        }
+                        });
+                    });
+                });
+            });
+
+        }).then(function(model) {
+             util.log("Passei aq");
+             func(true);
+        }, function() {
+            util.log("Ocorreu erro");
+            func(false);
+        });
+}
+
+
+
+
+
 
 exports.listarpj = function(func)
  {
@@ -352,58 +410,25 @@ exports.buscarRevendedor = function(user, then, fail){
     });
 }
 
-exports.inserir = function(entidade1, entidade2, entidade3, entidade4, entidade5, func){
-        Bookshelf.transaction(function(t) {
-            entidade1.save(null, {
-                transacting: t
-            }).
-            then(function(entidade1) 
-            {
-                util.log(entidade1);
-                entidade2.save({
-                    pessoa_id: entidade1.id,
-                }, {
-                    transacting: t
-                }).then(function(model, err) {
-
-                    util.log("Model"+model);
-                    entidade3.save({
-                        revendedor_id: entidade2.id,
-                    }, {
-                        transacting: t
-                    }).then(function(model, err) {
-                        entidade4.save({
-                            pessoa_id: entidade1.id,
-                        }, {
-                            transacting: t
-                        }).then(function(model, err) {
-                            entidade5.save({
-                                pessoa_id: entidade1.id,
-                            }, {
-                                transacting: t
-                            }).then(function(model, err) {
-                                  util.log("Commit");
-                                  t.commit();
-                             }),
-                      
-                        function() {
-                            t.rollback();
-                               util.log("rollback");
-                            func(false);
-                        }
-                        });
-                    });
-                });
-            });
-
-        }).then(function(model) {
-             util.log("Passei aq");
-             func(true);
-        }, function() {
-            util.log("Ocorreu erro");
-            func(false);
-        });
+exports.mostrarSaldo = function(user, then, fail){
+    console.log("usuario"+user.id_usuario);
+    Revendedor.forge().query(function(qb){
+        qb.join('pessoa', 'pessoa.id_pessoa','=','revendedor.pessoa_id');
+        qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
+        qb.join('conta','conta.pessoa_id','=','pessoa.id_pessoa');
+        qb.where('usuario.id_usuario', user.id_usuario);
+        qb.select('revendedor.*','usuario.*','pessoa.*','conta.*');
+        console.log("sql: "+qb);
+    }).fetch().then(function(model) {
+        console.log("model"+model);
+        then(model);
+    }).catch(function(err){
+        console.log("err"+err);
+        fail(err);
+    });
 }
+
+
 
 
 exports.Revendedor = Revendedor;
