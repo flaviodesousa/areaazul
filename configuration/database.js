@@ -1,11 +1,51 @@
 var Bookshelf = require('bookshelf');
 var util = require('../models/models/util');
+var schema_version = {target: 20150420};
 
-Bookshelf.conexaoMain = Bookshelf.initialize({
+var knex = require('knex')({
     client: 'pg',
     connection: '/var/run/postgresql areaazul'
 });
+
+Bookshelf.conexaoMain = require('bookshelf')(knex);
 var bspg = Bookshelf.conexaoMain;
+var SchemaVersion;
+
+schema_version_promise = bspg.knex.schema.hasTable('schema_version')
+.then(function(exists) {
+    if (!exists) {
+        bspg.knex.schema.createTable('schema_version', function(table) {
+            table.integer('id').primary();
+            table.bigInteger('version').notNullable();
+        })
+        .then(function() {
+            util.log('tabela schema_version criada');
+            exists = true;
+        })
+        .catch(function(err) {
+            util.log('erro: ' + err)
+        });
+    }
+    if (exists) {
+        SchemaVersion = bspg.Model.extend({
+            tableName: 'schema_version',
+            idAttribute: 'id'
+        });
+        new SchemaVersion({id: 1})
+            .fetch()
+            .then(function(result) {
+                if (result === undefined) {
+                    schema_version.current = 0;
+                } else {
+                    schema_version.current = result.schema_version;
+                    console.dir(result);
+                }
+            })
+            .catch(function(err) {
+                schema_version.current = 0;
+            });
+    }
+});
 
 bspg.knex.schema.hasTable('estado').then(function(exists) {
     if (!exists) {
