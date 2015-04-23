@@ -55,7 +55,8 @@ exports.cadastrar = function(dealer, then, fail) {
             'login': login,
             'primeiro_acesso': 'true',
             'senha': senha,
-            'ativo': 'true'
+            'ativo': 'true',
+            'autorizacao': 'funcionario'
     });
 
     var revendedor = new this.Revendedor({
@@ -90,7 +91,7 @@ exports.cadastrar = function(dealer, then, fail) {
 
 
     if(validator.isNull(pessoaFisica.attributes.cpf) == false){
-        this.inserir(pessoa, revendedor, usuario_revendedor, conta, pessoaFisica, 
+        this.inserir(pessoa,  pessoaFisica, revendedor, conta, usuario_revendedor, 
             function(model){
                 util.enviarEmailConfirmacao(dealer, login, senhaGerada);
                 then(model);
@@ -124,7 +125,7 @@ exports.inserir = function(entidade1, entidade2, entidade3, entidade4, entidade5
 
                     util.log("Model"+model);
                     entidade3.save({
-                        revendedor_id: entidade2.id,
+                        pessoa_id: entidade1.id,
                     }, {
                         transacting: t
                     }).then(function(model, err) {
@@ -134,7 +135,7 @@ exports.inserir = function(entidade1, entidade2, entidade3, entidade4, entidade5
                             transacting: t
                         }).then(function(model, err) {
                             entidade5.save({
-                                pessoa_id: entidade1.id,
+                                pessoa_fisica_pessoa_id: entidade2.id,
                             }, {
                                 transacting: t
                             }).then(function(model, err) {

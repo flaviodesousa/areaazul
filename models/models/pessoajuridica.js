@@ -7,7 +7,7 @@ var validation = require('./validation');
 
 var PessoaJuridica = Bookshelf.Model.extend({
     tableName: 'pessoa_juridica',
-    idAttribute: 'id_pessoa_juridica'
+    idAttribute: 'pessoa_id'
 });
 
 

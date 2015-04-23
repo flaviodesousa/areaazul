@@ -4,9 +4,7 @@ var Bookshelf = require('bookshelf').conexaoMain,
 
 var Usuario_Revendedor = Bookshelf.Model.extend({
     tableName: 'usuario_revendedor',
-    idAttribute: 'pessoa_fisica_pessoa_id',
-
-  //  idAttribute: 'pessoa_fisica_id'
+    idAttribute: 'pessoa_fisica_pessoa_id'
 });
 
 exports.search = function(entidade, func) {
