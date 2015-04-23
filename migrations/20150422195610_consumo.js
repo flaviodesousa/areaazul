@@ -5,7 +5,7 @@ exports.up = function(knex, Promise) {
         table.increments('id_consumo').primary();
         table.timestamp('data_ativacao').notNullable();
         table.timestamp('data_desativacao');
-        table.decimal('valor').notNullable();
+        table.decimal('valor',18,2).notNullable();
         table.boolean('ativo').notNullable();
         table.bigInteger('veiculo_id').notNullable()
         	.references('id_veiculo').inTable('veiculo');

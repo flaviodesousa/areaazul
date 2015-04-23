@@ -3,7 +3,7 @@ module.exports = {
   development: {
     client: 'postgresql',
     connection: process.env.AREAAZULDB || '/var/run/postgresql areaazul',
-    debug: true
+    debug: false
   },
 
   staging: {

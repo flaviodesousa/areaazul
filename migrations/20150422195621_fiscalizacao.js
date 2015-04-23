@@ -11,7 +11,7 @@ exports.up = function(knex, Promise) {
             .references('pessoa_id').inTable('usuario_fiscal');
         table.decimal('latitude',14,10);
         table.decimal('longitude',14,10);
-        table.decimal('altitude');
+        table.decimal('altitude',18,10);
     });
 };
 
