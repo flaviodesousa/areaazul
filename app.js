@@ -6,14 +6,13 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var app = express();
 var passport = require('passport');
-var BasicStrategy = require('passport-http').BasicStrategy;
+var basicAuthentication = require('./basic-authentication');
 
-passport.use(new BasicStrategy({},
-    require('./basic-authentication')));
+passport.use(new basicAuthentication.FiscalBasicStrategy({}));
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(cookieParser());
 
 app.use(passport.initialize());
