@@ -1,38 +1,29 @@
 {
-    "name": "areaazul",
-    "version": "0.2.0",
-    "private": true,
-    "main": "areaazul.js",
-    "scripts": {
-        "start": "node ./bin/www",
-        "test": "mocha"
-    },
-    "dependencies": {
-        "express": "~4.2.0",
-        "express-load": "*",
-        "static-favicon": "~1.0.0",
-        "morgan": "~1.0.0",
-        "cookie-parser": "~1.0.1",
-        "body-parser": "~1.0.0",
-        "debug": "~0.7.4",
-        "jade": "~1.3.0",
-        "pg": "*",
-        "bookshelf": "*",
-        "knex": "0.6.x",
-        "moment": "*",
-        "util": "*",
-        "bcrypt": "*",
-        "async": "*",
-        "validator":"*",
-        "winston": "*",
-        "winston-loggly": "*",
-        "bcrypt": "*",
-        "passport": "latest",
-        "passport-local": "latest",
-        "areaazul-mailer":"git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git"
-    },
-    "devDependencies": {
-        "mocha": "*",
-        "should": "*"
-    }
+  "name": "areaazul",
+  "version": "0.2.0",
+  "private": true,
+  "main": "areaazul.js",
+  "scripts": {
+    "start": "node ./bin/www",
+    "test": "mocha"
+  },
+  "dependencies": {
+    "areaazul-mailer": "git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git",
+    "async": "*",
+    "bcrypt": "*",
+    "bookshelf": "*",
+    "debug": "^2.1.3",
+    "knex": "^0.7.6",
+    "moment": "*",
+    "morgan": "^1.5.2",
+    "pg": "*",
+    "util": "*",
+    "validator": "*",
+    "winston": "*",
+    "winston-loggly": "*"
+  },
+  "devDependencies": {
+    "mocha": "*",
+    "should": "*"
+  }
 }
