@@ -12,7 +12,7 @@ exports.up = function(knex, Promise) {
             table.string('autorizacao').notNullable();
             table.boolean('ativo').notNullable();
             table.bigInteger('revendedor_id')
-                .references('id_revendedor').inTable('revendedor');
+                .references('pessoa_id').inTable('revendedor');
         });
 };
 

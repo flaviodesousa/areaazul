@@ -6,8 +6,7 @@ exports.up = function(knex, Promise) {
             table.bigInteger('pessoa_id')
             	.primary()
             	.references('id_pessoa').inTable('pessoa');
-            table.increments('id_revendedor').primary();
-            table.boolean('ativo').notNullable();
+            table.boolean('ativo').notNullable().defaultTo(true);
         });
 };
 
