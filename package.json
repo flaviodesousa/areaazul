@@ -8,12 +8,12 @@
   "dependencies": {
     "areaazul": "git+ssh://git@bitbucket.org:solutions-inf-br/areaazul.git",
     "bcrypt": "*",
-    "body-parser": "~1.0.0",
-    "cookie-parser": "~1.0.1",
-    "debug": "~0.7.4",
-    "express": "~4.2.0",
+    "body-parser": "^1.0.2",
+    "cookie-parser": "^1.0.1",
+    "debug": "^0.8.1",
+    "express": "^4.2.0",
     "express-load": "*",
-    "morgan": "~1.0.0",
+    "morgan": "^1.0.1",
     "passport": "latest",
     "passport-http": "^0.2.2"
   }
