@@ -7,9 +7,7 @@ var knex = require('knex')(knexfile[env]);
 var migrations_config = {
     directory: path.join(__dirname, '..', 'migrations')
 };
-console.log('migrations_config: ');
-console.dir(migrations_config);
-knex.migrate.latest();
+knex.migrate.latest(migrations_config);
 
 exports.Bookshelf = require('bookshelf');
 exports.Bookshelf.conexaoMain = require('bookshelf')(knex);
