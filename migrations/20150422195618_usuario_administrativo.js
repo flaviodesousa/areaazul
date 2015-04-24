@@ -1,7 +1,7 @@
 'use strict';
 
 exports.up = function(knex, Promise) {
-    knex.schema
+    return knex.schema
         .createTable('usuario_administrativo', function(table) {
             table.bigInteger('pessoa_fisica_pessoa_id')
             	.primary()
