@@ -18,7 +18,7 @@ exports.cadastrar = function(fiscalizacao_params, then, fail) {
 		latitude: fiscalizacao_params.latitude,
 		longitude: fiscalizacao_params.longitude,
 		timestamp: new Date(),
-		fiscal_id: 1
+		fiscal_id: fiscalizacao_params.fiscal_id
 	});
 	fiscalizacao.save().then(function(model) {
 		then(model);
