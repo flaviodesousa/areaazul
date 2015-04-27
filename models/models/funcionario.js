@@ -11,7 +11,6 @@ var moment = require('moment');
 var validator = require("validator");
 var validation = require('./validation');
 var util = require('./util');
-var crud = require('./crud');
 var Conta = require('./conta');
 
 var Funcionario = Bookshelf.Model.extend({
@@ -40,7 +39,7 @@ exports.search = function(entidade, func) {
 exports.cadastrar = function(functionary, then, fail) {
     var senhaGerada = util.generate();
     var senha = util.criptografa(senhaGerada);
-    var dat_nascimento = moment(Date.parse(functionary.data_nascimento)).format("YYYY-MM-DD");       
+    var dat_nascimento = moment(Date.parse(functionary.data_nascimento)).format("YYYY-MM-DD");
 
     var login;
      if(functionary.cpf != null){
@@ -90,9 +89,9 @@ exports.cadastrar = function(functionary, then, fail) {
     });
 
     new Usuario.Usuario({
-    'login': functionary.nome_usuario, 
-    }).fetch().then(function(model) { 
-        Pessoa.sixSaveTransaction(pessoa, funcionario, usuario, usuario1, conta, pessoaFisica, 
+    'login': functionary.nome_usuario,
+    }).fetch().then(function(model) {
+        Pessoa.sixSaveTransaction(pessoa, funcionario, usuario, usuario1, conta, pessoaFisica,
             function(model){
                 util.enviarEmailConfirmacao(functionary,login + " Nome de usuario: "+functionary.nome_usuario ,senhaGerada);
                 then(result);
@@ -162,7 +161,7 @@ exports.listar = function(then, fail)
         then(collection);
     }).catch(function(err){
         fail(err);
-    }); 
+    });
 }
 
 exports.procurar = function(functionary, then, fail){
@@ -178,12 +177,12 @@ exports.procurar = function(functionary, then, fail){
         then(model);
     }).catch(function(err){
         fail(err);
-    }); 
+    });
 }
 
 exports.editar = function(functionary, then, fail) {
         var dat_nascimento = util.converteData(functionary.data_nascimento);
-        
+
         var usuario = new Usuario.Usuario({
             'id_usuario': functionary.id_usuario,
             'login': functionary.cpf,
@@ -220,7 +219,7 @@ exports.editar = function(functionary, then, fail) {
             'ativo': 'true'
         });
 
-        Pessoa.fiveUpdateTransaction(pessoa, funcionario, usuario, usuario1, pessoaFisica, 
+        Pessoa.fiveUpdateTransaction(pessoa, funcionario, usuario, usuario1, pessoaFisica,
             function(model){
                 then(model);
             }, function(err){
@@ -232,7 +231,7 @@ exports.editar = function(functionary, then, fail) {
 exports.desativar = function(functionary, then, fail) {
      this.procurar({id_funcionario: functionary.id_funcionario},
         function(result){
-        
+
             var pessoa = new Pessoa.Pessoa({
                 'id_pessoa': result.attributes.pessoa_id,
                 'ativo': 'false'
@@ -256,7 +255,7 @@ exports.desativar = function(functionary, then, fail) {
                 'ativo': 'false'
             });
 
-            Pessoa.fiveUpdateTransaction(pessoa, funcionario, usuario, pessoaFisica, conta, 
+            Pessoa.fiveUpdateTransaction(pessoa, funcionario, usuario, pessoaFisica, conta,
                 function(model){
                     then(model);
                 }, function(){
