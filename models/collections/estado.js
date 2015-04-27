@@ -1,6 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var Estado = require("../models/estado");
 
-module.export = Bookshelf.Collection.extend({
+module.exports = Bookshelf.Collection.extend({
     model: Estado.Estado
 });

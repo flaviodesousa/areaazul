@@ -1,6 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var Credenciado = require("../models/credenciado");
 
-module.export = Bookshelf.Collection.extend({
+module.exports = Bookshelf.Collection.extend({
     model: Credenciado.Credenciado
 });

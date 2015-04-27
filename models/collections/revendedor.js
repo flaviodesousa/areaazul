@@ -1,6 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var Revendedor = require("../models/revendedor");
 
-module.export = Bookshelf.Collection.extend({
+module.exports = Bookshelf.Collection.extend({
     model: Revendedor.Revendedor
 });

@@ -1,6 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var MovimentacaoConta = require("../models/movimentacaoconta");
 
-module.export = Bookshelf.Collection.extend({
+module.exports = Bookshelf.Collection.extend({
     model: MovimentacaoConta.MovimentacaoConta
 });

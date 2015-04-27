@@ -4,7 +4,6 @@ exports.conta = require('./collections/conta');
 exports.contrato = require('./collections/contrato');
 exports.credenciado = require('./collections/credenciado');
 exports.estado = require('./collections/estado');
-exports.fiscal = require('./collections/fiscal');
 exports.fiscalizacao = require('./collections/fiscalizacao');
 exports.funcionario = require('./collections/funcionario');
 exports.movimentacaoconta = require('./collections/movimentacaoconta');
