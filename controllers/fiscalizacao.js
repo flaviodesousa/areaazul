@@ -6,6 +6,8 @@ module.exports = function(app) {
         registrar: function(req, res) {
         	console.log('fiscalizacao-registrar-body');
         	console.dir(req.body);
+            console.log('fiscal: ' + req.user.username);
+            console.dir(req.user);
             Fiscalizacao.cadastrar({
             	fiscal: req.body.fiscal,
   				senha: req.body.senha,
@@ -24,9 +26,6 @@ module.exports = function(app) {
         listar: function(req, res) {
             Fiscalizacao.listar(undefined,
                 function(collection) {
-                    // TODO generalizar este header para todas chamadas
-                    res.setHeader('Access-Control-Allow-Origin','*');
-                    res.header('Access-Control-Allow-Origin', '*');
                     res.send(collection.toJSON());
                 },
                 function(result) {
