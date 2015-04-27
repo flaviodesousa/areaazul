@@ -13,15 +13,15 @@ var validation = require('./validation');
 var util = require('./util');
 var Conta = require('./conta');
 
-var Fiscal = Bookshelf.Model.extend({
-    tableName: 'fiscal',
-    idAttribute: 'id_fiscal'
+var UsuarioFiscal = Bookshelf.Model.extend({
+    tableName: 'usuario_fiscal',
+    idAttribute: 'pessoa_id'
 });
 
-exports.Fiscal = Fiscal;
+module.exports = UsuarioFiscal;
 
 var FiscalCollection =  Bookshelf.Collection.extend({
-    model: Fiscal
+    model: UsuarioFiscal
 });
 
 exports.search = function(entidade, func) {
@@ -38,33 +38,14 @@ exports.search = function(entidade, func) {
 exports.cadastrar = function(tax, then, fail) {
     var senhaGerada = util.generate();
     var senha = util.criptografa(senhaGerada);
-    var dat_nascimento = moment(Date.parse(tax.data_nascimento)).format("YYYY-MM-DD");       
+    var dat_nascimento = moment(Date.parse(tax.data_nascimento)).format("YYYY-MM-DD");
 
-    var login;
-     if(tax.cpf != null){
-        login = tax.cpf;
-    }else{
-        login = tax.cnpj;
-    }
-
-    var usuario = new Usuario.Usuario({
-            'login': tax.cpf,
-            'autorizacao': '3',
-            'primeiro_acesso': 'true',
-            'senha': senha,
-            'ativo': 'true'
-    });
-
-    var usuario1 = new Usuario.Usuario({
+    var usuario_fiscal = new this.UsuarioFiscal({
             'login': tax.login,
             'autorizacao': '6',
             'primeiro_acesso': 'true',
             'senha': senha,
             'ativo': 'true'
-    });
-
-    var fiscal = new this.Fiscal({
-        'ativo': 'true'
     });
 
     var pessoa = new Pessoa.Pessoa({
@@ -80,22 +61,16 @@ exports.cadastrar = function(tax, then, fail) {
         'ativo': 'true'
     });
 
-    var conta = new Conta.Conta({
-        'data_abertura': new Date(),
-        'saldo': '10.0',
-        'ativo': 'true'
-    });
-
     new Usuario.Usuario({
-    'login': tax.nome_usuario, 
-    }).fetch().then(function(model) { 
-        Pessoa.sixSaveTransaction(pessoa, fiscal, usuario, usuario1, conta, pessoaFisica, 
-        function(model){    
+    'login': tax.nome_usuario,
+    }).fetch().then(function(model) {
+        Pessoa.sixSaveTransaction(pessoa, usuario_fiscal, usuario, usuario1, conta, pessoaFisica,
+        function(model){
             util.enviarEmailConfirmacao(tax,login + " Nome de usuario: "+tax.nome_usuario ,senhaGerada);
             then(model);
         }, function(err){
             fail(err);
-        });   
+        });
      }).catch(function(){
         fail(err);
      })
@@ -135,29 +110,28 @@ exports.validateFiscal = function(tax){
 exports.listar = function(then, fail)
  {
     FiscalCollection.forge().query(function(qb){
-         qb.join('pessoa', 'pessoa.id_pessoa','=','fiscal.pessoa_id');
+         qb.join('pessoa', 'pessoa.id_pessoa','=','usuario_fiscal.pessoa_id');
          qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
          qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
-         qb.where('fiscal.ativo','=','true');
+         qb.where('usuario_fiscal.ativo','=','true');
          qb.where('usuario.autorizacao','=','5');
-         qb.select('usuario.*','pessoa.*','pessoa_fisica.*','fiscal.*');
+         qb.select('usuario.*','pessoa.*','pessoa_fisica.*','usuario_fiscal.*');
     }).fetch().then(function(collection) {
         then(collection);
     }).catch(function(err){
         fail(err);
-    }); 
+    });
 }
 
 exports.procurar = function(tax, then, fail){
-     Fiscal.forge().query(function(qb){
-        qb.join('pessoa', 'pessoa.id_pessoa','=','fiscal.pessoa_id');
-        qb.join('usuario','usuario.pessoa_id','=','pessoa.id_pessoa');
+     UsuarioFiscal.forge().query(function(qb){
+        qb.join('pessoa', 'pessoa.id_pessoa','=','usuario_fiscal.pessoa_id');
         qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
         qb.join('conta','pessoa.id_pessoa','=','conta.pessoa_id');
-        qb.where('fiscal.id_fiscal', tax.id_fiscal);
+        qb.where('usuario_fiscal.pessoa_id', tax.pessoa_id);
         qb.where('usuario.autorizacao','=','5');
-        qb.where('fiscal.ativo','=','true');
-        qb.select('fiscal.*','usuario.*','pessoa.*','pessoa_fisica.*','conta.*');
+        qb.where('usuario_fiscal.ativo','=','true');
+        qb.select('usuario_fiscal.*','usuario.*','pessoa.*','pessoa_fisica.*','conta.*');
     }).fetch().then(function(model) {
         then(model);
     }).catch(function(err){
@@ -168,7 +142,7 @@ exports.procurar = function(tax, then, fail){
 exports.editar = function(tax, then, fail) {
 
         var dat_nascimento = util.converteData(tax.data_nascimento);
-        
+
         var usuario = new Usuario.Usuario({
             'id_usuario': tax.id_usuario,
             'login': tax.cpf,
@@ -185,8 +159,8 @@ exports.editar = function(tax, then, fail) {
             'ativo': 'true'
         });
 
-        var fiscal = new this.Fiscal({
-            'id_fiscal': tax.id_fiscal,
+        var usuario_fiscal = new this.UsuarioFiscal({
+            'pessoa_id': tax.pessoa_id,
             'ativo': 'true'
         });
 
@@ -205,7 +179,7 @@ exports.editar = function(tax, then, fail) {
             'ativo': 'true'
         });
 
-        Pessoa.fiveUpdateTransaction(pessoa, fiscal, usuario, usuario1, pessoaFisica, 
+        Pessoa.fiveUpdateTransaction(pessoa, usuario_fiscal, usuario, usuario1, pessoaFisica,
         function(model){
             then(model);
         }, function(err){
@@ -215,7 +189,7 @@ exports.editar = function(tax, then, fail) {
 
 exports.desativar = function(tax, then, fail) {
     util.log('Tax: '+tax);
-     this.procurar({id_fiscal: tax.id_fiscal},
+     this.procurar({pessoa_id: tax.pessoa_id},
         function(result){
         var pessoa = new Pessoa.Pessoa({
             'id_pessoa': result.attributes.pessoa_id,
@@ -235,8 +209,8 @@ exports.desativar = function(tax, then, fail) {
             'ativo': 'false'
         });
 
-        var fiscal = new Fiscal({
-            'id_fiscal': result.attributes.id_fiscal,
+        var usuario_fiscal = new UsuarioFiscal({
+            'pessoa_id': result.attributes.pessoa_id,
             'ativo': 'false'
         });
 
@@ -246,7 +220,7 @@ exports.desativar = function(tax, then, fail) {
             'ativo': 'false'
         });
 
-        Pessoa.sixUpdateTransaction(pessoa, fiscal, usuario, usuario1, conta, pessoaFisica, 
+        Pessoa.sixUpdateTransaction(pessoa, usuario_fiscal, usuario, usuario1, conta, pessoaFisica,
             function(model){
                 then(model);
             }, function(err){
