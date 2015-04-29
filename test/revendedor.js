@@ -1,7 +1,7 @@
 var AreaAzul = require('../areaazul');
 var should = require('should');
 var Revendedor = AreaAzul.models.revendedor;
-
+/*
 describe('model.revendedor', function() {
 
 	describe('buscarRevendedor()', function() {
@@ -21,3 +21,5 @@ describe('model.revendedor', function() {
 	});
 
 });
+
+*/

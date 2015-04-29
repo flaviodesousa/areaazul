@@ -1,7 +1,7 @@
 var AreaAzul = require('../areaazul');
 var should = require('should');
 var Usuario = AreaAzul.models.usuario;
-
+/*
 describe('model.usuario', function() {
 
 	describe('validade()', function() {
@@ -36,7 +36,7 @@ describe('model.usuario', function() {
 			function(err) {
 				done();
 			});
-	});*/
+	});
 	describe('listar()', function() {
 		it('retorna uma lista de usuarios', function(done) {
 			Usuario.listar(function(collection) {
@@ -78,3 +78,4 @@ describe('model.usuario', function() {
 	});
 	
 });
+*/

@@ -18,7 +18,7 @@ var Conta = require('./conta');
 
 var Revendedor = Bookshelf.Model.extend({
     tableName: 'revendedor',
-    idAttribute: 'id_revendedor'
+    idAttribute: 'pessoa_id'
 });
 
 var RevendedorCollection =  Bookshelf.Collection.extend({
@@ -60,7 +60,7 @@ exports.cadastrar = function(dealer, then, fail) {
     });
 
     var revendedor = new this.Revendedor({
-            'ativo': 'true'
+         'ativo': 'true'
     });
 
     var conta = new Conta.Conta({
@@ -110,6 +110,8 @@ exports.cadastrar = function(dealer, then, fail) {
 }
 
 exports.inserir = function(entidade1, entidade2, entidade3, entidade4, entidade5, func){
+                          //pessoa,  pessoaFisica, revendedor, conta, usuario_revendedor 
+
         Bookshelf.transaction(function(t) {
             entidade1.save(null, {
                 transacting: t
@@ -428,6 +430,7 @@ exports.mostrarSaldo = function(user, then, fail){
         fail(err);
     });
 }
+
 
 
 

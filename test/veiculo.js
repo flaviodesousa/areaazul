@@ -1,7 +1,7 @@
 var AreaAzul = require('../areaazul');
 var should = require('should');
 var Veiculo = AreaAzul.models.veiculo;
-
+/*
 describe('model.veiculo', function() {
 	describe('cadastrar()', function() {
 
@@ -57,3 +57,5 @@ describe('model.veiculo', function() {
 	});
 
 });
+
+*/
