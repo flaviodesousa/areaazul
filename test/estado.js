@@ -1,7 +1,7 @@
 var AreaAzul = require('../areaazul');
 var should = require('should');
 var Estado = AreaAzul.models.estado;
-
+/*
 describe('model.estado', function() {
 
 	describe('cadastrar()', function() {
@@ -57,3 +57,5 @@ describe('model.estado', function() {
 	});
 	
 });
+
+*/
