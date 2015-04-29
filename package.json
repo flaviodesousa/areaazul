@@ -20,7 +20,8 @@
     "util": "*",
     "validator": "*",
     "winston": "*",
-    "winston-loggly": "*"
+    "winston-loggly": "*",
+    "knex": "*"
   },
   "devDependencies": {
     "mocha": "*",
