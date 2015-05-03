@@ -1,11 +1,13 @@
+'use strict';
+
 var _ = require('lodash');
 var validator = require("validator");
 var validation = require("./validation");
 var util = require('./util');
+var logger = require('winston');
 
-var app = require('../../app');
-var Bookshelf = app.database.Bookshelf.conexaoMain;
-var Pessoa = app.models.pessoa.Pessoa;
+var Bookshelf = require('bookshelf').conexaoMain;
+var Pessoa = require('./pessoa').Pessoa;
 
 var PessoaFisica = Bookshelf.Model.extend({
   tableName: 'pessoa_fisica',
@@ -14,6 +16,7 @@ var PessoaFisica = Bookshelf.Model.extend({
   cadastrar: function (tax, then, fail) {
     var pessoa_fisica = null;
     var PessoaFisica = this;
+
     Bookshelf.transaction(function (t) {
       var trx = {transacting: t};
       var trx_ins = _.merge(trx, {method: 'insert'});
@@ -37,12 +40,6 @@ var PessoaFisica = Bookshelf.Model.extend({
         })
         .then(function (pf) {
           pessoa_fisica = pf;
-          trx.transacting.commit();
-          return pf;
-        })
-        .catch(function (err) {
-          trx.transacting.rollback();
-          throw err;
         });
     })
       .then(
@@ -53,6 +50,20 @@ var PessoaFisica = Bookshelf.Model.extend({
           fail(e);
         }
       );
+  },
+  CPFnovo: function (person, then, fail) {
+    this
+      .forge({cpf: person.cpf})
+      .fetch()
+      .then(function (model) {
+        if (model !== null) {
+          throw new Error("Cpf já existe!!!");
+        }
+        then(model);
+      })
+      .catch(function (err) {
+        fail(err);
+      });
   }
 });
 
@@ -79,19 +90,4 @@ exports.validate = function (pessoaFisica) {
     return false;
   }*/
   return true;
-}
-
-exports.CPFnovo = function (person, then, fail) {
-
-  PessoaFisica.forge().query(function(qb){
-    qb.where('pessoa_fisica.cpf', person.cpf);
-    qb.select('pessoa_fisica.*');
-  }).fetch().then(function(model) {
-    if(model != null){
-      throw new Error("Cpf já existe!!!");
-    }
-    then(model);
-  }).catch(function(err){
-    fail(err);
-  });
-}
+};
