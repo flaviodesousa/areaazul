@@ -3,10 +3,12 @@ var Fiscalizacao = require("../models/fiscalizacao");
 var moment = require('moment');
 
 module.exports = Bookshelf.Collection.extend({
-  model: Fiscalizacao,
-  listar: function (params, then, fail) {
+  model: Fiscalizacao
+}, {
+  listar: function (parameters, then, fail) {
     this
       .query(function (qb) {
+        var params = parameters || {};
         if (params.since) {
           qb.where('timestamp', '>=',
             moment().subtract(params.since, 'hours')
