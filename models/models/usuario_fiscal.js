@@ -1,153 +1,146 @@
-var Bookshelf = require('bookshelf').conexaoMain;
-var Pessoa = require('./pessoa');
-var Usuario = require('./usuario');
-var PessoaFisica = require('./pessoafisica');
-var PessoaCollection = require('../collections/pessoa');
-var UsuarioCollection = require('../collections/usuario');
-var PessoaFisicaCollection = require('../collections/pessoafisica');
+var _ = require('lodash');
+var Promise = require('bluebird');
 var bcrypt = require('bcrypt');
 var Areaazul_mailer = require('areaazul-mailer');
 var moment = require('moment');
-var validator = require("validator");
-var validation = require('./validation');
 var util = require('./util');
-var Conta = require('./conta');
+
+var app = require('../../app');
+var Bookshelf = app.database.Bookshelf.conexaoMain;
+var Pessoa = app.models.pessoa.Pessoa;
+var PessoaFisica = app.models.pessoafisica.PessoaFisica;
+var PessoaCollection = app.collections.pessoa;
 
 var UsuarioFiscal = Bookshelf.Model.extend({
-    tableName: 'usuario_fiscal',
-    idAttribute: 'pessoa_id',
-    validateFiscal: function(tax){
+  tableName: 'usuario_fiscal',
+  idAttribute: 'pessoa_id',
+  validateFiscal: function (tax) {
 
-        var pessoa = new Pessoa.Pessoa({
-            'nome': tax.nome,
-            'email': tax.email,
-            'telefone': tax.telefone,
-            'ativo': 'true'
-        });
-        var pessoaFisica = new PessoaFisica.PessoaFisica({
-            'cpf': tax.cpf,
-            'data_nascimento': tax.data_nascimento,
-            'sexo': tax.sexo,
-            'ativo': 'true'
-        });
+    var pessoa = new Pessoa({
+      'nome': tax.nome,
+      'email': tax.email,
+      'telefone': tax.telefone,
+      'ativo': 'true'
+    });
+    var pessoaFisica = new PessoaFisica({
+      'cpf': tax.cpf,
+      'data_nascimento': tax.data_nascimento,
+      'sexo': tax.sexo,
+      'ativo': 'true'
+    });
 
-        if(Usuario.validateNomeUsuario(tax) != true){
-            return false;
-        }
-
-        if(PessoaFisica.validate(pessoaFisica) != true){
-            return false;
-        }
-
-        if(Pessoa.validate(pessoa) != true){
-            return false;
-        }
-
-        return true;
-
-    },
-    desativar: function(tax, then, fail) {
-        util.log('Tax: '+tax);
-        var pessoa = new Pessoa.Pessoa({
-            'id_pessoa': result.attributes.pessoa_id,
-            'ativo': 'false'
-        });
-        var pessoaFisica = new PessoaFisica.PessoaFisica({
-            'id_pessoa_fisica': result.attributes.id_pessoa_fisica,
-            'ativo': 'false'
-        });
-
-        var usuario = new Usuario.Usuario({
-            'id_usuario': result.attributes.id_usuario,
-            'ativo': 'false'
-        });
-        var usuario1 = new Usuario.Usuario({
-            'id_usuario': result.attributes.id_usuario,
-            'ativo': 'false'
-        });
-
-        var usuario_fiscal = new UsuarioFiscal({
-            'pessoa_id': result.attributes.pessoa_id,
-            'ativo': 'false'
-        });
-
-        var conta = new Conta.Conta({
-            'id_conta' : result.attributes.id_conta,
-            'data_fechamento': new Date(),
-            'ativo': 'false'
-        });
-
-        Pessoa.sixUpdateTransaction(pessoa, usuario_fiscal, usuario, usuario1, conta, pessoaFisica,
-            function(model){
-                then(model);
-            }, function(err){
-               fail(err);
-            }
-        );
+    if (!PessoaFisica.validate(pessoaFisica)) {
+      return false;
     }
+
+    if (!Pessoa.validate(pessoa)) {
+      return false;
+    }
+
+    return true;
+
+  },
+  desativar: function (tax, then, fail) {
+    util.log('Tax: ' + tax);
+    var pessoa = new Pessoa.Pessoa({
+      id_pessoa: tax.pessoa_id,
+      ativo: false
+    });
+    var pessoaFisica = new PessoaFisica.PessoaFisica({
+      id_pessoa_fisica: tax.id_pessoa_fisica,
+      ativo: false
+    });
+    var usuario_fiscal = new UsuarioFiscal({
+      pessoa_id: tax.pessoa_id,
+      ativo: false
+    });
+
+    Pessoa.sixUpdateTransaction(pessoa, usuario_fiscal, pessoaFisica,
+      function (model) {
+        then(model);
+      }, function (err) {
+        fail(err);
+      });
+  }
 
 }, {
-    cadastrar: function(tax, then, fail) {
-        var senhaGerada = util.generate();
-        var senha = util.criptografa(senhaGerada);
-        var dat_nascimento = moment(Date.parse(tax.data_nascimento)).format("YYYY-MM-DD");
+  cadastrar: function (tax, then, fail) {
+    var senhaGerada = util.generate();
+    var senha = util.criptografa(senhaGerada);
+    var dat_nascimento = moment(Date.parse(tax.data_nascimento)).format("YYYY-MM-DD");
+    var Fiscal = this;
+    var fiscal = null;
 
-        var usuario_fiscal = new this.UsuarioFiscal({
-                'login': tax.login,
-                'autorizacao': '6',
-                'primeiro_acesso': 'true',
-                'senha': senha,
-                'ativo': 'true'
-        });
-
-        var pessoa = new Pessoa.Pessoa({
-            'nome': tax.nome,
-            'email': tax.email,
-            'telefone': tax.telefone,
-            'ativo': 'true'
-        });
-        var pessoaFisica = new PessoaFisica.PessoaFisica({
-            'cpf': tax.cpf,
-            'data_nascimento': dat_nascimento,
-            'sexo': tax.sexo,
-            'ativo': 'true'
-        });
-
-        new Usuario.Usuario({
-        'login': tax.nome_usuario,
-        }).fetch().then(function(model) {
-            Pessoa.sixSaveTransaction(pessoa, usuario_fiscal, usuario, usuario1, conta, pessoaFisica,
-            function(model){
-                util.enviarEmailConfirmacao(tax,login + " Nome de usuario: "+tax.nome_usuario ,senhaGerada);
-                then(model);
-            }, function(err){
-                fail(err);
+    Bookshelf.transaction(function (t) {
+      var trx = {transacting: t};
+      var trx_ins = _.merge(trx, {method: 'insert'});
+      PessoaFisica
+        .forge({cpf: tax.cpf})
+        .fetch()
+        .then(function (pessoa_fisica) {
+          if (pessoa_fisica !== null) {
+            return pessoa_fisica;
+          }
+          return new Pessoa({
+            nome: tax.nome,
+            email: tax.email,
+            telefone: tax.telefone,
+            ativo: true
+          })
+            .save(null, trx)
+            .then(function (pessoa) {
+              return new PessoaFisica({
+                cpf: tax.cpf,
+                data_nascimento: dat_nascimento,
+                sexo: tax.sexo,
+                ativo: true,
+                pessoa_id: pessoa.get('id_pessoa')
+              })
+                .save(null, trx_ins);
             });
-         }).catch(function(){
-            fail(err);
-         })
-    },
-    procurar: function(tax, then, fail){
-         UsuarioFiscal.forge().query(function(qb){
-            qb.join('pessoa', 'pessoa.id_pessoa','=','usuario_fiscal.pessoa_id');
-            qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
-            qb.join('conta','pessoa.id_pessoa','=','conta.pessoa_id');
-            qb.where('usuario_fiscal.pessoa_id', tax.pessoa_id);
-            qb.where('usuario.autorizacao','=','5');
-            qb.where('usuario_fiscal.ativo','=','true');
-            qb.select('usuario_fiscal.*','usuario.*','pessoa.*','pessoa_fisica.*','conta.*');
-        }).fetch().then(function(model) {
-            then(model);
-        }).catch(function(err){
-            fail(err);
+        })
+        .then(function (pessoa_fisica) {
+          return new Fiscal({
+            login: tax.login,
+            senha: senha,
+            primeiro_acesso: true,
+            ativo: true,
+            pessoa_id: pessoa_fisica.get('pessoa_id')
+          })
+            .save(null, trx_ins);
+        })
+        .then(function (f) {
+          fiscal = f;
+          trx.transacting.commit();
+          return fiscal;
+        })
+        .catch(function (err) {
+          trx.transacting.rollback();
+          throw err;
         });
-    }
-
-
+    })
+      .then(
+        function (f) {
+          then(fiscal);
+        },
+        function (e) {
+          fail(e);
+        }
+      );
+  },
+  procurar: function (tax, then, fail) {
+    UsuarioFiscal.forge().query(function (qb) {
+      qb.join('pessoa', 'pessoa.id_pessoa', '=', 'usuario_fiscal.pessoa_id');
+      qb.join('pessoa_fisica', 'pessoa_fisica.pessoa_id', '=', 'pessoa.id_pessoa');
+      qb.where('usuario_fiscal.pessoa_id', tax.pessoa_id);
+      qb.where('usuario_fiscal.ativo', '=', 'true');
+      qb.select('usuario_fiscal.*', 'pessoa.*', 'pessoa_fisica.*');
+    }).fetch().then(function (model) {
+      then(model);
+    }).catch(function (err) {
+      fail(err);
+    });
+  }
 });
 
 module.exports = UsuarioFiscal;
-
-var FiscalCollection =  Bookshelf.Collection.extend({
-    model: UsuarioFiscal
-});
