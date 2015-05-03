@@ -9,7 +9,6 @@ var app = require('../../app');
 var Bookshelf = app.database.Bookshelf.conexaoMain;
 var Pessoa = app.models.pessoa.Pessoa;
 var PessoaFisica = app.models.pessoafisica.PessoaFisica;
-var PessoaCollection = app.collections.pessoa;
 
 var UsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'usuario_fiscal',
@@ -65,22 +64,27 @@ var UsuarioFiscal = Bookshelf.Model.extend({
 
 }, {
   cadastrar: function (tax, then, fail) {
-    var senhaGerada = util.generate();
-    var senha = util.criptografa(senhaGerada);
-    var dat_nascimento = moment(Date.parse(tax.data_nascimento)).format("YYYY-MM-DD");
     var Fiscal = this;
     var fiscal = null;
+
+    var senha = tax.senha;
+    if (!senha) {
+      senha = util.criptografa(util.generate());
+    }
 
     Bookshelf.transaction(function (t) {
       var trx = {transacting: t};
       var trx_ins = _.merge(trx, {method: 'insert'});
+      // verifica se a pessoa fisica ja' existe
       PessoaFisica
         .forge({cpf: tax.cpf})
         .fetch()
         .then(function (pessoa_fisica) {
+          // se pessoa fisica ja' existir, conectar a ela
           if (pessoa_fisica !== null) {
             return pessoa_fisica;
           }
+          // caso nao exista, criar a pessoa fisica
           return new Pessoa({
             nome: tax.nome,
             email: tax.email,
@@ -91,7 +95,7 @@ var UsuarioFiscal = Bookshelf.Model.extend({
             .then(function (pessoa) {
               return new PessoaFisica({
                 cpf: tax.cpf,
-                data_nascimento: dat_nascimento,
+                data_nascimento: tax.data_nascimento,
                 sexo: tax.sexo,
                 ativo: true,
                 pessoa_id: pessoa.get('id_pessoa')
@@ -120,7 +124,7 @@ var UsuarioFiscal = Bookshelf.Model.extend({
         });
     })
       .then(
-        function (f) {
+        function () {
           then(fiscal);
         },
         function (e) {
