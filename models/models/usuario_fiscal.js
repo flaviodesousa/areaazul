@@ -5,10 +5,10 @@ var Areaazul_mailer = require('areaazul-mailer');
 var moment = require('moment');
 var util = require('./util');
 
-var app = require('../../app');
-var Bookshelf = app.database.Bookshelf.conexaoMain;
-var Pessoa = app.models.pessoa.Pessoa;
-var PessoaFisica = app.models.pessoafisica.PessoaFisica;
+var app = require('../../areaazul');
+var Bookshelf = require('bookshelf').conexaoMain;
+var Pessoa = require('./pessoa').Pessoa;
+var PessoaFisica = require('./pessoafisica').PessoaFisica;
 
 var UsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'usuario_fiscal',
