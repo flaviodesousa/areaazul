@@ -10,6 +10,7 @@
     "areaazul-mailer": "git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git",
     "async": "*",
     "bcrypt": "*",
+    "bluebird": "^2.9.25",
     "bookshelf": "*",
     "debug": "^2.1.3",
     "knex": "^0.7.6",
@@ -17,7 +18,6 @@
     "moment": "*",
     "morgan": "^1.5.2",
     "pg": "*",
-    "util": "*",
     "validator": "*",
     "winston": "*"
   },
