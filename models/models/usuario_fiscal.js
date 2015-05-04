@@ -67,9 +67,11 @@ var UsuarioFiscal = Bookshelf.Model.extend({
     var Fiscal = this;
     var fiscal = null;
 
-    var senha = tax.senha;
-    if (!senha) {
+    var senha;
+    if (!tax.senha) {
       senha = util.criptografa(util.generate());
+    } else {
+      senha = util.criptografa(tax.senha);
     }
 
     Bookshelf.transaction(function (t) {
@@ -131,6 +133,27 @@ var UsuarioFiscal = Bookshelf.Model.extend({
           fail(e);
         }
       );
+  },
+  valido: function (login, senha) {
+    var UsuarioFiscal = this;
+    return UsuarioFiscal
+      .forge({login: login})
+      .fetch()
+      .then(function(usuario_fiscal) {
+        if (usuario_fiscal === null) {
+          var err = new Error("login invalido: " + login);
+          err.authentication_event = true;
+          throw err;
+        }
+        var hash_senha = util.criptografa(senha);
+        if (hash_senha === usuario_fiscal.get('senha')) {
+          return usuario_fiscal;
+        } else {
+          var err = new Error("senha incorreta");
+          err.authentication_event = true;
+          throw err;
+        }
+      });
   },
   procurar: function (tax, then, fail) {
     UsuarioFiscal.forge().query(function (qb) {
