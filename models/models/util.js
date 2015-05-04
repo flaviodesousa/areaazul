@@ -30,12 +30,13 @@ function getRandomChar() {
         return String.fromCharCode(Math.floor(Math.random()*(ascii[i][1]-ascii[i][0]))+ascii[i][0]);
 }
 
-{
-    var salt = '$2a$10$VfS9mOR1XGDT3TDUw8Uxge';
-    exports.criptografa = function(password){
-        //var salt = bcrypt.genSaltSync(10);
-        return bcrypt.hashSync(password, salt);
-    }
+exports.criptografa = function(password){
+    var salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync(password, salt);
+}
+
+exports.senhaValida = function(senha, hash) {
+    return bcrypt.compareSync(senha, hash);
 }
 
 exports.converteData = function(data){

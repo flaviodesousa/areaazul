@@ -146,7 +146,7 @@ var UsuarioFiscal = Bookshelf.Model.extend({
           throw err;
         }
         var hash_senha = util.criptografa(senha);
-        if (hash_senha === usuario_fiscal.get('senha')) {
+        if (util.senhaValida(senha, usuario_fiscal.get('senha'))) {
           return usuario_fiscal;
         } else {
           var err = new Error("senha incorreta");
