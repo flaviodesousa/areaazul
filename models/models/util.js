@@ -30,11 +30,14 @@ function getRandomChar() {
         return String.fromCharCode(Math.floor(Math.random()*(ascii[i][1]-ascii[i][0]))+ascii[i][0]);
 }
 
-exports.criptografa = function(password){
-    var salt = bcrypt.genSaltSync(10);
-    return bcrypt.hashSync(password, salt);
-
+{
+    var salt = '$2a$10$VfS9mOR1XGDT3TDUw8Uxge';
+    exports.criptografa = function(password){
+        //var salt = bcrypt.genSaltSync(10);
+        return bcrypt.hashSync(password, salt);
+    }
 }
+
 exports.converteData = function(data){
     return moment(Date.parse(data)).format("YYYY-MM-DD");
 }
