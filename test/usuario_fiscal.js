@@ -125,7 +125,7 @@ describe('models.UsuarioFiscal', function () {
         .catch(function (err) {
           should.exist(err);
           should.exist(err.authentication_event);
-          err.authentication_event.should.be.true;
+          err.authentication_event.should.be.exactly(true);
           done();
         });
     });
@@ -140,7 +140,7 @@ describe('models.UsuarioFiscal', function () {
         .catch(function (err) {
           should.exist(err);
           should.exist(err.authentication_event);
-          err.authentication_event.should.be.true;
+          err.authentication_event.should.be.exactly(true);
           done();
         });
     });
