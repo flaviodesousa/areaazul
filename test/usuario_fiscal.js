@@ -75,7 +75,8 @@ describe('models.UsuarioFiscal', function () {
         nome: 'Fiscal Teste',
         email: 'fiscal-teste@example.com',
         cpf: cpf_nao_existente
-      }, function () {
+      }, function (pessoa) {
+        should.exist(pessoa);
         done();
       }, function (e) {
         done(e);
@@ -89,7 +90,8 @@ describe('models.UsuarioFiscal', function () {
         nome: 'Fiscal Teste',
         email: 'fiscal-teste@example.com',
         cpf: cpf_pre_existente
-      }, function () {
+      }, function (pessoa) {
+        should.exist(pessoa);
         done();
       }, function (e) {
         done(e);
@@ -105,6 +107,7 @@ describe('models.UsuarioFiscal', function () {
         login_fiscal_pf_pre_existente,
         senha_fiscal_pf_pre_existente)
         .then(function(usuario_fiscal) {
+          should.exist(usuario_fiscal);
           done();
         })
         .catch(function (err) {
@@ -120,10 +123,10 @@ describe('models.UsuarioFiscal', function () {
           done('Nao deve aceitar senha errada');
         })
         .catch(function (err) {
-          if (err.authentication_event) {
-            return done();
-          }
-          done(err);
+          should.exist(err);
+          should.exist(err.authentication_event);
+          err.authentication_event.should.be.true;
+          done();
         });
     });
 
@@ -135,10 +138,10 @@ describe('models.UsuarioFiscal', function () {
           done('Nao deve aceitar login errada');
         })
         .catch(function (err) {
-          if (err.authentication_event) {
-            return done();
-          }
-          done(err);
+          should.exist(err);
+          should.exist(err.authentication_event);
+          err.authentication_event.should.be.true;
+          done();
         });
     });
 
