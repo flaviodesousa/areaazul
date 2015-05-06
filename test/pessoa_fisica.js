@@ -1,7 +1,6 @@
 'use strict';
 
 var should = require('should');
-var moment = require('moment');
 
 var AreaAzul = require('../areaazul');
 var Pessoa = AreaAzul.models.pessoa.Pessoa;
@@ -46,11 +45,17 @@ describe('models.PessoaFisica', function () {
         email: 'preexistente@example.com',
         telefone: '0',
         cpf: cpf_teste,
-        //data_nascimento: new Date(1981, 11, 13),
-        //sexo: 'feminino',
-      }, function () { // then
+        data_nascimento: new Date(1981, 11, 13),
+        sexo: 'feminino'
+      })
+      .then(function (pf) {
+        should.exist(pf);
+        should.exist(pf.attributes);
+        should.exist(pf.attributes.cpf);
+        pf.attributes.cpf.should.be.exactly(cpf_teste);
         done();
-      }, function (e) { // fail
+      })
+      .catch(function (e) {
         done(e);
       });
     });

@@ -1,11 +1,8 @@
+'use strict';
+
 var _ = require('lodash');
-var Promise = require('bluebird');
-var bcrypt = require('bcrypt');
-var Areaazul_mailer = require('areaazul-mailer');
-var moment = require('moment');
 var util = require('./util');
 
-var app = require('../../areaazul');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa').Pessoa;
 var PessoaFisica = require('./pessoafisica').PessoaFisica;
@@ -63,7 +60,7 @@ var UsuarioFiscal = Bookshelf.Model.extend({
   }
 
 }, {
-  cadastrar: function (tax, then, fail) {
+  cadastrar: function (tax) {
     var Fiscal = this;
     var fiscal = null;
 
@@ -74,11 +71,11 @@ var UsuarioFiscal = Bookshelf.Model.extend({
       senha = util.criptografa(tax.senha);
     }
 
-    Bookshelf.transaction(function (t) {
-      var trx = {transacting: t};
-      var trx_ins = _.merge(trx, {method: 'insert'});
+    return Bookshelf.transaction(function (t) {
+      var trx = { transacting: t };
+      var trx_ins = _.merge(trx, { method: 'insert' });
       // verifica se a pessoa fisica ja' existe
-      PessoaFisica
+      return PessoaFisica
         .forge({cpf: tax.cpf})
         .fetch()
         .then(function (pessoa_fisica) {
@@ -87,69 +84,45 @@ var UsuarioFiscal = Bookshelf.Model.extend({
             return pessoa_fisica;
           }
           // caso nao exista, criar a pessoa fisica
-          return new Pessoa({
-            nome: tax.nome,
-            email: tax.email,
-            telefone: tax.telefone,
-            ativo: true
-          })
-            .save(null, trx)
-            .then(function (pessoa) {
-              return new PessoaFisica({
-                cpf: tax.cpf,
-                data_nascimento: tax.data_nascimento,
-                sexo: tax.sexo,
-                ativo: true,
-                pessoa_id: pessoa.get('id_pessoa')
-              })
-                .save(null, trx_ins);
-            });
+          return PessoaFisica
+            ._cadastrar(tax, trx);
         })
         .then(function (pessoa_fisica) {
-          return new Fiscal({
-            login: tax.login,
-            senha: senha,
-            primeiro_acesso: true,
-            ativo: true,
-            pessoa_id: pessoa_fisica.get('pessoa_id')
-          })
+          return Fiscal
+            .forge({
+              login: tax.login,
+              senha: senha,
+              primeiro_acesso: true,
+              ativo: true,
+              pessoa_id: pessoa_fisica.get('pessoa_id')
+            })
             .save(null, trx_ins);
         })
         .then(function (f) {
           fiscal = f;
-          trx.transacting.commit();
-          return fiscal;
-        })
-        .catch(function (err) {
-          trx.transacting.rollback();
-          throw err;
+          return f;
         });
     })
-      .then(
-        function () {
-          then(fiscal);
-        },
-        function (e) {
-          fail(e);
-        }
-      );
+      .then(function () {
+          return fiscal;
+      });
   },
   valido: function (login, senha) {
     var UsuarioFiscal = this;
+    var err;
     return UsuarioFiscal
       .forge({login: login})
       .fetch()
       .then(function(usuario_fiscal) {
         if (usuario_fiscal === null) {
-          var err = new Error("login invalido: " + login);
+          err = new Error("login invalido: " + login);
           err.authentication_event = true;
           throw err;
         }
-        var hash_senha = util.criptografa(senha);
         if (util.senhaValida(senha, usuario_fiscal.get('senha'))) {
           return usuario_fiscal;
         } else {
-          var err = new Error("senha incorreta");
+          err = new Error("senha incorreta");
           err.authentication_event = true;
           throw err;
         }

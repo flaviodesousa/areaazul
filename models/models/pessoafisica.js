@@ -4,7 +4,6 @@ var _ = require('lodash');
 var validator = require("validator");
 var validation = require("./validation");
 var util = require('./util');
-var logger = require('winston');
 
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa').Pessoa;
@@ -13,43 +12,42 @@ var PessoaFisica = Bookshelf.Model.extend({
   tableName: 'pessoa_fisica',
   idAttribute: 'pessoa_id'
 }, {
-  cadastrar: function (tax, then, fail) {
+  _cadastrar: function(pf, options) {
+    var options_ins = _.merge(options||{}, {method: 'insert'});
+    return Pessoa
+      .forge({
+        nome: pf.nome,
+        email: pf.email,
+        telefone: pf.telefone,
+        ativo: true
+      })
+      .save(null, options)
+      .then(function (pessoa) {
+        return PessoaFisica
+          .forge({
+            cpf: pf.cpf,
+            data_nascimento: pf.data_nascimento,
+            sexo: pf.sexo,
+            ativo: true,
+            pessoa_id: pessoa.id
+          })
+          .save(null, options_ins);
+      });
+  },
+  cadastrar: function (tax) {
     var pessoa_fisica = null;
     var PessoaFisica = this;
 
-    Bookshelf.transaction(function (t) {
-      var trx = {transacting: t};
-      var trx_ins = _.merge(trx, {method: 'insert'});
-
-      return new Pessoa({
-        nome: tax.nome,
-        email: tax.email,
-        telefone: tax.telefone,
-        ativo: true
-      })
-        .save(null, trx)
-        .then(function (pessoa) {
-          return new PessoaFisica({
-            cpf: tax.cpf,
-            data_nascimento: tax.data_nascimento,
-            sexo: tax.sexo,
-            ativo: true,
-            pessoa_id: pessoa.get('id_pessoa')
-          })
-            .save(null, trx_ins);
-        })
-        .then(function (pf) {
+    return Bookshelf.transaction(function (t) {
+      return PessoaFisica
+        ._cadastrar(tax, {transacting: t})
+        .then(function(pf) {
           pessoa_fisica = pf;
         });
-    })
-      .then(
-        function () {
-          then(pessoa_fisica);
-        },
-        function (e) {
-          fail(e);
-        }
-      );
+      })
+      .then(function () {
+        return pessoa_fisica;
+      });
   },
   CPFnovo: function (person, then, fail) {
     this

@@ -57,9 +57,11 @@ describe('models.UsuarioFiscal', function () {
           nome: 'PF preexistente',
           email: 'preexistente@example.com',
           cpf: cpf_pre_existente,
-        }, function () { // then
+        })
+        .then(function () { // then
           done();
-        }, function (e) { // fail
+        })
+        .catch(function (e) { // fail
           done(e);
         });
       });
@@ -73,10 +75,12 @@ describe('models.UsuarioFiscal', function () {
         nome: 'Fiscal Teste',
         email: 'fiscal-teste@example.com',
         cpf: cpf_nao_existente
-      }, function (pessoa) {
+      })
+      .then(function (pessoa) {
         should.exist(pessoa);
         done();
-      }, function (e) {
+      })
+      .catch(function (e) {
         done(e);
       });
     });
@@ -88,10 +92,12 @@ describe('models.UsuarioFiscal', function () {
         nome: 'Fiscal Teste',
         email: 'fiscal-teste@example.com',
         cpf: cpf_pre_existente
-      }, function (pessoa) {
+      })
+      .then(function (pessoa) {
         should.exist(pessoa);
         done();
-      }, function (e) {
+      })
+      .catch(function (e) {
         done(e);
       });
     });
