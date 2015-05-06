@@ -1,7 +1,9 @@
+'use strict';
+
 var AreaAzul = require('../areaazul');
 var should = require('should');
 var Usuario = AreaAzul.models.usuario;
-/*
+
 describe('model.usuario', function() {
 
 	describe('validade()', function() {
@@ -13,13 +15,15 @@ describe('model.usuario', function() {
                 cpf: '7507584913',
                 data_nascimento: '02/02/2002',
                 sexo: ''
-    		}
+    		};
 
-			Usuario.validate(usuario);
+			var messages = Usuario.validate(usuario);
+      done();
 		});
-	
+
 	});
-	/*it('grava usuario', function(done) {
+	/*
+  it('grava usuario', function(done) {
 	 	   var usuario = {
 		        nome: '',
                 email: 'sirline',
@@ -76,6 +80,5 @@ describe('model.usuario', function() {
 
 		});
 	});
-	
+  */
 });
-*/

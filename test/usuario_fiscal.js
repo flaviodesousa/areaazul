@@ -1,13 +1,11 @@
+'use strict';
+
 var should = require('should');
-var moment = require('moment');
-var Promise = require('bluebird');
 
 var AreaAzul = require('../areaazul');
-var Fiscalizacao = AreaAzul.models.fiscalizacao;
 var UsuarioFiscal = AreaAzul.models.UsuarioFiscal;
 var Pessoa = AreaAzul.models.pessoa.Pessoa;
 var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
-var UsuariosFiscais = AreaAzul.collections.UsuariosFiscais;
 
 describe('models.UsuarioFiscal', function () {
   var cpf_pre_existente = 'fiscal-teste-pre-existente';
@@ -119,7 +117,7 @@ describe('models.UsuarioFiscal', function () {
       UsuarioFiscal.valido(
         login_fiscal_pf_pre_existente,
         senha_fiscal_pf_pre_existente + '0')
-        .then(function(usuario_fiscal) {
+        .then(function() {
           done('Nao deve aceitar senha errada');
         })
         .catch(function (err) {
@@ -134,8 +132,8 @@ describe('models.UsuarioFiscal', function () {
       UsuarioFiscal.valido(
         login_fiscal_pf_pre_existente + '0',
         senha_fiscal_pf_pre_existente)
-        .then(function(usuario_fiscal) {
-          done('Nao deve aceitar login errada');
+        .then(function() {
+          done('Nao deve aceitar login errado');
         })
         .catch(function (err) {
           should.exist(err);
