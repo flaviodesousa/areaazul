@@ -1,11 +1,11 @@
 'use strict';
 
+var _ = require('lodash');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa');
 var PessoaFisica = require('./pessoafisica');
 var UsuarioCollection = require('../collections/usuario');
 var bcrypt = require('bcrypt');
-var moment = require('moment');
 var validator = require("validator");
 var validation = require('./validation');
 var util = require('./util');
@@ -14,6 +14,57 @@ var Conta = require('./conta');
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
     idAttribute: 'id_usuario'
+}, {
+    cadastrar: function(user) {
+        var Usuario = this;
+        var login;
+        var senha;
+        var senhaGerada;
+
+        if (! user.senha) {
+            senhaGerada = util.generate();
+            senha = util.criptografa(senhaGerada);
+        } else {
+            senha = util.criptografa(user.senha);
+        }
+
+        if (! user.login) {
+            login = user.cpf;
+        } else {
+            login = user.login;
+        }
+
+        return Bookshelf.transaction(function (t) {
+            var options = { transacting: t };
+            var options_ins = _.merge(options, { method: 'insert' });
+            user = _.merge(user, { ativo: true });
+            return PessoaFisica
+                ._cadastrar(user, options)
+                .then(function (pf) {
+                    user = _.merge(user, {
+                        pessoa_id: pf.get('pessoa_id'),
+                        login: login,
+                        primeiro_acesso: true
+                    });
+                    return Usuario
+                        .forge(user)
+                        .save(null, options_ins);
+                })
+                .then(function () {
+                    return Conta
+                        .forge({
+                            data_abertura: new Date(),
+                            saldo: 0,
+                            ativo: true,
+                            pessoa_id: user.pessoa_id
+                        })
+                        .save(null, options);
+                });
+        })
+        .then(function () {
+            return util.enviarEmailConfirmacao(user, login, senhaGerada);
+        });
+    }
 });
 
 exports.Usuario = Usuario;
@@ -33,52 +84,6 @@ exports.search = function(entidade, func) {
             return func(null);
         }
         func(retorno);
-    });
-};
-
-
-exports.cadastrar = function(user, then, fail) {
-    var senhaGerada = util.generate();
-    var senha = util.criptografa(senhaGerada);
-    var dat_nascimento = moment(Date.parse(user.data_nascimento)).format("YYYY-MM-DD");
-
-    var login;
-     if(user.cpf !== null){
-        login = user.cpf;
-    }else{
-        login = user.cnpj;
-    }
-
-    var usuario = new this.Usuario({
-            'login': user.cpf,
-            'autorizacao': '3',
-            'primeiro_acesso': 'true',
-            'senha': senha,
-            'ativo': 'true'
-    });
-    var pessoa = new Pessoa.Pessoa({
-        'nome': user.nome,
-        'email': user.email,
-        'telefone': user.telefone,
-        'ativo': 'true'
-    });
-    var pessoaFisica = new PessoaFisica.PessoaFisica({
-        'cpf': user.cpf,
-        'data_nascimento': dat_nascimento,
-        'sexo': user.sexo,
-        'ativo': 'true'
-    });
-    var conta = new Conta.Conta({
-        'data_abertura': new Date(),
-        'saldo': '10.0',
-        'ativo': 'true'
-    });
-
-    Pessoa.transaction(pessoa, usuario, conta, pessoaFisica, function(model){
-        util.enviarEmailConfirmacao(user, login, senhaGerada);
-        then(model);
-    }, function(err) {
-        fail(err);
     });
 };
 
@@ -216,22 +221,22 @@ exports.desativar = function(user, then, fail) {
 
 exports.validate = function(user){
     var message = [];
-    if (validator.isNull(user.nome) || user.nome === '') {
+    if (validator.isNull(user.nome)) {
         message.push({attribute : 'nome', problem : "Nome obrigatório"});
     }
-    if (validator.isNull(user.sexo) || user.sexo === '') {
-        message.push({attribute : "sexo", problem : "Nome obrigatório"});
+    if (validator.isNull(user.sexo)) {
+        message.push({attribute : "sexo", problem : "Sexo obrigatório"});
     }
-    if (validator.isNull(user.cpf) || user.cpf === '') {
+    if (validator.isNull(user.cpf)) {
         message.push({attribute : "cpf", problem : "CPF é obrigatório"});
     }
-    if (validator.isNull(user.email) || user.email === '') {
-       message.push({attribute : "email", problem : "Email obrigatório!"});
+    if (validator.isNull(user.email)) {
+        message.push({attribute : "email", problem : "Email obrigatório!"});
     }
-    if(validator.isEmail(user.email) === false){
-       message.push({attribute: "email" , problem : "Email inválido!"});
+    if (!validator.isEmail(user.email)){
+        message.push({attribute: "email" , problem : "Email inválido!"});
     }
-    if(validation.isCPF(user.cpf) === false){
+    if(!validation.isCPF(user.cpf)){
         message.push({attribute : "cpf", problem : "CPF inválido!"});
     }
     if (user.data_nascimento === '') {

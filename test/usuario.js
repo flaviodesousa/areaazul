@@ -6,47 +6,49 @@ var Usuario = AreaAzul.models.usuario;
 
 describe('model.usuario', function() {
 
-	describe('validade()', function() {
+  describe('validade()', function() {
 		it('valida usuario', function(done) {
-		   var usuario = {
-		        nome: '',
-                email: 'sirline',
-                telefone: '',
-                cpf: '7507584913',
-                data_nascimento: '02/02/2002',
-                sexo: ''
-    		};
+		  var usuario = {
+        nome: '',
+        email: 'sirline',
+        telefone: '',
+        cpf: '7507584913',
+        data_nascimento: '02/02/2002',
+        sexo: ''
+      };
 
 			var messages = Usuario.validate(usuario);
+      should.exist(messages);
       done();
 		});
 
 	});
-	/*
-  it('grava usuario', function(done) {
-	 	   var usuario = {
-		        nome: '',
-                email: 'sirline',
-                telefone: '',
-                cpf: '7507584913',
-                data_nascimento: '02/02/2002',
-                sexo: ''
-    		}
 
-		Usuario.cadastrar(usuario,
-			function(model) {
-				done('Should not have saved!')
-			},
-			function(err) {
-				done();
-			});
+  it.skip('grava usuario', function(done) {
+    var usuario = {
+      nome: '',
+      email: 'sirline',
+      telefone: '',
+      cpf: '7507584913',
+      data_nascimento: '02/02/2002',
+      sexo: ''
+    };
+
+		Usuario
+      .cadastrar(usuario)
+      .then(function () {
+  				done('Should not have saved!');
+  		})
+      .catch(function () {
+  				done();
+  		});
 	});
 	describe('listar()', function() {
-		it('retorna uma lista de usuarios', function(done) {
+		it.skip('retorna uma lista de usuarios', function(done) {
 			Usuario.listar(function(collection) {
 					collection.toJSON({shallow: true})
 						.should.be.Array
-						.and.not.empty;
+						.and.not.empty();
 					done();
 				},
 				function(err) {
@@ -56,23 +58,21 @@ describe('model.usuario', function() {
 	});
 
 	describe('alterarSenha()', function() {
-		it('altera senha dos usuarios', function(done) {
+		it.skip('altera senha dos usuarios', function(done) {
 	    var usuario = {
-                id_usuario: 52,
-                login: "26316010257",
-                senha: "123454",
-                nova_senha:"123454",
-                conf_senha:"123454"
-        }
+        id_usuario: 52,
+        login: "26316010257",
+        senha: "123454",
+        nova_senha:"123454",
+        conf_senha:"123454"
+      };
 
-
-
-		Usuario.alterarSenha(usuario,
-			function(model) {
+  		Usuario.alterarSenha(usuario,
+			function() {
 				console.log("passei aq");
-				done()
+				done();
 			},
-			function(err) {
+			function() {
 				console.log("passei aq erro");
 				done();
 			});
@@ -80,5 +80,5 @@ describe('model.usuario', function() {
 
 		});
 	});
-  */
+
 });
