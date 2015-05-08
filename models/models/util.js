@@ -15,13 +15,13 @@ exports.enviarEmailConfirmacao = function(entidade, login, senha){
     Areaazul_mailer.enviar.emailer(message);
 }
 
-exports.enviarEmailNovaSenha = function(email, nome, senha){
+exports.enviarEmailNovaSenha = function(email, nome, uuid){
     var message = {
         from: 'Stiket <cadastro@areaazul.org>',
         to:  email,
         cc: 'cadastro@areaazul.org',
         subject: 'AreaAzul nova senha ',
-        html: '<p><b></b>  Por favor   '+ nome + ' clique no link abaixo para alterar sua senha. </br> http://demo.areaazul.org/login </br>  Senha é:  '+ senha + '.',
+        html: '<p><b></b>  Por favor   '+ nome + ' clique no link abaixo para alterar sua senha. </br> http://demo.areaazul.org/'+uuid + '.',
     }
     console.log("Message email: "+message);
     Areaazul_mailer.enviar.emailer(message);
@@ -72,3 +72,4 @@ exports.log = function(log, type) {
 exports.geradorUUIDAleatorio = function(){
     return uuid.v4();
 }
+
