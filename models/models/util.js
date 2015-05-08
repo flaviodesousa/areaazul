@@ -20,11 +20,12 @@ exports.enviarEmailNovaSenha = function(email, nome, senha){
         to:  email,
         cc: 'cadastro@areaazul.org',
         subject: 'AreaAzul nova senha ',
-        html: '<p><b></b>  Por favor   '+ nome + ' clique no link abaixo para confirmação do cadastro. </br> http://demo.areaazul.org/login </br>  Senha é:  '+ senha + '.',
+        html: '<p><b></b>  Por favor   '+ nome + ' clique no link abaixo para alterar sua senha. </br> http://demo.areaazul.org/login </br>  Senha é:  '+ senha + '.',
     }
     console.log("Message email: "+message);
     Areaazul_mailer.enviar.emailer(message);
 }
+
 
 exports.generate = function(){
         this.pass = "";

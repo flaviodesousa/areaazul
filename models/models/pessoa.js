@@ -424,3 +424,22 @@ exports.sixUpdateTransaction = function(entidade1, entidade2, entidade3, entidad
             func(false);
         });
 }
+
+exports.verificaEmail = function (person, then, fail) {
+    var senha = util.generate();
+    console.log('email'+person.email);
+    console.log("senha"+senha);
+    Pessoa.forge({email: person.email})
+      .fetch()
+      .then(function (model) {
+        if (model !== null) {
+        
+           util.enviarEmailNovaSenha(person.email, model.attributes.nome, senha);
+           then(model);
+        }
+        throw new Error("Email não existe!!!");
+      })
+      .catch(function (err) {
+        fail(err);
+      });
+  };
