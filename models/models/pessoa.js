@@ -427,8 +427,7 @@ exports.sixUpdateTransaction = function(entidade1, entidade2, entidade3, entidad
 
 exports.verificaEmail = function (person, then, fail) {
     var senha = util.generate();
-    console.log('email'+person.email);
-    console.log("senha"+senha);
+
     Pessoa.forge({email: person.email})
       .fetch()
       .then(function (model) {

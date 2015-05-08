@@ -2,6 +2,7 @@ var bcrypt = require('bcrypt');
 var Areaazul_mailer = require('areaazul-mailer');
 var moment = require('moment');
 var winston = require('winston');
+var uuid = require('node-uuid');
 
 exports.enviarEmailConfirmacao = function(entidade, login, senha){
     var message = {
@@ -68,10 +69,6 @@ exports.log = function(log, type) {
     logger.info(log);
 }
 
-exports.geradorUUID = function(){
-    function _p8(s){
-        var p =(Math.random().toString(16)+"000000000").substr(2,8);
-        return s ? "-" + p.substr(0,4) + "-" + p.substr(4,4) : p ;
-    }
-    return _p8() + _p8(true) + _p8(true) + _p8();
+exports.geradorUUIDAleatorio = function(){
+    return uuid.v4();
 }
