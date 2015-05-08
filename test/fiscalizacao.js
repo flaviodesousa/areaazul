@@ -26,11 +26,13 @@ describe('model.fiscalizacao', function () {
             email: 'fiscal-teste@example.com',
             telefone: '0',
             cpf: 'teste-fiscalizacao',
-          }, function (f) {
+          })
+          .then(function (f) {
             fiscal_id = f.get('pessoa_id');
             fiscalCriado = true;
             done();
-          }, function (e) {
+          })
+          .catch(function (e) {
             done(e);
           });
         }
