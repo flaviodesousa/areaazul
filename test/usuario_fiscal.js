@@ -104,10 +104,10 @@ describe('models.UsuarioFiscal', function () {
 
   });
 
-  describe("valido()", function() {
+  describe("autorizado()", function() {
 
     it('aceita credencial valida', function (done) {
-      UsuarioFiscal.valido(
+      UsuarioFiscal.autorizado(
         login_fiscal_pf_pre_existente,
         senha_fiscal_pf_pre_existente)
         .then(function(usuario_fiscal) {
@@ -120,7 +120,7 @@ describe('models.UsuarioFiscal', function () {
     });
 
     it('recusa credencial invalida', function (done) {
-      UsuarioFiscal.valido(
+      UsuarioFiscal.autorizado(
         login_fiscal_pf_pre_existente,
         senha_fiscal_pf_pre_existente + '0')
         .then(function() {
@@ -135,7 +135,7 @@ describe('models.UsuarioFiscal', function () {
     });
 
     it('recusa login invalido', function (done) {
-      UsuarioFiscal.valido(
+      UsuarioFiscal.autorizado(
         login_fiscal_pf_pre_existente + '0',
         senha_fiscal_pf_pre_existente)
         .then(function() {

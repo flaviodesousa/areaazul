@@ -10,32 +10,6 @@ var PessoaFisica = require('./pessoafisica').PessoaFisica;
 var UsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'usuario_fiscal',
   idAttribute: 'pessoa_id',
-  validateFiscal: function (tax) {
-
-    var pessoa = new Pessoa({
-      'nome': tax.nome,
-      'email': tax.email,
-      'telefone': tax.telefone,
-      'ativo': 'true'
-    });
-    var pessoaFisica = new PessoaFisica({
-      'cpf': tax.cpf,
-      'data_nascimento': tax.data_nascimento,
-      'sexo': tax.sexo,
-      'ativo': 'true'
-    });
-
-    if (!PessoaFisica.validate(pessoaFisica)) {
-      return false;
-    }
-
-    if (!Pessoa.validate(pessoa)) {
-      return false;
-    }
-
-    return true;
-
-  },
   desativar: function (tax, then, fail) {
     util.log('Tax: ' + tax);
     var pessoa = new Pessoa.Pessoa({
@@ -107,7 +81,7 @@ var UsuarioFiscal = Bookshelf.Model.extend({
           return fiscal;
       });
   },
-  valido: function (login, senha) {
+  autorizado: function (login, senha) {
     var UsuarioFiscal = this;
     var err;
     return UsuarioFiscal
