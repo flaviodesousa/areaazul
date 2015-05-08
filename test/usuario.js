@@ -43,6 +43,7 @@ describe('model.usuario', function() {
   				done();
   		});
 	});
+
 	describe('listar()', function() {
 		it.skip('retorna uma lista de usuarios', function(done) {
 			Usuario.listar(function(collection) {
