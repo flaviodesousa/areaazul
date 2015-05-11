@@ -428,14 +428,20 @@ exports.sixUpdateTransaction = function(entidade1, entidade2, entidade3, entidad
 exports.verificaEmail = function (person, then, fail) {
     var uuid = util.geradorUUIDAleatorio();
 
-    console.log("uuid: "+uuid);
     Pessoa.forge({email: person.email})
       .fetch()
       .then(function (model) {
         if (model !== null) {
-        
-           util.enviarEmailNovaSenha(person.email, model.attributes.nome, uuid);
-           then(model);
+           Recuperacao_senha.cadastrar(uuid,
+            function(result){
+                util.enviarEmailNovaSenha(person.email, model.attributes.nome, uuid);
+                then(model);
+            }, 
+            function(result){
+                console.log("erro no verifica email: "+result);
+                throw new Error("Erro !!!");
+           }); 
+          
         }
         throw new Error("Email não existe!!!");
       })
