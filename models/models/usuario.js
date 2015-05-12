@@ -14,6 +14,9 @@ var Conta = require('./conta');
 var Usuario = Bookshelf.Model.extend({
   tableName: 'usuario',
   idAttribute: 'id_usuario',
+  pessoaFisica: function() {
+    return this.hasOne(PessoaFisica);
+  },
 }, {
   cadastrar: function(user) {
     var Usuario = this;
@@ -104,7 +107,7 @@ exports.listar = function(then, fail) {
 
 exports.alterarSenha = function(user, then, fail) {
   new this({
-      id_usuario: user.id_usuario
+      id_usuario: user.id_usuario,
     })
       .fetch()
       .then(function(model) {
@@ -115,18 +118,18 @@ exports.alterarSenha = function(user, then, fail) {
         var hash = bcrypt.compareSync(user.senha, pwd);
         console.log('hash' + hash);
         if (hash !== false) {
-          var new_senha = util.criptografa(user.nova_senha);
+          var novaSenha = util.criptografa(user.nova_senha);
 
           model.save({
             primeiro_acesso: 'false',
-            senha: new_senha,
+            senha: novaSenha,
             ativo: 'true',
           }).then(function(model) {
-            util.log("Alterado com sucesso!");
+            util.log('Alterado com sucesso!');
             then(model);
           }).catch(function(err) {
-            util.log("Houve erro ao alterar");
-            util.log("Model: " + model.attributes);
+            util.log('Houve erro ao alterar');
+            util.log('Model: ' + model.attributes);
             fail(model.attributes);
             fail(err);
           });
@@ -140,77 +143,77 @@ exports.alterarSenha = function(user, then, fail) {
 };
 
 exports.editar = function(user, then, fail) {
-  var dat_nascimento = util.converteData(user.data_nascimento);
+  var dataDeNascimento = util.converteData(user.data_nascimento);
 
   var usuario = new this.Usuario({
-    'id_usuario': user.id_usuario,
-    'login': user.cpf,
-    'primeiro_acesso': 'true',
-    'ativo': 'true'
+    id_usuario: user.id_usuario,
+    login: user.cpf,
+    primeiro_acesso: true,
+    ativo: true,
   });
   var pessoa = new Pessoa.Pessoa({
-    'id_pessoa':user.pessoa_id,
-    'nome': user.nome,
-    'email': user.email,
-    'telefone': user.telefone,
-    'ativo': 'true'
+    id_pessoa: user.pessoa_id,
+    nome: user.nome,
+    email: user.email,
+    telefone: user.telefone,
+    ativo: true,
   });
   var pessoaFisica = new PessoaFisica.PessoaFisica({
-    'id_pessoa_fisica': user.id_pessoa_fisica,
-    'cpf': user.cpf,
-    'data_nascimento': dat_nascimento,
-    'sexo': user.sexo,
-    'ativo': 'true'
+    id_pessoa_fisica: user.id_pessoa_fisica,
+    cpf: user.cpf,
+    data_nascimento: dataDeNascimento,
+    sexo: user.sexo,
+    ativo: true,
   });
 
   Pessoa.updateTransaction(pessoa, usuario, pessoaFisica,
-  function(model){
+  function(model) {
     then(model);
-  }, function(err){
+  }, function(err) {
     fail(err);
   });
 };
 
 
-exports.procurar = function(user, then, fail){
-  Usuario.forge().query(function(qb){
-    qb.join('pessoa', 'pessoa.id_pessoa','=','usuario.pessoa_id');
-    qb.join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa');
-    qb.join('conta','pessoa.id_pessoa','=','conta.pessoa_id');
+exports.procurar = function(user, then, fail) {
+  Usuario.forge().query(function(qb) {
+    qb.join('pessoa', 'pessoa.id_pessoa', '=', 'usuario.pessoa_id');
+    qb.join('pessoa_fisica', 'pessoa_fisica.pessoa_id', '=', 'pessoa.id_pessoa');
+    qb.join('conta', 'pessoa.id_pessoa', '=', 'conta.pessoa_id');
     qb.where('usuario.id_usuario', user.id_usuario);
-    qb.select('usuario.*','pessoa.*','pessoa_fisica.*', 'conta.*');
-  }).fetch().then(function(model){
+    qb.select('usuario.*', 'pessoa.*', 'pessoa_fisica.*', 'conta.*');
+  }).fetch().then(function(model) {
     then(model);
-  }).catch(function(err){
+  }).catch(function(err) {
     fail(err);
   });
 };
 
 exports.desativar = function(user, then, fail) {
   this.procurar({id_usuario: user.id_usuario},
-    function(result){
+    function(result) {
     var pessoa = new Pessoa.Pessoa({
-      'id_pessoa':result.attributes.pessoa_id,
-      'ativo': 'false'
+      id_pessoa: result.attributes.pessoa_id,
+      ativo: false,
     });
     var pessoaFisica = new PessoaFisica.PessoaFisica({
-      'id_pessoa_fisica': result.attributes.id_pessoa_fisica,
-      'ativo': 'false'
+      id_pessoa_fisica: result.attributes.id_pessoa_fisica,
+      ativo: false,
     });
     var usuario = new Usuario({
-       'id_usuario': result.attributes.id_usuario,
-      'ativo': 'false'
+      id_usuario: result.attributes.id_usuario,
+      ativo: false,
     });
     var conta = new Conta.Conta({
-      'id_conta' : result.attributes.id_conta,
-      'data_fechamento': new Date(),
-      'ativo': 'false'
+      id_conta: result.attributes.id_conta,
+      data_fechamento: new Date(),
+      ativo: false,
     });
 
     Pessoa.updateTransaction(pessoa, usuario, conta, pessoaFisica,
-    function(model){
+    function(model) {
       then(model);
-    }, function(err){
+    }, function(err) {
       fail(err);
     });
 
@@ -218,32 +221,32 @@ exports.desativar = function(user, then, fail) {
 };
 
 
-exports.validate = function(user){
+exports.validate = function(user) {
   var message = [];
   if (validator.isNull(user.nome)) {
-    message.push({attribute : 'nome', problem : "Nome obrigatório"});
+    message.push({attribute: 'nome', problem: 'Nome obrigatório'});
   }
   if (validator.isNull(user.sexo)) {
-    message.push({attribute : "sexo", problem : "Sexo obrigatório"});
+    message.push({attribute: 'sexo', problem: 'Sexo obrigatório'});
   }
   if (validator.isNull(user.cpf)) {
-    message.push({attribute : "cpf", problem : "CPF é obrigatório"});
+    message.push({attribute: 'cpf', problem: 'CPF é obrigatório'});
   }
   if (validator.isNull(user.email)) {
-    message.push({attribute : "email", problem : "Email obrigatório!"});
+    message.push({attribute: 'email', problem: 'Email obrigatório!'});
   }
-  if (!validator.isEmail(user.email)){
-    message.push({attribute: "email" , problem : "Email inválido!"});
+  if (!validator.isEmail(user.email)) {
+    message.push({attribute: 'email' , problem: 'Email inválido!'});
   }
-  if(!validation.isCPF(user.cpf)){
-    message.push({attribute : "cpf", problem : "CPF inválido!"});
+  if (!validation.isCPF(user.cpf)) {
+    message.push({attribute: 'cpf', problem: 'CPF inválido!'});
   }
   if (user.data_nascimento === '') {
-     message.push({attribute : "data_nascimento", problem : "Data de nascimento é obrigatório!"});
+    message.push({attribute: 'data_nascimento', problem: 'Data de nascimento é obrigatório!'});
   }
 
-  for(var i = 0; i<message.length;i++){
-    console.log("Atributo: "+message[i].attribute+" Problem: "+message[i].problem);
+  for (var i = 0; i < message.length;i++) {
+    console.log('Atributo: ' + message[i].attribute + ' Problem: ' + message[i].problem);
   }
   return message;
 };
@@ -251,41 +254,41 @@ exports.validate = function(user){
 exports.validateNomeUsuario = function(user) {
   var message = [];
   if (validator.isNull(user.login) || user.login === '') {
-    message.push({attribute : 'nova_senha', problem : "Login é obrigatório!"});
+    message.push({attribute: 'nova_senha', problem: 'Login é obrigatório!'});
   }
-  if((user.login.length > 4) && (user.login.length < 8)){
-    message.push({attribute : 'login', problem : "O nome de login deve conter no minimo 4 a 8 caracteres"});
+  if ((user.login.length > 4) && (user.login.length < 8)) {
+    message.push({attribute: 'login', problem: 'O nome de login deve conter no minimo 4 a 8 caracteres'});
   }
   return message;
 };
 
 
-exports.validarSenha = function(user){
+exports.validarSenha = function(user) {
   var message = [];
-  if(validator.isNull(user.nova_senha)) {
-    message.push({attribute : 'nova_senha', problem : "Nova senha é obrigatório!"});
+  if (validator.isNull(user.nova_senha)) {
+    message.push({attribute: 'nova_senha', problem: 'Nova senha é obrigatório!'});
   }
-  if(validator.isNull(user.senha)) {
-    message.push({attribute : 'senha', problem : "Senha é obrigatório!"});
+  if (validator.isNull(user.senha)) {
+    message.push({attribute: 'senha', problem: 'Senha é obrigatório!'});
   }
-  if(validator.isNull(user.conf_senha)) {
-    message.push({attribute : 'conf_senha', problem : "Confirmação de senha é obrigatório!"});
+  if (validator.isNull(user.conf_senha)) {
+    message.push({attribute: 'conf_senha', problem: 'Confirmação de senha é obrigatório!'});
   }
-  if(validator.isNull(user.nova_senha)) {
-    message.push({attribute : 'nova_senha', problem : "As senhas devem ser iguais!"});
+  if (validator.isNull(user.nova_senha)) {
+    message.push({attribute: 'nova_senha', problem: 'As senhas devem ser iguais!'});
   }
-  if(user.senha.length < 4 && user.senha.length > 8 ){
-    message.push({attribute : 'senha', problem : "A senha deve conter no minimo 4 a 8 caracteres!"});
+  if (user.senha.length < 4 && user.senha.length > 8) {
+    message.push({attribute: 'senha', problem: 'A senha deve conter no minimo 4 a 8 caracteres!'});
   }
-  if(user.conf_senha.length < 4 && user.conf_senha.length > 8 ){
-    message.push({attribute : 'conf_senha', problem : "A confirmação de senha deve conter no minimo 4 a 8caracteres!"});
+  if (user.conf_senha.length < 4 && user.conf_senha.length > 8) {
+    message.push({attribute: 'conf_senha', problem: 'A confirmação de senha deve conter no minimo 4 a 8caracteres!'});
   }
-  if(user.nova_senha.length < 4 && user.nova_senha.length  > 8 ){
-    message.push({attribute : 'nova_senha', problem : "A nova senha deve conter no minimo 4 a 8 caracteres!"});
+  if (user.nova_senha.length < 4 && user.nova_senha.length  > 8) {
+    message.push({attribute: 'nova_senha', problem: 'A nova senha deve conter no minimo 4 a 8 caracteres!'});
   }
 
-  for(var i = 0; i<message.length;i++){
-    console.log("Atributo: "+message[i].attribute+" Problem: "+message[i].problem);
+  for (var i = 0; i < message.length;i++) {
+    console.log('Atributo: ' + message[i].attribute + ' Problem: ' + message[i].problem);
   }
 
   return message;

@@ -1,8 +1,8 @@
 'use strict';
 
 var _ = require('lodash');
-var validator = require("validator");
-var validation = require("./validation");
+var validator = require('validator');
+var validation = require('./validation');
 var util = require('./util');
 
 var Bookshelf = require('bookshelf').conexaoMain;
@@ -10,82 +10,79 @@ var Pessoa = require('./pessoa').Pessoa;
 
 var PessoaFisica = Bookshelf.Model.extend({
   tableName: 'pessoa_fisica',
-  idAttribute: 'pessoa_id'
+  idAttribute: 'pessoa_id',
 }, {
   _cadastrar: function(pf, options) {
-    var options_ins = _.merge(options||{}, {method: 'insert'});
+    var optionsInsert = _.merge(options || {}, {method: 'insert'});
     return Pessoa
       .forge({
         nome: pf.nome,
         email: pf.email,
         telefone: pf.telefone,
-        ativo: true
+        ativo: true,
       })
       .save(null, options)
-      .then(function (pessoa) {
+      .then(function(pessoa) {
         return PessoaFisica
           .forge({
             cpf: pf.cpf,
             data_nascimento: pf.data_nascimento,
             sexo: pf.sexo,
             ativo: true,
-            pessoa_id: pessoa.id
+            pessoa_id: pessoa.id,
           })
-          .save(null, options_ins);
+          .save(null, optionsInsert);
       });
   },
-  cadastrar: function (tax) {
-    var pessoa_fisica = null;
+  cadastrar: function(tax) {
+    var pessoaFisica = null;
     var PessoaFisica = this;
 
-    return Bookshelf.transaction(function (t) {
+    return Bookshelf.transaction(function(t) {
       return PessoaFisica
         ._cadastrar(tax, {transacting: t})
         .then(function(pf) {
-          pessoa_fisica = pf;
+          pessoaFisica = pf;
         });
-      })
-      .then(function () {
-        return pessoa_fisica;
+    })
+      .then(function() {
+        return pessoaFisica;
       });
   },
-  CPFnovo: function (person, then, fail) {
+  CPFnovo: function(person, then, fail) {
     this
       .forge({cpf: person.cpf})
       .fetch()
-      .then(function (model) {
+      .then(function(model) {
         if (model !== null) {
-          throw new Error("Cpf já existe!!!");
+          throw new Error('Cpf já existe!!!');
         }
         then(model);
       })
-      .catch(function (err) {
+      .catch(function(err) {
         fail(err);
       });
-  }
+  },
 });
 
 exports.PessoaFisica = PessoaFisica;
 
-exports.validate = function (pessoaFisica) {
+exports.validate = function(pessoaFisica) {
 
-  if (validator.isNull(pessoaFisica.attributes.cpf) === true || pessoaFisica.attributes.cpf === '') {
-    util.log("Cpf obrigatório");
+  if (validator.isNull(pessoaFisica.attributes.cpf)) {
+    util.log('Cpf obrigatório');
     return false;
   }
 
-  if (validation.isCPF(pessoaFisica.attributes.cpf) === false) {
-    util.log("Cpf Inválido");
+  if (!validation.isCPF(pessoaFisica.attributes.cpf)) {
+    util.log('Cpf Inválido');
     return false;
   }
 
   if (pessoaFisica.attributes.data_nascimento === '') {
-    util.log("Data Nascimento obrigatório");
+    util.log('Data Nascimento obrigatório');
     return false;
   }
-  /*  if (validation.validarData(individuals.attributes.data_nascimento) == false) {
-    util.log("Data Nascimento não pode ser maior ou igual do que a data atual");
-    return false;
-  }*/
+
   return true;
 };
