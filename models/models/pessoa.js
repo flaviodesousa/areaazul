@@ -426,13 +426,13 @@ exports.sixUpdateTransaction = function(entidade1, entidade2, entidade3, entidad
 }
 
 exports.verificaEmail = function (person, then, fail) {
-    var uuid = util.geradorUUIDAleatorio();
+    var _uuid = util.geradorUUIDAleatorio();
 
     Pessoa.forge({email: person.email})
       .fetch()
       .then(function (model) {
         if (model !== null) {
-           Recuperacao_senha.cadastrar(uuid,
+           Recuperacao_senha.cadastrar({uuid: _uuid, pessoa_id: model.attributes.id_pessoa},
             function(result){
                 util.enviarEmailNovaSenha(person.email, model.attributes.nome, uuid);
                 then(model);
