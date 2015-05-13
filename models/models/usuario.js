@@ -3,17 +3,17 @@
 var _ = require('lodash');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa');
-var PessoaFisica = require('./pessoafisica');
+var PessoaFisica = require('./pessoafisica').PessoaFisica;
 var UsuarioCollection = require('../collections/usuario');
 var bcrypt = require('bcrypt');
 var validator = require('validator');
 var validation = require('./validation');
 var util = require('./util');
-var Conta = require('./conta');
+var Conta = require('./conta').Conta;
 
 var Usuario = Bookshelf.Model.extend({
   tableName: 'usuario',
-  idAttribute: 'id_usuario',
+  idAttribute: 'pessoa_id',
   pessoaFisica: function() {
     return this.hasOne(PessoaFisica);
   },
@@ -40,26 +40,28 @@ var Usuario = Bookshelf.Model.extend({
     return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
       var optionsInsert = _.merge(options, { method: 'insert' });
-      user = _.merge(user, { ativo: true });
       return PessoaFisica
         ._cadastrar(user, options)
         .then(function(pf) {
           user = _.merge(user, {
-            pessoa_id: pf.get('pessoa_id'),
-            login: login,
-            primeiro_acesso: true,
           });
           return Usuario
-            .forge(user)
+            .forge({
+              pessoa_id: pf.id,
+              login: login,
+              senha: senha,
+              primeiro_acesso: true,
+              ativo: true,
+            })
             .save(null, optionsInsert);
         })
-        .then(function() {
+        .then(function(user) {
           return Conta
             .forge({
               data_abertura: new Date(),
               saldo: 0,
               ativo: true,
-              pessoa_id: user.pessoa_id,
+              pessoa_id: user.id,
             })
             .save(null, options);
         });
@@ -92,8 +94,10 @@ exports.search = function(entidade, func) {
 
 exports.listar = function(then, fail) {
   UsuarioCollection.forge().query(function(qb) {
-    qb.join('pessoa', 'pessoa.id_pessoa', '=', 'usuario.pessoa_id');
-    qb.join('pessoa_fisica', 'pessoa_fisica.pessoa_id', '=', 'pessoa.id_pessoa');
+    qb.join('pessoa',
+      'pessoa.id_pessoa', 'usuario.pessoa_id');
+    qb.join('pessoa_fisica',
+      'pessoa_fisica.pessoa_id', 'pessoa.id_pessoa');
     qb.where('usuario.ativo', '=', 'true');
     qb.select('usuario.*');
     qb.select('pessoa.*');
@@ -177,9 +181,12 @@ exports.editar = function(user, then, fail) {
 
 exports.procurar = function(user, then, fail) {
   Usuario.forge().query(function(qb) {
-    qb.join('pessoa', 'pessoa.id_pessoa', '=', 'usuario.pessoa_id');
-    qb.join('pessoa_fisica', 'pessoa_fisica.pessoa_id', '=', 'pessoa.id_pessoa');
-    qb.join('conta', 'pessoa.id_pessoa', '=', 'conta.pessoa_id');
+    qb.join('pessoa',
+      'pessoa.id_pessoa', '=', 'usuario.pessoa_id');
+    qb.join('pessoa_fisica',
+      'pessoa_fisica.pessoa_id', '=', 'pessoa.id_pessoa');
+    qb.join('conta',
+      'pessoa.id_pessoa', '=', 'conta.pessoa_id');
     qb.where('usuario.id_usuario', user.id_usuario);
     qb.select('usuario.*', 'pessoa.*', 'pessoa_fisica.*', 'conta.*');
   }).fetch().then(function(model) {
@@ -223,41 +230,72 @@ exports.desativar = function(user, then, fail) {
 
 exports.validate = function(user) {
   var message = [];
+
   if (validator.isNull(user.nome)) {
-    message.push({attribute: 'nome', problem: 'Nome obrigatório'});
-  }
-  if (validator.isNull(user.sexo)) {
-    message.push({attribute: 'sexo', problem: 'Sexo obrigatório'});
-  }
-  if (validator.isNull(user.cpf)) {
-    message.push({attribute: 'cpf', problem: 'CPF é obrigatório'});
-  }
-  if (validator.isNull(user.email)) {
-    message.push({attribute: 'email', problem: 'Email obrigatório!'});
-  }
-  if (!validator.isEmail(user.email)) {
-    message.push({attribute: 'email' , problem: 'Email inválido!'});
-  }
-  if (!validation.isCPF(user.cpf)) {
-    message.push({attribute: 'cpf', problem: 'CPF inválido!'});
-  }
-  if (user.data_nascimento === '') {
-    message.push({attribute: 'data_nascimento', problem: 'Data de nascimento é obrigatório!'});
+    message.push({
+      attribute: 'nome',
+      problem: 'Nome obrigatório',
+    });
   }
 
-  for (var i = 0; i < message.length;i++) {
-    console.log('Atributo: ' + message[i].attribute + ' Problem: ' + message[i].problem);
+  if (validator.isNull(user.sexo)) {
+    message.push({
+      attribute: 'sexo',
+      problem: 'Sexo obrigatório',
+    });
   }
+
+  if (validator.isNull(user.cpf)) {
+    message.push({
+      attribute: 'cpf',
+      problem: 'CPF é obrigatório',
+    });
+  }
+
+  if (validator.isNull(user.email)) {
+    message.push({
+      attribute: 'email',
+      problem: 'Email obrigatório!',
+    });
+  }
+
+  if (!validator.isEmail(user.email)) {
+    message.push({
+      attribute: 'email' ,
+      problem: 'Email inválido!',
+    });
+  }
+
+  if (!validation.isCPF(user.cpf)) {
+    message.push({
+      attribute: 'cpf',
+      problem: 'CPF inválido!',
+    });
+  }
+
+  if (user.data_nascimento === '') {
+    message.push({
+      attribute: 'data_nascimento',
+      problem: 'Data de nascimento é obrigatório!',
+    });
+  }
+
   return message;
 };
 
 exports.validateNomeUsuario = function(user) {
   var message = [];
   if (validator.isNull(user.login) || user.login === '') {
-    message.push({attribute: 'nova_senha', problem: 'Login é obrigatório!'});
+    message.push({
+      attribute: 'nova_senha',
+      problem: 'Login é obrigatório!',
+    });
   }
-  if ((user.login.length > 4) && (user.login.length < 8)) {
-    message.push({attribute: 'login', problem: 'O nome de login deve conter no minimo 4 a 8 caracteres'});
+  if ((user.login.length < 4) || (user.login.length > 32)) {
+    message.push({
+      attribute: 'login',
+      problem: 'O nome de login deve conter de 4 a 32 caracteres',
+    });
   }
   return message;
 };
@@ -266,29 +304,46 @@ exports.validateNomeUsuario = function(user) {
 exports.validarSenha = function(user) {
   var message = [];
   if (validator.isNull(user.nova_senha)) {
-    message.push({attribute: 'nova_senha', problem: 'Nova senha é obrigatório!'});
+    message.push({
+      attribute: 'nova_senha',
+      problem: 'Nova senha é obrigatória!',
+    });
   }
   if (validator.isNull(user.senha)) {
-    message.push({attribute: 'senha', problem: 'Senha é obrigatório!'});
+    message.push({
+      attribute: 'senha',
+      problem: 'Senha é obrigatória!',
+    });
   }
   if (validator.isNull(user.conf_senha)) {
-    message.push({attribute: 'conf_senha', problem: 'Confirmação de senha é obrigatório!'});
+    message.push({
+      attribute: 'conf_senha',
+      problem: 'Confirmação de senha é obrigatória!',
+    });
   }
-  if (validator.isNull(user.nova_senha)) {
-    message.push({attribute: 'nova_senha', problem: 'As senhas devem ser iguais!'});
+  if (user.nova_senha !== user.conf_senha) {
+    message.push({
+      attribute: 'conf_senha',
+      problem: 'As senhas devem ser iguais!',
+    });
   }
-  if (user.senha.length < 4 && user.senha.length > 8) {
-    message.push({attribute: 'senha', problem: 'A senha deve conter no minimo 4 a 8 caracteres!'});
+  if (user.senha.length < 4) {
+    message.push({
+      attribute: 'senha',
+      problem: 'A senha deve conter no minimo 4 caracteres!',
+    });
   }
   if (user.conf_senha.length < 4 && user.conf_senha.length > 8) {
-    message.push({attribute: 'conf_senha', problem: 'A confirmação de senha deve conter no minimo 4 a 8caracteres!'});
+    message.push({
+      attribute: 'conf_senha',
+      problem: 'A confirmação de senha deve conter no minimo 4 caracteres!',
+    });
   }
-  if (user.nova_senha.length < 4 && user.nova_senha.length  > 8) {
-    message.push({attribute: 'nova_senha', problem: 'A nova senha deve conter no minimo 4 a 8 caracteres!'});
-  }
-
-  for (var i = 0; i < message.length;i++) {
-    console.log('Atributo: ' + message[i].attribute + ' Problem: ' + message[i].problem);
+  if (user.nova_senha.length < 4) {
+    message.push({
+      attribute: 'nova_senha',
+      problem: 'A nova senha deve conter no minimo 4 caracteres!',
+    });
   }
 
   return message;
