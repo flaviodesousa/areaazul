@@ -4,6 +4,9 @@ module.exports = {
     client: 'postgresql',
     connection: process.env.AREAAZULDB || '/var/run/postgresql areaazul',
     debug: process.env.AREAAZULDBDEBUG !== undefined,
+    migrations: {
+      tableName: 'migrations',
+    },
   },
 
   staging: {
