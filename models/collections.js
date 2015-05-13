@@ -1,6 +1,6 @@
 exports.ativacao = require('./collections/ativacao');
 exports.consumo = require('./collections/consumo');
-exports.conta = require('./collections/conta');
+exports.Contas = require('./collections/conta');
 exports.contrato = require('./collections/contrato');
 exports.credenciado = require('./collections/credenciado');
 exports.estado = require('./collections/estado');
