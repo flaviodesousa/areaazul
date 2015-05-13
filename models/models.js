@@ -17,3 +17,4 @@ module.exports.ativacao = require('./models/ativacao');
 module.exports.usuario_has_veiculo = require('./models/usuario_has_veiculo');
 module.exports.usuario_revendedor = require('./models/usuario_revendedor');
 module.exports.UsuarioFiscal = require('./models/usuario_fiscal');
+module.exports.recuperacao_senha = require('./models/recuperacao_senha');
