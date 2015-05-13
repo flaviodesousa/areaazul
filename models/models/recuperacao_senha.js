@@ -12,7 +12,7 @@ var RecuperacaoSenha = Bookshelf.Model.extend({
 
 }, {
   cadastrar: function (password_recovery, then, fail) {
-    return RecuperacaoSenha.forge({
+    return this.forge({
         id_recuperacao_senha: password_recovery.uuid,
         pessoa_id: password_recovery.pessoa_id,
         data_expiracao: new Date()

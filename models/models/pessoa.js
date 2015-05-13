@@ -2,6 +2,7 @@ var Bookshelf = require('bookshelf').conexaoMain;
 var PesquisaPessoa = require("./pessoa");
 var validator = require("validator");
 var util = require('./util');
+var Recuperacao_senha = require('./recuperacao_senha');
 
 var Pessoa = Bookshelf.Model.extend({
     tableName: 'pessoa',
