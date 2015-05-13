@@ -21,6 +21,23 @@ var RecuperacaoSenha = Bookshelf.Model.extend({
    }).catch(function(err){
         fail(err);
    });
+  },
+  procurar: function (password_recovery, then, fail) {
+    this.forge().query(function (qb) {
+      qb.join('pessoa', 'pessoa.id_pessoa', '=', 'recuperacao_senha.pessoa_id');
+            qb.join('usuario_revendedor','usuario_revendedor.pessoa_fisica_pessoa_id','=','pessoa.id_pessoa');
+      qb.where('recuperacao_senha.id_recuperacao_senha', '=', password_recovery.id_recuperacao_senha);
+      qb.select('recuperacao_senha.*', 'pessoa.*','usuario_revendedor.*');
+      console.log("sql"+qb);
+    }).fetch().then(function (model) {
+      if(model!==null){
+          then(model);
+      }else{
+          throw new Error("Não encontrado!!!");
+      }
+    }).catch(function (err) {
+      fail(err);
+    });
   }
 });
 
