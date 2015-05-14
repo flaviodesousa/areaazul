@@ -1,6 +1,7 @@
 var Bookshelf = require('bookshelf').conexaoMain,
     bcrypt = require('bcrypt'),
-    util = require('./util');
+    util = require('./util'),
+    validator = require('validator');
 
 var Usuario_Revendedor = Bookshelf.Model.extend({
     tableName: 'usuario_revendedor',
@@ -85,6 +86,77 @@ exports.validarSenha = function(user){
 
     return message;
 }
+
+exports.validarSenhaAlteracao = function(user) {
+    console.log("user"+user);
+  var message = [];
+  if (validator.isNull(user.conf_senha)) {
+    message.push({
+      attribute: 'nova_senha',
+      problem: 'Nova senha é obrigatória!',
+    });
+  }
+  if (validator.isNull(user.senha)) {
+    message.push({
+      attribute: 'senha',
+      problem: 'Senha é obrigatória!',
+    });
+  }
+
+  if (user.senha.length > 3) {
+    message.push({
+      attribute: 'senha',
+      problem: 'A senha deve conter no minimo 4 caracteres!',
+    });
+  }
+
+  if (user.conf_senha.length > 3) {
+    message.push({
+      attribute: 'nova_senha',
+      problem: 'A nova senha deve conter no minimo 4 caracteres!',
+    });
+  }
+  if (user.conf_senha === user.senha) {
+    message.push({
+      attribute: 'nova_senha, senha',
+      problem: 'As senhas devem ser iguais!',
+    });
+  }
+  return message;
+};
+
+exports.alterarSenhaRecuperacao = function(user, then, fail) {
+
+ new this.Usuario_Revendedor({
+   pessoa_fisica_pessoa_id: user.pessoa_fisica_pessoa_id,
+   })
+    .fetch()
+      .then(function(model) {
+       if (model !== null) {
+              var novaSenha = util.criptografa(user.senha);
+              model.save({
+                primeiro_acesso: 'false',
+                senha: novaSenha,
+                ativo: 'true',
+              }).then(function(model) {
+                util.log('Alterado com sucesso!');
+                then(model);
+              }).catch(function(err) {
+                util.log('Houve erro ao alterar');
+                util.log('Model: ' + model.attributes);
+                fail(model.attributes);
+                fail(err);
+              });
+            } else {
+             throw new Error("Não encontrado!!!");
+          }
+         })
+  .catch(function(err) {
+   console.log("erro "+err);
+       fail(err);
+     });
+};
+
 
 
 exports.compareSenha = function(password, pwd){
