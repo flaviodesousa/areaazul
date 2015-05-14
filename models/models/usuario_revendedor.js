@@ -103,20 +103,20 @@ exports.validarSenhaAlteracao = function(user) {
     });
   }
 
-  if (user.senha.length > 3) {
+  if (user.senha.length < 4) {
     message.push({
       attribute: 'senha',
       problem: 'A senha deve conter no minimo 4 caracteres!',
     });
   }
 
-  if (user.conf_senha.length > 3) {
+  if (user.conf_senha.length < 4) {
     message.push({
       attribute: 'nova_senha',
       problem: 'A nova senha deve conter no minimo 4 caracteres!',
     });
   }
-  if (user.conf_senha === user.senha) {
+  if (user.conf_senha != user.senha) {
     message.push({
       attribute: 'nova_senha, senha',
       problem: 'As senhas devem ser iguais!',
