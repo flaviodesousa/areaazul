@@ -15,7 +15,7 @@ var Usuario = Bookshelf.Model.extend({
   tableName: 'usuario',
   idAttribute: 'pessoa_id',
   pessoaFisica: function() {
-    return this.hasOne(PessoaFisica);
+    return this.hasOne(PessoaFisica, 'pessoa_id');
   },
 }, {
   cadastrar: function(user) {
