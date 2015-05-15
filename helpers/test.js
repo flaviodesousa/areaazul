@@ -6,6 +6,7 @@ var AreaAzul = require('../areaazul');
 var Fiscalizacoes = AreaAzul.collections.Fiscalizacoes;
 var UsuarioFiscal = AreaAzul.models.UsuarioFiscal;
 var Usuario = AreaAzul.models.usuario.Usuario;
+var UsuarioAdministrativo = AreaAzul.models.UsuarioAdministrativo;
 var Pessoa = AreaAzul.models.pessoa.Pessoa;
 var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
 var Contas = AreaAzul.collections.Contas;
@@ -74,6 +75,24 @@ exports.apagarUsuarioFiscalPorCPF = function(cpf) {
 exports.apagarUsuarioPorLogin = function(login) {
   var pessoaId = null;
   return Usuario
+    .forge({login: login})
+    .fetch()
+    .then(function(usuario) {
+      if (!usuario) {
+        return Promise.resolve(null);
+      }
+      pessoaId = usuario.id;
+      return usuario
+        .destroy();
+    })
+    .then(function() {
+      return _apagarPessoaFisica(pessoaId);
+    });
+};
+
+exports.apagarUsuarioAdministrativoPorLogin = function(login) {
+  var pessoaId = null;
+  return UsuarioAdministrativo
     .forge({login: login})
     .fetch()
     .then(function(usuario) {
