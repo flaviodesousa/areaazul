@@ -6,10 +6,17 @@ var util = require('./util');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa').Pessoa;
 var PessoaFisica = require('./pessoafisica').PessoaFisica;
+var Fiscalizacao = require('./fiscalizacao');
 
 var UsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'usuario_fiscal',
   idAttribute: 'pessoa_id',
+  pessoaFisica: function() {
+    return this.hasOne(PessoaFisica, 'pessoa_id');
+  },
+  fiscalizacoes: function() {
+    return this.hasMany(Fiscalizacao, 'fiscal_id');
+  },
   desativar: function(tax, then, fail) {
     util.log('Tax: ' + tax);
     var pessoa = new Pessoa.Pessoa({
