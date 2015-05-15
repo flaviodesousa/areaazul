@@ -4,7 +4,8 @@
   "private": true,
   "main": "areaazul.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "usuario_cadastrar": "./scripts/usuario_cadastrar.js"
   },
   "dependencies": {
     "areaazul-mailer": "git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git",
@@ -22,7 +23,9 @@
     "winston": "*"
   },
   "devDependencies": {
+    "gulp": "^3.8.11",
     "mocha": "*",
-    "should": "*"
+    "should": "*",
+    "yargs": "^3.9.0"
   }
 }
