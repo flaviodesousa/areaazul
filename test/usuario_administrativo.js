@@ -19,6 +19,14 @@ describe('models.UsuarioAdministrativo', function() {
       .then(function() {
         return TestHelpers
           .apagarUsuarioAdministrativoPorLogin(loginAdministrativoNaoExistente);
+      })
+      .then(function() {
+        return TestHelpers
+          .apagarPessoaFisicaPorCPF(cpfPreExistente);
+      })
+      .then(function() {
+        return TestHelpers
+          .apagarPessoaFisicaPorCPF(cpfNaoExistente);
       });
   }
 
@@ -41,7 +49,7 @@ describe('models.UsuarioAdministrativo', function() {
 
   describe('cadastrar()', function() {
 
-    it('cadastra fiscal com cpf novo', function(done) {
+    it('cadastra usuario admin com cpf novo', function(done) {
       UsuarioAdministrativo.cadastrar({
         login: loginAdministrativoNaoExistente,
         nome: 'Administrativo Teste',
@@ -57,7 +65,7 @@ describe('models.UsuarioAdministrativo', function() {
       });
     });
 
-    it('cadastra fiscal com cpf existente', function(done) {
+    it('cadastra usuario admin com cpf existente', function(done) {
       UsuarioAdministrativo.cadastrar({
         login: loginAdministrativoPreExistente,
         senha: senhaAdministrativoPreExistente,

@@ -72,6 +72,18 @@ exports.apagarUsuarioFiscalPorCPF = function(cpf) {
       });
 };
 
+exports.apagarPessoaFisicaPorCPF = function(cpf) {
+  return PessoaFisica
+    .forge({cpf: cpf})
+    .fetch()
+      .then(function(pf) {
+        if (pf === null) {
+          return Promise.resolve(null);
+        }
+        return _apagarPessoaFisica(pf.id);
+      });
+};
+
 exports.apagarUsuarioPorLogin = function(login) {
   var pessoaId = null;
   return Usuario

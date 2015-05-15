@@ -35,10 +35,15 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
       var options = { transacting: t };
       var optionsInsert = _.merge(options, { method: 'insert' });
       return PessoaFisica
-        ._cadastrar(user, options)
+        .forge({cpf: user.cpf})
+        .fetch()
         .then(function(pf) {
-          user = _.merge(user, {
-          });
+          if (!pf) {
+            return PessoaFisica._cadastrar(user, options);
+          }
+          return pf;
+        })
+        .then(function(pf) {
           return UsuarioAdministrativo
             .forge({
               pessoa_id: pf.id,
@@ -52,19 +57,19 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
     });
   },
   autorizado: function(login, senha) {
-    var UsuarioFiscal = this;
+    var UsuarioAdministrativo = this;
     var err;
-    return UsuarioFiscal
+    return UsuarioAdministrativo
       .forge({login: login})
       .fetch()
-      .then(function(usuarioFiscal) {
-        if (usuarioFiscal === null) {
+      .then(function(usuarioAdministrativo) {
+        if (usuarioAdministrativo === null) {
           err = new Error('login invalido: ' + login);
           err.authentication_event = true;
           throw err;
         }
-        if (util.senhaValida(senha, usuarioFiscal.get('senha'))) {
-          return usuarioFiscal;
+        if (util.senhaValida(senha, usuarioAdministrativo.get('senha'))) {
+          return usuarioAdministrativo;
         } else {
           err = new Error('senha incorreta');
           err.authentication_event = true;
@@ -74,4 +79,4 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
   },
 });
 
-exports = UsuarioAdministrativo;
+module.exports = UsuarioAdministrativo;

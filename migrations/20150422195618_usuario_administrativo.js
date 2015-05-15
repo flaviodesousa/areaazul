@@ -3,7 +3,7 @@
 exports.up = function(knex) {
   return knex.schema
     .createTable('usuario_administrativo', function(table) {
-      table.bigInteger('pessoa_fisica_pessoa_id')
+      table.bigInteger('pessoa_id')
           .primary()
           .references('pessoa_id').inTable('pessoa_fisica');
       table.string('login').unique().notNullable();
