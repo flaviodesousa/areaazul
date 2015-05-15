@@ -1,13 +1,15 @@
+'use strict';
+
 var Bookshelf = require('bookshelf').conexaoMain;
-var Fiscalizacao = require("../models/fiscalizacao");
+var Fiscalizacao = require('../models/fiscalizacao');
 var moment = require('moment');
 
 module.exports = Bookshelf.Collection.extend({
-  model: Fiscalizacao
+  model: Fiscalizacao,
 }, {
-  listar: function (parameters, then, fail) {
+  listar: function(parameters, then, fail) {
     this
-      .query(function (qb) {
+      .query(function(qb) {
         var params = parameters || {};
         if (params.since) {
           qb.where('timestamp', '>=',
@@ -20,11 +22,11 @@ module.exports = Bookshelf.Collection.extend({
         qb.orderBy('timestamp', 'desc');
       })
       .fetch()
-      .then(function (c) {
+      .then(function(c) {
         then(c);
       })
-      .catch(function (err) {
+      .catch(function(err) {
         fail(err);
       });
-  }
+  },
 });
