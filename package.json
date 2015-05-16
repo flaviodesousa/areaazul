@@ -4,9 +4,7 @@
   "private": true,
   "main": "areaazul.js",
   "scripts": {
-    "test": "mocha",
-    "usuario_cadastrar": "./scripts/usuario_cadastrar.js",
-    "adm_cadastrar": "./scripts/usuario_admnistrativo_cadastrar.js"
+    "test": "mocha"
   },
   "dependencies": {
     "areaazul-mailer": "git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git",
