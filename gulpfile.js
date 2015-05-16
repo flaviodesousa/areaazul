@@ -2,6 +2,4 @@
 
 var gulp = require('gulp');
 
-gulp.task('default', function() {
-  console.log('default...');
-});
+require('gulp-release-tasks')(gulp);
