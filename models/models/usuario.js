@@ -18,6 +18,27 @@ var Usuario = Bookshelf.Model.extend({
     return this.hasOne(PessoaFisica, 'pessoa_id');
   },
 }, {
+  autorizado: function(login, senha) {
+    var Usuario = this;
+    var err;
+    return Usuario
+      .forge({login: login})
+      .fetch()
+      .then(function(usuario) {
+        if (usuario === null) {
+          err = new Error('login invalido: ' + login);
+          err.authentication_event = true;
+          throw err;
+        }
+        if (util.senhaValida(senha, usuario.get('senha'))) {
+          return usuario;
+        } else {
+          err = new Error('senha incorreta');
+          err.authentication_event = true;
+          throw err;
+        }
+      });
+  },
   cadastrar: function(user) {
     var Usuario = this;
     var login;
