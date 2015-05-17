@@ -1,53 +1,52 @@
+'use strict';
+
 var AreaAzul = require('../areaazul');
-var should = require('should');
 var Ativacao = AreaAzul.models.ativacao;
-/*
+
 describe('model.ativacao', function() {
 
-	describe('Ativar()', function() {
-		it('nao grava sem usuario', function(done) {
-		   var ativacao = {
-		         veiculo_id: 17
-    		}
+  describe('Ativar()', function() {
+    it.skip('nao grava sem usuario', function(done) {
+      var ativacao = {
+        veiculo_id: 17,
+      };
 
-			Ativacao.ativar(ativacao,
-				function(model) {
-					done('Should not have saved!')
-				},
-				function(err) {
-					done();
-				});
-		});
-		it('nao grava sem veiculo', function(done) {
-		   var ativacao = {
-		          usuario_id: 31
-    		}
+      Ativacao.ativar(ativacao,
+        function() {
+          done('Should not have saved!');
+        },
+        function() {
+          done();
+        });
+    });
+    it.skip('nao grava sem veiculo', function(done) {
+      var ativacao = {
+        usuario_id: 31,
+      };
 
-			Ativacao.ativar(ativacao,
-				function(model) {
-					done('Should not have saved!')
-				},
-				function(err) {
-					done();
-				});
-		});
-		it('grava ativacao', function(done) {
-		   var ativacao = {
-		         usuario_id: 31,
-		         veiculo_id: 17
-    		}
+      Ativacao.ativar(ativacao,
+        function() {
+          done('Should not have saved!');
+        },
+        function() {
+          done();
+        });
+    });
+    it.skip('grava ativacao', function(done) {
+      var ativacao = {
+        usuario_id: 31,
+        veiculo_id: 17,
+      };
 
-			Ativacao.ativar(ativacao,
-				function(model) {
-					done()
-				},
-				function(err) {
-					done(err);
-				});
-		});
+      Ativacao.ativar(ativacao,
+        function() {
+          done();
+        },
+        function(err) {
+          done(err);
+        });
+    });
 
-	});
-	
+  });
+
 });
-
-*/

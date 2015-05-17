@@ -1,66 +1,66 @@
 'use strict';
 
-var should = require('should');
+var should = require('chai').should();
 
 var AreaAzul = require('../areaazul');
 var Pessoa = AreaAzul.models.pessoa.Pessoa;
 var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
 
-describe('models.PessoaFisica', function () {
-  var cpf_teste = 'teste-pf';
+describe('models.PessoaFisica', function() {
+  var cpfTeste = 'teste-pf';
 
-  function delete_test_data(done) {
-    var pessoa_id = null;
+  function deleteTestData(done) {
+    var pessoaId = null;
     PessoaFisica
-      .forge({cpf: cpf_teste})
+      .forge({cpf: cpfTeste})
       .fetch()
-      .then(function (pf) {
+      .then(function(pf) {
         if (pf !== null) {
-          pessoa_id = pf.get('pessoa_id');
+          pessoaId = pf.get('pessoa_id');
           return pf.destroy();
         }
       })
-      .then(function () {
-        if (pessoa_id !== null) {
+      .then(function() {
+        if (pessoaId !== null) {
           return Pessoa
-            .forge({id_pessoa: pessoa_id})
+            .forge({id_pessoa: pessoaId})
             .destroy();
         }
       })
-      .then(function () {
+      .then(function() {
         return done();
       })
-      .catch(function (e) {
+      .catch(function(e) {
         done(e);
       });
   }
 
-  before(delete_test_data);
+  before(deleteTestData);
 
-  describe('cadastrar()', function () {
+  describe('cadastrar()', function() {
 
-    it('funciona!', function (done) {
+    it('funciona!', function(done) {
       PessoaFisica.cadastrar({
         nome: 'PF preexistente',
         email: 'preexistente@example.com',
         telefone: '0',
-        cpf: cpf_teste,
+        cpf: cpfTeste,
         data_nascimento: new Date(1981, 11, 13),
-        sexo: 'feminino'
+        sexo: 'feminino',
       })
-      .then(function (pf) {
+      .then(function(pf) {
         should.exist(pf);
         should.exist(pf.attributes);
         should.exist(pf.attributes.cpf);
-        pf.attributes.cpf.should.be.exactly(cpf_teste);
+        pf.attributes.cpf.should.be.equal(cpfTeste);
         done();
       })
-      .catch(function (e) {
+      .catch(function(e) {
         done(e);
       });
     });
 
   });
 
-  after(delete_test_data);
+  after(deleteTestData);
 });

@@ -1,4 +1,6 @@
-var should = require('should');
+'use strict';
+
+var should = require('chai').should();
 
 var AreaAzul = require('../areaazul');
 var Fiscalizacao = AreaAzul.models.Fiscalizacao;
@@ -6,17 +8,17 @@ var Fiscalizacoes = AreaAzul.collections.Fiscalizacoes;
 var UsuarioFiscal = AreaAzul.models.UsuarioFiscal;
 var UsuariosFiscais = AreaAzul.collections.UsuariosFiscais;
 
-describe('model.fiscalizacao', function () {
-  var fiscal_id = null;
+describe('model.fiscalizacao', function() {
+  var fiscalId = null;
   var fiscalCriado = false;
 
-  before(function (done) {
+  before(function(done) {
     UsuariosFiscais
       .forge()
       .fetchOne()
-      .then(function (f) {
+      .then(function(f) {
         if (f) {
-          fiscal_id = f.get('pessoa_id');
+          fiscalId = f.get('pessoa_id');
           fiscalCriado = false;
           done();
         } else {
@@ -27,120 +29,118 @@ describe('model.fiscalizacao', function () {
             telefone: '0',
             cpf: 'teste-fiscalizacao',
           })
-          .then(function (f) {
-            fiscal_id = f.get('pessoa_id');
+          .then(function(f) {
+            fiscalId = f.get('pessoa_id');
             fiscalCriado = true;
             done();
           })
-          .catch(function (e) {
+          .catch(function(e) {
             done(e);
           });
         }
       });
   });
 
-  describe('cadastrar()', function () {
+  describe('cadastrar()', function() {
 
-    it('nao grava sem placa', function (done) {
+    it('nao grava sem placa', function(done) {
       Fiscalizacao.cadastrar({
         latitude: 33.5,
         longitude: 44.5,
-        fiscal_id: fiscal_id
-      }, function (model) {
-        done(new Error('Nao deveria ter gravado sem placa. id_fiscalizacao=' + model.get('id')));
-      }, function () {
+        fiscal_id: fiscalId,
+      }, function() {
+        done(new Error('Nao deveria ter gravado sem placa.'));
+      }, function() {
         done();
       });
     });
 
-    it('nao grava sem fiscal', function (done) {
+    it('nao grava sem fiscal', function(done) {
       Fiscalizacao.cadastrar({
         placa: 'xyz1234',
         latitude: 33.5,
         longitude: 34.5,
-      }, function (model) {
-        done(new Error('Nao deveria ter gravado sem fiscal_id valido. id_fiscalizacao=' + model.get('id')));
-      }, function () {
+      }, function() {
+        done(new Error('Nao deveria ter gravado sem fiscal'));
+      }, function() {
         done();
       });
     });
 
-    it('grava com placa e fiscal', function (done) {
+    it('grava com placa e fiscal', function(done) {
       Fiscalizacao.cadastrar({
         placa: 'xyz1234',
         latitude: 33.5,
         longitude: 34.5,
-        fiscal_id: fiscal_id
-      }, function () {
+        fiscal_id: fiscalId,
+      }, function() {
         done();
-      }, function (err) {
+      }, function(err) {
         done(err);
       });
     });
 
-    it('nao deve aceitar virgula decimal', function (done) {
+    it('nao deve aceitar virgula decimal', function(done) {
       Fiscalizacao.cadastrar({
         placa: 'xyz1234',
         latitude: '33,5',
         longitude: '34,5',
-        fiscal_id: fiscal_id
-      }, function (model) {
-        done(new Error('Nao deveria ter gravado com virgula decimal. id_fiscalizacao=' + model.get('id')));
-      }, function () {
+        fiscal_id: fiscalId,
+      }, function() {
+        done(new Error('Nao deveria ter gravado com virgula decimal.'));
+      }, function() {
         done();
       });
     });
 
-    it("lat/lon devem ter ate' 10 casas decimais", function (done) {
+    it('lat/lon devem ter até 10 casas decimais', function(done) {
       Fiscalizacao.cadastrar({
         placa: 'lon9999',
         latitude: '-89.9999999999',
         longitude: '-179.9999999999',
-        fiscal_id: fiscal_id
-      }, function (model) {
+        fiscal_id: fiscalId,
+      }, function(model) {
         model.attributes.latitude
-          .should.be.exactly('-89.9999999999', 'Latitude');
+          .should.be.equal('-89.9999999999', 'Latitude');
         model.attributes.longitude
-          .should.be.exactly('-179.9999999999', 'Longitude');
+          .should.be.equal('-179.9999999999', 'Longitude');
         done();
-      }, function (err) {
+      }, function(err) {
         done(err);
       });
     });
 
   });
 
-  describe('listar()', function () {
-    it('retorna uma lista de fiscalizacoes', function (done) {
+  describe('listar()', function() {
+    it('retorna uma lista de fiscalizacoes', function(done) {
       Fiscalizacoes.listar(undefined,
-        function (collection) {
-          collection.toJSON({shallow: true})
-            .should.be.Array
-            .and.not.empty;
+        function(collection) {
+          should.exist(collection);
           done();
         },
-        function (err) {
+        function(err) {
           done(err);
         });
     });
   });
 
-  after(function (done) {
+  after(function(done) {
     if (!fiscalCriado) {
-      done(); // nada a fazer...
+      done(); // Nada a fazer...
     } else {
       Fiscalizacao
-        .where('fiscal_id', fiscal_id)
+        .where('fiscal_id', fiscalId)
         .destroy()
-        .then(function () {
+        .then(function() {
           UsuarioFiscal
-            .forge({pessoa_id: fiscal_id})
+            .forge({pessoa_id: fiscalId})
             .destroy();
         })
-        .then(function () {
+        .then(function() {
           done();
         })
-        .catch(function (err) {
+        .catch(function(err) {
           done(err);
         });
     }

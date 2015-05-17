@@ -45,31 +45,31 @@ exports.apagarUsuarioFiscalPorCPF = function(cpf) {
   return PessoaFisica
     .forge({cpf: cpf})
     .fetch()
-      .then(function(pf) {
-        if (pf === null) {
-          return Promise.resolve(null);
-        }
-        pessoaId = pf.id;
-        return Fiscalizacoes
-          .forge({fiscal_id: pessoaId})
-          .fetch()
-          .then(function(fiscalizacoes) {
-            return fiscalizacoes.each(function(f) {
-              f.destroy();
-            });
+    .then(function(pf) {
+      if (pf === null) {
+        return Promise.resolve(null);
+      }
+      pessoaId = pf.id;
+      return Fiscalizacoes
+        .forge({fiscal_id: pessoaId})
+        .fetch()
+        .then(function(fiscalizacoes) {
+          return fiscalizacoes.each(function(f) {
+            f.destroy();
           });
-      })
-      .then(function() {
-        if (pessoaId === null) {
-          return Promise.resolve(null);
-        }
-        return UsuarioFiscal
-          .forge({pessoa_id: pessoaId})
-          .destroy();
-      })
-      .then(function() {
-        return _apagarPessoaFisica(pessoaId);
-      });
+        });
+    })
+    .then(function() {
+      if (pessoaId === null) {
+        return Promise.resolve(null);
+      }
+      return UsuarioFiscal
+        .forge({pessoa_id: pessoaId})
+        .destroy();
+    })
+    .then(function() {
+      return _apagarPessoaFisica(pessoaId);
+    });
 };
 
 exports.apagarPessoaFisicaPorCPF = function(cpf) {

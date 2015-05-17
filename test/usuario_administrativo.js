@@ -1,6 +1,6 @@
 'use strict';
 
-var should = require('should');
+var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
 var UsuarioAdministrativo = AreaAzul.models.UsuarioAdministrativo;
@@ -109,7 +109,7 @@ describe('models.UsuarioAdministrativo', function() {
         .catch(function(err) {
           should.exist(err);
           should.exist(err.authentication_event);
-          err.authentication_event.should.be.exactly(true);
+          err.authentication_event.should.be.true;
           done();
         });
     });
@@ -124,7 +124,7 @@ describe('models.UsuarioAdministrativo', function() {
         .catch(function(err) {
           should.exist(err);
           should.exist(err.authentication_event);
-          err.authentication_event.should.be.exactly(true);
+          err.authentication_event.should.be.true;
           done();
         });
     });

@@ -22,10 +22,10 @@
     "winston": "*"
   },
   "devDependencies": {
+    "chai": "^2.3.0",
     "gulp": "^3.8.11",
     "gulp-release-tasks": "0.0.3",
     "mocha": "*",
-    "should": "*",
     "yargs": "^3.9.0"
   }
 }
