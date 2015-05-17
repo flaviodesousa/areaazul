@@ -25,7 +25,7 @@ exports.ativar = function(activation, then, fail) {
     longitude = null;
   }
   if (validator.isNull(altitude)) {
-    altitude = 0;
+    altitude = null;
   }
 
   var ativacao = new this.Ativacao({
