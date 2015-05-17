@@ -1,3 +1,5 @@
+'use strict';
+
 var passport = require('passport');
 
 module.exports = function(app) {
@@ -24,4 +26,4 @@ module.exports = function(app) {
   app.post('/users/:id_usuario/deactivations',
     passport.authenticate('basic-usuario', { session: false }),
     app.controllers.users.deactivations_add);
-}
+};
