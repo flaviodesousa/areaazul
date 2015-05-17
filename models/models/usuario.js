@@ -10,12 +10,18 @@ var validator = require('validator');
 var validation = require('./validation');
 var util = require('./util');
 var Conta = require('./conta').Conta;
+var UsuarioHasVeiculo = require('./usuario_has_veiculo');
+var Veiculo = require('./veiculo').Veiculo;
 
 var Usuario = Bookshelf.Model.extend({
   tableName: 'usuario',
   idAttribute: 'pessoa_id',
   pessoaFisica: function() {
     return this.hasOne(PessoaFisica, 'pessoa_id');
+  },
+  veiculos: function() {
+    return this.hasMany(Veiculo)
+      .through(UsuarioHasVeiculo);
   },
 }, {
   autorizado: function(login, senha) {

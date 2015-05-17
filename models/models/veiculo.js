@@ -5,13 +5,16 @@ var validator = require('validator');
 var validation = require('./validation');
 var util = require('./util');
 
+var Usuario = require('./usuario').Usuario;
+var UsuarioHasVeiculo = require('./usuario_has_veiculo');
+
 var Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',
   idAttribute: 'id_veiculo',
-});
-
-var UsuarioHasVeiculo = Bookshelf.Model.extend({
-  tableName: 'usuario_has_veiculo',
+  usuarios: function() {
+    return this.belongsToMany(Usuario)
+      .through(UsuarioHasVeiculo);
+  },
 });
 
 
@@ -38,8 +41,8 @@ exports.cadastrar  = function(vehicle, then, fail) {
   Bookshelf.transaction(function(t) {
     veiculo.save(null, {
       transacting: t,
-    }).
-            then(function(veiculo) {
+    })
+    .then(function(veiculo) {
               UsuarioHasVeiculo.save({
                 veiculo_id: veiculo.id,
               }, {
