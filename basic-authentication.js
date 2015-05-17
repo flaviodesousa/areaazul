@@ -1,18 +1,31 @@
-var passport = require('passport')
+'use strict';
+
+var passport = require('passport');
 var util = require('util');
 var BasicStrategy = require('passport-http').BasicStrategy;
 
-function fiscalVerify (username, password, done) {
+var AreaAzul = require('areaazul');
+var UsuarioFiscal = AreaAzul.models.UsuarioFiscal;
+var Usuario = AreaAzul.models.usuario.Usuario;
+
+function fiscalVerify(username, password, done) {
   process.nextTick(function() {
-    console.log('u=' + username + '/p=' + password)
-    if (username === "valido") {
-      return done(null, { username: username, id: 1 });
-    } else {
-      return done(null, false);
-    }
-    return done("usuario não é valido");
+    UsuarioFiscal.autorizado(username, password)
+      .then(function(usuarioFiscal) {
+        return done(null, {
+          username: username,
+          id: usuarioFiscal.get('pessoa_id'),
+          usuarioFiscal: usuarioFiscal,
+        });
+      })
+      .catch(function(err) {
+        if (err.authentication_event) {
+          return done(null, false);
+        }
+        return done(err);
+      });
   });
-};
+}
 
 function FiscalBasicStrategy(options) {
   passport.Strategy.call(this);
@@ -24,17 +37,25 @@ function FiscalBasicStrategy(options) {
 
 util.inherits(FiscalBasicStrategy, BasicStrategy);
 
-function usuarioVerify (username, password, done) {
+function usuarioVerify(username, password, done) {
   process.nextTick(function() {
-    console.log('u=' + username + '/p=' + password)
-    if (username === "valido") {
-      return done(null, { username: username, id: 1 });
-    } else {
-      return done(null, false);
-    }
-    return done("usuario não é valido");
+    Usuario
+      .autorizado(username, password)
+      .then(function(usuario) {
+        return done(null, {
+          username: username,
+          id: usuario.id,
+          usuario: usuario.toJSON(),
+        });
+      })
+      .catch(function(err) {
+        if (err.authentication_event) {
+          return done(null, false);
+        }
+        return done(err);
+      });
   });
-};
+}
 
 function UsuarioBasicStrategy(options) {
   passport.Strategy.call(this);
