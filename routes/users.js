@@ -15,6 +15,10 @@ module.exports = function(app) {
     passport.authenticate('basic-usuario', { session: false }),
     app.controllers.users.vehicles_list);
 
+  app.post('/users/:id_usuario/vehicles',
+    passport.authenticate('basic-usuario', { session: false }),
+    app.controllers.users.vehicles_add);
+
   app.post('/users/:id_usuario/activations',
     passport.authenticate('basic-usuario', { session: false }),
     app.controllers.users.activations_add);
