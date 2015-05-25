@@ -101,7 +101,7 @@ var Usuario = Bookshelf.Model.extend({
 
 
 
-exports.Usuario = Usuario;
+module.exports = Usuario;
 
 var UsuarioCollection =  Bookshelf.Collection.extend({
   model: Usuario,

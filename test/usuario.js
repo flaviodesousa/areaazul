@@ -3,7 +3,7 @@
 var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
-var Usuario = AreaAzul.models.usuario.Usuario;
+var Usuario = AreaAzul.models.Usuario;
 
 describe('model.usuario', function() {
   var loginDeTeste = 'login-teste-unitario';

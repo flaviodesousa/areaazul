@@ -13,9 +13,9 @@ module.exports.pessoafisica = require('./models/pessoafisica');
 module.exports.pessoajuridica = require('./models/pessoajuridica');
 module.exports.recuperacao_senha = require('./models/recuperacao_senha');
 module.exports.revendedor = require('./models/revendedor');
-module.exports.usuario = require('./models/usuario');
+module.exports.Usuario = require('./models/usuario');
 module.exports.UsuarioAdministrativo =
   require('./models/usuario_administrativo');
 module.exports.UsuarioFiscal = require('./models/usuario_fiscal');
-module.exports.usuario_revendedor = require('./models/usuario_revendedor');
+module.exports.UsuarioRevendedor = require('./models/usuario_revendedor');
 module.exports.veiculo = require('./models/veiculo');
