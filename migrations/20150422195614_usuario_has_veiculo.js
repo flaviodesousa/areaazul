@@ -9,6 +9,7 @@ exports.up = function(knex) {
     table.bigInteger('veiculo_id')
       .notNullable()
       .references('id_veiculo').inTable('veiculo');
+    table.timestamp('ultima_ativacao');
   });
 };
 

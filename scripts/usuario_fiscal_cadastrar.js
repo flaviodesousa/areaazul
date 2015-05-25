@@ -9,7 +9,6 @@ var a = require('yargs').argv;
 
 if (!a.login || !a.senha) {
   console.log('--login <login> --senha <senha>');
-  console.log('  [--autorizacao "niveldeacesso"]');
   console.log('  [--nome "nome"]');
   console.log('  [--email <email>]');
   console.log('  [--telefone "telefone"]');
@@ -19,14 +18,13 @@ if (!a.login || !a.senha) {
   process.exit(0);
 }
 
-AreaAzul.models.UsuarioAdministrativo.cadastrar({
+AreaAzul.models.UsuarioFiscal.cadastrar({
   login: a.login,
   senha: a.senha,
   nome: a.nome || a.login,
   email: a.email || 'teste@areaazul.org',
   telefone: a.telefone || '1234567890',
   cpf: a.cpf || '00000000000',
-  autorizacao: a.autorizacao || 'normal',
   data_nascimento: a.nascimento && moment(a.nascimento) || moment(),
 })
   .then(function(u) {
