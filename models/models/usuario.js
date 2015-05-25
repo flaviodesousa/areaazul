@@ -95,7 +95,7 @@ var Usuario = Bookshelf.Model.extend({
     })
     .then(function() {
       return util.enviarEmailConfirmacao(user, login, senhaGerada);
-    })
+    });
   },
 });
 

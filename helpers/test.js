@@ -44,25 +44,25 @@ function _apagarPessoaFisica(id) {
     });
 }
 
-function _apagarVeiculo(id_veiculo){
-  if(!id_veiculo){
+function _apagarVeiculo(idVeiculo) {
+  if (!idVeiculo) {
     return Promise.resolve(null);
   }
   return Veiculo
-          .forge({id_veiculo: id_veiculo})
-          .then(function(veiculo){
+          .forge({id_veiculo: idVeiculo})
+          .then(function(veiculo) {
             return veiculo.destroy();
-  });
+          });
 }
 
 
 
-function _apagarRevendedor(id_revenda){
+function _apagarRevendedor(idRevenda) {
 
   var pessoaId = null;
-  
+
   return Revendedor
-    .forge({id_revendedor: id_revenda})
+    .forge({id_revendedor: idRevenda})
     .fetch()
     .then(function(revenda) {
       if (!revenda) {
@@ -75,11 +75,11 @@ function _apagarRevendedor(id_revenda){
 }
 
 
-function _apagarUsuario(id_usuario){
-    var pessoaId = null;
-    return Usuario
-      .forge({pessoa_fisica_pessoa_id: id_usuario})
-      .fetch()
+function _apagarUsuario(idUsuario) {
+  var pessoaId = null;
+  return Usuario
+    .forge({pessoa_fisica_pessoa_id: idUsuario})
+    .fetch()
       .then(function(usuario) {
         if (!usuario) {
           return Promise.resolve(null);
@@ -94,40 +94,40 @@ function _apagarUsuario(id_usuario){
 }
 
 
-function _apagarUsuarioHasVeiculo(id_usuario, id_veiculo){
+function _apagarUsuarioHasVeiculo(idUsuario, idVeiculo) {
   var usuarioId = null;
   var veiculoId = null;
 
-  if (!id_usuario || !id_veiculo) {
+  if (!idUsuario || !idVeiculo) {
     return Promise.resolve(null);
   }
 
   return UsuarioHasVeiculo
-        .forge({usuario_pessoa_id: id_usuario, veiculo_id: id_veiculo})
+        .forge({usuario_pessoa_id: idUsuario, veiculo_id: idVeiculo})
         .destroy()
-        .then(function(usuariohasveiculo){
+        .then(function(usuariohasveiculo) {
           if (!usuariohasveiculo) {
-              return Promise.resolve(null);
+            return Promise.resolve(null);
           }
 
           usuarioId = usuariohasveiculo.usuarioId;
-          veiculoId = usuariohasveiculo.veiculoId;      
+          veiculoId = usuariohasveiculo.veiculoId;
+        })
+  .then(function() {
+    return _apagarVeiculo(veiculoId);
   })
-  .then(function(){
-      return _apagarVeiculo(veiculoId);
-  })
-  .then(function(){
-      return _apagarUsuario(usuarioId);
+  .then(function() {
+    return _apagarUsuario(usuarioId);
   });
 
 }
 
-function _apagarUsuarioRevenda(id_usuario){
-    var pessoaId = null;
-    var revendedorId = null;
-    return UsuarioRevendedor
-      .forge({pessoa_fisica_pessoa_id: id_usuario})
-      .fetch()
+function _apagarUsuarioRevenda(idUsuario) {
+  var pessoaId = null;
+  var revendedorId = null;
+  return UsuarioRevendedor
+    .forge({pessoa_fisica_pessoa_id: idUsuario})
+    .fetch()
       .then(function(usuario) {
         if (!usuario) {
           return Promise.resolve(null);
@@ -138,7 +138,7 @@ function _apagarUsuarioRevenda(id_usuario){
         return usuario
           .destroy();
       })
-      .then(function(){
+      .then(function() {
         return _apagarRevendedor(revendedorId);
       })
       .then(function() {
@@ -242,16 +242,19 @@ exports.apagarAtivacaoId = function(id) {
         return Promise.resolve(null);
       }
       pessoaId = ativacao.id;
-      usuarioId = ativacao.usuario_id;
-      veiculoId = ativacao.veiculo_id;
+      console.log('ativacao--');
+      console.dir(ativacao);
+      usuarioId = ativacao.get('usuario_id');
+      veiculoId = ativacao.get('veiculo_id');
       return ativacao.destroy();
-  }).then(function(){
+    })
+    .then(function() {
       return _apagarUsuarioHasVeiculo(usuarioId, veiculoId);
-  }).then(function(){
+    })
+    .then(function() {
       return _apagarUsuarioRevenda(usuarioId);
-  });
-
-}
+    });
+};
 
 
 
