@@ -68,6 +68,7 @@ describe('model.Ativacao', function() {
         });
       })
       .then(function(user) {
+        console.log("user.attributes" + user.attributes);
         idUsuarioComun = user.get('pessoa_id');
       })
       .then(function() {
