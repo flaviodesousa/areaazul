@@ -7,6 +7,9 @@ var util = require('./util');
 
 var Usuario = require('./usuario').Usuario;
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
+var VeiculoCollection =  Bookshelf.Collection.extend({
+  model: Veiculo,
+});
 
 var Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',
@@ -15,55 +18,51 @@ var Veiculo = Bookshelf.Model.extend({
     return this.belongsToMany(Usuario)
       .through(UsuarioHasVeiculo);
   },
+},{
+
+cadastrar: function(vehicle, user) {
+
+return Bookshelf.transaction(function(t) {
+      var trx = { transacting: t };
+      var trxIns = _.merge(trx, { method: 'insert' });
+
+      return Veiculo
+        .forge({
+          placa: vehicle.placa,
+          marca: vehicle.marca,
+          modelo: vehicle.modelo,
+          cor: vehicle.cor,
+          ano_fabricado: vehicle.ano_fabricado,
+          ano_modelo: vehicle.ano_modelo,
+          ativo: true,
+        })
+        .then(function(veiculo) {
+          if (veiculo !== null) {
+            return veiculo;
+          }
+        })
+        .then(function(veiculo) {
+          return UsuarioHasVeiculo
+            .forge({
+              usuario_id: user.usuario_id,
+              veiculo_id: veiculo.get('veiculo_id'),
+            })
+            .save(null, trxIns);
+        })
+        .then(function(v) {
+          veiculo = v;
+          return v;
+        })
+      .then(function() {
+        return veiculo;
+      });
+  
+});
+}
 });
 
+module.exports = Veiculo;
 
-exports.Veiculo = Veiculo;
-
-
-var VeiculoCollection =  Bookshelf.Collection.extend({
-  model: Veiculo,
-});
-
-
-exports.cadastrar  = function(vehicle, then, fail) {
-  var veiculo = new this.Veiculo({
-    estado_id: vehicle.estado_id,
-    placa: vehicle.placa,
-    marca: vehicle.marca,
-    modelo: vehicle.modelo,
-    cor: vehicle.cor,
-    ano_fabricado: vehicle.ano_fabricado,
-    ano_modelo: vehicle.ano_modelo,
-    ativo: true,
-  });
-
-  Bookshelf.transaction(function(t) {
-    veiculo.save(null, {
-      transacting: t,
-    })
-    .then(function(veiculo) {
-              UsuarioHasVeiculo.save({
-                veiculo_id: veiculo.id,
-              }, {
-                transacting: t,
-              }).then(function(model) {
-                t.commit();
-                console.log('commit');
-                then(model);
-              }).catch(function(err) {
-                t.rollback();
-                util.log('rollback' + err);
-                fail(err);
-              });
-            });
-  }).catch(function(err) {
-    util.log('Ocorreu erro!');
-    fail(err);
-  });
-
-
-};
 
 exports.listar = function(then, fail) {
   VeiculoCollection.forge().query(function(qb) {
@@ -164,19 +163,34 @@ exports.desativar = function(vehicle, then, fail) {
 exports.validate = function(vehicle) {
   var message = [];
   if (validator.isNull(vehicle.estado_id)) {
-    message.push({attribute: 'estado', problem: 'Estado é obrigatório!'});
+    message.push({
+      attribute: 'estado', 
+      problem: 'Estado é obrigatório!'
+    });
   }
   if (validator.isNull(vehicle.placa)) {
-    message.push({attribute: 'placa', problem: 'Estado é obrigatório!'});
+    message.push({
+      attribute: 'placa', 
+      problem: 'Estado é obrigatório!'
+    });
   }
   if (validator.isNull(vehicle.modelo)) {
-    message.push({attribute: 'modelo', problem: 'Modelo é obrigatório!'});
+    message.push({
+      attribute: 'modelo', 
+      problem: 'Modelo é obrigatório!'
+    });
   }
   if (validator.isNull(vehicle.marca)) {
-    message.push({attribute: 'marca', problem: 'Marca é obrigatório!'});
+    message.push({
+      attribute: 'marca', 
+      problem: 'Marca é obrigatório!'
+    });
   }
   if (validator.isNull(vehicle.cor)) {
-    message.push({attribute: 'cor', problem: 'Cor é obrigatório!'});
+    message.push({
+      attribute: 'cor', 
+      problem: 'Cor é obrigatório!'
+    });
   }
   if (validator.isNull(vehicle.ano_fabricado)) {
     message.push({
@@ -210,3 +224,4 @@ exports.validate = function(vehicle) {
   }
   return true;
 };
+

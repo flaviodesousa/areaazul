@@ -8,11 +8,8 @@ var Revendedor = require('./revendedor');
 var Ativacao = Bookshelf.Model.extend({
   tableName: 'ativacao',
   idAttribute: 'id_ativacao',
-});
 
-exports.Ativacao = Ativacao;
-
-exports.ativar = function(activation, then, fail) {
+ativar: function(activation, then, fail) {
 
   var latitude = activation.latitude;
   var altitude = activation.longitude;
@@ -44,9 +41,9 @@ exports.ativar = function(activation, then, fail) {
     fail(err);
   });
 
-};
-
-exports.ativarPelaRevenda = function(car, then, fail) {
+}
+},{
+ativarPelaRevenda: function(car, then, fail) {
 
   var ativacao = new this.Ativacao({
     data_ativacao: new Date(),
@@ -69,7 +66,10 @@ exports.ativarPelaRevenda = function(car, then, fail) {
         },
         function(result) {
           fail(result);
-        }
-    );
+  });
+}
 
-};
+});
+
+module.exports = Ativacao;
+

@@ -5,342 +5,337 @@ var util = require('./util');
 var Recuperacao_senha = require('./recuperacao_senha');
 
 var Pessoa = Bookshelf.Model.extend({
-    tableName: 'pessoa',
-    idAttribute: 'id_pessoa'
+  tableName: 'pessoa',
+  idAttribute: 'id_pessoa'
 });
 
 exports.Pessoa = Pessoa;
 
 exports.validate = function(pessoa) {
-    if (validator.isNull(pessoa.attributes.nome) == true || pessoa.attributes.nome == '') {
-        util.log("Nome obrigatório");
-        return false;
-    } else if (validator.isNull(pessoa.attributes.telefone) == true || pessoa.attributes.telefone == '') {
-        util.log("Telefone obrigatório");
-        return false;
-    } else if (validator.isNull(pessoa.attributes.email) == true || pessoa.attributes.email == '') {
-        util.log("Email obrigatório: " + pessoa.attributes.email);
-        return false;
-    } else if (validator.isEmail(pessoa.attributes.email) == false) {
-        util.log("Email inválido");
-        return false;
-    }
-    return true;
+  if (validator.isNull(pessoa.attributes.nome) == true || pessoa.attributes.nome == '') {
+    util.log("Nome obrigatório");
+    return false;
+  } else if (validator.isNull(pessoa.attributes.telefone) == true || pessoa.attributes.telefone == '') {
+    util.log("Telefone obrigatório");
+    return false;
+  } else if (validator.isNull(pessoa.attributes.email) == true || pessoa.attributes.email == '') {
+    util.log("Email obrigatório: " + pessoa.attributes.email);
+    return false;
+  } else if (validator.isEmail(pessoa.attributes.email) == false) {
+    util.log("Email inválido");
+    return false;
+  }
+  return true;
 }
 
-exports.saveTransaction = function(entidade1, entidade2, entidade3, func){
-        Bookshelf.transaction(function(t) {
-            entidade1.save(null, {
-                transacting: t
-            }).
-            then(function(entidade1) {
-                util.log(entidade1);
-                entidade2.save({
-                    pessoa_id: entidade1.id,
-                }, {
-                    transacting: t
-                }).then(function(model, err) {
-
-                    util.log("Model"+model);
-                    entidade3.save({
-                        pessoa_id: entidade1.id,
-                    }, {
-                        transacting: t
-                    }).then(function(model, err) {
-                          util.log("Commit");
-                        t.commit();
-                    }),
-                    function() {
-                        t.rollback();
-                           util.log("rollback");
-                        func(false);
-                    }
-                });
-            });
-        }).then(function(model) {
-             util.log("Passei aq");
-             func(true);
-        }, function() {
-            util.log("Ocorreu erro");
-            func(false);
-        });
-}
-
-exports.updateTransaction = function(entidade1, entidade2, entidade3, func){
+exports.saveTransaction = function(entidade1, entidade2, entidade3, func) {
   Bookshelf.transaction(function(t) {
-            entidade1.save(null, {
-                transacting: t
-            }).
+    entidade1.save(null, {
+      transacting: t
+    }).
             then(function(entidade1) {
-                util.log(entidade1);
-                entidade2.save({
-                    pessoa_id: entidade1.id,
+              util.log(entidade1);
+              entidade2.save({
+                pessoa_id: entidade1.id,
+              }, {
+                transacting: t
+              }).then(function(model, err) {
+
+                util.log("Model" + model);
+                entidade3.save({
+                  pessoa_id: entidade1.id,
                 }, {
-                    transacting: t
-                },{patch: true}
+                  transacting: t
+                }).then(function(model, err) {
+                  util.log("Commit");
+                  t.commit();
+                }),
+                    function() {
+                      t.rollback();
+                      util.log("rollback");
+                      func(false);
+                    }
+              });
+            });
+  }).then(function(model) {
+    util.log("Passei aq");
+    func(true);
+  }, function() {
+    util.log("Ocorreu erro");
+    func(false);
+  });
+}
+
+exports.updateTransaction = function(entidade1, entidade2, entidade3, func) {
+  Bookshelf.transaction(function(t) {
+    entidade1.save(null, {
+      transacting: t
+    }).
+            then(function(entidade1) {
+              util.log(entidade1);
+              entidade2.save({
+                pessoa_id: entidade1.id,
+              }, {
+                transacting: t
+              }, {patch: true}
                 ).then(function(model, err) {
-                    util.log("Model"+model);
-                    entidade3.save({
-                        pessoa_id: entidade1.id,
-                    }, {
-                        transacting: t
-                    }, {patch: true}
+                  util.log("Model" + model);
+                  entidade3.save({
+                    pessoa_id: entidade1.id,
+                  }, {
+                    transacting: t
+                  }, {patch: true}
                     ).then(function(model, err) {
-                          util.log("Commit");
-                        t.commit();
+                      util.log("Commit");
+                      t.commit();
                     }),
                     function() {
-                        t.rollback();
-                           util.log("rollback");
-                        func(false);
+                      t.rollback();
+                      util.log("rollback");
+                      func(false);
                     }
                 });
             });
-        }).then(function(model) {
-             util.log("Passei aq");
-             func(true);
-        }, function() {
-            util.log("Ocorreu erro");
-            func(false);
-        });
+  }).then(function(model) {
+    util.log("Passei aq");
+    func(true);
+  }, function() {
+    util.log("Ocorreu erro");
+    func(false);
+  });
 }
 
-exports.transaction = function(entidade1, entidade2, entidade3, entidade4, func){
-        Bookshelf.transaction(function(t) {
-            entidade1.save(null, {
+exports.transaction = function(entidade1, entidade2, entidade3, entidade4, func) {
+  Bookshelf.transaction(function(t) {
+    entidade1.save(null, {
+      transacting: t
+    }).
+            then(function(entidade1) {
+              util.log(entidade1);
+              entidade2.save({
+                pessoa_id: entidade1.id,
+              }, {
                 transacting: t
-            }).
-            then(function(entidade1) 
-            {
-                util.log(entidade1);
-                entidade2.save({
-                    pessoa_id: entidade1.id,
+              }).then(function(model, err) {
+
+                util.log("Model" + model);
+                entidade3.save({
+                  pessoa_id: entidade1.id,
                 }, {
-                    transacting: t
+                  transacting: t
                 }).then(function(model, err) {
 
-                    util.log("Model"+model);
-                    entidade3.save({
-                        pessoa_id: entidade1.id,
-                    }, {
-                        transacting: t
-                    }).then(function(model, err) {
 
-
-                        entidade4.save({
-                            pessoa_id: entidade1.id,
-                        }, {
-                            transacting: t
-                        }).then(function(model, err) {
-                              util.log("Commit");
-                              t.commit();
-                        }),
+                  entidade4.save({
+                    pessoa_id: entidade1.id,
+                  }, {
+                    transacting: t
+                  }).then(function(model, err) {
+                    util.log("Commit");
+                    t.commit();
+                  }),
                         function() {
-                            t.rollback();
-                               util.log("rollback");
-                            func(false);
+                          t.rollback();
+                          util.log("rollback");
+                          func(false);
                         }
-                    });
                 });
+              });
             });
 
-        }).then(function(model) {
-             util.log("Passei aq");
-             func(true);
-        }, function() {
-            util.log("Ocorreu erro");
-            func(false);
-        });
+  }).then(function(model) {
+    util.log("Passei aq");
+    func(true);
+  }, function() {
+    util.log("Ocorreu erro");
+    func(false);
+  });
 }
 
-exports.transactionUpdate = function(entidade1, entidade2, entidade3, entidade4, func){
+exports.transactionUpdate = function(entidade1, entidade2, entidade3, entidade4, func) {
  
-        Bookshelf.transaction(function(t) {
-            entidade1.save(null, {
+  Bookshelf.transaction(function(t) {
+    entidade1.save(null, {
+      transacting: t
+    }).
+            then(function(entidade1) {
+              util.log(entidade1);
+              entidade2.save({
+                pessoa_id: entidade1.id,
+              }, {
                 transacting: t
-            }).
-            then(function(entidade1) 
-            {
-                util.log(entidade1);
-                entidade2.save({
-                    pessoa_id: entidade1.id,
+              }, {patch: true}).then(function(model, err) {
+
+                util.log("Model" + model);
+                entidade3.save({
+                  pessoa_id: entidade1.id,
                 }, {
-                    transacting: t
+                  transacting: t
                 }, {patch: true}).then(function(model, err) {
 
-                    util.log("Model"+model);
-                    entidade3.save({
-                        pessoa_id: entidade1.id,
+
+                  entidade4.save({
+                    pessoa_id: entidade1.id,
+                  }, {
+                    transacting: t
+                  }, {patch: true}).then(function(model, err) {
+                    util.log("Commit");
+                    t.commit();
+                  }),
+                        function() {
+                          t.rollback();
+                          util.log("rollback");
+                          func(false);
+                        }
+                });
+              });
+            });
+
+  }).then(function(model) {
+    util.log("Passei aq");
+    func(true);
+  }, function() {
+    util.log("Ocorreu erro");
+    func(false);
+  });
+}
+
+
+
+exports.fiveSaveTransaction = function(entidade1, entidade2, entidade3, entidade4, entidade5, func) {
+  Bookshelf.transaction(function(t) {
+    entidade1.save(null, {
+      transacting: t
+    }).
+            then(function(entidade1) {
+              util.log(entidade1);
+              entidade2.save({
+                pessoa_id: entidade1.id,
+              }, {
+                transacting: t
+              }).then(function(model, err) {
+
+                util.log("Model" + model);
+                entidade3.save({
+                  pessoa_id: entidade1.id,
+                }, {
+                  transacting: t
+                }).then(function(model, err) {
+                  entidade4.save({
+                    pessoa_id: entidade1.id,
+                  }, {
+                    transacting: t
+                  }).then(function(model, err) {
+                    entidade5.save({
+                      pessoa_id: entidade1.id,
                     }, {
-                        transacting: t
+                      transacting: t
+                    }).then(function(model, err) {
+                      util.log("Commit");
+                      t.commit();
+                    }),
+                      
+                        function() {
+                          t.rollback();
+                          util.log("rollback");
+                          func(false);
+                        }
+                  });
+                });
+              });
+            });
+
+  }).then(function(model) {
+    util.log("Passei aq");
+    func(true);
+  }, function() {
+    util.log("Ocorreu erro");
+    func(false);
+  });
+}
+
+exports.fiveUpdateTransaction = function(entidade1, entidade2, entidade3, entidade4, entidade5, func) {
+  Bookshelf.transaction(function(t) {
+    entidade1.save(null, {
+      transacting: t
+    }, {patch: true}).
+            then(function(entidade1) {
+              util.log(entidade1);
+              entidade2.save({
+                pessoa_id: entidade1.id,
+              }, {
+                transacting: t
+              }, {patch: true}).then(function(model, err) {
+
+                util.log("Model" + model);
+                entidade3.save({
+                  pessoa_id: entidade1.id,
+                }, {
+                  transacting: t
+                }, {patch: true}).then(function(model, err) {
+                  entidade4.save({
+                    pessoa_id: entidade1.id,
+                  }, {
+                    transacting: t
+                  }, {patch: true}).then(function(model, err) {
+                    entidade5.save({
+                      pessoa_id: entidade1.id,
+                    }, {
+                      transacting: t
                     }, {patch: true}).then(function(model, err) {
-
-
-                        entidade4.save({
-                            pessoa_id: entidade1.id,
-                        }, {
-                            transacting: t
-                        }, {patch: true}).then(function(model, err) {
-                              util.log("Commit");
-                              t.commit();
-                        }),
-                        function() {
-                            t.rollback();
-                               util.log("rollback");
-                            func(false);
-                        }
-                    });
-                });
-            });
-
-        }).then(function(model) {
-             util.log("Passei aq");
-             func(true);
-        }, function() {
-            util.log("Ocorreu erro");
-            func(false);
-        });
-}
-
-
-
-exports.fiveSaveTransaction= function(entidade1, entidade2, entidade3, entidade4, entidade5, func){
-        Bookshelf.transaction(function(t) {
-            entidade1.save(null, {
-                transacting: t
-            }).
-            then(function(entidade1) 
-            {
-                util.log(entidade1);
-                entidade2.save({
-                    pessoa_id: entidade1.id,
-                }, {
-                    transacting: t
-                }).then(function(model, err) {
-
-                    util.log("Model"+model);
-                    entidade3.save({
-                        pessoa_id: entidade1.id,
-                    }, {
-                        transacting: t
-                    }).then(function(model, err) {
-                        entidade4.save({
-                            pessoa_id: entidade1.id,
-                        }, {
-                            transacting: t
-                        }).then(function(model, err) {
-                            entidade5.save({
-                                pessoa_id: entidade1.id,
-                            }, {
-                                transacting: t
-                            }).then(function(model, err) {
-                                  util.log("Commit");
-                                  t.commit();
-                             }),
+                      util.log("Commit");
+                      t.commit();
+                    }),
                       
                         function() {
-                            t.rollback();
-                               util.log("rollback");
-                            func(false);
+                          t.rollback();
+                          util.log("rollback");
+                          func(false);
                         }
-                        });
-                    });
+                  });
                 });
+              });
             });
 
-        }).then(function(model) {
-             util.log("Passei aq");
-             func(true);
-        }, function() {
-            util.log("Ocorreu erro");
-            func(false);
-        });
+  }).then(function(model) {
+    util.log("Passei aq");
+    func(true);
+  }, function() {
+    util.log("Ocorreu erro");
+    func(false);
+  });
 }
 
-exports.fiveUpdateTransaction= function(entidade1, entidade2, entidade3, entidade4, entidade5, func){
-        Bookshelf.transaction(function(t) {
-            entidade1.save(null, {
+exports.sixSaveTransaction = function(entidade1, entidade2, entidade3, entidade4, entidade5, entidade6, func) {
+  Bookshelf.transaction(function(t) {
+    entidade1.save(null, {
+      transacting: t
+    }).
+            then(function(entidade1) {
+              util.log(entidade1);
+              entidade2.save({
+                pessoa_id: entidade1.id,
+              }, {
                 transacting: t
-            },{patch: true}).
-            then(function(entidade1) 
-            {
-                util.log(entidade1);
-                entidade2.save({
-                    pessoa_id: entidade1.id,
+              }).then(function(model, err) {
+
+                util.log("Model" + model);
+                entidade3.save({
+                  pessoa_id: entidade1.id,
                 }, {
-                    transacting: t
-                },{patch: true}).then(function(model, err) {
-
-                    util.log("Model"+model);
-                    entidade3.save({
-                        pessoa_id: entidade1.id,
-                    }, {
-                        transacting: t
-                    },{patch: true}).then(function(model, err) {
-                        entidade4.save({
-                            pessoa_id: entidade1.id,
-                        }, {
-                            transacting: t
-                        },{patch: true}).then(function(model, err) {
-                            entidade5.save({
-                                pessoa_id: entidade1.id,
-                            }, {
-                                transacting: t
-                            },{patch: true}).then(function(model, err) {
-                                  util.log("Commit");
-                                  t.commit();
-                             }),
-                      
-                        function() {
-                            t.rollback();
-                               util.log("rollback");
-                            func(false);
-                        }
-                        });
-                    });
-                });
-            });
-
-        }).then(function(model) {
-             util.log("Passei aq");
-             func(true);
-        }, function() {
-            util.log("Ocorreu erro");
-            func(false);
-        });
-}
-
-exports.sixSaveTransaction = function(entidade1, entidade2, entidade3, entidade4, entidade5, entidade6, func){
-        Bookshelf.transaction(function(t) {
-            entidade1.save(null, {
-                transacting: t
-            }).
-            then(function(entidade1) 
-            {
-                util.log(entidade1);
-                entidade2.save({
-                    pessoa_id: entidade1.id,
-                }, {
-                    transacting: t
+                  transacting: t
                 }).then(function(model, err) {
-
-                    util.log("Model"+model);
-                    entidade3.save({
-                        pessoa_id: entidade1.id,
+                  entidade4.save({
+                    pessoa_id: entidade1.id,
+                  }, {
+                    transacting: t
+                  }).then(function(model, err) {
+                    entidade5.save({
+                      pessoa_id: entidade1.id,
                     }, {
-                        transacting: t
+                      transacting: t
                     }).then(function(model, err) {
-                        entidade4.save({
-                            pessoa_id: entidade1.id,
-                        }, {
-                            transacting: t
-                        }).then(function(model, err) {
-                            entidade5.save({
-                                pessoa_id: entidade1.id,
-                            }, {
-                                transacting: t
-                            }).then(function(model, err) {
-                                  entidade6.save({
+                      entidade6.save({
                                     pessoa_id: entidade1.id,
                                   }, {
                                     transacting: t
@@ -349,103 +344,102 @@ exports.sixSaveTransaction = function(entidade1, entidade2, entidade3, entidade4
                                     t.commit();
                                   }),
                                 function() {
-                                    t.rollback();
-                                    util.log("rollback");
-                                    func(false);
+                                  t.rollback();
+                                  util.log("rollback");
+                                  func(false);
                                 }
-                             });
-                        });
                     });
+                  });
                 });
+              });
             });
 
-        }).then(function(model) {
-             util.log("Passei aq");
-             func(true);
-        }, function() {
-            util.log("Ocorreu erro");
-            func(false);
-        });
+  }).then(function(model) {
+    util.log("Passei aq");
+    func(true);
+  }, function() {
+    util.log("Ocorreu erro");
+    func(false);
+  });
 }
 
-exports.sixUpdateTransaction = function(entidade1, entidade2, entidade3, entidade4, entidade5, entidade6, func){
-        Bookshelf.transaction(function(t) {
-            entidade1.save(null, {
+exports.sixUpdateTransaction = function(entidade1, entidade2, entidade3, entidade4, entidade5, entidade6, func) {
+  Bookshelf.transaction(function(t) {
+    entidade1.save(null, {
+      transacting: t
+    }, {patch: true}).
+            then(function(entidade1) {
+              util.log(entidade1);
+              entidade2.save({
+                pessoa_id: entidade1.id,
+              }, {
                 transacting: t
-            },{patch: true}).
-            then(function(entidade1) 
-            {
-                util.log(entidade1);
-                entidade2.save({
-                    pessoa_id: entidade1.id,
-                }, {
-                    transacting: t
-                },{patch: true}).then(function(model, err) {
+              }, {patch: true}).then(function(model, err) {
 
-                    util.log("Model"+model);
-                    entidade3.save({
-                        pessoa_id: entidade1.id,
+                util.log("Model" + model);
+                entidade3.save({
+                  pessoa_id: entidade1.id,
+                }, {
+                  transacting: t
+                }, {patch: true}).then(function(model, err) {
+                  entidade4.save({
+                    pessoa_id: entidade1.id,
+                  }, {
+                    transacting: t
+                  }, {patch: true}).then(function(model, err) {
+                    entidade5.save({
+                      pessoa_id: entidade1.id,
                     }, {
-                        transacting: t
-                    },{patch: true}).then(function(model, err) {
-                        entidade4.save({
-                            pessoa_id: entidade1.id,
-                        }, {
-                            transacting: t
-                        },{patch: true}).then(function(model, err) {
-                            entidade5.save({
-                                pessoa_id: entidade1.id,
-                            }, {
-                                transacting: t
-                            },{patch: true}).then(function(model, err) {
-                                  entidade6.save({
+                      transacting: t
+                    }, {patch: true}).then(function(model, err) {
+                      entidade6.save({
                                     pessoa_id: entidade1.id,
                                   }, {
                                     transacting: t
-                                  },{patch: true}).then(function(model, err) {
+                                  }, {patch: true}).then(function(model, err) {
                                     util.log("Commit");
                                     t.commit();
                                   }),
                                 function() {
-                                    t.rollback();
-                                    util.log("rollback");
-                                    func(false);
+                                  t.rollback();
+                                  util.log("rollback");
+                                  func(false);
                                 }
-                             });
-                        });
                     });
+                  });
                 });
+              });
             });
 
-        }).then(function(model) {
-             util.log("Passei aq");
-             func(true);
-        }, function() {
-            util.log("Ocorreu erro");
-            func(false);
-        });
+  }).then(function(model) {
+    util.log("Passei aq");
+    func(true);
+  }, function() {
+    util.log("Ocorreu erro");
+    func(false);
+  });
 }
 
-exports.verificaEmail = function (person, then, fail) {
+exports.verificaEmail = function(person, then, fail) {
     var _uuid = util.geradorUUIDAleatorio();
     Pessoa.forge({email: person.email})
       .fetch()
-      .then(function (model) {
+      .then(function(model) {
         if (model !== null) {
-           Recuperacao_senha.cadastrar({uuid: _uuid, pessoa_id: model.attributes.id_pessoa},
-            function(result){
-                util.enviarEmailNovaSenha(person.email, model.attributes.nome, _uuid);
-                then(model);
+          Recuperacao_senha.cadastrar({uuid: _uuid, pessoa_id: model.attributes.id_pessoa},
+            function(result) {
+              util.enviarEmailNovaSenha(person.email, model.attributes.nome, _uuid);
+              then(model);
             }, 
-            function(result){
-                throw new Error("Erro !!!");
-           }); 
+            function(result) {
+              throw new Error("Erro !!!");
+            }); 
           
-        }else{
-             throw new Error("Email não existe!!!");
+        }else {
+          throw new Error("Email não existe!!!");
         }
       })
-      .catch(function (err) {
+      .catch(function(err) {
         fail(err);
       });
   };
