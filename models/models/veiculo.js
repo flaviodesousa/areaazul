@@ -1,5 +1,6 @@
 'use strict';
 
+var _ = require('lodash');
 var Bookshelf = require('bookshelf').conexaoMain;
 var validator = require('validator');
 var validation = require('./validation');
@@ -7,9 +8,6 @@ var util = require('./util');
 
 var Usuario = require('./usuario').Usuario;
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
-var VeiculoCollection =  Bookshelf.Collection.extend({
-  model: Veiculo,
-});
 
 var Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',
@@ -18,11 +16,11 @@ var Veiculo = Bookshelf.Model.extend({
     return this.belongsToMany(Usuario)
       .through(UsuarioHasVeiculo);
   },
-},{
+}, {
 
-cadastrar: function(vehicle, user) {
+  cadastrar: function(vehicle, user) {
 
-return Bookshelf.transaction(function(t) {
+    return Bookshelf.transaction(function(t) {
       var trx = { transacting: t };
       var trxIns = _.merge(trx, { method: 'insert' });
 
@@ -36,6 +34,7 @@ return Bookshelf.transaction(function(t) {
           ano_modelo: vehicle.ano_modelo,
           ativo: true,
         })
+        .save()
         .then(function(veiculo) {
           if (veiculo !== null) {
             return veiculo;
@@ -48,21 +47,16 @@ return Bookshelf.transaction(function(t) {
               veiculo_id: veiculo.get('veiculo_id'),
             })
             .save(null, trxIns);
-        })
-        .then(function(v) {
-          veiculo = v;
-          return v;
-        })
-      .then(function() {
-        return veiculo;
-      });
-  
-});
-}
+        });
+    });
+  },
 });
 
 module.exports = Veiculo;
 
+var VeiculoCollection =  Bookshelf.Collection.extend({
+  model: Veiculo,
+});
 
 exports.listar = function(then, fail) {
   VeiculoCollection.forge().query(function(qb) {
@@ -164,32 +158,32 @@ exports.validate = function(vehicle) {
   var message = [];
   if (validator.isNull(vehicle.estado_id)) {
     message.push({
-      attribute: 'estado', 
-      problem: 'Estado é obrigatório!'
+      attribute: 'estado',
+      problem: 'Estado é obrigatório!',
     });
   }
   if (validator.isNull(vehicle.placa)) {
     message.push({
-      attribute: 'placa', 
-      problem: 'Estado é obrigatório!'
+      attribute: 'placa',
+      problem: 'Placa é obrigatória!',
     });
   }
   if (validator.isNull(vehicle.modelo)) {
     message.push({
-      attribute: 'modelo', 
-      problem: 'Modelo é obrigatório!'
+      attribute: 'modelo',
+      problem: 'Modelo é obrigatório!',
     });
   }
   if (validator.isNull(vehicle.marca)) {
     message.push({
-      attribute: 'marca', 
-      problem: 'Marca é obrigatório!'
+      attribute: 'marca',
+      problem: 'Marca é obrigatória!',
     });
   }
   if (validator.isNull(vehicle.cor)) {
     message.push({
-      attribute: 'cor', 
-      problem: 'Cor é obrigatório!'
+      attribute: 'cor',
+      problem: 'Cor é obrigatória!',
     });
   }
   if (validator.isNull(vehicle.ano_fabricado)) {

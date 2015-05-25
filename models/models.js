@@ -4,7 +4,7 @@ module.exports.consumo = require('./models/consumo');
 module.exports.conta = require('./models/conta');
 module.exports.contrato = require('./models/contrato');
 module.exports.credenciado = require('./models/credenciado');
-module.exports.estado = require('./models/estado');
+module.exports.Estado = require('./models/estado');
 module.exports.Fiscalizacao = require('./models/fiscalizacao');
 module.exports.funcionario = require('./models/funcionario');
 module.exports.movimentacaoconta = require('./models/movimentacaoconta');
@@ -18,4 +18,4 @@ module.exports.UsuarioAdministrativo =
   require('./models/usuario_administrativo');
 module.exports.UsuarioFiscal = require('./models/usuario_fiscal');
 module.exports.UsuarioRevendedor = require('./models/usuario_revendedor');
-module.exports.veiculo = require('./models/veiculo');
+module.exports.Veiculo = require('./models/veiculo');
