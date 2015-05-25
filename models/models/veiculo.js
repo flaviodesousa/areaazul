@@ -43,7 +43,7 @@ var Veiculo = Bookshelf.Model.extend({
         .then(function(veiculo) {
           return UsuarioHasVeiculo
             .forge({
-              usuario_id: user.usuario_id,
+              usuario_id: user.id,
               veiculo_id: veiculo.get('veiculo_id'),
             })
             .save(null, trxIns);
