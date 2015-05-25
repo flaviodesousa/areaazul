@@ -4,7 +4,7 @@ var AreaAzul = require('../areaazul');
 var should = require('chai').should();
 var Veiculo = AreaAzul.models.veiculo;
 var Usuario = AreaAzul.models.Usuario;
-var Estado = AreaAzul.models.estado.Estado;
+var Estado = AreaAzul.models.Estado;
 
 describe('model.veiculo', function() {
   var usuarioTeste = 'usuarioVeiculo';
