@@ -12,6 +12,7 @@ var Usuario = AreaAzul.models.Usuario;
 var Estado = AreaAzul.models.Estado;
 
 describe('model.Ativacao', function() {
+
   var idUsuarioComum = null;
   var idVeiculo = null;
   var idEstado = null;
@@ -42,7 +43,7 @@ describe('model.Ativacao', function() {
     return TestHelpers.apagarAtivacaoId(idPreExistenteAtivacao);
   }
 
-  before(function(done) {
+    before(function(done) {
     apagarDadosDeTeste()
       .then(function() {
         return UsuarioRevendedor
@@ -83,7 +84,7 @@ describe('model.Ativacao', function() {
       })
       .then(function() {
         console.log('Estado');
-        console.dir(Estado);
+        console.log('pessoa_id'+idUsuarioComum);
         return Estado
           .forge({uf: estadoTesteUf})
           .fetch()
@@ -129,22 +130,25 @@ describe('model.Ativacao', function() {
   });
 
   describe('Ativar()', function() {
-    it.skip('grava ativacao', function(done) {
+    it('grava ativacao', function(done) {
+
       var ativacao = {
-        usuario_pessoa_id: idUsuarioComum,
-        veiculo_id: idVeiculo,
+          usuario_pessoa_id: idUsuarioComum,
+          veiculo_id: idVeiculo,
       };
 
-      Ativacao.ativar(ativacao,
-        function() {
-          done();
-        },
-        function(err) {
-          done(err);
-        });
-    });
+      Ativacao.ativar(ativacao)
+      .then(function(at) {
+              should.exist(at);
+              done();
+            })
+            .catch(function(e) {
+              done(e);
+            });
 
+      });
   });
+
 
   after(function(done) {
     apagarDadosDeTeste()
@@ -155,5 +159,4 @@ describe('model.Ativacao', function() {
         done(e);
       });
   });
-
 });
