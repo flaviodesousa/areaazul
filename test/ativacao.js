@@ -4,9 +4,7 @@ var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
 var Ativacao = AreaAzul.models.ativacao;
-var UsuarioHasVeiculo = AreaAzul.models.UsuarioHasVeiculo;
 var UsuarioRevendedor = AreaAzul.models.UsuarioRevendedor;
-var PessoaFisica = AreaAzul.models.PessoaFisica;
 var Veiculo = AreaAzul.models.Veiculo;
 var Usuario = AreaAzul.models.Usuario;
 var Estado = AreaAzul.models.Estado;
@@ -19,11 +17,8 @@ describe('model.Ativacao', function() {
   var idUsuarioRevendedor = null;
   var idPreExistenteAtivacao = null;
 
-  var cpfPreExistente = 'revendedor-teste-pre-existente';
   var cpfNaoExistente = 'revendedor-teste-nao-existente';
-  var loginRevendedorPreExistente = 'revendedor-pre-existente';
   var loginRevendedorNaoExistente = 'revendedor-nao-existente';
-  var senhaRevendedorPreExistente = 'senha-revendedor-pre-existente';
 
   var loginUsuarioComPreExistente = 'usuario-pre-existente';
   var cpfUsuarioComumPreExistente = 'usuario-comum-test';
@@ -43,7 +38,8 @@ describe('model.Ativacao', function() {
     return TestHelpers.apagarAtivacaoId(idPreExistenteAtivacao);
   }
 
-    before(function(done) {
+  before(function(done) {
+    var usuario;
     apagarDadosDeTeste()
       .then(function() {
         return UsuarioRevendedor
@@ -61,8 +57,6 @@ describe('model.Ativacao', function() {
           });
       })
       .then(function(revenda) {
-        console.log("revenda" + revenda);
-        console.log("revenda id " + revenda.get('pessoa_fisica_pessoa_id'));
         idUsuarioRevendedor = revenda.get('pessoa_fisica_pessoa_id');
       })
       .then(function() {
@@ -80,11 +74,10 @@ describe('model.Ativacao', function() {
           });
       })
       .then(function(user) {
+        usuario = user;
         idUsuarioComum = user.get('pessoa_id');
       })
       .then(function() {
-        console.log('Estado');
-        console.log('pessoa_id'+idUsuarioComum);
         return Estado
           .forge({uf: estadoTesteUf})
           .fetch()
@@ -114,39 +107,37 @@ describe('model.Ativacao', function() {
               ano_fabricado: anoFabricadoTeste,
               ano_modelo: anoModeloTeste,
               usuario_id: idUsuarioComum,
-            });
+            }, usuario);
           });
       })
       .then(function(veiculo) {
-        idVeiculo = veiculo.get('id_veiculo');
+        idVeiculo = veiculo.id;
       })
       .then(function() {
         done();
       })
       .catch(function(e) {
-        console.dir(e);
         done(e);
       });
   });
 
   describe('Ativar()', function() {
     it('grava ativacao', function(done) {
-
       var ativacao = {
-          usuario_pessoa_id: idUsuarioComum,
-          veiculo_id: idVeiculo,
+        usuario_pessoa_id: idUsuarioComum,
+        veiculo_id: idVeiculo,
       };
 
-      Ativacao.ativar(ativacao)
-      .then(function(at) {
-              should.exist(at);
-              done();
-            })
-            .catch(function(e) {
-              done(e);
-            });
-
-      });
+      Ativacao
+        .ativar(ativacao)
+        .then(function(at) {
+          should.exist(at);
+          done();
+        })
+        .catch(function(e) {
+          done(e);
+        });
+    });
   });
 
 
