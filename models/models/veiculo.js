@@ -6,7 +6,7 @@ var validator = require('validator');
 var validation = require('./validation');
 var util = require('./util');
 
-var Usuario = require('./usuario').Usuario;
+var Usuario = require('./usuario');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 
 var Veiculo = Bookshelf.Model.extend({
@@ -35,17 +35,18 @@ var Veiculo = Bookshelf.Model.extend({
         })
         .save()
         .then(function(veiculo) {
-          if (veiculo !== null) {
-            return veiculo;
-          }
-        })
-        .then(function(veiculo) {
           return UsuarioHasVeiculo
             .forge({
-              usuario_id: user.id,
-              veiculo_id: veiculo.get('veiculo_id'),
+              usuario_pessoa_id: user.id,
+              veiculo_id: veiculo.id,
             })
-            .save(null, trxIns);
+            .save(null, trxIns)
+            .then(function() {
+              // Forca retorno de veiculo
+              // Sem esta linha ele retornaria um
+              // UsuarioHasVeiculo
+              return veiculo;
+            });
         });
     });
   },
@@ -66,7 +67,6 @@ exports.listar = function(then, fail) {
     util.log('Sucesso!');
     then(collection);
   }).catch(function(err) {
-    console.log(err);
     util.log('Ocorreu erro!');
     fail(err);
   });
@@ -81,12 +81,10 @@ exports.listarVeiculosUsuario = function(user, then, fail) {
       'veiculo.id_veiculo', '=', 'usuario_has_veiculo.veiculo_id');
     qb.select('veiculo.*');
     qb.select('estado.*');
-    console.log('sql' + qb);
   }).fetch().then(function(collection) {
     util.log('Sucesso!');
     then(collection);
   }).catch(function(err) {
-    console.log(err);
     util.log('Ocorreu erro!');
     fail(err);
   });
@@ -115,7 +113,6 @@ exports.editar = function(vehicle, then, fail) {
       util.log('Sucesso!');
       then(model);
     }).catch(function(err) {
-      console.log(err);
       util.log('Ocorreu erro!');
       fail(err);
     });
@@ -126,12 +123,9 @@ exports.procurarVeiculoPorPlaca = function(vehicle, then, fail) {
   Veiculo.forge().query(function(qb) {
     qb.where('veiculo.placa', vehicle.placa);
     qb.select('veiculo.*');
-    console.log('sql: ' + qb);
   }).fetch().then(function(model) {
-      console.log('passei aq');
       then(model);
     }).catch(function(err) {
-      console.log('err' + err);
       fail(err);
     });
 
@@ -146,7 +140,6 @@ exports.desativar = function(vehicle, then, fail) {
       util.log('Sucesso!');
       then(model);
     }).catch(function(err) {
-      console.log(err);
       util.log('Ocorreu erro!');
       fail(err);
     });
