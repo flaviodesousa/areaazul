@@ -19,7 +19,6 @@ var Veiculo = Bookshelf.Model.extend({
 }, {
 
   cadastrar: function(vehicle, user) {
-
     return Bookshelf.transaction(function(t) {
       var trx = { transacting: t };
       var trxIns = _.merge(trx, { method: 'insert' });
