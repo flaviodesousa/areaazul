@@ -47,6 +47,7 @@ var Usuario = Bookshelf.Model.extend({
   },
   cadastrar: function(user) {
     var Usuario = this;
+    var usuario;
     var login;
     var senha;
     var senhaGerada;
@@ -80,7 +81,13 @@ var Usuario = Bookshelf.Model.extend({
               primeiro_acesso: true,
               ativo: true,
             })
-            .save(null, optionsInsert);
+            .save(null, optionsInsert)
+            .then(function(u) {
+              // Salvar usuario para que seja o resultado
+              // final do metodo.
+              usuario = u;
+              return u;
+            });
         })
         .then(function(user) {
           return Conta
@@ -95,6 +102,9 @@ var Usuario = Bookshelf.Model.extend({
     })
     .then(function() {
       return util.enviarEmailConfirmacao(user, login, senhaGerada);
+    })
+    .then(function() {
+      return usuario;
     });
   },
 });
