@@ -75,7 +75,7 @@ describe('model.Ativacao', function() {
       })
       .then(function(user) {
         usuario = user;
-        idUsuarioComum = user.get('pessoa_id');
+        idUsuarioComum = user.id;
       })
       .then(function() {
         return Estado
@@ -90,7 +90,7 @@ describe('model.Ativacao', function() {
           });
       })
       .then(function(estado) {
-        idEstado = estado.get('id_estado');
+        idEstado = estado.id;
       })
       .then(function() {
         return Veiculo
