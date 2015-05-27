@@ -1,3 +1,7 @@
+'use strict';
+
+
+var _ = require('lodash');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa');
 var PessoaFisica = require('./pessoafisica');
@@ -19,28 +23,11 @@ var Conta = require('./conta');
 var Revendedor = Bookshelf.Model.extend({
   tableName: 'revendedor',
   idAttribute: 'pessoa_id'
-});
 
-var RevendedorCollection =  Bookshelf.Collection.extend({
-  model: Revendedor
-});
+},
+{
 
-
-exports.getById = function(id, func) {
-  util.log('getById');
-  new Revendedor({
-    id_revendedor: id 
-  }).fetch().then(function(model, err) {
-    if (model != null)
-        var retorno = model.attributes;
-    if (err) {
-      return func(null);
-    }
-    func(retorno);
-  });
-}
-
-exports.cadastrar = function(dealer, then, fail) {
+cadastrar: function(dealer) {
   var senhaGerada = util.generate();
   var senha = util.criptografa(senhaGerada);
 
@@ -90,15 +77,17 @@ exports.cadastrar = function(dealer, then, fail) {
   });
 
 
-  if (validator.isNull(pessoaFisica.attributes.cpf) == false) {
-    this.inserir(pessoa,  pessoaFisica, revendedor, conta, usuario_revendedor, 
+ 
+   /* this.inserir(pessoa,  pessoaFisica, revendedor, conta, usuario_revendedor, 
             function(model) {
               util.enviarEmailConfirmacao(dealer, login, senhaGerada);
               then(model);
             }, function(err) {
               fail(err);
             });
-  } else {
+
+
+  /*else {
     Pessoa.fiveSaveTransaction(pessoa, revendedor, usuario_revendedor, conta, pessoaJuridica, 
             function(model) {
               util.enviarEmailConfirmacao(dealer, login, senhaGerada);
@@ -106,8 +95,30 @@ exports.cadastrar = function(dealer, then, fail) {
             }, function(err) {
               fail(err);
             });
-  }
+  }*/
+ }
+
+});
+
+var RevendedorCollection =  Bookshelf.Collection.extend({
+  model: Revendedor
+});
+
+
+exports.getById = function(id, func) {
+  util.log('getById');
+  new Revendedor({
+    id_revendedor: id 
+  }).fetch().then(function(model, err) {
+    if (model != null)
+        var retorno = model.attributes;
+    if (err) {
+      return func(null);
+    }
+    func(retorno);
+  });
 }
+
 
 exports.inserir = function(entidade1, entidade2, entidade3, entidade4, entidade5, func) {
   //pessoa,  pessoaFisica, revendedor, conta, usuario_revendedor 
@@ -241,7 +252,6 @@ exports.procurar = function(dealer, then, fail) {
     fail(err);
   });
 }
-
 
 exports.editar = function(dealer, then, fail) {
 
@@ -428,4 +438,4 @@ exports.mostrarSaldo = function(user, then, fail) {
   });
 }
 
-exports.Revendedor = Revendedor;
+module.exports = Revendedor;
