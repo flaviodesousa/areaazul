@@ -2,7 +2,10 @@ module.exports = {
 
   development: {
     client: 'postgresql',
-    connection: process.env.AREAAZULDB || '/var/run/postgresql areaazul',
+    connection: process.env.AREAAZULDB || {
+      host: '/var/run/postgresql',
+      database: 'areaazul',
+    },
     debug: process.env.AREAAZULDBDEBUG !== undefined,
     migrations: {
       tableName: 'migrations',
@@ -11,7 +14,10 @@ module.exports = {
 
   staging: {
     client: 'postgresql',
-    connection: process.env.AREAAZULDB || '/var/run/postgresql areaazul',
+    connection: process.env.AREAAZULDB || {
+      host: '/var/run/postgresql',
+      database: 'areaazul',
+    },
     pool: {
       min: 2,
       max: 10,
@@ -23,7 +29,10 @@ module.exports = {
 
   production: {
     client: 'postgresql',
-    connection: process.env.AREAAZULDB || '/var/run/postgresql areaazul',
+    connection: process.env.AREAAZULDB || {
+      host: '/var/run/postgresql',
+      database: 'areaazul',
+    },
     pool: {
       min: 2,
       max: 10,
