@@ -4,11 +4,11 @@
 var _ = require('lodash');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa');
-var PessoaFisica = require('./pessoafisica');
+var PessoaFisica = require('./pessoafisica').PessoaFisica;
 var Usuario_Revendedor = require('./usuario_revendedor');
 var Usuario = require('./usuario');
 var UsuarioCollection = require('../collections/usuario');
-var PessoaJuridica = require('./pessoajuridica');
+var PessoaJuridica = require('./pessoajuridica').PessoaJuridica;
 var PessoaJuridicaCollection = require('../collections/pessoajuridica');
 var PessoaCollection = require('../collections/pessoa');
 var RevendedorCollection = require('../collections/revendedor');
@@ -17,7 +17,7 @@ var Areaazul_mailer = require('areaazul-mailer');
 var validation = require('./validation');
 var util = require('./util');
 var validator = require("validator");
-var Conta = require('./conta');
+var Conta = require('./conta').Conta;
 
 
 var Revendedor = Bookshelf.Model.extend({
@@ -31,74 +31,76 @@ cadastrar: function(dealer) {
   var senhaGerada = util.generate();
   var senha = util.criptografa(senhaGerada);
 
-  var login;
-  if (dealer.cpf != null) {
-    login = dealer.cpf;
-  }else {
-    login = dealer.cnpj;
+  console.log("dealer"+dealer.cpf);
+
+  console.log("validator.isNull(dealer.cpf) - "+validator.isNull(dealer.cpf));
+
+  if(validator.isNull(dealer.cpf)){
+      return Bookshelf.transaction(function(t) {
+      var options = { transacting: t };
+      var optionsInsert = _.merge(options, { method: 'insert' });
+      return PessoaJuridica
+        ._cadastrar(dealer, options)
+        .then(function(pf) {
+          dealer = _.merge(dealer, {
+          });
+          return Revendedor
+            .forge({
+              ativo: true,
+              pessoa_id: pf.id,
+            })
+            .save(null, optionsInsert);
+        })
+        .then(function(revenda) {
+          return Conta
+            .forge({
+              data_abertura: new Date(),
+              saldo: 0,
+              ativo: true,
+              pessoa_id: revenda.id,
+            })
+            .save(null, options);
+        });
+    })
+    .then(function(revenda) {
+      return revenda;
+    });
+  }else{
+      return Bookshelf.transaction(function(t) {
+      var options = { transacting: t };
+      var optionsInsert = _.merge(options, { method: 'insert' });
+      return PessoaFisica
+        ._cadastrar(dealer, options)
+        .then(function(pf) {
+          dealer = _.merge(dealer, {
+          });
+          return Revendedor
+            .forge({
+              pessoa_id: pf.id,
+              ativo: true,
+            })
+            .save(null, optionsInsert);
+        })
+        .then(function(revenda) {
+          return Conta
+            .forge({
+              data_abertura: new Date(),
+              saldo: 0,
+              ativo: true,
+              pessoa_id: revenda.id,
+            })
+            .save(null, options);
+        });
+    })
+    .then(function(revenda) {
+      return revenda;
+    });
   }
-
-  var usuario_revendedor = new Usuario_Revendedor.Usuario_Revendedor({
-    'login': login,
-    'primeiro_acesso': 'true',
-    'senha': senha,
-    'ativo': 'true',
-    'autorizacao': 'funcionario'
-  });
-
-  var revendedor = new this.Revendedor({
-    'ativo': 'true'
-  });
-
-  var conta = new Conta.Conta({
-    'data_abertura': new Date(),
-    'saldo': '10.0',
-    'ativo': 'true'
-  });
-
-  var pessoa = new Pessoa.Pessoa({
-    'nome': dealer.nome,
-    'email': dealer.email,
-    'telefone': dealer.telefone,
-    'ativo': 'true'
-  });
-
-  var pessoaJuridica = new PessoaJuridica. PessoaJuridica({
-    'cnpj': dealer.cnpj,
-    'nome_fantasia': dealer.nome,
-    'razao_social': dealer.razao_social,
-    'contato': dealer.contato,
-    'ativo': 'true'
-  });
-
-  var pessoaFisica = new PessoaFisica.PessoaFisica({
-    'cpf': dealer.cpf,
-    'ativo': 'true'
-  });
-
-
- 
-   /* this.inserir(pessoa,  pessoaFisica, revendedor, conta, usuario_revendedor, 
-            function(model) {
-              util.enviarEmailConfirmacao(dealer, login, senhaGerada);
-              then(model);
-            }, function(err) {
-              fail(err);
-            });
-
-
-  /*else {
-    Pessoa.fiveSaveTransaction(pessoa, revendedor, usuario_revendedor, conta, pessoaJuridica, 
-            function(model) {
-              util.enviarEmailConfirmacao(dealer, login, senhaGerada);
-              then(model);
-            }, function(err) {
-              fail(err);
-            });
-  }*/
  }
 
 });
+
+module.exports = Revendedor;
 
 var RevendedorCollection =  Bookshelf.Collection.extend({
   model: Revendedor
@@ -118,65 +120,6 @@ exports.getById = function(id, func) {
     func(retorno);
   });
 }
-
-
-exports.inserir = function(entidade1, entidade2, entidade3, entidade4, entidade5, func) {
-  //pessoa,  pessoaFisica, revendedor, conta, usuario_revendedor 
-
-  Bookshelf.transaction(function(t) {
-    entidade1.save(null, {
-      transacting: t
-    }).
-            then(function(entidade1) {
-              util.log(entidade1);
-              entidade2.save({
-                pessoa_id: entidade1.id,
-              }, {
-                transacting: t
-              }).then(function(model, err) {
-
-                util.log("Model" + model);
-                entidade3.save({
-                  pessoa_id: entidade1.id,
-                }, {
-                  transacting: t
-                }).then(function(model, err) {
-                  entidade4.save({
-                    pessoa_id: entidade1.id,
-                  }, {
-                    transacting: t
-                  }).then(function(model, err) {
-                    entidade5.save({
-                      pessoa_fisica_pessoa_id: entidade2.id,
-                    }, {
-                      transacting: t
-                    }).then(function(model, err) {
-                      util.log("Commit");
-                      t.commit();
-                    }),
-                      
-                        function() {
-                          t.rollback();
-                          util.log("rollback");
-                          func(false);
-                        }
-                  });
-                });
-              });
-            });
-
-  }).then(function(model) {
-    util.log("Passei aq");
-    func(true);
-  }, function() {
-    util.log("Ocorreu erro");
-    func(false);
-  });
-}
-
-
-
-
 
 
 exports.listarpj = function(func) {

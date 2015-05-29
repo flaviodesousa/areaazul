@@ -12,7 +12,7 @@ module.exports.pessoa = require('./models/pessoa');
 module.exports.pessoafisica = require('./models/pessoafisica');
 module.exports.PessoaJuridica = require('./models/pessoajuridica');
 module.exports.recuperacao_senha = require('./models/recuperacao_senha');
-module.exports.revendedor = require('./models/revendedor');
+module.exports.Revendedor = require('./models/revendedor');
 module.exports.Usuario = require('./models/usuario');
 module.exports.UsuarioAdministrativo =
   require('./models/usuario_administrativo');
