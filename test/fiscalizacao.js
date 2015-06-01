@@ -3,6 +3,8 @@
 var should = require('chai').should();
 var app = require('../app');
 var superagent = require('superagent');
+var AreaAzul = require('areaazul');
+var UsuarioFiscal = AreaAzul.models.UsuarioFiscal;
 
 describe('/fiscalizacao', function() {
   var fiscalLogin = 'fiscalAPIlogin';
@@ -10,9 +12,25 @@ describe('/fiscalizacao', function() {
   var server;
 
   before(function(done) {
-    server = app.listen(8080, function() {
-      done();
-    });
+    UsuarioFiscal
+      .forge({login: fiscalLogin})
+      .fetch()
+      .then(function(fiscal) {
+        if (fiscal) { return fiscal };
+        return UsuarioFiscal
+          .cadastrar({
+            login: fiscalLogin,
+            senha: fiscalSenha,
+            cpf: fiscalLogin,
+            nome: fiscalLogin,
+            email: fiscalLogin + '@areaazul.org',
+          });
+      })
+      .then(function() {
+        server = app.listen(8080, function() {
+          done();
+        });
+      })
   });
 
   after(function(done) {
