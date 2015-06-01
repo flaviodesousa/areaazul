@@ -1,6 +1,7 @@
+'use strict';
+
 var express = require('express');
 var load = require('express-load');
-var path = require('path');
 var logger = require('morgan');
 var bodyParser = require('body-parser');
 var app = express();
@@ -25,26 +26,25 @@ app.use(function(req, res, next) {
   next();
 });
 
-/// catch 404 and forward to error handler
+// Catch 404 and forward to error handler
 app.use(function(req, res, next) {
-    console.log(err);
-    var err = new Error('Not Found');
-    err.status = 404;
-    next(err);
+  var newErr = new Error('Not Found');
+  newErr.status = 404;
+  next(newErr);
 });
 
-/// error handlers
+// Error handlers
 
-// development error handler will print stacktrace
+// Development error handler will print stacktrace
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        res.status(err.status || 500).end();
-    });
+  app.use(function(err, req, res) {
+    res.status(err.status || 500).end();
+  });
 }
 
-// production error handler no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-    res.status(err.status || 500).end();
+// Production error handler no stacktraces leaked to user
+app.use(function(err, req, res) {
+  res.status(err.status || 500).end();
 });
 
 module.exports = app;
