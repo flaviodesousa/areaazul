@@ -10,7 +10,6 @@ var UsuariosFiscais = AreaAzul.collections.UsuariosFiscais;
 
 describe('model.fiscalizacao', function() {
   var fiscalId = null;
-  var fiscalCriado = false;
 
   before(function(done) {
     UsuariosFiscais
@@ -18,8 +17,7 @@ describe('model.fiscalizacao', function() {
       .fetchOne()
       .then(function(f) {
         if (f) {
-          fiscalId = f.get('pessoa_id');
-          fiscalCriado = false;
+          fiscalId = f.id;
           done();
         } else {
           UsuarioFiscal.cadastrar({
@@ -30,8 +28,7 @@ describe('model.fiscalizacao', function() {
             cpf: 'teste-fiscalizacao',
           })
           .then(function(f) {
-            fiscalId = f.get('pessoa_id');
-            fiscalCriado = true;
+            fiscalId = f.id;
             done();
           })
           .catch(function(e) {
@@ -73,7 +70,8 @@ describe('model.fiscalizacao', function() {
         latitude: 33.5,
         longitude: 34.5,
         fiscal_id: fiscalId,
-      }, function() {
+      }, function(f) {
+        should.exist(f);
         done();
       }, function(err) {
         done(err);
@@ -123,26 +121,5 @@ describe('model.fiscalizacao', function() {
           done(err);
         });
     });
-  });
-
-  after(function(done) {
-    if (!fiscalCriado) {
-      done(); // Nada a fazer...
-    } else {
-      Fiscalizacao
-        .where('fiscal_id', fiscalId)
-        .destroy()
-        .then(function() {
-          UsuarioFiscal
-            .forge({pessoa_id: fiscalId})
-            .destroy();
-        })
-        .then(function() {
-          done();
-        })
-        .catch(function(err) {
-          done(err);
-        });
-    }
   });
 });
