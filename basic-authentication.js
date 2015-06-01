@@ -6,7 +6,7 @@ var BasicStrategy = require('passport-http').BasicStrategy;
 
 var AreaAzul = require('areaazul');
 var UsuarioFiscal = AreaAzul.models.UsuarioFiscal;
-var Usuario = AreaAzul.models.usuario.Usuario;
+var Usuario = AreaAzul.models.Usuario;
 
 function fiscalVerify(username, password, done) {
   process.nextTick(function() {
