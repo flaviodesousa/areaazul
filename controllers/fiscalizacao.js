@@ -22,6 +22,7 @@ module.exports = function() {
       Fiscalizacoes.listar(
         undefined,
         function(collection) {
+          res.header('Access-Control-Allow-Origin', '*');
           res.send(collection.toJSON());
         },
         function(result) {
