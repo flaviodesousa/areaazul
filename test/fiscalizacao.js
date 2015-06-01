@@ -9,23 +9,23 @@ var UsuarioFiscal = AreaAzul.models.UsuarioFiscal;
 var UsuariosFiscais = AreaAzul.collections.UsuariosFiscais;
 
 describe('model.fiscalizacao', function() {
+  var fiscalLogin = 'fiscal-teste-fiscalizacao';
   var fiscalId = null;
 
   before(function(done) {
-    UsuariosFiscais
-      .forge()
-      .fetchOne()
+    UsuarioFiscal
+      .forge({login: fiscalLogin})
+      .fetch()
       .then(function(f) {
         if (f) {
           fiscalId = f.id;
           done();
         } else {
           UsuarioFiscal.cadastrar({
-            login: 'fiscal-teste',
-            nome: 'Fiscal Teste',
-            email: 'fiscal-teste@example.com',
-            telefone: '0',
-            cpf: 'teste-fiscalizacao',
+            login: fiscalLogin,
+            nome: 'Fiscal Fiscalizacao Teste',
+            email: fiscalLogin + '@areaazul.org',
+            cpf: fiscalLogin,
           })
           .then(function(f) {
             fiscalId = f.id;
@@ -98,16 +98,48 @@ describe('model.fiscalizacao', function() {
         longitude: '-179.9999999999',
         fiscal_id: fiscalId,
       }, function(model) {
-        model.attributes.latitude
-          .should.be.equal('-89.9999999999', 'Latitude');
-        model.attributes.longitude
-          .should.be.equal('-179.9999999999', 'Longitude');
-        done();
+        Fiscalizacao
+          .forge({id_fiscalizacao: model.id})
+          .fetch()
+          .then(function(f) {
+            f.get('latitude')
+              .should.be.equal( '-89.9999999999', 'Latitude');
+            f.get('longitude')
+              .should.be.equal('-179.9999999999', 'Longitude');
+            done();
+          })
+          .catch(function(e) {
+            done(e);
+          });
       }, function(err) {
         done(err);
       });
     });
 
+    it('lat/lon arredonda com mais de 10 casas decimais', function(done) {
+      Fiscalizacao.cadastrar({
+        placa: 'lon9999',
+        latitude:   '-89.99999999999',
+        longitude: '-179.99999999999',
+        fiscal_id: fiscalId,
+      }, function(model) {
+        Fiscalizacao
+          .forge({id_fiscalizacao: model.id})
+          .fetch()
+          .then(function(f) {
+            f.get('latitude')
+              .should.be.equal( '-90.0000000000', 'Latitude');
+            f.get('longitude')
+              .should.be.equal('-180.0000000000', 'Longitude');
+            done();
+          })
+          .catch(function(e) {
+            done(e);
+          });
+      }, function(err) {
+        done(err);
+      });
+    });
   });
 
   describe('listar()', function() {
