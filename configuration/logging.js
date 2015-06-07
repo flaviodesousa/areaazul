@@ -25,11 +25,6 @@ require('winston-loggly');
     winston.remove(winston.transports.Console);
   }
 
-  // Comandos console redirecionam para winston
-  // assim codigo usando console automaticamente
-  // gera logs compativeis com winston
-  // require('console-winston')();
-
   winston.info('Logging started');
 })();
 
