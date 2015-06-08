@@ -53,7 +53,7 @@ var PessoaJuridica = Bookshelf.Model.extend({
           pessoaJuridica = pj;
         });
     })
-      .then(function() {
+      .then(function(pessoaJuridica) {
         return pessoaJuridica;
       });
   },

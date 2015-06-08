@@ -1,14 +1,13 @@
 'use strict';
 
-
 var _ = require('lodash');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa');
 var PessoaFisica = require('./pessoafisica').PessoaFisica;
-var Usuario_Revendedor = require('./usuario_revendedor');
+var UsuarioRevendedor = require('./usuario_revendedor');
 var Usuario = require('./usuario');
 var UsuarioCollection = require('../collections/usuario');
-var PessoaJuridica = require('./pessoajuridica').PessoaJuridica;
+var PessoaJuridica = require('./pessoajuridica');
 var PessoaJuridicaCollection = require('../collections/pessoajuridica');
 var PessoaCollection = require('../collections/pessoa');
 var RevendedorCollection = require('../collections/revendedor');
@@ -22,82 +21,112 @@ var Conta = require('./conta').Conta;
 
 var Revendedor = Bookshelf.Model.extend({
   tableName: 'revendedor',
-  idAttribute: 'pessoa_id'
-
+  idAttribute: 'pessoa_id',
 },
 {
-
-cadastrar: function(dealer) {
-  var senhaGerada = util.generate();
-  var senha = util.criptografa(senhaGerada);
-
-  console.log("dealer"+dealer.cpf);
-
-  console.log("validator.isNull(dealer.cpf) - "+validator.isNull(dealer.cpf));
-
-  if(validator.isNull(dealer.cpf)){
-      return Bookshelf.transaction(function(t) {
+  cadastrar: function(dealer) {
+    return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
       var optionsInsert = _.merge(options, { method: 'insert' });
-      return PessoaJuridica
-        ._cadastrar(dealer, options)
-        .then(function(pf) {
-          dealer = _.merge(dealer, {
-          });
-          return Revendedor
-            .forge({
-              ativo: true,
-              pessoa_id: pf.id,
+      var idPessoa = null;
+      var idRevendedor = null;
+      var senha;
+
+      if (!dealer.senha) {
+        senha = util.criptografa(util.generate());
+      } else {
+        senha = util.criptografa(dealer.senha);
+      }
+
+      if (dealer.cpf != null) {
+        return PessoaFisica
+          ._cadastrar(dealer, options)
+            .then(function(pf) {
+
+              idPessoa = pf.id;
+              return Revendedor._cadastrar(pf, options)
+            .then(function(revenda) {
+              console.log("revenda" + revenda.get('pessoa_id'));
+              idRevendedor = revenda.get('pessoa_id');
+              return UsuarioRevendedor
+                 .forge({
+                   login: dealer.login,
+                   senha: senha,
+                   primeiro_acesso: true,
+                   ativo: true,
+                   autorizacao: dealer.autorizacao,
+                   revendedor_id:  idRevendedor,
+                   pessoa_fisica_pessoa_id: idPessoa,
+                 }).save(null, options);
             })
-            .save(null, optionsInsert);
-        })
-        .then(function(revenda) {
-          return Conta
-            .forge({
-              data_abertura: new Date(),
-              saldo: 0,
-              ativo: true,
-              pessoa_id: revenda.id,
-            })
-            .save(null, options);
-        });
-    })
-    .then(function(revenda) {
-      return revenda;
+              .then(function(usuario_revenda) {
+                return usuario_revenda;
+              });
+            });
+      }else {
+        return PessoaJuridica
+            ._cadastrar(dealer, options)
+              .then(function(pj) {
+                return Revendedor._cadastrar(pj, options);
+              })
+          .then(function(revenda) {
+            return revenda;
+          })
+      }
     });
-  }else{
-      return Bookshelf.transaction(function(t) {
-      var options = { transacting: t };
-      var optionsInsert = _.merge(options, { method: 'insert' });
-      return PessoaFisica
-        ._cadastrar(dealer, options)
-        .then(function(pf) {
-          dealer = _.merge(dealer, {
-          });
-          return Revendedor
-            .forge({
-              pessoa_id: pf.id,
-              ativo: true,
-            })
-            .save(null, optionsInsert);
-        })
-        .then(function(revenda) {
-          return Conta
-            .forge({
-              data_abertura: new Date(),
-              saldo: 0,
-              ativo: true,
-              pessoa_id: revenda.id,
-            })
-            .save(null, options);
-        });
-    })
-    .then(function(revenda) {
-      return revenda;
-    });
+  },
+
+  _cadastrar: function(pessoa, options) {
+    var optionsInsert = _.merge(options || {}, {method: 'insert'});
+    return Revendedor
+      .forge({
+        ativo: true,
+        pessoa_id: pessoa.id,
+      })
+      .save(null, optionsInsert)
+      .then(function(revenda) {
+        return Conta
+          .forge({
+            data_abertura: new Date(),
+            saldo: 0,
+            ativo: true,
+            pessoa_id: pessoa.id,
+          })
+          .save(null, options);
+      });
+  },
+  
+  validateRevendedorPessoaFisica: function(dealer) {
+  var message = [];
+  if (validator.isNull(dealer.nome)) {
+    message.push({
+        attribute: 'nome',
+        problem: 'Nome obrigatório!',
+      });
   }
- }
 
+  if (validator.isNull(dealer.telefone)) {
+    message.push({
+        attribute: 'telefone',
+        problem: 'Telefone obrigatório!',
+      });
+  }
+
+  if (validator.isNull(dealer.cpf)) {
+    message.push({
+        attribute: 'cpf',
+        problem: 'CPF é obrigatório!',
+      });
+  }
+
+  if (validator.isNull(dealer.email)) {
+    message.push({
+        attribute: 'email',
+        problem: 'Email obrigatório!',
+      });
+  }
+  return message;
+}
 });
 
 module.exports = Revendedor;
@@ -338,7 +367,8 @@ exports.desativarpj = function(dealer, then, fail) {
 }
 
 
-exports.validateRevendedor = function(dealer) {
+
+exports.validateRevendedorPessoaJuridica = function(dealer) {
   var message = [];
 
 
