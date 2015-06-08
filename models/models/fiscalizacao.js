@@ -1,3 +1,5 @@
+var AreaAzul = require('../../areaazul');
+var log = AreaAzul.log;
 var Bookshelf = require('bookshelf').conexaoMain;
 var moment = require('moment');
 
@@ -16,9 +18,11 @@ module.exports = Bookshelf.Model.extend({
 		})
 		.save()
 		.then(function(model) {
+			log.info('Fiscalizacao id: ' + model.id);
 			then(model);
 		})
 		.catch(function(err) {
+			log.error('Fiscalizacao', {params: params, err: err});
 			fail(err);
 		});
 	}
