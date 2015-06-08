@@ -8,9 +8,10 @@ var Usuario = AreaAzul.models.Usuario;
 var UsuarioAdministrativo = AreaAzul.models.UsuarioAdministrativo;
 var Pessoa = AreaAzul.models.pessoa.Pessoa;
 var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
+var PessoaJuridica = AreaAzul.models.PessoaJuridica;
 var Contas = AreaAzul.collections.Contas;
 var UsuarioRevendedor = AreaAzul.models.UsuarioRevendedor;
-var Revendedor = AreaAzul.models.revendedor;
+var Revendedor = AreaAzul.models.Revendedor;
 var Ativacao = AreaAzul.models.ativacao;
 var UsuarioHasVeiculo = AreaAzul.models.UsuarioHasVeiculo;
 var Veiculo = AreaAzul.models.veiculo;
@@ -44,6 +45,24 @@ function _apagarPessoaFisica(id) {
     });
 }
 
+
+function _apagarPessoaJuridica(id) {
+  if (!id) {
+    return Promise.resolve(null);
+  }
+  return PessoaJuridica
+    .forge({pessoa_id: id})
+    .destroy()
+    .then(function() {
+      return _apagarContasDePessoa(id);
+    })
+    .then(function() {
+      return Pessoa
+        .forge({id_pessoa: id})
+        .destroy();
+    });
+}
+
 function _apagarVeiculo(idVeiculo) {
   if (!idVeiculo) {
     return Promise.resolve(null);
@@ -58,20 +77,19 @@ function _apagarVeiculo(idVeiculo) {
 
 
 function _apagarRevendedor(idRevenda) {
-
   var pessoaId = null;
 
   return Revendedor
-    .forge({id_revendedor: idRevenda})
+    .forge({pessoa_id: idRevenda})
     .fetch()
-    .then(function(revenda) {
-      if (!revenda) {
-        return Promise.resolve(null);
-      }
-      pessoaId = revenda.id;
-      return revenda
-        .destroy();
-    });
+      .then(function(revenda) {
+        if (!revenda) {
+          return Promise.resolve(null);
+        }
+        pessoaId = revenda.get("pessoa_id");
+        return revenda
+          .destroy();
+      });
 }
 
 
@@ -119,7 +137,7 @@ function _apagarUsuarioHasVeiculo(idUsuario, idVeiculo) {
   .then(function() {
     return _apagarUsuario(usuarioId);
   });
-
+ 
 }
 
 function _apagarUsuarioRevenda(idUsuario) {
@@ -132,20 +150,41 @@ function _apagarUsuarioRevenda(idUsuario) {
         if (!usuario) {
           return Promise.resolve(null);
         }
-        pessoaId = usuario.id;
-        revendedorId = usuario.revendedor_id;
+        pessoaId = usuario.get('pessoa_fisica_pessoa_id');
+        revendedorId = usuario.get('revendedor_id');
 
-        return usuario
-          .destroy();
+        return usuario.destroy();
       })
       .then(function() {
-        return _apagarRevendedor(revendedorId);
+        return _apagarRevendedor(revendedorId);        
       })
       .then(function() {
         return _apagarPessoaFisica(pessoaId);
       });
 }
 
+function _apagarRevendedorJuridica(idUsuario) {
+  console.log("pessoa juridica "+idUsuario);
+
+  var pessoaId = null;
+  var revendedorId = null;
+  return Revendedor
+    .forge({pessoa_id: idUsuario})
+    .fetch()
+      .then(function(revenda) {
+        if (!revenda) {
+          return Promise.resolve(null);
+        }
+        pessoaId = revenda.get('pessoa_id');
+        return revenda;
+      })
+      .then(function() {
+        return _apagarRevendedor(pessoaId);        
+      })
+      .then(function() {
+        return _apagarPessoaJuridica(pessoaId);
+      });
+}
 
 exports.apagarUsuarioFiscalPorCPF = function(cpf) {
   var pessoaId = null;
@@ -224,6 +263,46 @@ exports.apagarUsuarioAdministrativoPorLogin = function(login) {
     })
     .then(function() {
       return _apagarPessoaFisica(pessoaId);
+    });
+};
+
+
+exports.apagarRevendedorPessoPorIdentificador = function(cpf, cnpj) {
+  var pessoaId = null;
+
+  if (!cpf) {
+    return Promise.resolve(null);
+  }
+  if (!cnpj) {
+    return Promise.resolve(null);
+  }
+
+
+  return PessoaFisica
+       .forge({cpf: cpf})
+       .fetch()
+        .then(function(pf) {
+          if (!pf) {
+            return Promise.resolve(null);
+          }
+          pessoaId = pf.get('pessoa_id');
+        })
+      .then(function() {
+        return _apagarUsuarioRevenda(pessoaId);
+      })
+      .then(function() {
+        return PessoaJuridica
+        .forge({cnpj: cnpj})
+        .fetch()
+        .then(function(pj) {
+          if (!pj) {
+            return Promise.resolve(null);
+          }
+          pessoaId = pj.get('pessoa_id');
+        })
+        .then(function() {
+            return _apagarRevendedorJuridica(pessoaId);
+        });
     });
 };
 
