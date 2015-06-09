@@ -126,7 +126,29 @@ var Revendedor = Bookshelf.Model.extend({
       });
   }
   return message;
+},
+
+  buscarRevendedor: function(user, then, fail) {
+  Revendedor
+  .forge()
+  .query(
+    function(qb) {
+      qb.join('pessoa', 'pessoa.id_pessoa', '=', 'revendedor.pessoa_id');
+      qb.join('usuario_revendedor', 'usuario_revendedor.revendedor_id', '=', 'revendedor.pessoa_id');
+      qb.join('conta', 'conta.pessoa_id', '=', 'pessoa.id_pessoa');
+      qb.where('usuario_revendedor.pessoa_fisica_pessoa_id', user.pessoa_id);
+      qb.select('revendedor.*', 'usuario_revendedor.*', 'pessoa.*', 'conta.*');
+    })
+    .fetch()
+  .then(function(model) {
+    then(model);
+  }).catch(function(err) {
+    fail(err);
+  });
 }
+
+
+
 });
 
 module.exports = Revendedor;
@@ -375,23 +397,7 @@ exports.validateRevendedorPessoaJuridica = function(dealer) {
   return message;
 }
 
-exports.buscarRevendedor = function(user, then, fail) {
-   
-  Revendedor.forge().query(function(qb) {
-    qb.join('pessoa', 'pessoa.id_pessoa', '=', 'revendedor.pessoa_id');
-    qb.join('usuario', 'usuario.pessoa_id', '=', 'pessoa.id_pessoa');
-    qb.join('conta', 'conta.pessoa_id', '=', 'pessoa.id_pessoa');
-    qb.where('usuario.id_usuario', user.attributes.id_usuario);
-    qb.select('revendedor.*', 'usuario.*', 'pessoa.*', 'conta.*');
-    console.log("sql: " + qb);
-  }).fetch().then(function(model) {
-    console.log("model" + model);
-    then(model);
-  }).catch(function(err) {
-    console.log("err" + err);
-    fail(err);
-  });
-}
+
 
 exports.mostrarSaldo = function(user, then, fail) {
   console.log("usuario" + user.id_usuario);

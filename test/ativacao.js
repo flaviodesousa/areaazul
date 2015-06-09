@@ -140,6 +140,28 @@ describe('model.Ativacao', function() {
     });
   });
 
+  describe('ativarPelaRevenda()', function() {
+    it('grava ativacao', function(done) {
+
+
+      console.log("idUsuarioComum: "+idUsuarioComum);
+      console.log("idVeiculo: "+idVeiculo);
+      console.log("idUsuarioRevendedor: "+idUsuarioRevendedor);
+      Ativacao
+        .ativarPelaRevenda({
+            usuario_pessoa_id: idUsuarioComum,
+            veiculo_id: idVeiculo,
+            revendedor_id: idUsuarioRevendedor,
+        },
+        function(model) {
+          should.exist(model);  
+          done();
+        }, 
+        function(err) {
+          done(err);
+        });
+    });
+  });
 
   after(function(done) {
     apagarDadosDeTeste()

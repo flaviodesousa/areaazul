@@ -52,30 +52,29 @@ var Ativacao = Bookshelf.Model.extend({
   },
 
   ativarPelaRevenda: function(car, then, fail) {
+      Revendedor.buscarRevendedor({pessoa_id: car.revendedor_id},
+      function(){
+        return Bookshelf.transaction(function(t) {
+          var options = { transacting: t };
+          var optionsInsert = _.merge(options, { method: 'insert' });
 
-    var ativacao = new this.Ativacao({
-      data_ativacao: new Date(),
-      usuario_id: car.usuario_id,
-      veiculo_id: car.veiculo_id,
-      ativo: true,
-    });
-
-    var usuario = new Usuario.Usuario({
-      id_usuario: car.usuario_id,
-    });
-
-    Revendedor.buscarRevendedor(usuario,
-      function() {
-        ativacao.save().then(function(model) {
-          then(model);
-        }).catch(function(err) {
-          fail(err);
+          return Ativacao
+                .forge({
+                    data_ativacao: new Date(),
+                    usuario_pessoa_id: car.usuario_pessoa_id,
+                    veiculo_id: car.veiculo_id,
+                    ativo: true,
+                })
+                .save(null, optionsInsert)
+                .then(
+                  function(ativacao) {
+                  then(ativacao);
+                });
         });
       },
-      function(result) {
+      function(result){
         fail(result);
-      }
-    );
+      });
   },
 
 });

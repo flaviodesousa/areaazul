@@ -22,36 +22,27 @@ describe('model.revendedor', function() {
   var loginTeste = 'login-teste-usuario';
   var nomeFantasiaTeste = 'nome-fantasia-teste';
   var nomeEmpresa = 'nome-teste';
-
-
-  describe('cadastrar()', function() {
-
+  var revendedorId = null;
 
   function apagarDadosDeTeste() {
     return TestHelpers.apagarRevendedorPessoPorIdentificador(cpfPreExistente, cnpjPreExistente);
   }
 
-    before(function(done) {
-      apagarDadosDeTeste()
-        .then(function() {
-          done();
-        })
-        .catch(function(e) {
-          console.log("e -> " + e);
-          done(e);
-        });
-    });
 
-    after(function(done) {
-      apagarDadosDeTeste()
-        .then(function() {
-          done();
-        })
-        .catch(function(e) {
-          console.log("e -> " + e);
-          done(e);
-        });
-    });
+  before(function(done) {
+    apagarDadosDeTeste()
+      .then(function() {
+        done();
+      })
+      .catch(function(e) {
+        console.log("e -> " + e);
+        done(e);
+      });
+  });
+
+
+
+  describe('cadastrar()', function() {
 
     it('cadastrar pessoa fisica funciona', function(done) {
       Revendedor.cadastrar({
@@ -65,6 +56,7 @@ describe('model.revendedor', function() {
         login: loginTeste,
       })
       .then(function(revenda) {
+        revendedorId = revenda.id;
         should.exist(revenda);
         done();
       })
@@ -99,17 +91,30 @@ describe('model.revendedor', function() {
   });
 
   describe('buscarRevendedor()', function() {
-    it.skip('retorna um revendedor', function(done) {
-      var revendedor = { id_usuario: 53};
-      Revendedor.buscarRevendedor(revendedor,
-        function(model) {
-          should.exist(model);
-          done();
-        },
-        function(err) {
-          done(err);
-        });
+
+    it('retorna um revendedor', function(done) {
+      Revendedor.buscarRevendedor({
+        pessoa_id: revendedorId
+      },
+      function(model) {
+        should.exist(model);  
+        done();
+      }, 
+      function(err) {
+        done(err);
+      });
     });
+  });
+
+  after(function(done) {
+    apagarDadosDeTeste()
+      .then(function() {
+        done();
+      })
+      .catch(function(e) {
+        console.log("e -> " + e);
+        done(e);
+      });
   });
 
 });
