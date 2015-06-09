@@ -1,54 +1,51 @@
 'use strict';
 
 var AreaAzul = require('../areaazul');
-var Estado = AreaAzul.models.estado;
+var Estado = AreaAzul.models.Estado;
 
 describe('model.estado', function() {
 
+  var nomeEstadoTeste = 'teste-estado';
+  var ufTeste = 'TT';
+  var IdEstado = null;
+
+function deleteTestData(done) {
+    Estado
+      .forge({id_estado: IdEstado})
+      .fetch()
+      .then(function(est) {
+        if (est !== null) {
+          return est.destroy();
+        }
+      })
+      .then(function() {
+        return done();
+      })
+      .catch(function(e) {
+        done(e);
+      });
+  }
+
+
+ before(deleteTestData);
+
+
   describe('cadastrar()', function() {
-    it.skip('nao grava com nomes iguais', function(done) {
-      var estado = {
-        nome: 'ACRE',
-        uf: 'AC',
-      };
-
-      Estado.cadastrar(estado,
-        function() {
-          done('Should not have saved!');
-        },
-        function() {
-          done();
+    it('grava estados', function(done) {
+      Estado
+        .cadastrar({
+          nome: nomeEstadoTeste,
+          uf: ufTeste,
+        })
+        .then(function(estado) {
+          IdEstado = estado.id;
+          return done();
+        })
+        .catch(function(e) {
+          done(e);
         });
     });
-    it.skip('nao grava sem nome de estado', function(done) {
-      var estado = {
-        uf: 'AC',
-      };
-
-      Estado.cadastrar(estado,
-        function() {
-          done('Should not have saved!');
-        },
-        function() {
-          done();
-        });
-    });
-    it.skip('nao grava com nome já cadastrado', function(done) {
-      var estado = {
-        nome: 'TOCANTINS',
-        uf: 'TO',
-      };
-
-      Estado.cadastrar(estado,
-        function() {
-          done('Nao deve salvar ja cadastrado');
-        },
-        function() {
-          done();
-        });
-    });
-
-
   });
 
+after(deleteTestData);
 });

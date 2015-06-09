@@ -26,7 +26,7 @@ var Estado = Bookshelf.Model.extend({
 }, {
 
 
-  cadastrar: function(state, then, fail) {
+  cadastrar: function(state) {
       return Estado
             .forge({
               nome: state.nome,
@@ -35,7 +35,6 @@ var Estado = Bookshelf.Model.extend({
             })
             .save()
         .then(function(estado) {
-
           return estado;
       });
 
