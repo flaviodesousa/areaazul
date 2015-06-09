@@ -10,21 +10,21 @@ module.exports = Bookshelf.Model.extend({
 }, {
   cadastrar: function(params, then, fail) {
     this
-  .forge({
-    placa: params.placa,
-    latitude: params.latitude,
-    longitude: params.longitude,
-    timestamp: new Date(),
-    fiscal_id: params.fiscal_id,
-  })
-  .save()
-  .then(function(model) {
-    log.info('Fiscalizacao adicionada', model);
-    then(model);
-  })
-  .catch(function(err) {
-    log.error('Fiscalizacao', {params: params, err: err});
-    fail(err);
-  });
+      .forge({
+        placa: params.placa,
+        latitude: params.latitude,
+        longitude: params.longitude,
+        timestamp: new Date(),
+        fiscal_id: params.fiscal_id,
+      })
+      .save()
+      .then(function(model) {
+        log.info('Fiscalizacao adicionada', model);
+        then(model);
+      })
+      .catch(function(err) {
+        log.error('Fiscalizacao', {params: params, err: err});
+        fail(err);
+      });
   },
 });
