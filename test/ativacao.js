@@ -16,6 +16,7 @@ describe('model.Ativacao', function() {
   var idEstado = null;
   var idUsuarioRevendedor = null;
   var idPreExistenteAtivacao = null;
+  var idAtivacao = null;
 
   var cpfNaoExistente = 'revendedor-teste-nao-existente';
   var loginRevendedorNaoExistente = 'revendedor-nao-existente';
@@ -132,6 +133,53 @@ describe('model.Ativacao', function() {
         .ativar(ativacao)
         .then(function(at) {
           should.exist(at);
+          idAtivacao = at.id;
+          done();
+        })
+        .catch(function(e) {
+          done(e);
+        });
+    });
+  });
+
+  describe('desativar()', function() {
+    it('falha para ativacao inexistente', function(done) {
+      Ativacao
+        .desativar({
+          id_ativacao: 0,
+          usuario_pessoa_id: idUsuarioComum,
+        })
+        .then(function() {
+          done('Nao deveria ter desativado uma ativacao inexistente');
+        })
+        .catch(function(e) {
+          should.exist(e);
+          console.dir(e);
+          done();
+        });
+    });
+    it('falha se usuario diferente do ativador', function(done) {
+      Ativacao
+        .desativar({
+          id_ativacao: idAtivacao,
+          usuario_pessoa_id: 0,
+        })
+        .then(function() {
+          done('Nao deveria ter desativado com usuario diferente');
+        })
+        .catch(function(e) {
+          should.exist(e);
+          console.dir(e);
+          done();
+        });
+    });
+    it('desativa ativacao existente', function(done) {
+      Ativacao
+        .desativar({
+          id_ativacao: idAtivacao,
+          usuario_pessoa_id: idUsuarioComum,
+        })
+        .then(function() {
           done();
         })
         .catch(function(e) {
@@ -144,19 +192,19 @@ describe('model.Ativacao', function() {
     it('grava ativacao', function(done) {
 
 
-      console.log("idUsuarioComum: "+idUsuarioComum);
-      console.log("idVeiculo: "+idVeiculo);
-      console.log("idUsuarioRevendedor: "+idUsuarioRevendedor);
+      console.log('idUsuarioComum: ' + idUsuarioComum);
+      console.log('idVeiculo: ' + idVeiculo);
+      console.log('idUsuarioRevendedor: ' + idUsuarioRevendedor);
       Ativacao
         .ativarPelaRevenda({
-            usuario_pessoa_id: idUsuarioComum,
-            veiculo_id: idVeiculo,
-            revendedor_id: idUsuarioRevendedor,
+          usuario_pessoa_id: idUsuarioComum,
+          veiculo_id: idVeiculo,
+          revendedor_id: idUsuarioRevendedor,
         },
         function(model) {
-          should.exist(model);  
+          should.exist(model);
           done();
-        }, 
+        },
         function(err) {
           done(err);
         });
