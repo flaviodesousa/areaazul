@@ -19,7 +19,7 @@ module.exports = Bookshelf.Model.extend({
       })
       .save()
       .then(function(model) {
-        log.info('Fiscalizacao adicionada', model);
+        log.info('Fiscalizacao adicionada', {model: model});
         then(model);
       })
       .catch(function(err) {
