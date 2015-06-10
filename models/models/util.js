@@ -1,5 +1,6 @@
 'use strict';
 
+var AreaAzul = require('../../areaazul');
 var bcrypt = require('bcrypt');
 var AreaAzulMailer = require('areaazul-mailer');
 var moment = require('moment');
@@ -8,7 +9,7 @@ var uuid = require('node-uuid');
 
 exports.enviarEmailConfirmacao = function(entidade, login, senha) {
   var message = {
-    from: 'Stiket <cadastro@areaazul.org>',
+    from: 'AreaAzul <cadastro@areaazul.org>',
     to:  entidade.email,
     cc: 'cadastro@areaazul.org',
     subject: 'AreaAzul confirmação de cadastro',
@@ -23,7 +24,7 @@ exports.enviarEmailConfirmacao = function(entidade, login, senha) {
 
 exports.enviarEmailNovaSenha = function(email, nome, uuid) {
   var message = {
-    from: 'Stiket <cadastro@areaazul.org>',
+    from: 'AreaAzul <cadastro@areaazul.org>',
     to:  email,
     cc: 'cadastro@areaazul.org',
     subject: 'AreaAzul nova senha ',
@@ -31,7 +32,6 @@ exports.enviarEmailNovaSenha = function(email, nome, uuid) {
         ' clique no link abaixo para alterar sua senha.</br>' +
         'http://demo.areaazul.org/' + uuid + '.',
   };
-  console.log('Message email: ' + message);
   AreaAzulMailer.enviar.emailer(message);
 };
 
@@ -67,14 +67,7 @@ exports.converteData = function(data) {
 };
 
 exports.log = function(log, type) {
-  var logger = new(winston.Logger)({
-    transports: [
-        new(winston.transports.Console)(),
-            new(winston.transports.File)({
-              filename: 'logging.log',
-            }),
-        ],
-  });
+  var logger = AreaAzul.log;
   if (!type) {
     logger.info(log);
   } else {
