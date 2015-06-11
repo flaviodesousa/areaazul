@@ -25,9 +25,9 @@ describe('model.Ativacao', function() {
   var cpfUsuarioComumPreExistente = 'usuario-comum-test';
 
   var estadoTeste = null;
-  var placaTeste = 'AAA1234';
-  var marcaTeste = 'Marca teste';
-  var modeloTeste = 'Modelo Teste';
+  var placaTeste = 'TES1234';
+  var marcaTeste = 'Marca-teste-veiculo';
+  var modeloTeste = 'Modelo-teste-veiculo';
   var corTeste = 'Cor Teste';
   var anoFabricadoTeste = '2015';
   var anoModeloTeste = '2015';
@@ -107,8 +107,8 @@ describe('model.Ativacao', function() {
               cor: corTeste,
               ano_fabricado: anoFabricadoTeste,
               ano_modelo: anoModeloTeste,
-              usuario_id: idUsuarioComum,
-            }, usuario);
+              usuario_pessoa_id: idUsuarioComum,
+            });
           });
       })
       .then(function(veiculo) {
@@ -191,10 +191,6 @@ describe('model.Ativacao', function() {
   describe('ativarPelaRevenda()', function() {
     it('grava ativacao', function(done) {
 
-
-      console.log('idUsuarioComum: ' + idUsuarioComum);
-      console.log('idVeiculo: ' + idVeiculo);
-      console.log('idUsuarioRevendedor: ' + idUsuarioRevendedor);
       Ativacao
         .ativarPelaRevenda({
           usuario_pessoa_id: idUsuarioComum,
