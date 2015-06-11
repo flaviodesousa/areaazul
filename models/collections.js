@@ -15,4 +15,4 @@ exports.usuario = require('./collections/usuario');
 exports.UsuariosFiscais = require('./collections/usuarios_fiscais');
 exports.usuario_revendedor = require('./collections/usuario_revendedor');
 exports.usuario_has_veiculo = require('./collections/usuario_has_veiculo');
-exports.veiculo = require('./collections/veiculo');
+module.exports.Veiculos = require('./collections/veiculo');
