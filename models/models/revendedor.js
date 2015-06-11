@@ -46,7 +46,7 @@ var Revendedor = Bookshelf.Model.extend({
               idPessoa = pf.id;
               return Revendedor._cadastrar(pf, options)
             .then(function(revenda) {
-              console.log("revenda" + revenda.get('pessoa_id'));
+
               idRevendedor = revenda.get('pessoa_id');
               return UsuarioRevendedor
                  .forge({
