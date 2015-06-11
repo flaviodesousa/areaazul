@@ -18,13 +18,10 @@ var Veiculo = Bookshelf.Model.extend({
   },
 }, {
 
-  cadastrar: function(vehicle, user) {
-    return Bookshelf.transaction(function(t) {
-      var trx = { transacting: t };
-      var trxIns = _.merge(trx, { method: 'insert' });
-
+  cadastrar: function(vehicle) {
       return Veiculo
         .forge({
+          estado_id: vehicle.estado_id,
           placa: vehicle.placa,
           marca: vehicle.marca,
           modelo: vehicle.modelo,
@@ -35,118 +32,26 @@ var Veiculo = Bookshelf.Model.extend({
         })
         .save()
         .then(function(veiculo) {
-          return UsuarioHasVeiculo
-            .forge({
-              usuario_pessoa_id: user.id,
-              veiculo_id: veiculo.id,
-            })
-            .save(null, trxIns)
-            .then(function() {
-              // Forca retorno de veiculo
-              // Sem esta linha ele retornaria um
-              // UsuarioHasVeiculo
               return veiculo;
-            });
         });
-    });
   },
-});
 
-module.exports = Veiculo;
+ procurarVeiculoPorPlaca: function(vehicle, then, fail) {
+  Veiculo
+    .forge()
+    .query(function(qb) {
+      qb.where('veiculo.placa', vehicle.placa);
+      qb.select('veiculo.*');
+    })
+    .fetch()
+    .then(function(model) {
+        then(model);
+      }).catch(function(err) {
+        fail(err);
+      });
+},
 
-var VeiculoCollection =  Bookshelf.Collection.extend({
-  model: Veiculo,
-});
-
-exports.listar = function(then, fail) {
-  VeiculoCollection.forge().query(function(qb) {
-    qb.join('estado', 'estado.id_estado', '=', 'veiculo.estado_id');
-    qb.select('veiculo.*');
-    qb.select('estado.*');
-  }).fetch().then(function(collection) {
-    util.log('Sucesso!');
-    then(collection);
-  }).catch(function(err) {
-    util.log('Ocorreu erro!');
-    fail(err);
-  });
-
-};
-
-exports.listarVeiculosUsuario = function(user, then, fail) {
-  VeiculoCollection.forge().query(function(qb) {
-    qb.where('usuario_has_veiculo.usuario_id', user.id_usuario);
-    qb.join('estado', 'estado.id_estado', '=', 'veiculo.estado_id');
-    qb.join('usuario_has_veiculo',
-      'veiculo.id_veiculo', '=', 'usuario_has_veiculo.veiculo_id');
-    qb.select('veiculo.*');
-    qb.select('estado.*');
-  }).fetch().then(function(collection) {
-    util.log('Sucesso!');
-    then(collection);
-  }).catch(function(err) {
-    util.log('Ocorreu erro!');
-    fail(err);
-  });
-
-};
-
-
-exports.procurar = function(vehicle, then, fail) {
-  Veiculo.forge().query(function(qb) {
-    qb.where('veiculo.id_veiculo', vehicle.id_veiculo);
-    qb.join('estado', 'estado.id_estado', '=', 'veiculo.estado_id');
-    qb.select('veiculo.*');
-    qb.select('estado.*');
-  }).fetch().then(function(collection) {
-    then(collection);
-  }).catch(function(err) {
-    fail(err);
-  });
-};
-
-exports.editar = function(vehicle, then, fail) {
-  new this.Veiculo({
-    id_veiculo: vehicle.id_veiculo,
-  }).fetch().then(function(model) {
-    model.save(vehicle).then(function(model) {
-      util.log('Sucesso!');
-      then(model);
-    }).catch(function(err) {
-      util.log('Ocorreu erro!');
-      fail(err);
-    });
-  });
-};
-
-exports.procurarVeiculoPorPlaca = function(vehicle, then, fail) {
-  Veiculo.forge().query(function(qb) {
-    qb.where('veiculo.placa', vehicle.placa);
-    qb.select('veiculo.*');
-  }).fetch().then(function(model) {
-      then(model);
-    }).catch(function(err) {
-      fail(err);
-    });
-
-};
-
-
-exports.desativar = function(vehicle, then, fail) {
-  new this.Veiculo({
-    id_veiculo: vehicle.id_veiculo,
-  }).fetch().then(function(model) {
-    model.save(vehicle).then(function(model) {
-      util.log('Sucesso!');
-      then(model);
-    }).catch(function(err) {
-      util.log('Ocorreu erro!');
-      fail(err);
-    });
-  });
-};
-
-exports.validate = function(vehicle) {
+validate: function(vehicle) {
   var message = [];
   if (validator.isNull(vehicle.estado_id)) {
     message.push({
@@ -209,5 +114,77 @@ exports.validate = function(vehicle) {
     });
   }
   return true;
+},
+});
+
+
+module.exports = Veiculo;
+
+var VeiculoCollection =  Bookshelf.Collection.extend({
+  model: Veiculo,
+});
+
+exports.listar = function(then, fail) {
+  VeiculoCollection.forge().query(function(qb) {
+    qb.join('estado', 'estado.id_estado', '=', 'veiculo.estado_id');
+    qb.select('veiculo.*');
+    qb.select('estado.*');
+  }).fetch().then(function(collection) {
+    util.log('Sucesso!');
+    then(collection);
+  }).catch(function(err) {
+    util.log('Ocorreu erro!');
+    fail(err);
+  });
+
 };
+
+exports.listarVeiculosUsuario = function(user, then, fail) {
+  VeiculoCollection.forge().query(function(qb) {
+    qb.where('usuario_has_veiculo.usuario_id', user.id_usuario);
+    qb.join('estado', 'estado.id_estado', '=', 'veiculo.estado_id');
+    qb.join('usuario_has_veiculo',
+      'veiculo.id_veiculo', '=', 'usuario_has_veiculo.veiculo_id');
+    qb.select('veiculo.*');
+    qb.select('estado.*');
+  }).fetch().then(function(collection) {
+    util.log('Sucesso!');
+    then(collection);
+  }).catch(function(err) {
+    util.log('Ocorreu erro!');
+    fail(err);
+  });
+
+};
+
+exports.editar = function(vehicle, then, fail) {
+  new this.Veiculo({
+    id_veiculo: vehicle.id_veiculo,
+  }).fetch().then(function(model) {
+    model.save(vehicle).then(function(model) {
+      util.log('Sucesso!');
+      then(model);
+    }).catch(function(err) {
+      util.log('Ocorreu erro!');
+      fail(err);
+    });
+  });
+};
+
+
+exports.desativar = function(vehicle, then, fail) {
+  new this.Veiculo({
+    id_veiculo: vehicle.id_veiculo,
+  }).fetch().then(function(model) {
+    model.save(vehicle).then(function(model) {
+      util.log('Sucesso!');
+      then(model);
+    }).catch(function(err) {
+      util.log('Ocorreu erro!');
+      fail(err);
+    });
+  });
+};
+
+
 
