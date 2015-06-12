@@ -51,7 +51,6 @@ describe('model.veiculo', function() {
 
   describe('cadastrar()', function() {
     it('grava veiculo', function(done) {
-
       Veiculo
       .cadastrar({
         estado_id: idEstado,
@@ -71,7 +70,8 @@ describe('model.veiculo', function() {
       });
     });
   });
-    describe('Procurar()', function() {
+
+  describe('Procurar()', function() {
     it('retorna um veiculo', function(done) {
       var v = { id_veiculo: idVeiculo };
       Veiculos.procurar(v,
@@ -84,7 +84,8 @@ describe('model.veiculo', function() {
         });
     });
   });
-    describe('procurarVeiculoPorPlaca()', function() {
+
+  describe('procurarVeiculoPorPlaca()', function() {
     it('retorna um veiculo', function(done) {
       var v = { placa: placaTeste};
       Veiculo.procurarVeiculoPorPlaca(v,
@@ -98,7 +99,7 @@ describe('model.veiculo', function() {
     });
   });
 
-    after(function(done) {
+  after(function(done) {
     apagarDadosDeTeste(placaTeste)
       .then(function() {
         done();
@@ -107,7 +108,5 @@ describe('model.veiculo', function() {
         done(e);
       });
   });
-
-
 
 });
