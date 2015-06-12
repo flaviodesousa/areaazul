@@ -19,7 +19,7 @@ var Veiculo = Bookshelf.Model.extend({
 }, {
 
   cadastrar: function(vehicle) {
-      return Veiculo
+    return Veiculo
         .forge({
           estado_id: vehicle.estado_id,
           placa: vehicle.placa,
@@ -32,26 +32,22 @@ var Veiculo = Bookshelf.Model.extend({
         })
         .save()
         .then(function(veiculo) {
-              return veiculo;
+          return veiculo;
         });
   },
 
- procurarVeiculoPorPlaca: function(vehicle, then, fail) {
-  Veiculo
-    .forge()
-    .query(function(qb) {
-      qb.where('veiculo.placa', vehicle.placa);
-      qb.select('veiculo.*');
-    })
-    .fetch()
-    .then(function(model) {
-        then(model);
-      }).catch(function(err) {
-        fail(err);
-      });
-},
+  procurarVeiculoPorPlaca: function(vehicle, then, fail) {
+    Veiculo
+      .forge({placa: vehicle.placa})
+      .fetch()
+      .then(function(model) {
+          then(model);
+        }).catch(function(err) {
+          fail(err);
+        });
+  },
 
-validate: function(vehicle) {
+  validate: function(vehicle) {
   var message = [];
   if (validator.isNull(vehicle.estado_id)) {
     message.push({

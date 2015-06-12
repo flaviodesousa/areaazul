@@ -4,14 +4,13 @@ var AreaAzul = require('../areaazul');
 var should = require('chai').should();
 var Veiculo = AreaAzul.models.Veiculo;
 var Veiculos = AreaAzul.collections.Veiculos;
-var Usuario = AreaAzul.models.Usuario;
 var Estado = AreaAzul.models.Estado;
 var TestHelpers = require('../helpers/test');
 
 describe('model.veiculo', function() {
 
-  function apagarDadosDeTeste() {
-    return TestHelpers.apagarVeiculoPorId(idVeiculo, idUsuarioComum);
+  function apagarDadosDeTeste(placa) {
+    return TestHelpers.apagarVeiculoPorPlaca(placa);
   }
 
   var placaTeste = 'AAA1234';
@@ -24,13 +23,9 @@ describe('model.veiculo', function() {
   var estadoTesteUf = 'UF';
   var idEstado = null;
   var idVeiculo = null;
-  var idUsuarioComum = null;
-  var loginUsuarioComPreExistente = 'usuario-pre-existente';
-  var cpfUsuarioComumPreExistente = 'usuario-comum-test';
-
 
   before(function(done) {
-    apagarDadosDeTeste()
+    apagarDadosDeTeste(placaTeste)
       .then(function() {
         return Estado
           .forge({nome: estadoTesteNome})
@@ -94,9 +89,9 @@ describe('model.veiculo', function() {
       var v = { placa: placaTeste};
       Veiculo.procurarVeiculoPorPlaca(v,
           function(model) {
-            should.exist(model);  
+            should.exist(model);
             done();
-          }, 
+          },
           function(err) {
             done(err);
           });
@@ -104,7 +99,7 @@ describe('model.veiculo', function() {
   });
 
     after(function(done) {
-    apagarDadosDeTeste()
+    apagarDadosDeTeste(placaTeste)
       .then(function() {
         done();
       })
