@@ -75,7 +75,7 @@ describe('model.veiculo', function() {
         done(e);
       });
     });
-
+  });
     describe('Procurar()', function() {
     it('retorna um veiculo', function(done) {
       var v = { id_veiculo: idVeiculo };
@@ -113,6 +113,6 @@ describe('model.veiculo', function() {
       });
   });
 
-  });
+
 
 });
