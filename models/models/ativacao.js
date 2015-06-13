@@ -61,10 +61,10 @@ var Ativacao = Bookshelf.Model.extend({
       .fetch()
       .then(function(d) {
         if (!d) {
-          var detalhes = {desativacao: desativacao};
-          var err = new Error('Ativacao nao reconhecida');
-          err.details = detalhes;
-          log.error('Desativacao: erro: Ativacao desconhecida', detalhes);
+          var err = new AreaAzul.BusinessException(
+            'Desativacao: Ativacao nao reconhecida',
+            {desativacao: desativacao});
+          log.error(err.message, err.details);
           throw err;
         }
         return d;
