@@ -13,9 +13,10 @@ var Contas = AreaAzul.collections.Contas;
 var UsuarioRevendedor = AreaAzul.models.UsuarioRevendedor;
 var Revendedor = AreaAzul.models.Revendedor;
 var Ativacao = AreaAzul.models.ativacao;
+var Ativacoes = AreaAzul.collections.Ativacoes;
 var UsuarioHasVeiculo = AreaAzul.models.UsuarioHasVeiculo;
 var Veiculo = AreaAzul.models.Veiculo;
-var Estado = AreaAzul.models.Estado;
+var UsuarioHasVeiculos = AreaAzul.collections.UsuarioHasVeiculos;
 
 function _apagarContasDePessoa(id) {
   if (!id) {
@@ -65,27 +66,23 @@ function _apagarPessoaJuridica(id) {
 }
 
 function _apagarVeiculo(idVeiculo) {
-  var estadoId = null;
-  if (!idVeiculo) {
-    return Promise.resolve(null);
-  }
-  return Veiculo
-          .forge({id_veiculo: idVeiculo})
-          .fetch()
-          .then(function(veiculo) {
-            estadoId = veiculo.get('estado_id');
-            return veiculo.destroy();
-          })
-          .then(function() {
-            return Estado
-              .forge({id_estado: estadoId})
-              .fetch()
-              .then(function(est) {
-                if (est !== null) {
-                  return est.destroy();
-                }
-              });
-          });
+  return UsuarioHasVeiculos
+    .forge()
+    .query()
+    .where({veiculo_id: idVeiculo})
+    .delete()
+    .then(function() {
+      return Ativacoes
+        .forge()
+        .query()
+        .where({veiculo_id: idVeiculo})
+        .delete();
+    })
+    .then(function() {
+      return Veiculo
+        .forge({id_veiculo: idVeiculo})
+        .destroy();
+    });
 }
 
 
@@ -145,7 +142,7 @@ function _apagarUsuarioHasVeiculo(idUsuario, idVeiculo) {
           usuarioId = usuariohasveiculo.get('usuario_pessoa_id');
           veiculoId = usuariohasveiculo.get('veiculo_id');
           return usuariohasveiculo.destroy();
-   
+
         })
   .then(function() {
     return _apagarVeiculo(veiculoId);
@@ -153,7 +150,7 @@ function _apagarUsuarioHasVeiculo(idUsuario, idVeiculo) {
   .then(function() {
     return _apagarUsuario(usuarioId);
   });
- 
+
 }
 
 function _apagarUsuarioRevenda(idUsuario) {
@@ -172,7 +169,7 @@ function _apagarUsuarioRevenda(idUsuario) {
         return usuario.destroy();
       })
       .then(function() {
-        return _apagarRevendedor(revendedorId);        
+        return _apagarRevendedor(revendedorId);
       })
       .then(function() {
         return _apagarPessoaFisica(pessoaId);
@@ -193,7 +190,7 @@ function _apagarRevendedorJuridica(idUsuario) {
         return revenda;
       })
       .then(function() {
-        return _apagarRevendedor(pessoaId);        
+        return _apagarRevendedor(pessoaId);
       })
       .then(function() {
         return _apagarPessoaJuridica(pessoaId);
@@ -348,18 +345,14 @@ exports.apagarAtivacaoId = function(id) {
 };
 
 
-exports.apagarVeiculoPorId = function(idVeiculo) {
-
-  var veiculoId = null;
+exports.apagarVeiculoPorPlaca = function(placa) {
   return Veiculo
-      .forge({id_veiculo: idVeiculo})
-      .fetch()
-      .then(function(veiculo) {
-        if (!veiculo) {
-          return Promise.resolve(null);
-        }
-        veiculoId = veiculo.get('id_veiculo');
-        return _apagarVeiculo(veiculoId);
-      });
-}
-
+    .forge({placa: placa})
+    .fetch()
+    .then(function(v) {
+      if (v) {
+        return _apagarVeiculo(v.id);
+      }
+      return v;
+    });
+};

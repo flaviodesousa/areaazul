@@ -1,4 +1,4 @@
-exports.ativacao = require('./collections/ativacao');
+exports.Ativacoes = require('./collections/ativacoes');
 exports.consumo = require('./collections/consumo');
 exports.Contas = require('./collections/conta');
 exports.contrato = require('./collections/contrato');
@@ -14,5 +14,5 @@ exports.revendedor = require('./collections/revendedor');
 exports.usuario = require('./collections/usuario');
 exports.UsuariosFiscais = require('./collections/usuarios_fiscais');
 exports.usuario_revendedor = require('./collections/usuario_revendedor');
-exports.usuario_has_veiculo = require('./collections/usuario_has_veiculo');
-module.exports.Veiculos = require('./collections/veiculo');
+exports.UsuarioHasVeiculos = require('./collections/usuario_has_veiculo');
+exports.Veiculos = require('./collections/veiculo');
