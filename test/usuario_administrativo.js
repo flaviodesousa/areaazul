@@ -12,6 +12,7 @@ describe('models.UsuarioAdministrativo', function() {
   var loginAdministrativoPreExistente = 'adm-pre-existente';
   var loginAdministrativoNaoExistente = 'adm-nao-existente';
   var senhaAdministrativoPreExistente = 'senha-adm-pre-existente';
+  var idUsuarioAdministrativo = null;
 
   function apagarDadosDeTeste() {
     return TestHelpers
@@ -58,6 +59,8 @@ describe('models.UsuarioAdministrativo', function() {
       })
       .then(function(pessoa) {
         should.exist(pessoa);
+        // Salvar id para testes de buscarPorId()
+        idUsuarioAdministrativo = pessoa.id;
         done();
       })
       .catch(function(e) {
@@ -82,6 +85,32 @@ describe('models.UsuarioAdministrativo', function() {
       });
     });
 
+  });
+
+  describe('buscaPorId()', function() {
+    it('encontra id valido', function(done) {
+      UsuarioAdministrativo
+        .buscarPorId(idUsuarioAdministrativo)
+        .then(function(p) {
+          should.exist(p);
+          p.should.have.property('id', idUsuarioAdministrativo);
+          done();
+        })
+        .catch(function(err) {
+          done(err);
+        });
+    });
+    it('nao encontra id invalido', function(done) {
+      UsuarioAdministrativo
+        .buscarPorId(0)
+        .then(function() {
+          done(new Error('nao deveria encontrar id invalido'));
+        })
+        .catch(function(err) {
+          should.exist(err);
+          done();
+        });
+    });
   });
 
   describe('autorizado()', function() {
