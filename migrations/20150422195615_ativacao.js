@@ -10,9 +10,9 @@ exports.up = function(knex) {
     table.decimal('altitude', 18, 10);
     table.boolean('ativo').notNullable();
     table.bigInteger('usuario_pessoa_id').notNullable()
-        .references('pessoa_id').inTable('usuario');
+      .references('pessoa_id').inTable('usuario');
     table.bigInteger('veiculo_id').notNullable()
-    .references('id_veiculo').inTable('veiculo');
+      .references('id_veiculo').inTable('veiculo');
   });
 };
 
