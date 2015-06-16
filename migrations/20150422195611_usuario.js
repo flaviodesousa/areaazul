@@ -2,9 +2,9 @@
 
 exports.up = function(knex) {
   return knex.schema.createTable('usuario', function(table) {
-    table.bigInteger('pessoa_id')
-        .primary()
-        .references('pessoa_id').inTable('pessoa_fisica');
+    table.integer('pessoa_id')
+      .primary()
+      .references('pessoa_id').inTable('pessoa_fisica');
     table.string('login').unique().notNullable();
     table.string('senha');
     table.boolean('primeiro_acesso').notNullable();

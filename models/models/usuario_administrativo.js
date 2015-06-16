@@ -58,6 +58,11 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
         });
     });
   },
+  buscarPorId: function(id) {
+    return UsuarioAdministrativo
+      .forge({pessoa_id: id})
+      .fetch({require: true});
+  },
   autorizado: function(login, senha) {
     var UsuarioAdministrativo = this;
     var err;

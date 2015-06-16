@@ -3,10 +3,10 @@
 exports.up = function(knex) {
   return knex.schema.createTable('usuario_has_veiculo', function(table) {
     table.primary(['usuario_pessoa_id', 'veiculo_id']);
-    table.bigInteger('usuario_pessoa_id')
+    table.integer('usuario_pessoa_id')
       .notNullable()
       .references('pessoa_id').inTable('usuario');
-    table.bigInteger('veiculo_id')
+    table.integer('veiculo_id')
       .notNullable()
       .references('id_veiculo').inTable('veiculo');
     table.timestamp('ultima_ativacao');

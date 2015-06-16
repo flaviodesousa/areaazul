@@ -13,7 +13,7 @@ describe('models.UsuarioAdministrativo', function() {
   var loginAdministrativoPreExistente = 'adm-pre-existente';
   var loginAdministrativoNaoExistente = 'adm-nao-existente';
   var senhaAdministrativoPreExistente = 'senha-adm-pre-existente';
-  var idValido = null;
+  var idUsuarioAdministrativo = null;
 
   function apagarDadosDeTeste() {
     return TestHelpers
@@ -58,9 +58,10 @@ describe('models.UsuarioAdministrativo', function() {
         email: 'adm-teste@example.com',
         cpf: cpfNaoExistente,
       })
-      .then(function(p) {
-        should.exist(p);
-        idValido = p.id;
+      .then(function(pessoa) {
+        should.exist(pessoa);
+        // Salvar id para testes de buscarPorId()
+        idUsuarioAdministrativo = pessoa.id;
         done();
       })
       .catch(function(e) {
@@ -91,14 +92,14 @@ describe('models.UsuarioAdministrativo', function() {
 
     it('encontra id valido', function(done) {
       UsuarioAdministrativo
-        .buscarPorId(idValido)
-        .then(function(usuarioAdministrativo) {
-          should.exist(usuarioAdministrativo);
-          usuarioAdministrativo.should.have.property('id', idValido);
+        .buscarPorId(idUsuarioAdministrativo)
+        .then(function(p) {
+          should.exist(p);
+          p.should.have.property('id', idUsuarioAdministrativo);
           done();
         })
-        .catch(function(e) {
-          done(e);
+        .catch(function(err) {
+          done(err);
         });
     });
 
