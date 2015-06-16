@@ -7,7 +7,7 @@ exports.up = function(knex, Promise) {
     table.timestamp('data_inicio').notNullable;
     table.timestamp('data_termino');
     table.boolean('ativo').notNullable();
-    table.bigInteger('pessoa_id').notNullable()
+    table.integer('pessoa_id').notNullable()
       .references('id_pessoa').inTable('pessoa');
   });
 };

@@ -9,9 +9,9 @@ exports.up = function(knex, Promise) {
     table.string('tipo').notNullable();
     table.decimal('valor', 18, 2).notNullable();
     table.boolean('ativo').notNullable();
-    table.bigInteger('conta_id').notNullable()
+    table.integer('conta_id').notNullable()
       .references('id_conta').inTable('conta');
-    table.bigInteger('pessoa_id').notNullable()
+    table.integer('pessoa_id').notNullable()
       .references('id_pessoa').inTable('pessoa');
   });
 };

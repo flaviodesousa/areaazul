@@ -10,7 +10,7 @@ exports.up = function(knex) {
     table.bigInteger('ano_fabricado');
     table.bigInteger('ano_modelo');
     table.boolean('ativo').notNullable().defaultTo(true);
-    table.bigInteger('estado_id')
+    table.integer('estado_id')
       .references('id_estado').inTable('estado');
   });
 };

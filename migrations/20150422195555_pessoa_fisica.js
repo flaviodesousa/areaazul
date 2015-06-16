@@ -2,7 +2,7 @@
 
 exports.up = function(knex, Promise) {
   return knex.schema.createTable('pessoa_fisica', function(table) {
-    table.bigInteger('pessoa_id')
+    table.integer('pessoa_id')
       .primary()
       .references('id_pessoa').inTable('pessoa');
     table.string('cpf').unique().notNullable();

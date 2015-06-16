@@ -10,9 +10,9 @@ exports.up = function(knex, Promise) {
     table.string('quadra');
     table.string('logradouro').notNullable();
     table.boolean('ativo').notNullable();
-    table.bigInteger('cidade_id').notNullable()
+    table.integer('cidade_id').notNullable()
       .references('id_cidade').inTable('cidade');
-    table.bigInteger('bairro_id').notNullable()
+    table.integer('bairro_id').notNullable()
       .references('id_bairro').inTable('bairro');
   });
 };

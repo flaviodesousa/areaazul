@@ -5,7 +5,7 @@ exports.up = function(knex, Promise) {
     table.increments('id_cidade').primary();
     table.string('nome').notNullable();
     table.boolean('ativo').notNullable();
-    table.bigInteger('estado_id').notNullable()
+    table.integer('estado_id').notNullable()
       .references('id_estado').inTable('estado');
   });
 };

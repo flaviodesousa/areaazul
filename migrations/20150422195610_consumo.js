@@ -7,9 +7,9 @@ exports.up = function(knex, Promise) {
     table.timestamp('data_desativacao');
     table.decimal('valor', 18, 2).notNullable();
     table.boolean('ativo').notNullable();
-    table.bigInteger('veiculo_id').notNullable()
+    table.integer('veiculo_id').notNullable()
       .references('id_veiculo').inTable('veiculo');
-    table.bigInteger('pessoa_id').notNullable()
+    table.integer('pessoa_id').notNullable()
       .references('id_pessoa').inTable('pessoa');
   });
 };
