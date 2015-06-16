@@ -1,6 +1,8 @@
 'use strict';
 
 var _ = require('lodash');
+var AreaAzul = require('../../areaazul.js');
+var log = AreaAzul.log;
 var Bookshelf = require('bookshelf').conexaoMain;
 var PessoaFisica = require('./pessoafisica').PessoaFisica;
 var util = require('./util');
@@ -64,17 +66,34 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
       .fetch()
       .then(function(usuarioAdministrativo) {
         if (usuarioAdministrativo === null) {
-          err = new Error('login invalido: ' + login);
-          err.authentication_event = true;
+          err = new AreaAzul.BusinessException(
+            'UsuarioAdministrativo: login invalido',
+            {login: login});
+          log.warn(err.message, err.details);
           throw err;
         }
         if (util.senhaValida(senha, usuarioAdministrativo.get('senha'))) {
           return usuarioAdministrativo;
         } else {
-          err = new Error('senha incorreta');
-          err.authentication_event = true;
+          err = new AreaAzul.BusinessException(
+            'UsuarioAdministrativo: senha incorreta',
+            {login: login});
+          log.warn(err.message, err.details);
           throw err;
         }
+      });
+  },
+  buscarPorId: function(id) {
+    return UsuarioAdministrativo
+      .forge({pessoa_id: id})
+      .fetch()
+      .then(function(u) {
+        if (u) { return u; }
+        var err = new AreaAzul.BusinessException(
+          'UsuarioAdministrativo: id nao encontrado',
+          {id: id});
+        log.warn(err.message, err.details);
+        throw err;
       });
   },
 });

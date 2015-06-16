@@ -3,6 +3,7 @@
 var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
+var BusinessException = AreaAzul.BusinessException;
 var UsuarioAdministrativo = AreaAzul.models.UsuarioAdministrativo;
 var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
 
@@ -12,6 +13,7 @@ describe('models.UsuarioAdministrativo', function() {
   var loginAdministrativoPreExistente = 'adm-pre-existente';
   var loginAdministrativoNaoExistente = 'adm-nao-existente';
   var senhaAdministrativoPreExistente = 'senha-adm-pre-existente';
+  var idValido = null;
 
   function apagarDadosDeTeste() {
     return TestHelpers
@@ -56,8 +58,9 @@ describe('models.UsuarioAdministrativo', function() {
         email: 'adm-teste@example.com',
         cpf: cpfNaoExistente,
       })
-      .then(function(pessoa) {
-        should.exist(pessoa);
+      .then(function(p) {
+        should.exist(p);
+        idValido = p.id;
         done();
       })
       .catch(function(e) {
@@ -80,6 +83,39 @@ describe('models.UsuarioAdministrativo', function() {
       .catch(function(e) {
         done(e);
       });
+    });
+
+  });
+
+  describe('buscaPorId()', function() {
+
+    it('encontra id valido', function(done) {
+      UsuarioAdministrativo
+        .buscarPorId(idValido)
+        .then(function(usuarioAdministrativo) {
+          should.exist(usuarioAdministrativo);
+          usuarioAdministrativo.should.have.property('id', idValido);
+          done();
+        })
+        .catch(function(e) {
+          done(e);
+        });
+    });
+
+    it('nao encontra id invalido', function(done) {
+      UsuarioAdministrativo
+        .buscarPorId(0)
+        .then(function() {
+          done(new Error('Nao deveria encontrar id=0'));
+        })
+        .catch(function(err) {
+          should.exist(err);
+          err.should.be.an.instanceof(BusinessException);
+          err.should.have.property(
+            'message',
+            'UsuarioAdministrativo: id nao encontrado');
+          done();
+        });
     });
 
   });
@@ -108,8 +144,10 @@ describe('models.UsuarioAdministrativo', function() {
         })
         .catch(function(err) {
           should.exist(err);
-          should.exist(err.authentication_event);
-          err.authentication_event.should.be.true;
+          err.should.be.an.instanceof(BusinessException);
+          err.should.have.property(
+            'message',
+            'UsuarioAdministrativo: senha incorreta');
           done();
         });
     });
@@ -123,8 +161,10 @@ describe('models.UsuarioAdministrativo', function() {
         })
         .catch(function(err) {
           should.exist(err);
-          should.exist(err.authentication_event);
-          err.authentication_event.should.be.true;
+          err.should.be.an.instanceof(BusinessException);
+          err.should.have.property(
+            'message',
+            'UsuarioAdministrativo: login invalido');
           done();
         });
     });
