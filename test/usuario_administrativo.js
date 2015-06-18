@@ -58,15 +58,15 @@ describe('models.UsuarioAdministrativo', function() {
         email: 'adm-teste@example.com',
         cpf: cpfNaoExistente,
       })
-      .then(function(pessoa) {
-        should.exist(pessoa);
-        // Salvar id para testes de buscarPorId()
-        idUsuarioAdministrativo = pessoa.id;
-        done();
-      })
-      .catch(function(e) {
-        done(e);
-      });
+        .then(function(pessoa) {
+          should.exist(pessoa);
+          // Salvar id para testes de buscarPorId()
+          idUsuarioAdministrativo = pessoa.id;
+          done();
+        })
+        .catch(function(e) {
+          done(e);
+        });
     });
 
     it('cadastra usuario admin com cpf existente', function(done) {
@@ -77,13 +77,13 @@ describe('models.UsuarioAdministrativo', function() {
         email: 'adm-teste@example.com',
         cpf: cpfPreExistente,
       })
-      .then(function(pessoa) {
-        should.exist(pessoa);
-        done();
-      })
-      .catch(function(e) {
-        done(e);
-      });
+        .then(function(pessoa) {
+          should.exist(pessoa);
+          done();
+        })
+        .catch(function(e) {
+          done(e);
+        });
     });
 
   });
