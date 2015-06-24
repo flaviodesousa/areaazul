@@ -103,7 +103,7 @@ describe('model.fiscalizacao', function() {
           .fetch()
           .then(function(f) {
             f.get('latitude')
-              .should.be.equal( '-89.9999999999', 'Latitude');
+              .should.be.equal('-89.9999999999', 'Latitude');
             f.get('longitude')
               .should.be.equal('-179.9999999999', 'Longitude');
             done();
@@ -128,7 +128,7 @@ describe('model.fiscalizacao', function() {
           .fetch()
           .then(function(f) {
             f.get('latitude')
-              .should.be.equal( '-90.0000000000', 'Latitude');
+              .should.be.equal('-90.0000000000', 'Latitude');
             f.get('longitude')
               .should.be.equal('-180.0000000000', 'Longitude');
             done();
@@ -145,6 +145,36 @@ describe('model.fiscalizacao', function() {
   describe('listar()', function() {
     it('retorna uma lista de fiscalizacoes', function(done) {
       Fiscalizacoes.listar(undefined,
+        function(collection) {
+          should.exist(collection);
+          done();
+        },
+        function(err) {
+          done(err);
+        });
+    });
+    it('limita por tempo', function(done) {
+      Fiscalizacoes.listar({minutos: 10},
+        function(collection) {
+          should.exist(collection);
+          done();
+        },
+        function(err) {
+          done(err);
+        });
+    });
+    it('limita por respostas', function(done) {
+      Fiscalizacoes.listar({limite: 2},
+        function(collection) {
+          should.exist(collection);
+          done();
+        },
+        function(err) {
+          done(err);
+        });
+    });
+    it('limita por tempo E respostas', function(done) {
+      Fiscalizacoes.listar({limite: 2, minutos: 10},
         function(collection) {
           should.exist(collection);
           done();
