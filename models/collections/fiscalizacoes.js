@@ -11,13 +11,13 @@ module.exports = Bookshelf.Collection.extend({
     this
       .query(function(qb) {
         var params = parameters || {};
-        if (params.since) {
+        if (params.minutos) {
           qb.where('timestamp', '>=',
-            moment().subtract(params.since, 'hours')
+            moment().subtract(params.minutos, 'minutes')
             .calendar());
         }
-        if (params.limit) {
-          qb.limit(params.limit);
+        if (params.limite) {
+          qb.limit(params.limite);
         }
         qb.orderBy('timestamp', 'desc');
       })
