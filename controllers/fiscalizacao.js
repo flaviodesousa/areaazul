@@ -19,8 +19,15 @@ module.exports = function() {
       });
     },
     listar: function(req, res) {
+      var params = {};
+      if (req.params.minutos) {
+        params.minutos = Number(req.params.minutos);
+      }
+      if (req.params.limite) {
+        params.limite = Number(req.params.limite);
+      }
       Fiscalizacoes.listar(
-        undefined,
+        params,
         function(collection) {
           res.header('Access-Control-Allow-Origin', '*');
           res.send(collection.toJSON());
