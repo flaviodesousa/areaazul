@@ -20,11 +20,11 @@ module.exports = function() {
     },
     listar: function(req, res) {
       var params = {};
-      if (req.params.minutos) {
-        params.minutos = Number(req.params.minutos);
+      if (req.query.minutos) {
+        params.minutos = Number(req.query.minutos);
       }
-      if (req.params.limite) {
-        params.limite = Number(req.params.limite);
+      if (req.query.limite) {
+        params.limite = Number(req.query.limite);
       }
       Fiscalizacoes.listar(
         params,
