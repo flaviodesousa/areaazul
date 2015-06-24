@@ -13,6 +13,7 @@
     "debug": "^0.8.1",
     "express": "^4.12.4",
     "express-load": "*",
+    "express-validator": "*",
     "http-status": "^0.1.8",
     "morgan": "^1.0.1",
     "passport": "^0.2.2",
