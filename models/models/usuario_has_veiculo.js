@@ -12,17 +12,6 @@ var UsuarioHasVeiculo =  Bookshelf.Model.extend({
     return this.belongsTo(require('./usuario'), 'usuario_pessoa_id');
   },
 }, {
-  cadastrar: function(usuariohasveiculo){
-        return UsuarioHasVeiculo
-         .forge({
-            usuario_pessoa_id: usuariohasveiculo.usuario_pessoa_id,
-            veiculo_id: usuariohasveiculo.veiculo_id,
-         })
-         .save()
-         .then(function(usuariohasveiculo) {
-            return usuariohasveiculo;
-         });
-  }
 });
 
 module.exports = UsuarioHasVeiculo;
