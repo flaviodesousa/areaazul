@@ -46,27 +46,27 @@ var Ativacao = Bookshelf.Model.extend({
         })
         .save(null, optionsInsert)
         .then(function(ativacao) {
-            return UsuarioHasVeiculo
+          return UsuarioHasVeiculo
              .forge({
-                usuario_pessoa_id: ativacao.get('usuario_pessoa_id'),
-                veiculo_id: ativacao.get('veiculo_id'),
+               usuario_pessoa_id: ativacao.get('usuario_pessoa_id'),
+               veiculo_id: ativacao.get('veiculo_id'),
              })
              .fetch()
              .then(function(usuariohasveiculo) {
-                if(usuariohasveiculo == null){
+               if (usuariohasveiculo == null) {
 
-                  console.log("passei para salvar");
-                     return UsuarioHasVeiculo
+                 console.log("passei para salvar");
+                 return UsuarioHasVeiculo
                       .forge({
-                          usuario_pessoa_id: activation.usuario_pessoa_id,
-                          veiculo_id: activation.veiculo_id,
-                          ultima_ativacao: new Date(),
-                       })
-                      .save(null, optionsInsert);
+                        usuario_pessoa_id: activation.usuario_pessoa_id,
+                        veiculo_id: activation.veiculo_id,
+                        ultima_ativacao: new Date(),
+                      })
+                     .save(null, optionsInsert);
 
-                }else{
-                     return usuariohasveiculo.save({ultima_ativacao: new Date()}, {patch: true});
-                }
+               }else {
+                 return usuariohasveiculo.save({ultima_ativacao: new Date()}, {patch: true});
+               }
 
              });
         });
