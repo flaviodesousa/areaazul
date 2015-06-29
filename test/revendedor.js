@@ -56,8 +56,8 @@ describe('model.revendedor', function() {
         login: loginTeste,
       })
       .then(function(revenda) {
-        revendedorId = revenda.id;
         should.exist(revenda);
+        revendedorId = revenda.id;
         done();
       })
       .catch(function(e) {
@@ -97,9 +97,9 @@ describe('model.revendedor', function() {
         pessoa_id: revendedorId
       },
       function(model) {
-        should.exist(model);  
+        should.exist(model);
         done();
-      }, 
+      },
       function(err) {
         done(err);
       });

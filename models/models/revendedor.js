@@ -27,7 +27,7 @@ var Revendedor = Bookshelf.Model.extend({
   cadastrar: function(dealer) {
     return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
-      var optionsInsert = _.merge(options, { method: 'insert' });
+      var optionsInsert = _.merge({}, options, {method: 'insert'});
       var idPessoa = null;
       var idRevendedor = null;
       var senha;
@@ -57,7 +57,7 @@ var Revendedor = Bookshelf.Model.extend({
                    autorizacao: dealer.autorizacao,
                    revendedor_id:  idRevendedor,
                    pessoa_fisica_pessoa_id: idPessoa,
-                 }).save(null, options);
+                 }).save(null, optionsInsert);
             })
               .then(function(usuario_revenda) {
                 return usuario_revenda;
@@ -77,7 +77,7 @@ var Revendedor = Bookshelf.Model.extend({
   },
 
   _cadastrar: function(pessoa, options) {
-    var optionsInsert = _.merge(options || {}, {method: 'insert'});
+    var optionsInsert = _.merge({}, options || {}, {method: 'insert'});
     return Revendedor
       .forge({
         ativo: true,
@@ -95,7 +95,7 @@ var Revendedor = Bookshelf.Model.extend({
           .save(null, options);
       });
   },
-  
+
   validateRevendedorPessoaFisica: function(dealer) {
   var message = [];
   if (validator.isNull(dealer.nome)) {
@@ -161,7 +161,7 @@ var RevendedorCollection =  Bookshelf.Collection.extend({
 exports.getById = function(id, func) {
   util.log('getById');
   new Revendedor({
-    id_revendedor: id 
+    id_revendedor: id
   }).fetch().then(function(model, err) {
     if (model != null)
         var retorno = model.attributes;
@@ -185,7 +185,7 @@ exports.listarpj = function(func) {
     then(collection);
   }).catch(function(err) {
     fail(err);
-  }); 
+  });
 }
 
 exports.listarpf = function(then, fail) {
@@ -199,7 +199,7 @@ exports.listarpf = function(then, fail) {
     then(collection);
   }).catch(function(err) {
     fail(err);
-  }); 
+  });
 }
 
 exports.procurarpf = function(dealer, then, fail) {
@@ -295,14 +295,14 @@ exports.editar = function(dealer, then, fail) {
   });
 
   if (validator.isNull(pessoaFisica.attributes.cpf) == false) {
-    Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaFisica, 
+    Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaFisica,
             function(model) {
               then(model);
             }, function(err) {
               fail(err);
             });
   } else {
-    Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaJuridica, 
+    Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaJuridica,
             function(model) {
               then(model);
             }, function(err) {
@@ -315,7 +315,6 @@ exports.desativarpf = function(dealer, then, fail) {
   util.log(dealer);
   this.procurarpf({id_revendedor: dealer.id_revendedor},
         function(result) {
-          console.log(result);
           var pessoa = new Pessoa.Pessoa({
             'id_pessoa': result.attributes.pessoa_id,
             'ativo': 'false'
@@ -335,14 +334,14 @@ exports.desativarpf = function(dealer, then, fail) {
             'ativo': 'false'
           });
 
-            
+
           var conta = new Conta.Conta({
             'id_conta': result.attributes.id_conta,
             'data_fechamento': new Date(),
             'ativo': 'false'
           });
 
-          Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaFisica, 
+          Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaFisica,
             function(model) {
               then(model);
             }, function(err) {
@@ -379,7 +378,7 @@ exports.desativarpj = function(dealer, then, fail) {
             'ativo': 'false'
           });
 
-          Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaJuridica, 
+          Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaJuridica,
             function(model) {
               then(model);
             }, function(err) {
