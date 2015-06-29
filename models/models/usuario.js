@@ -67,12 +67,10 @@ var Usuario = Bookshelf.Model.extend({
 
     return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
-      var optionsInsert = _.merge(options, { method: 'insert' });
+      var optionsInsert = _.merge({}, options, { method: 'insert' });
       return PessoaFisica
         ._cadastrar(user, options)
         .then(function(pf) {
-          user = _.merge(user, {
-          });
           return Usuario
             .forge({
               pessoa_id: pf.id,

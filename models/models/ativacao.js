@@ -107,7 +107,7 @@ var Ativacao = Bookshelf.Model.extend({
       function() {
         return Bookshelf.transaction(function(t) {
           var options = { transacting: t };
-          var optionsInsert = _.merge(options, { method: 'insert' });
+          var optionsInsert = _.merge({}, options, { method: 'insert' });
 
           return Ativacao
                 .forge({

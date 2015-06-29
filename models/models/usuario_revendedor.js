@@ -30,7 +30,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
 
   return Bookshelf.transaction(function(t) {
       var trx = { transacting: t };
-      var trxIns = _.merge(trx, { method: 'insert' });
+      var trxIns = _.merge({}, trx, { method: 'insert' });
       // Verifica se a pessoa fisica ja' existe
       return PessoaFisica
         .forge({cpf: user_reveller.cpf})
@@ -76,23 +76,23 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       func(retorno);
     });
   },
-  alterarSenha: function(user, then, fail) { 
+  alterarSenha: function(user, then, fail) {
     new this.Usuario_Revendedor({
       id_usuario_revendedor: user.id_usuario_revendedor
-    }).fetch().then(function(model) { 
+    }).fetch().then(function(model) {
       //   console.log("model"+model.attributes);
       console.log("model" + model);
-      if (model !== null) {       
-        console.log("model.attributes.senha" + model.attributes.senha);                                                                                                                                                      
+      if (model !== null) {
+        console.log("model.attributes.senha" + model.attributes.senha);
         var pwd = model.attributes.senha;
       }
       console.log("user.senha" + user.senha);
       console.log("pwd" + pwd);
       var hash = bcrypt.compareSync(user.senha, pwd);
-       
+
       if (hash !== false) {
         var new_senha = util.criptografa(user.nova_senha);
-            
+
         model.save({
           primeiro_acesso: 'false',
           senha: new_senha,
@@ -116,45 +116,45 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     var message = [];
     if (user.nova_senha === null || user.nova_senha === '') {
       message.push({
-          attribute: 'nova_senha', 
+          attribute: 'nova_senha',
           problem: "Nova senha é obrigatório!"
         });
     }
     if (user.senha === null || user.senha === '') {
       message.push({
-          attribute: 'senha', 
+          attribute: 'senha',
           problem: "Senha é obrigatório!"
         });
     }
     if (user.conf_senha === null || user.conf_senha === '') {
       message.push({
-          attribute: 'conf_senha', 
+          attribute: 'conf_senha',
           problem: "Confirmação de senha é obrigatório!"
         });
     }
     if (user.nova_senha  !== user.conf_senha) {
       message.push({
-          attribute: 'nova_senha', 
+          attribute: 'nova_senha',
           problem: "As senhas devem ser iguais!"
-        });                                               
+        });
     }
     if (user.senha.length < 4 && user.senha.length > 8) {
       message.push({
-          attribute: 'senha', 
+          attribute: 'senha',
           problem: "A senha deve conter no minimo 4 a 8 caracteres!"
-        });  
+        });
     }
     if (user.conf_senha.length < 4 && user.conf_senha.length > 8) {
       message.push({
-          attribute: 'conf_senha', 
+          attribute: 'conf_senha',
           problem: "A confirmação de senha deve conter no minimo 4 a 8caracteres!"
-        });  
+        });
     }
     if (user.nova_senha.length < 4 && user.nova_senha.length  > 8) {
       message.push({
-          attribute: 'nova_senha', 
+          attribute: 'nova_senha',
           problem: "A nova senha deve conter no minimo 4 a 8 caracteres!"
-        });  
+        });
     }
 
     for (var i = 0; i < message.length;i++) {
@@ -227,7 +227,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
   });
 }
 });
-  
+
 module.exports = UsuarioRevendedor;
 
 exports.compareSenha = function(password, pwd) {

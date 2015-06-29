@@ -54,7 +54,7 @@ var UsuarioFiscal = Bookshelf.Model.extend({
 
     return Bookshelf.transaction(function(t) {
       var trx = { transacting: t };
-      var trxIns = _.merge(trx, { method: 'insert' });
+      var trxIns = _.merge({}, trx, { method: 'insert' });
       // Verifica se a pessoa fisica ja' existe
       return PessoaFisica
         .forge({cpf: tax.cpf})

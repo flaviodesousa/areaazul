@@ -13,7 +13,7 @@ var PessoaFisica = Bookshelf.Model.extend({
   idAttribute: 'pessoa_id',
 }, {
   _cadastrar: function(pf, options) {
-    var optionsInsert = _.merge(options || {}, {method: 'insert'});
+    var optionsInsert = _.merge({}, options || {}, {method: 'insert'});
     return Pessoa
       .forge({
         nome: pf.nome,

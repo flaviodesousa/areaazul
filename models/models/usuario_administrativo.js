@@ -35,7 +35,7 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
 
     return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
-      var optionsInsert = _.merge(options, { method: 'insert' });
+      var optionsInsert = _.merge({}, options, { method: 'insert' });
       return PessoaFisica
         .forge({cpf: user.cpf})
         .fetch()
