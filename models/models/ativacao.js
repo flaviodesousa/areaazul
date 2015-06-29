@@ -31,8 +31,9 @@ var Ativacao = Bookshelf.Model.extend({
     }
 
     return Bookshelf.transaction(function(t) {
-      var options = { transacting: t };
-      var optionsInsert = _.merge(options, { method: 'insert' });
+      var optionsInsert = { transacting: t, method: 'insert' };
+      var optionsUpdate = { transacting: t, method: 'update', patch: true };
+      var ativacao;
 
       return Ativacao
         .forge({
@@ -45,33 +46,33 @@ var Ativacao = Bookshelf.Model.extend({
           ativo: true,
         })
         .save(null, optionsInsert)
-        .then(function(ativacao) {
+        .then(function(a) {
+          ativacao = a;
           return UsuarioHasVeiculo
-             .forge({
-               usuario_pessoa_id: ativacao.get('usuario_pessoa_id'),
-               veiculo_id: ativacao.get('veiculo_id'),
-             })
-             .fetch()
-             .then(function(usuariohasveiculo) {
-               if (usuariohasveiculo == null) {
-
-                 console.log("passei para salvar");
-                 return UsuarioHasVeiculo
-                      .forge({
-                        usuario_pessoa_id: activation.usuario_pessoa_id,
-                        veiculo_id: activation.veiculo_id,
-                        ultima_ativacao: new Date(),
-                      })
-                     .save(null, optionsInsert);
-
-               }else {
-                 return usuariohasveiculo.save({ultima_ativacao: new Date()}, {patch: true});
-               }
-
-             });
+            .forge({
+              usuario_pessoa_id: activation.usuario_pessoa_id,
+              veiculo_id: activation.veiculo_id,
+            })
+            .fetch()
+            .then(function(usuariohasveiculo) {
+              if (usuariohasveiculo === null) {
+                return UsuarioHasVeiculo
+                  .forge({
+                    usuario_pessoa_id: activation.usuario_pessoa_id,
+                    veiculo_id: activation.veiculo_id,
+                    ultima_ativacao: new Date(),
+                  })
+                  .save(null, optionsInsert);
+              } else {
+                return usuariohasveiculo
+                  .save({ultima_ativacao: new Date() }, optionsUpdate);
+              }
+            });
+        })
+        .then(function() {
+          return ativacao;
         });
     });
-
   },
 
   desativar: function(desativacao) {

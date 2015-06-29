@@ -133,6 +133,7 @@ describe('model.Ativacao', function() {
         .ativar(ativacao)
         .then(function(at) {
           should.exist(at);
+          should.exist(at.id);
           idAtivacao = at.id;
           done();
         })
@@ -154,7 +155,6 @@ describe('model.Ativacao', function() {
         })
         .catch(function(e) {
           should.exist(e);
-          console.dir(e);
           done();
         });
     });
@@ -169,7 +169,6 @@ describe('model.Ativacao', function() {
         })
         .catch(function(e) {
           should.exist(e);
-          console.dir(e);
           done();
         });
     });
