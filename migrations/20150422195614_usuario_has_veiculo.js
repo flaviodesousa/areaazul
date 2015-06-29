@@ -2,7 +2,10 @@
 
 exports.up = function(knex) {
   return knex.schema.createTable('usuario_has_veiculo', function(table) {
-    table.primary(['usuario_pessoa_id', 'veiculo_id']);
+    // Bug Bookshelf, nao atribui id de PK composta impossibilitando update
+    // table.primary(['usuario_pessoa_id', 'veiculo_id']);
+    // Coluna PK abaixo incluida enquanto bug nao for corrigido
+    table.increments('id_usuario_has_veiculo').primary();
     table.integer('usuario_pessoa_id')
       .notNullable()
       .references('pessoa_id').inTable('usuario');

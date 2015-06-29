@@ -4,7 +4,8 @@ var Bookshelf = require('bookshelf').conexaoMain;
 
 var UsuarioHasVeiculo =  Bookshelf.Model.extend({
   tableName: 'usuario_has_veiculo',
-  idAttribute: ['usuario_pessoa_id', 'veiculo_id'],
+  // Coluna id intruduzida por bug no Bookshelf
+  idAttribute: 'id_usuario_has_veiculo',
   veiculo: function() {
     return this.belongsTo(require('./veiculo'), 'veiculo_id');
   },
