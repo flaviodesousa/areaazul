@@ -9,7 +9,7 @@ var bcrypt = require('bcrypt');
 var validator = require('validator');
 var validation = require('./validation');
 var util = require('./util');
-var Conta = require('./conta').Conta;
+var Conta = require('./conta');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 var Veiculo = require('./veiculo').Veiculo;
 

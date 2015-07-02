@@ -16,7 +16,7 @@ var Areaazul_mailer = require('areaazul-mailer');
 var validation = require('./validation');
 var util = require('./util');
 var validator = require("validator");
-var Conta = require('./conta').Conta;
+var Conta = require('./conta');
 
 
 var Revendedor = Bookshelf.Model.extend({
