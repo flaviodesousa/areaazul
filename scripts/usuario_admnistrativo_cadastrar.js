@@ -25,7 +25,7 @@ AreaAzul.models.UsuarioAdministrativo.cadastrar({
   nome: a.nome || a.login,
   email: a.email || 'teste@areaazul.org',
   telefone: a.telefone || '1234567890',
-  cpf: a.cpf || '00000000000',
+  cpf: a.cpf || a.login,
   autorizacao: a.autorizacao || 'normal',
   data_nascimento: a.nascimento && moment(a.nascimento) || moment(),
 })
