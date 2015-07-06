@@ -17,6 +17,7 @@ var Ativacoes = AreaAzul.collections.Ativacoes;
 var UsuarioHasVeiculo = AreaAzul.models.UsuarioHasVeiculo;
 var Veiculo = AreaAzul.models.Veiculo;
 var UsuarioHasVeiculos = AreaAzul.collections.UsuarioHasVeiculos;
+var MovimentacaoConta = AreaAzul.models.MovimentacaoConta;
 
 function _apagarContasDePessoa(id) {
   if (!id) {
@@ -355,4 +356,11 @@ exports.apagarVeiculoPorPlaca = function(placa) {
       }
       return v;
     });
+};
+
+
+exports.apagarMovimentacaoConta = function(movimentacaoContaId){
+  return MovimentacaoConta
+        .forge({id_movimentacao_conta: movimentacaoContaId})
+        .destroy();
 };
