@@ -24,11 +24,10 @@ inserirCredito: function(conta){
     var saldoAtual = 0, novoSaldo = 0;
     saldoAtual = Number(c.get('saldo'));
     novoSaldo = math.sum(saldoAtual,conta.valor);
-    console.log("Novo saldo subtração: "+novoSaldo);
+
     if(c != null){
       return c.save({ saldo: novoSaldo},optionsUpdate)
       .then(function(){
-         console.log("passei aq 2");
         return MovimentacaoConta
           .forge({
              data_deposito: new Date(),
@@ -74,11 +73,10 @@ descontarValor: function(conta){
     var saldoAtual = 0, novoSaldo = 0;
     saldoAtual = Number(c.get('saldo'));
     novoSaldo = math.subtract(saldoAtual,conta.valor);
-    console.log("Novo saldo subtração: "+novoSaldo);
+
     if(c != null){
       return c.save({ saldo: novoSaldo},optionsUpdate)
       .then(function(){
-         console.log("passei aq 2");
         return MovimentacaoConta
           .forge({
              data_deposito: new Date(),

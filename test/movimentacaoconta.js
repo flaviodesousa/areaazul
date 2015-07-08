@@ -35,7 +35,6 @@ describe('model.movimentacaoConta', function() {
       Usuario
         .cadastrar(usuario)
         .then(function(usuario) {
-          console.log("usuario id"+usuario.id);
           usuarioId = usuario.id;
           done();
         })
