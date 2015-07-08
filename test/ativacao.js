@@ -127,6 +127,7 @@ describe('model.Ativacao', function() {
       var ativacao = {
         usuario_pessoa_id: idUsuarioComum,
         veiculo_id: idVeiculo,
+        valor: 10.0,
       };
 
       Ativacao

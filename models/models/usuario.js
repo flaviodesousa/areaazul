@@ -91,7 +91,7 @@ var Usuario = Bookshelf.Model.extend({
           return Conta
             .forge({
               data_abertura: new Date(),
-              saldo: 130.00,
+              saldo: 100.00,
               ativo: true,
               pessoa_id: user.id,
             })

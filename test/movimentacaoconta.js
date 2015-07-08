@@ -13,7 +13,6 @@ describe('model.movimentacaoConta', function() {
   var movimentacaoContaId = null;
 
   function apagarDadosDeTeste() {
-    console.log("movimentacaoContaId"+movimentacaoContaId);
     return TestHelpers.apagarMovimentacaoConta(movimentacaoContaId)
           .then(function() {
         return TestHelpers.apagarUsuarioPorLogin(loginDeTeste);
@@ -62,6 +61,24 @@ describe('model.movimentacaoConta', function() {
           done(err);
         });
     });
+
+  /*  it('desconta valor na conta', function(done) {
+      var conta = {
+          valor: 100.00,
+          pessoa_id: usuarioId,
+      };
+
+      MovimentacaoConta
+        .descontarValor(conta)
+        .then(
+          function(movimentacaoconta) {
+            console.log('movimentacaoconta::  '+movimentacaoconta.id);
+          done();
+        })
+        .catch(function(err) {
+          done(err);
+        });
+    });*/
   });
 
   after(function(done) {
@@ -73,4 +90,5 @@ describe('model.movimentacaoConta', function() {
         done(e);
       });
   });
+
 });

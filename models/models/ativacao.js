@@ -7,6 +7,7 @@ var validator = require('validator');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Revendedor = require('./revendedor');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
+var MovimentacaoConta = require('./movimentacaoconta');
 
 var Ativacao = Bookshelf.Model.extend({
   tableName: 'ativacao',
@@ -67,6 +68,14 @@ var Ativacao = Bookshelf.Model.extend({
                 return usuariohasveiculo
                   .save({ultima_ativacao: new Date() }, optionsUpdate);
               }
+            })
+            .then(function(){
+              return MovimentacaoConta.descontarValor({
+                  historico: 'ativacao',
+                  pessoa_id: activation.usuario_pessoa_id,
+                  valor: activation.valor,
+              });
+
             });
         })
         .then(function() {
