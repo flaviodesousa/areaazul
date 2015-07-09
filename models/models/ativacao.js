@@ -70,11 +70,11 @@ var Ativacao = Bookshelf.Model.extend({
               }
             })
             .then(function(){
-              return MovimentacaoConta.descontarValor({
+              return MovimentacaoConta._creditarValor({
                   historico: 'ativacao',
                   pessoa_id: activation.usuario_pessoa_id,
                   valor: activation.valor,
-              });
+              }, {transacting: t});
 
             });
         })

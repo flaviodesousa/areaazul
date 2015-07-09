@@ -13,36 +13,43 @@ describe('model.movimentacaoConta', function() {
   var movimentacaoContaId = null;
 
   function apagarDadosDeTeste() {
+    console.log("movimentacaoconta id");
     return TestHelpers.apagarMovimentacaoConta(movimentacaoContaId)
           .then(function() {
         return TestHelpers.apagarUsuarioPorLogin(loginDeTeste);
    });
   }
 
-  describe('cadastrar()', function() {
-    it('cria usuario e conta', function(done) {
-      var usuario = {
-        login: loginDeTeste,
-        senha: senhaDeTeste,
-        nome: 'usuario teste',
-        email: 'teste-unitario@areaazul.org',
-        telefone: '0',
-        cpf: '757',
-        data_nascimento: new Date(1981, 4, 1),
-        sexo: 'feminino',
-      };
-
-      Usuario
-        .cadastrar(usuario)
+  before(function(done) {
+    apagarDadosDeTeste()
+      .then(function() {
+        return Usuario.cadastrar({
+          login: loginDeTeste,
+          senha: senhaDeTeste,
+          nome: 'usuario teste',
+          email: 'teste-unitario@areaazul.org',
+          telefone: '0',
+          cpf: '757',
+          data_nascimento: new Date(1981, 4, 1),
+          sexo: 'feminino',
+        })
         .then(function(usuario) {
+          console.log("usuario.id"+usuario.id);
           usuarioId = usuario.id;
           done();
         })
-        .catch(function(err) {
-          done(err);
+        .then(function() {
+          done();
+        })
+        .catch(function(e) {
+          done(e);
         });
-    });
+  });
+  }); 
 
+
+
+describe('_inserirCredito()', function() {
     it('insere credito na conta', function(done) {
       var conta = {
           valor: 100.00,
@@ -50,7 +57,7 @@ describe('model.movimentacaoConta', function() {
       };
 
       MovimentacaoConta
-        .inserirCredito(conta)
+        ._inserirCredito(conta)
         .then(
           function(movimentacaoconta) {
           movimentacaoContaId = movimentacaoconta.get('id_movimentacao_conta');
@@ -60,27 +67,31 @@ describe('model.movimentacaoConta', function() {
           done(err);
         });
     });
+ });
 
-  /*  it('desconta valor na conta', function(done) {
+/*
+ describe('_creditarValor()', function(){
+  it('credita o valor da conta', function(done){
       var conta = {
-          valor: 100.00,
+          valor: 10.00,
           pessoa_id: usuarioId,
       };
 
       MovimentacaoConta
-        .descontarValor(conta)
-        .then(
-          function(movimentacaoconta) {
-            console.log('movimentacaoconta::  '+movimentacaoconta.id);
-          done();
-        })
-        .catch(function(err) {
-          done(err);
-        });
-    });*/
+      ._creditarValor(conta)
+      .then(
+        function(movimentacaoconta) {    
+        movimentacaoContaId = movimentacaoconta.id;
+        console.log('movimentacao _creditarValor :  '+movimentacaoconta.id);
+        done();
+      })
+      .catch(function(err) {
+        done(err);
+      });
   });
-
-  after(function(done) {
+ });
+*/
+after(function(done) {
     apagarDadosDeTeste()
       .then(function() {
         done();
@@ -88,6 +99,6 @@ describe('model.movimentacaoConta', function() {
       .catch(function(e) {
         done(e);
       });
-  });
+});
 
 });

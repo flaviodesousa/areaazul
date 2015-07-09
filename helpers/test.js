@@ -360,7 +360,15 @@ exports.apagarVeiculoPorPlaca = function(placa) {
 
 
 exports.apagarMovimentacaoConta = function(movimentacaoContaId){
+
   return MovimentacaoConta
         .forge({id_movimentacao_conta: movimentacaoContaId})
-        .destroy();
+        .fetch()
+        .then(function(mc){
+          if(mc != null){
+            return mc.destroy();
+          }
+          
+          return Promise.resolve(null);
+        });
 };
