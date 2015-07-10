@@ -16,8 +16,8 @@ describe('model.movimentacaoConta', function() {
     console.log("movimentacaoconta id");
     return TestHelpers.apagarMovimentacaoConta(movimentacaoContaId)
           .then(function() {
-        return TestHelpers.apagarUsuarioPorLogin(loginDeTeste);
-   });
+            return TestHelpers.apagarUsuarioPorLogin(loginDeTeste);
+          });
   }
 
   before(function(done) {
@@ -34,7 +34,7 @@ describe('model.movimentacaoConta', function() {
           sexo: 'feminino',
         })
         .then(function(usuario) {
-          console.log("usuario.id"+usuario.id);
+          console.log("usuario.id" + usuario.id);
           usuarioId = usuario.id;
           done();
         })
@@ -44,16 +44,17 @@ describe('model.movimentacaoConta', function() {
         .catch(function(e) {
           done(e);
         });
-  });
+      });
   }); 
 
 
 
-describe('_inserirCredito()', function() {
+  describe('_inserirCredito()', function() {
     it('insere credito na conta', function(done) {
       var conta = {
-          valor: 100.00,
-          pessoa_id: usuarioId,
+        valor: 100.00,
+        pessoa_id: usuarioId,
+        tipo: 'Cartão de credito',
       };
 
       MovimentacaoConta
@@ -67,31 +68,31 @@ describe('_inserirCredito()', function() {
           done(err);
         });
     });
- });
-
-/*
- describe('_creditarValor()', function(){
-  it('credita o valor da conta', function(done){
-      var conta = {
-          valor: 10.00,
-          pessoa_id: usuarioId,
-      };
-
-      MovimentacaoConta
-      ._creditarValor(conta)
-      .then(
-        function(movimentacaoconta) {    
-        movimentacaoContaId = movimentacaoconta.id;
-        console.log('movimentacao _creditarValor :  '+movimentacaoconta.id);
-        done();
-      })
-      .catch(function(err) {
-        done(err);
-      });
   });
- });
+
+  /*
+   describe('_creditarValor()', function(){
+    it('credita o valor da conta', function(done){
+        var conta = {
+            valor: 10.00,
+            pessoa_id: usuarioId,
+        };
+
+        MovimentacaoConta
+        ._debitarValor(conta)
+        .then(
+          function(movimentacaoconta) {    
+          movimentacaoContaId = movimentacaoconta.id;
+          console.log('movimentacao _creditarValor :  '+movimentacaoconta.id);
+          done();
+        })
+        .catch(function(err) {
+          done(err);
+        });
+    });
+   });
 */
-after(function(done) {
+  after(function(done) {
     apagarDadosDeTeste()
       .then(function() {
         done();
@@ -99,6 +100,6 @@ after(function(done) {
       .catch(function(e) {
         done(e);
       });
-});
+  });
 
 });

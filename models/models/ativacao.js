@@ -69,13 +69,14 @@ var Ativacao = Bookshelf.Model.extend({
                   .save({ultima_ativacao: new Date() }, optionsUpdate);
               }
             })
-            .then(function(){
-              return MovimentacaoConta._creditarValor({
+            .then(function() {
+              return MovimentacaoConta
+              ._debitarValor({
                   historico: 'ativacao',
                   pessoa_id: activation.usuario_pessoa_id,
-                  valor: activation.valor,
-              }, {transacting: t});
-
+                  valor: activation.valor 
+                }, {transacting: t}
+              );
             });
         })
         .then(function() {
@@ -119,17 +120,18 @@ var Ativacao = Bookshelf.Model.extend({
           var optionsInsert = _.merge({}, options, { method: 'insert' });
 
           return Ativacao
-                .forge({
-                  data_ativacao: new Date(),
-                  usuario_pessoa_id: car.usuario_pessoa_id,
-                  veiculo_id: car.veiculo_id,
-                  ativo: true,
-                })
-                .save(null, optionsInsert)
-                .then(
-                  function(ativacao) {
-                  then(ativacao);
-                });
+          .forge
+          ({
+            data_ativacao: new Date(),
+            usuario_pessoa_id: car.usuario_pessoa_id,
+            veiculo_id: car.veiculo_id,
+            ativo: true
+          })
+          .save(null, optionsInsert)
+          .then(
+            function(ativacao) {
+            then(ativacao);
+          });
         });
       },
       function(result) {

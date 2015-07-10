@@ -190,7 +190,6 @@ describe('model.Ativacao', function() {
 
   describe('ativarPelaRevenda()', function() {
     it('grava ativacao', function(done) {
-
       Ativacao
         .ativarPelaRevenda({
           usuario_pessoa_id: idUsuarioComum,

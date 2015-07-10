@@ -179,7 +179,7 @@ function _apagarUsuarioRevenda(idUsuario) {
 
 function _apagarRevendedorJuridica(idUsuario) {
   var pessoaId = null;
-  var revendedorId = null;
+
   return Revendedor
     .forge({pessoa_id: idUsuario})
     .fetch()
@@ -359,16 +359,14 @@ exports.apagarVeiculoPorPlaca = function(placa) {
 };
 
 
-exports.apagarMovimentacaoConta = function(movimentacaoContaId){
-
+exports.apagarMovimentacaoConta = function(movimentacaoContaId) {
   return MovimentacaoConta
         .forge({id_movimentacao_conta: movimentacaoContaId})
         .fetch()
-        .then(function(mc){
-          if(mc != null){
+        .then(function(mc) {
+          if (mc !== null) {
             return mc.destroy();
           }
-          
           return Promise.resolve(null);
         });
 };

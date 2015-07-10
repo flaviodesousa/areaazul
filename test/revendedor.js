@@ -18,7 +18,6 @@ describe('model.revendedor', function() {
   var razaoSocialTeste = 'razao-social-teste';
   var inscricaoEstadualTeste = 'inscricao-estadual-teste';
   var contatoTeste = 'contato-teste';
-  var ramoAtividadeTeste = 'ramo-teste';
   var loginTeste = 'login-teste-usuario';
   var nomeFantasiaTeste = 'nome-fantasia-teste';
   var nomeEmpresa = 'nome-teste';
@@ -91,7 +90,6 @@ describe('model.revendedor', function() {
   });
 
   describe('buscarRevendedor()', function() {
-
     it('retorna um revendedor', function(done) {
       Revendedor.buscarRevendedor({
         pessoa_id: revendedorId
