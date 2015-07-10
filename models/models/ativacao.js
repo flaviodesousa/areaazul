@@ -32,6 +32,7 @@ var Ativacao = Bookshelf.Model.extend({
     }
 
     return Bookshelf.transaction(function(t) {
+      var options = { transacting: t };
       var optionsInsert = { transacting: t, method: 'insert' };
       var optionsUpdate = { transacting: t, method: 'update', patch: true };
       var ativacao;
@@ -71,12 +72,12 @@ var Ativacao = Bookshelf.Model.extend({
             })
             .then(function() {
               return MovimentacaoConta
-              ._debitarValor({
+              ._inserirDebito({
                   historico: 'ativacao',
+                  tipo: 'ativacao',
                   pessoa_id: activation.usuario_pessoa_id,
-                  valor: activation.valor 
-                }, {transacting: t}
-              );
+                  valor: activation.valor
+                }, options);
             });
         })
         .then(function() {
@@ -142,4 +143,3 @@ var Ativacao = Bookshelf.Model.extend({
 });
 
 module.exports = Ativacao;
-
