@@ -17,34 +17,24 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use(passport.initialize());
 
-// Controler - Rotas
-load('controllers').then('routes').into(app, passport);
-
 // CORS API
 app.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
-
-// Catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  var newErr = new Error('Not Found');
-  newErr.status = 404;
-  next(newErr);
-});
-
-// Error handlers
-
-// Development error handler will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res) {
-    res.status(err.status || 500).end();
+  // Solution from [http://stackoverflow.com/questions/30761154/how-to-enable-cors-on-express-js-4-x-on-all-files]
+  res.set({
+    'Access-Control-Allow-Origin': req.get('Origin') || '*',
+    'Access-Control-Allow-Credentials': 'true',
+    'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    'Access-Control-Expose-Headers': 'Content-Length',
+    'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type, X-Requested-With, Range',
   });
-}
-
-// Production error handler no stacktraces leaked to user
-app.use(function(err, req, res) {
-  res.status(err.status || 500).end();
+  if (req.method === 'OPTIONS') {
+    return res.send(200);
+  } else {
+    return next();
+  }
 });
+
+// Controler - Rotas
+load('controllers').then('routes').into(app, passport);
 
 module.exports = app;
