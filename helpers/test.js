@@ -370,3 +370,12 @@ exports.apagarMovimentacaoConta = function(movimentacaoContaId) {
           return Promise.resolve(null);
         });
 };
+
+
+exports.apagarUsuarioRevenda = function(UsuarioRevendaId) {
+    if (!UsuarioRevendaId) {
+      return Promise.resolve(null);
+    }else{
+      return _apagarUsuarioRevenda(UsuarioRevendaId);
+    }
+};

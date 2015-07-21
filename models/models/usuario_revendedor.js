@@ -1,4 +1,3 @@
-
 'use script';
 
 var Pessoa = require('./pessoa').Pessoa;
@@ -14,21 +13,43 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
   tableName: 'usuario_revendedor',
   idAttribute: 'pessoa_fisica_pessoa_id',
 },
-{
+{  autorizado: function(login, senha) {
+    var UsuarioRevenda = this;
+    var err;
+    return UsuarioRevenda
+      .forge({login: login})
+      .fetch()
+      .then(function(usuario_revendedor) {
+
+
+        console.log("usuario_revendedor"+usuario_revendedor);
+        if (usuario_revendedor === null) {
+          err = new Error('login invalido: ' + login);
+          err.authentication_event = true;
+          throw err;
+        }
+        if (util.senhaValida(senha, usuario_revendedor.get('senha'))) {
+          return usuario_revendedor;
+        } else {
+          err = new Error('senha incorreta');
+          err.authentication_event = true;
+          throw err;
+        }
+      });
+  },
+
   cadastrar: function(user_reveller) {
-  console.log("User ");
-  console.log("user_reveller" + user_reveller);
-  var Usuario_Revendedor = this;
-  var usuario_revendedor = null;
+    var Usuario_Revendedor = this;
+    var usuario_revendedor = null;
 
-  var senha;
-  if (!user_reveller.senha) {
-    senha = util.criptografa(util.generate());
-  } else {
-    senha = util.criptografa(user_reveller.senha);
-  }
+    var senha;
+    if (!user_reveller.senha) {
+      senha = util.criptografa(util.generate());
+    } else {
+      senha = util.criptografa(user_reveller.senha);
+    }
 
-  return Bookshelf.transaction(function(t) {
+    return Bookshelf.transaction(function(t) {
       var trx = { transacting: t };
       var trxIns = _.merge({}, trx, { method: 'insert' });
       // Verifica se a pessoa fisica ja' existe
@@ -65,7 +86,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       .then(function() {
         return usuario_revendedor;
       });
-},
+  },
   search: function(entidade, func) {
     entidade.fetch().then(function(model, err) {
       if (model !== null)
@@ -76,6 +97,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       func(retorno);
     });
   },
+
   alterarSenha: function(user, then, fail) {
     new this.Usuario_Revendedor({
       id_usuario_revendedor: user.id_usuario_revendedor
@@ -83,11 +105,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       //   console.log("model"+model.attributes);
       console.log("model" + model);
       if (model !== null) {
-        console.log("model.attributes.senha" + model.attributes.senha);
         var pwd = model.attributes.senha;
       }
-      console.log("user.senha" + user.senha);
-      console.log("pwd" + pwd);
       var hash = bcrypt.compareSync(user.senha, pwd);
 
       if (hash !== false) {
@@ -98,10 +117,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
           senha: new_senha,
           ativo: 'true'
         }).then(function(model) {
-          util.log("Alterado com sucesso!");
           then(model);
         }).catch(function(err) {
-          util.log("Houve erro ao alterar");
           fail(err);
         });
       } else {
@@ -164,76 +181,70 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     return message;
   },
   validarSenhaAlteracao: function(user) {
-  var message = [];
-  if (validator.isNull(user.conf_senha)) {
-    message.push({
-      attribute: 'nova_senha',
-      problem: 'Nova senha é obrigatória!',
-    });
-  }
-  if (validator.isNull(user.senha)) {
-    message.push({
-      attribute: 'senha',
-      problem: 'Senha é obrigatória!',
-    });
-  }
+    var message = [];
 
-  if (user.senha.length < 4) {
-    message.push({
-      attribute: 'senha',
-      problem: 'A senha deve conter no minimo 4 caracteres!',
-    });
-  }
-
-  if (user.conf_senha.length < 4) {
-    message.push({
-      attribute: 'nova_senha',
-      problem: 'A nova senha deve conter no minimo 4 caracteres!',
-    });
-  }
-  if (user.conf_senha !== user.senha) {
-    message.push({
-      attribute: 'nova_senha, senha',
-      problem: 'As senhas devem ser iguais!',
-    });
-  }
-  return message;
-},
-  alterarSenhaRecuperacao: function(user) {
-  new this.Usuario_Revendedor({pessoa_fisica_pessoa_id: user.pessoa_fisica_pessoa_id, })
-  .fetch()
-  .then(function(model) {
-    if (model !== null) {
-      var novaSenha = util.criptografa(user.senha);
-      model.save({
-          primeiro_acesso: 'false',
-          senha: novaSenha,
-          ativo: 'true',
-        }).then(function(model) {
-          util.log('Alterado com sucesso!');
-          then(model);
-        }).catch(function(err) {
-          util.log('Houve erro ao alterar');
-          util.log('Model: ' + model.attributes);
-          fail(model.attributes);
-        });
-    } else {
-      throw new Error("Não encontrado!!!");
+    if (validator.isNull(user.conf_senha)) {
+      message.push({
+        attribute: 'nova_senha',
+        problem: 'Nova senha é obrigatória!',
+      });
     }
-  })
-  .catch(function(err) {
-    console.log("erro " + err);
-    fail(err);
-  });
-}
+    if (validator.isNull(user.senha)) {
+      message.push({
+        attribute: 'senha',
+        problem: 'Senha é obrigatória!',
+      });
+    }
+
+    if (user.senha.length < 4) {
+      message.push({
+        attribute: 'senha',
+        problem: 'A senha deve conter no minimo 4 caracteres!',
+      });
+    }
+
+    if (user.conf_senha.length < 4) {
+      message.push({
+        attribute: 'nova_senha',
+        problem: 'A nova senha deve conter no minimo 4 caracteres!',
+      });
+    }
+    if (user.conf_senha !== user.senha) {
+      message.push({
+        attribute: 'nova_senha, senha',
+        problem: 'As senhas devem ser iguais!',
+      });
+    }
+    return message;
+  },
+  alterarSenhaRecuperacao: function(user) {
+    new this.Usuario_Revendedor({pessoa_fisica_pessoa_id: user.pessoa_fisica_pessoa_id, })
+    .fetch()
+    .then(function(model) {
+      if (model !== null) {
+        var novaSenha = util.criptografa(user.senha);
+        model.save({
+            primeiro_acesso: 'false',
+            senha: novaSenha,
+            ativo: 'true',
+          }).then(function(model) {
+            then(model);
+          }).catch(function(err) {
+            fail(model.attributes);
+          });
+      } else {
+        throw new Error("Não encontrado!!!");
+      }
+    })
+    .catch(function(err) {
+      fail(err);
+    });
+  }
 });
 
 module.exports = UsuarioRevendedor;
 
 exports.compareSenha = function(password, pwd) {
-  console.log("password" + password);
-  console.log("pwd" + pwd);
   var hash = bcrypt.compareSync(password, pwd);
-  console.log("hash2" + hash);
   return hash;
 };
