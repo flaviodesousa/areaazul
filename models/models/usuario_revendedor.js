@@ -7,32 +7,36 @@ var bcrypt = require('bcrypt');
 var util = require('./util');
 var validator = require('validator');
 var _ = require('lodash');
+var AreaAzul = require('../../areaazul.js');
+var log = AreaAzul.log;
 
 
 var UsuarioRevendedor = Bookshelf.Model.extend({
   tableName: 'usuario_revendedor',
   idAttribute: 'pessoa_fisica_pessoa_id',
 },
-{  autorizado: function(login, senha) {
-    var UsuarioRevenda = this;
+{
+  autorizado: function(login, senha) {
+    var UsuarioRevendedor = this;
     var err;
-    return UsuarioRevenda
+    return UsuarioRevendedor
       .forge({login: login})
       .fetch()
-      .then(function(usuario_revendedor) {
-
-
-        console.log("usuario_revendedor"+usuario_revendedor);
-        if (usuario_revendedor === null) {
-          err = new Error('login invalido: ' + login);
-          err.authentication_event = true;
+      .then(function(usuarioRevenda) {
+        if (usuarioRevenda === null) {
+          err = new AreaAzul.BusinessException(
+            'UsuarioRevendedor: login invalido',
+            {login: login});
+          log.warn(err.message, err.details);
           throw err;
         }
-        if (util.senhaValida(senha, usuario_revendedor.get('senha'))) {
-          return usuario_revendedor;
+        if (util.senhaValida(senha, usuarioRevenda.get('senha'))) {
+          return usuarioRevenda;
         } else {
-          err = new Error('senha incorreta');
-          err.authentication_event = true;
+          err = new AreaAzul.BusinessException(
+            'UsuarioRevendedor: senha incorreta',
+            {login: login});
+          log.warn(err.message, err.details);
           throw err;
         }
       });
@@ -66,6 +70,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
             ._cadastrar(user_reveller, trx);
         })
         .then(function(pessoaFisica) {
+          console.log("user_reveller"+user_reveller.login);
           return Usuario_Revendedor
             .forge({
               login: user_reveller.login,
@@ -73,7 +78,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
               primeiro_acesso: true,
               ativo: true,
               autorizacao: user_reveller.autorizacao,
-              //revendedor_id: user_reveller.revendedor_id,
+              revendedor_id: user_reveller.revendedor_id,
               pessoa_fisica_pessoa_id: pessoaFisica.get('pessoa_id'),
             })
             .save(null, trxIns);

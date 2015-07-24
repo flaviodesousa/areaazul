@@ -86,8 +86,6 @@ function _apagarVeiculo(idVeiculo) {
     });
 }
 
-
-
 function _apagarRevendedor(idRevenda) {
   var pessoaId = null;
 
@@ -170,6 +168,7 @@ function _apagarUsuarioRevenda(idUsuario) {
         return usuario.destroy();
       })
       .then(function() {
+        console.log("revendedorId"+revendedorId);
         return _apagarRevendedor(revendedorId);
       })
       .then(function() {
@@ -278,7 +277,6 @@ exports.apagarUsuarioAdministrativoPorLogin = function(login) {
     });
 };
 
-
 exports.apagarRevendedorPessoPorIdentificador = function(cpf, cnpj) {
   var pessoaId = null;
 
@@ -319,15 +317,18 @@ exports.apagarRevendedorPessoPorIdentificador = function(cpf, cnpj) {
 };
 
 exports.apagarAtivacaoId = function(id) {
+
+  console.log("ID: "+id);
   var pessoaId = null;
   var usuarioId = null;
   var veiculoId = null;
 
-  if (!id) {
+  if (id === null) {
     return Promise.resolve(null);
   }
   return Ativacao
     .forge({id_ativacao: id})
+    .fetch()
     .then(function(ativacao) {
       if (!ativacao) {
         return Promise.resolve(null);
@@ -358,7 +359,6 @@ exports.apagarVeiculoPorPlaca = function(placa) {
     });
 };
 
-
 exports.apagarMovimentacaoConta = function(movimentacaoContaId) {
   return MovimentacaoConta
         .forge({id_movimentacao_conta: movimentacaoContaId})
@@ -370,7 +370,6 @@ exports.apagarMovimentacaoConta = function(movimentacaoContaId) {
           return Promise.resolve(null);
         });
 };
-
 
 exports.apagarUsuarioRevenda = function(UsuarioRevendaId) {
     if (!UsuarioRevendaId) {

@@ -36,7 +36,10 @@ describe('model.Ativacao', function() {
   var estadoTesteUf = 'UF';
 
   function apagarDadosDeTeste() {
-    return TestHelpers.apagarAtivacaoId(idPreExistenteAtivacao);
+    return TestHelpers.apagarAtivacaoId(idAtivacao)
+           .then(function() {
+             TestHelpers.apagarUsuarioRevenda(idUsuarioRevendedor);
+           });
   }
 
   before(function(done) {
@@ -198,6 +201,7 @@ describe('model.Ativacao', function() {
         },
         function(model) {
           should.exist(model);
+          idAtivacao = model.id;
           done();
         },
         function(err) {
