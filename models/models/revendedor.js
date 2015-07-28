@@ -24,7 +24,7 @@ var Revendedor = Bookshelf.Model.extend({
   idAttribute: 'pessoa_id',
 },
 {
-  cadastrar: function(dealer) {
+cadastrar: function(dealer) {
     return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
       var optionsInsert = _.merge({}, options, {method: 'insert'});
@@ -37,8 +37,7 @@ var Revendedor = Bookshelf.Model.extend({
       } else {
         senha = util.criptografa(dealer.senha);
       }
-
-      if (dealer.cpf != null) {
+      if (dealer.cnpj === undefined) {
         return PessoaFisica
           ._cadastrar(dealer, options)
             .then(function(pf) {
@@ -67,11 +66,26 @@ var Revendedor = Bookshelf.Model.extend({
         return PessoaJuridica
             ._cadastrar(dealer, options)
               .then(function(pj) {
+                idPessoa = pj.id;
                 return Revendedor._cadastrar(pj, options);
               })
           .then(function(revenda) {
-            return revenda;
-          })
+
+              idRevendedor = revenda.get('pessoa_id');
+              return UsuarioRevendedor
+                 .forge({
+                   login: dealer.login,
+                   senha: senha,
+                   primeiro_acesso: true,
+                   ativo: true,
+                   autorizacao: dealer.autorizacao,
+                   revendedor_id:  idRevendedor,
+                   pessoa_fisica_pessoa_id: idPessoa,
+                 }).save(null, optionsInsert);
+            })
+            .then(function(usuario_revenda) {
+                return usuario_revenda;
+            });
       }
     });
   },
