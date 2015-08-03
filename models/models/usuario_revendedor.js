@@ -75,7 +75,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
             .forge({
               login: user_reveller.login,
               senha: senha,
-              primeiro_acesso: true,
+              confirmacao_acesso: false,
               ativo: true,
               autorizacao: user_reveller.autorizacao,
               revendedor_id: user_reveller.revendedor_id,

@@ -7,7 +7,6 @@ exports.up = function(knex, Promise) {
       .references('id_pessoa').inTable('pessoa');
     table.string('cpf').unique().notNullable();
     table.date('data_nascimento');
-    table.string('sexo');
     table.boolean('ativo').notNullable();
   });
 };

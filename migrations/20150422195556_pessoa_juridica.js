@@ -8,9 +8,7 @@ exports.up = function(knex, Promise) {
     table.string('cnpj').unique().notNullable();
     table.string('nome_fantasia').notNullable();
     table.string('razao_social').notNullable();
-    table.string('inscricao_estadual')
     table.string('contato').notNullable();
-    table.string('ramo_atividade');
     table.boolean('ativo').notNullable();
   });
 };

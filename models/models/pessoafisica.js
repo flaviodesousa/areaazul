@@ -27,7 +27,6 @@ var PessoaFisica = Bookshelf.Model.extend({
           .forge({
             cpf: pf.cpf,
             data_nascimento: pf.data_nascimento,
-            sexo: pf.sexo,
             ativo: true,
             pessoa_id: pessoa.id,
           })

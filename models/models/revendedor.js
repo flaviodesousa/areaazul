@@ -51,7 +51,7 @@ cadastrar: function(dealer) {
                  .forge({
                    login: dealer.login,
                    senha: senha,
-                   primeiro_acesso: true,
+                   confirmacao_acesso: false,
                    ativo: true,
                    autorizacao: dealer.autorizacao,
                    revendedor_id:  idRevendedor,
@@ -76,7 +76,7 @@ cadastrar: function(dealer) {
                  .forge({
                    login: dealer.login,
                    senha: senha,
-                   primeiro_acesso: true,
+                   confirmacao_acesso: true,
                    ativo: true,
                    autorizacao: dealer.autorizacao,
                    revendedor_id:  idRevendedor,
