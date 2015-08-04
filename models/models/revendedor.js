@@ -17,6 +17,9 @@ var validation = require('./validation');
 var util = require('./util');
 var validator = require("validator");
 var Conta = require('./conta');
+var AreaAzul = require('../../areaazul.js');
+var log = AreaAzul.log;
+var BusinessException = AreaAzul.BusinessException;
 
 
 var Revendedor = Bookshelf.Model.extend({
@@ -24,34 +27,38 @@ var Revendedor = Bookshelf.Model.extend({
   idAttribute: 'pessoa_id',
 },
 {
-cadastrar: function(dealer) {
+  cadastrar: function(dealer) {
     return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
       var optionsInsert = _.merge({}, options, {method: 'insert'});
       var idPessoa = null;
       var idRevendedor = null;
       var senha;
+      var err;
+      var arrValidate;
 
       if (!dealer.senha) {
         senha = util.criptografa(util.generate());
       } else {
         senha = util.criptografa(dealer.senha);
       }
+
       if (dealer.cnpj === undefined) {
+        console.log("passei aq pf");
+        var arrValidate = Revendedor.validateRevendedorPessoaFisica(dealer);
+        if(arrValidate.length == 0){
         return PessoaFisica
           ._cadastrar(dealer, options)
             .then(function(pf) {
-
               idPessoa = pf.id;
               return Revendedor._cadastrar(pf, options)
             .then(function(revenda) {
-
               idRevendedor = revenda.get('pessoa_id');
               return UsuarioRevendedor
-                 .forge({
+              .forge({
                    login: dealer.login,
                    senha: senha,
-                   confirmacao_acesso: false,
+                   confirmacao_acesso: true,
                    ativo: true,
                    autorizacao: dealer.autorizacao,
                    revendedor_id:  idRevendedor,
@@ -62,34 +69,56 @@ cadastrar: function(dealer) {
                 return usuario_revenda;
               });
             });
-      }else {
+
+        }else {
+          err = new AreaAzul.BusinessException('Nao foi possivel cadastrar nova Revenda. Dados invalidos', 
+          {validationFailures: arrValidate});
+          throw err;
+        }
+
+      }else {  
+      if (dealer.cnpj === undefined) {
+        console.log("passei aq pf");
+        var arrValidate = Revendedor.validateRevendedorPessoaFisica(dealer);
+        
         return PessoaJuridica
             ._cadastrar(dealer, options)
-              .then(function(pj) {
-                idPessoa = pj.id;
-                return Revendedor._cadastrar(pj, options);
-              })
-          .then(function(revenda) {
-
-              idRevendedor = revenda.get('pessoa_id');
-              return UsuarioRevendedor
-                 .forge({
-                   login: dealer.login,
-                   senha: senha,
-                   confirmacao_acesso: true,
-                   ativo: true,
-                   autorizacao: dealer.autorizacao,
-                   revendedor_id:  idRevendedor,
-                   pessoa_fisica_pessoa_id: idPessoa,
-                 }).save(null, optionsInsert);
+            .then(function(pj) {
+              idPessoa = pj.id;
+              return Revendedor._cadastrar(pj, options);
             })
-            .then(function(usuario_revenda) {
-                return usuario_revenda;
-            });
+            .then(function(revenda_pj) {
+              return PessoaFisica
+                ._cadastrar(dealer, options)
+                  .then(function(pf) {
+                    idPessoa = pf.id;
+                    return Revendedor._cadastrar(pf, options)
+                  .then(function(revenda) {
+                    idRevendedor = revenda.get('pessoa_id');
+                    return UsuarioRevendedor
+                    .forge({
+                        login: dealer.login,
+                        senha: senha,
+                        confirmacao_acesso: true,
+                        ativo: true,
+                        autorizacao: dealer.autorizacao,
+                        revendedor_id:  idRevendedor,
+                        pessoa_fisica_pessoa_id: idPessoa,
+                    }).save(null, optionsInsert);
+                  })
+                  .then(function(usuario_revenda) {
+                      return usuario_revenda;
+                  });
+                });
+            });  
+       }else {
+          err = new AreaAzul.BusinessException('Nao foi possivel cadastrar nova Revenda. Dados invalidos', 
+          {validationFailures: arrValidate});
+          throw err;
       }
-    });
-  },
-
+    }
+   });
+},
   _cadastrar: function(pessoa, options) {
     var optionsInsert = _.merge({}, options || {}, {method: 'insert'});
     return Revendedor

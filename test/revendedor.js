@@ -12,11 +12,8 @@ describe('model.revendedor', function() {
   var emailTeste = 'preexistente@example.com';
   var telefoneTeste = '0';
   var data_nascimentoTeste = new Date(1981, 11, 13);
-  var sexoTeste = 'feminino';
   var cnpjPreExistente = 'revenda-teste-pessoa_juridica';
-  var ramoAtividadeTeste = 'ramo-atividade-teste';
   var razaoSocialTeste = 'razao-social-teste';
-  var inscricaoEstadualTeste = 'inscricao-estadual-teste';
   var contatoTeste = 'contato-teste';
   var loginTeste = 'login-teste-usuario';
   var nomeFantasiaTeste = 'nome-fantasia-teste';
@@ -51,7 +48,6 @@ describe('model.revendedor', function() {
         cpf: cpfPreExistente,
         data_nascimento: data_nascimentoTeste,
         autorizacao: 'autorizacao',
-        sexo: sexoTeste,
         login: loginTeste,
       })
       .then(function(revenda) {
@@ -71,11 +67,12 @@ describe('model.revendedor', function() {
         nome: nomeFantasiaTeste,
         nome_fantasia: nomeFantasiaTeste,
         razao_social: razaoSocialTeste,
-        inscricao_estadual: inscricaoEstadualTeste,
         contato: contatoTeste,
-        ramo_atividade: ramoAtividadeTeste,
         email: emailTeste,
         telefone: telefoneTeste,
+        cpf: 'cpf de teste',
+        login: 'logindeteste',
+        autorizacao: 'autorizacao teste',
       })
       .then(function(revenda) {
         should.exist(revenda);

@@ -5,9 +5,6 @@ var Conta = Bookshelf.Model.extend({
     idAttribute: 'id_conta'
 },{
 
-
-
-  
 });
 
 module.exports = Conta;

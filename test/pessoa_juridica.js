@@ -47,9 +47,7 @@ describe('models.PessoaJuridica', function() {
         cnpj: cnpjTeste,
         nome_fantasia: 'PJ preexistente',
         razao_social: 'razao social teste',
-        inscricao_estadual: 'insc-estadual-teste',
         contato: 'contato-teste',
-        ramo_atividade: 'ramo-atividade-teste',
         ativo: true,
       })
       .then(function(pj) {
