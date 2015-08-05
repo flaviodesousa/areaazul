@@ -34,21 +34,15 @@ var Revendedor = Bookshelf.Model.extend({
       var idPessoa = null;
       var idRevendedor = null;
       var senha;
-      var err;
       var arrValidate;
 
-      if (!dealer.senha) {
-        senha = util.criptografa(util.generate());
-      } else {
-        senha = util.criptografa(dealer.senha);
-      }
+      senha = util.criptografa(dealer.senha);
 
-      if (dealer.cnpj === undefined) {
-        console.log("passei aq pf");
+      if (!dealer.cnpj) {
         var arrValidate = Revendedor.validateRevendedorPessoaFisica(dealer);
-        if(arrValidate.length == 0){
-        return PessoaFisica
-          ._cadastrar(dealer, options)
+        if (arrValidate.length == 0) {
+          return PessoaFisica
+            ._cadastrar(dealer, options)
             .then(function(pf) {
               idPessoa = pf.id;
               return Revendedor._cadastrar(pf, options)
@@ -77,12 +71,10 @@ var Revendedor = Bookshelf.Model.extend({
         }
 
       }else {  
-      if (dealer.cnpj === undefined) {
-        console.log("passei aq pf");
-        var arrValidate = Revendedor.validateRevendedorPessoaFisica(dealer);
-        
-        return PessoaJuridica
-            ._cadastrar(dealer, options)
+        var arrValidate = Revendedor.validateRevendedorPessoaJuridica(dealer);
+        if (arrValidate.length == 0) {
+          return PessoaJuridica
+              ._cadastrar(dealer, options)
             .then(function(pj) {
               idPessoa = pj.id;
               return Revendedor._cadastrar(pj, options);
@@ -97,28 +89,28 @@ var Revendedor = Bookshelf.Model.extend({
                     idRevendedor = revenda.get('pessoa_id');
                     return UsuarioRevendedor
                     .forge({
-                        login: dealer.login,
-                        senha: senha,
-                        confirmacao_acesso: true,
-                        ativo: true,
-                        autorizacao: dealer.autorizacao,
-                        revendedor_id:  idRevendedor,
-                        pessoa_fisica_pessoa_id: idPessoa,
+                      login: dealer.login,
+                      senha: senha,
+                      confirmacao_acesso: true,
+                      ativo: true,
+                      autorizacao: dealer.autorizacao,
+                      revendedor_id:  idRevendedor,
+                      pessoa_fisica_pessoa_id: idPessoa,
                     }).save(null, optionsInsert);
                   })
                   .then(function(usuario_revenda) {
-                      return usuario_revenda;
+                    return usuario_revenda;
                   });
-                });
+                  });
             });  
-       }else {
+        }else {
           err = new AreaAzul.BusinessException('Nao foi possivel cadastrar nova Revenda. Dados invalidos', 
           {validationFailures: arrValidate});
           throw err;
+        }
       }
-    }
-   });
-},
+    });
+  },
   _cadastrar: function(pessoa, options) {
     var optionsInsert = _.merge({}, options || {}, {method: 'insert'});
     return Revendedor
@@ -168,8 +160,93 @@ var Revendedor = Bookshelf.Model.extend({
         problem: 'Email obrigatório!',
       });
   }
+
+  if (validator.isNull(dealer.login)) {
+    message.push({
+        attribute: 'login',
+        problem: 'Login obrigatório!',
+      });
+  }
+
+  if (dealer.senha !== dealer.confirmar_senha) {
+    message.push({
+        attribute: 'login',
+        problem: 'Senha e confirmacao de senha devem ser iguais!',
+      });
+  }
   return message;
 },
+
+validateRevendedorPessoaJuridica: function(dealer) {
+  var message = [];
+
+    if (validator.isNull(dealer.cnpj)) {
+    message.push({
+        attribute: 'cnpj',
+        problem: 'Nome obrigatório!',
+      });
+  }
+
+    if (validator.isNull(dealer.nome_fantasia)) {
+    message.push({
+        attribute: 'nome_fantasia',
+        problem: 'Nome fantasia obrigatório!',
+      });
+  }
+
+    if (validator.isNull(dealer.razao_social)) {
+    message.push({
+        attribute: 'razao_social',
+        problem: 'Razao social obrigatório!',
+      });
+  }
+
+  if (validator.isNull(dealer.nome)) {
+    message.push({
+        attribute: 'nome',
+        problem: 'Nome obrigatório!',
+      });
+  }
+
+  if (validator.isNull(dealer.telefone)) {
+    message.push({
+        attribute: 'telefone',
+        problem: 'Telefone obrigatório!',
+      });
+  }
+
+  if (validator.isNull(dealer.cpf)) {
+    message.push({
+        attribute: 'cpf',
+        problem: 'CPF é obrigatório!',
+      });
+  }
+
+  if (validator.isNull(dealer.email)) {
+    message.push({
+        attribute: 'email',
+        problem: 'Email obrigatório!',
+      });
+  }
+
+  if (validator.isNull(dealer.login)) {
+    message.push({
+        attribute: 'login',
+        problem: 'Login obrigatório!',
+      });
+  }
+
+  if (dealer.senha !== dealer.confirmar_senha) {
+    message.push({
+        attribute: 'login',
+        problem: 'Senha e confirmacao de senha devem ser iguais!',
+      });
+  }
+  return message;
+},
+
+
+
 
   buscarRevendedor: function(user, then, fail) {
   Revendedor
@@ -431,13 +508,6 @@ exports.desativarpj = function(dealer, then, fail) {
 }
 
 
-
-exports.validateRevendedorPessoaJuridica = function(dealer) {
-  var message = [];
-
-
-  return message;
-}
 
 
 
