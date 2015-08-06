@@ -18,6 +18,7 @@ describe('model.revendedor', function() {
   var loginTeste = 'login-teste-usuario';
   var nomeFantasiaTeste = 'nome-fantasia-teste';
   var nomeEmpresa = 'nome-teste';
+  var senhaTeste = 'senha-teste';
   var revendedorId = null;
 
   function apagarDadosDeTeste() {
@@ -49,6 +50,7 @@ describe('model.revendedor', function() {
         data_nascimento: data_nascimentoTeste,
         autorizacao: 'autorizacao',
         login: loginTeste,
+        senha: senhaTeste,
       })
       .then(function(revenda) {
         should.exist(revenda);
@@ -73,6 +75,7 @@ describe('model.revendedor', function() {
         cpf: 'cpf de teste',
         login: 'logindeteste',
         autorizacao: 'autorizacao teste',
+        senha: senhaTeste,
       })
       .then(function(revenda) {
         should.exist(revenda);

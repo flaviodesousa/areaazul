@@ -2,10 +2,6 @@
 
 var _ = require('lodash');
 var Bookshelf = require('bookshelf').conexaoMain;
-var validator = require('validator');
-var validation = require('./validation');
-
-var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa').Pessoa;
 
 
@@ -51,46 +47,6 @@ var PessoaJuridica = Bookshelf.Model.extend({
         return pessoaJuridica;
       });
   },
-
-
-
-
-
 });
-
-
-exports.validate =  function(pessoaJuridica) {
-  var message = [];
-
-  if (validator.isNull(pessoaJuridica.attributes.cnpj)) {
-    message.push({
-      attribute: 'cnpj',
-      problem: 'CNPJ obrigatório!',
-    });
-  } else if (!validation.isCNPJ(pessoaJuridica.attributes.cnpj)) {
-    message.push({
-      attribute: 'cnpj',
-      problem: 'CNPJ inválido!',
-    });
-  }
-
-  if (validator.isNull(pessoaJuridica.attributes.razao_social)) {
-    message.push({
-      attribute: 'razao_social',
-      problem: 'Razão social obrigatória!',
-    });
-  }
-
-  if (validator.isNull(pessoaJuridica.attributes.contato)) {
-    message.push({
-      attribute: 'contato',
-      problem: 'Contato obrigatório!',
-    });
-  }
-
-  return message;
-};
-
-
 
 module.exports = PessoaJuridica;

@@ -35,8 +35,8 @@ var Revendedor = Bookshelf.Model.extend({
       var idRevendedor = null;
       var senha;
       var arrValidate;
-
-      senha = util.criptografa(dealer.senha);
+      var senha = util.criptografa(dealer.senha);
+      var err;
 
       if (!dealer.cnpj) {
         var arrValidate = Revendedor.validateRevendedorPessoaFisica(dealer);
@@ -52,7 +52,7 @@ var Revendedor = Bookshelf.Model.extend({
               .forge({
                    login: dealer.login,
                    senha: senha,
-                   confirmacao_acesso: true,
+                   acesso_confirmado: true,
                    ativo: true,
                    autorizacao: dealer.autorizacao,
                    revendedor_id:  idRevendedor,
@@ -91,7 +91,7 @@ var Revendedor = Bookshelf.Model.extend({
                     .forge({
                       login: dealer.login,
                       senha: senha,
-                      confirmacao_acesso: true,
+                      acesso_confirmado: true,
                       ativo: true,
                       autorizacao: dealer.autorizacao,
                       revendedor_id:  idRevendedor,
@@ -133,45 +133,38 @@ var Revendedor = Bookshelf.Model.extend({
 
   validateRevendedorPessoaFisica: function(dealer) {
   var message = [];
-  if (validator.isNull(dealer.nome)) {
+  if (!dealer.nome) {
     message.push({
         attribute: 'nome',
         problem: 'Nome obrigatório!',
       });
   }
 
-  if (validator.isNull(dealer.telefone)) {
+  if (!dealer.telefone) {
     message.push({
         attribute: 'telefone',
         problem: 'Telefone obrigatório!',
       });
   }
 
-  if (validator.isNull(dealer.cpf)) {
+  if (!dealer.cpf) {
     message.push({
         attribute: 'cpf',
         problem: 'CPF é obrigatório!',
       });
   }
 
-  if (validator.isNull(dealer.email)) {
+  if (!dealer.email) {
     message.push({
         attribute: 'email',
         problem: 'Email obrigatório!',
       });
   }
 
-  if (validator.isNull(dealer.login)) {
+  if (!dealer.login) {
     message.push({
         attribute: 'login',
         problem: 'Login obrigatório!',
-      });
-  }
-
-  if (dealer.senha !== dealer.confirmar_senha) {
-    message.push({
-        attribute: 'login',
-        problem: 'Senha e confirmacao de senha devem ser iguais!',
       });
   }
   return message;
@@ -180,63 +173,63 @@ var Revendedor = Bookshelf.Model.extend({
 validateRevendedorPessoaJuridica: function(dealer) {
   var message = [];
 
-    if (validator.isNull(dealer.cnpj)) {
+    if (!dealer.cnpj) {
     message.push({
         attribute: 'cnpj',
         problem: 'Nome obrigatório!',
       });
   }
 
-    if (validator.isNull(dealer.nome_fantasia)) {
+    if (!dealer.nome_fantasia) {
     message.push({
         attribute: 'nome_fantasia',
         problem: 'Nome fantasia obrigatório!',
       });
   }
 
-    if (validator.isNull(dealer.razao_social)) {
+    if (!dealer.razao_social) {
     message.push({
         attribute: 'razao_social',
         problem: 'Razao social obrigatório!',
       });
   }
 
-  if (validator.isNull(dealer.nome)) {
+  if (!dealer.nome) {
     message.push({
         attribute: 'nome',
         problem: 'Nome obrigatório!',
       });
   }
 
-  if (validator.isNull(dealer.telefone)) {
+  if (!dealer.telefone) {
     message.push({
         attribute: 'telefone',
         problem: 'Telefone obrigatório!',
       });
   }
 
-  if (validator.isNull(dealer.cpf)) {
+  if (!dealer.cpf) {
     message.push({
         attribute: 'cpf',
         problem: 'CPF é obrigatório!',
       });
   }
 
-  if (validator.isNull(dealer.email)) {
+  if (!dealer.email) {
     message.push({
         attribute: 'email',
         problem: 'Email obrigatório!',
       });
   }
 
-  if (validator.isNull(dealer.login)) {
+  if (!dealer.login) {
     message.push({
         attribute: 'login',
         problem: 'Login obrigatório!',
       });
   }
 
-  if (dealer.senha !== dealer.confirmar_senha) {
+  if (!dealer.senha) {
     message.push({
         attribute: 'login',
         problem: 'Senha e confirmacao de senha devem ser iguais!',
@@ -366,150 +359,6 @@ exports.procurar = function(dealer, then, fail) {
     fail(err);
   });
 }
-
-exports.editar = function(dealer, then, fail) {
-
-  util.log(dealer);
-  var login;
-  if (dealer.cpf != null) {
-    login = dealer.cpf;
-  }else {
-    login = dealer.cnpj;
-  }
-
-  var usuario = new Usuario.Usuario({
-    'id_usuario': dealer.id_usuario,
-    'login': login,
-    'autorizacao': '1',
-    'primeiro_acesso': 'true',
-    // 'senha': senha,
-    'ativo': 'true'
-  });
-
-  var revendedor = new this.Revendedor({
-    'id_revendedor': dealer.id_revendedor,
-    'ativo': 'true'
-  });
-
-  var pessoa = new Pessoa.Pessoa({
-    'id_pessoa': dealer.pessoa_id,
-    'nome': dealer.nome,
-    'email': dealer.email,
-    'telefone': dealer.telefone,
-    'ativo': 'true'
-  });
-
-  var pessoaJuridica = new PessoaJuridica. PessoaJuridica({
-    'id_pessoa_juridica': dealer.id_pessoa_juridica,
-    'cnpj': dealer.cnpj,
-    'nome_fantasia': dealer.nome,
-    'razao_social': dealer.razao_social,
-    'contato': dealer.contato,
-    'ativo': 'true'
-  });
-
-  var pessoaFisica = new PessoaFisica.PessoaFisica({
-    'id_pessoa_fisica': dealer.id_pessoa_fisica,
-    'cpf': dealer.cpf,
-    'ativo': 'true'
-  });
-
-  if (validator.isNull(pessoaFisica.attributes.cpf) == false) {
-    Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaFisica,
-            function(model) {
-              then(model);
-            }, function(err) {
-              fail(err);
-            });
-  } else {
-    Pessoa.transactionUpdate(pessoa, revendedor, usuario, pessoaJuridica,
-            function(model) {
-              then(model);
-            }, function(err) {
-              fail(err);
-            });
-  }
-}
-
-exports.desativarpf = function(dealer, then, fail) {
-  util.log(dealer);
-  this.procurarpf({id_revendedor: dealer.id_revendedor},
-        function(result) {
-          var pessoa = new Pessoa.Pessoa({
-            'id_pessoa': result.attributes.pessoa_id,
-            'ativo': 'false'
-          });
-
-          var pessoaFisica = new PessoaFisica.PessoaFisica({
-            'id_pessoa_fisica': result.attributes.id_pessoa_fisica,
-            'ativo': 'false'
-          });
-          var revendedor = new Revendedor({
-            'id_revendedor': result.attributes.id_revendedor,
-            'ativo': 'false'
-          });
-
-          var usuario = new Usuario.Usuario({
-            'id_usuario': result.attributes.id_usuario,
-            'ativo': 'false'
-          });
-
-
-          var conta = new Conta.Conta({
-            'id_conta': result.attributes.id_conta,
-            'data_fechamento': new Date(),
-            'ativo': 'false'
-          });
-
-          Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaFisica,
-            function(model) {
-              then(model);
-            }, function(err) {
-              fail(err);
-            });
-        });
-}
-
-exports.desativarpj = function(dealer, then, fail) {
-  util.log(dealer);
-  this.procurarpj({id_revendedor: dealer.id_revendedor},
-        function(result) {
-          var pessoa = new Pessoa.Pessoa({
-            'id_pessoa': result.attributes.pessoa_id,
-            'ativo': 'false'
-          });
-          var pessoaJuridica = new PessoaJuridica.PessoaJuridica({
-            'id_pessoa_juridica': result.attributes.id_pessoa_juridica,
-            'ativo': 'false'
-          });
-          var usuario = new Usuario.Usuario({
-            'id_usuario': result.attributes.id_usuario,
-            'ativo': 'false'
-          });
-
-          var revendedor = new Revendedor({
-            'id_revendedor': dealer.id_revendedor,
-            'ativo': 'false'
-          });
-
-          var conta = new Conta.Conta({
-            'id_conta': result.attributes.id_conta,
-            'data_fechamento': new Date(),
-            'ativo': 'false'
-          });
-
-          Pessoa.fiveUpdateTransaction(pessoa, revendedor, usuario, conta, pessoaJuridica,
-            function(model) {
-              then(model);
-            }, function(err) {
-              fail(err);
-            });
-        });
-}
-
-
-
-
 
 exports.mostrarSaldo = function(user, then, fail) {
   console.log("usuario" + user.id_usuario);

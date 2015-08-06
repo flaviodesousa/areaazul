@@ -183,38 +183,6 @@ exports.alterarSenha = function(user, then, fail) {
       });
 };
 
-exports.editar = function(user, then, fail) {
-  var dataDeNascimento = util.converteData(user.data_nascimento);
-
-  var usuario = new this.Usuario({
-    id_usuario: user.id_usuario,
-    login: user.cpf,
-    primeiro_acesso: true,
-    ativo: true,
-  });
-  var pessoa = new Pessoa.Pessoa({
-    id_pessoa: user.pessoa_id,
-    nome: user.nome,
-    email: user.email,
-    telefone: user.telefone,
-    ativo: true,
-  });
-  var pessoaFisica = new PessoaFisica.PessoaFisica({
-    id_pessoa_fisica: user.id_pessoa_fisica,
-    cpf: user.cpf,
-    data_nascimento: dataDeNascimento,
-    sexo: user.sexo,
-    ativo: true,
-  });
-
-  Pessoa.updateTransaction(pessoa, usuario, pessoaFisica,
-  function(model) {
-    then(model);
-  }, function(err) {
-    fail(err);
-  });
-};
-
 
 exports.procurar = function(user, then, fail) {
   Usuario.forge().query(function(qb) {
@@ -230,37 +198,6 @@ exports.procurar = function(user, then, fail) {
     then(model);
   }).catch(function(err) {
     fail(err);
-  });
-};
-
-exports.desativar = function(user, then, fail) {
-  this.procurar({id_usuario: user.id_usuario},
-    function(result) {
-    var pessoa = new Pessoa.Pessoa({
-      id_pessoa: result.attributes.pessoa_id,
-      ativo: false,
-    });
-    var pessoaFisica = new PessoaFisica.PessoaFisica({
-      id_pessoa_fisica: result.attributes.id_pessoa_fisica,
-      ativo: false,
-    });
-    var usuario = new Usuario({
-      id_usuario: result.attributes.id_usuario,
-      ativo: false,
-    });
-    var conta = new Conta.Conta({
-      id_conta: result.attributes.id_conta,
-      data_fechamento: new Date(),
-      ativo: false,
-    });
-
-    Pessoa.updateTransaction(pessoa, usuario, conta, pessoaFisica,
-    function(model) {
-      then(model);
-    }, function(err) {
-      fail(err);
-    });
-
   });
 };
 

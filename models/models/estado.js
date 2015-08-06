@@ -39,18 +39,7 @@ var Estado = Bookshelf.Model.extend({
       });
 
 },
-/*
-  var estado = new this.Estado({
-    'nome': state.nome,
-    'uf': state.uf,
-    'ativo': 'true'
-  });
-  estado.save().then(function(model) {
-    then(model);
-  }).catch(function(err) {
-    fail(err);
-  });
-}*/
+
 });
 
 module.exports = Estado;
@@ -64,42 +53,6 @@ exports.listar = function(func) {
     func(collection);
   }); 
 }
-
-
-exports.editar = function(state, fail, then) {
-  util.log(state); 
-  var estado = new this.Estado({
-    'id_estado': state.id_estado,
-    'nome': state.nome,
-    'uf': state.uf,
-    'ativo': state.ativo
-  }); 
-  new this.Estado({
-    id_estado: state.id_estado,
-  }).fetch().then(function(model) {
-    model.save(state).then(function(model, err) {
-      if (err) {
-        fail(false);
-      } else {
-        util.log(model);
-        then(true);
-      }
-
-    });
-  });
-}
-exports.desativar = function(state, then, fail) {
-  new this.Estado({
-    id_estado: state.id_estado,
-  }).fetch().then(function(model) {
-    model.save(state).then(function(model) {
-      then(model);
-    }).catch(function(err) {
-      fail(err);
-    });
-  });
-}
-
 
 exports.validate = function(state) {
   var message = [];

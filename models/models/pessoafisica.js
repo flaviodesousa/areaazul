@@ -66,22 +66,3 @@ var PessoaFisica = Bookshelf.Model.extend({
 
 exports.PessoaFisica = PessoaFisica;
 
-exports.validate = function(pessoaFisica) {
-
-  if (validator.isNull(pessoaFisica.attributes.cpf)) {
-    util.log('Cpf obrigatório');
-    return false;
-  }
-
-  if (!validation.isCPF(pessoaFisica.attributes.cpf)) {
-    util.log('Cpf Inválido');
-    return false;
-  }
-
-  if (pessoaFisica.attributes.data_nascimento === '') {
-    util.log('Data Nascimento obrigatório');
-    return false;
-  }
-
-  return true;
-};
