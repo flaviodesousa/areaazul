@@ -20,97 +20,95 @@ exports.validarData = function(dataNascimento) {
     }
 }
 
-exports.isCPF = function(CPF) {
-    var cpf = CPF;
-
-    util.log("1: " + cpf);
-    for (var i = 0; i <= cpf.length; i++) {
-        cpf = cpf.replace('.', ''); //onde há ponto coloca espaço
-        cpf = cpf.replace('/', ''); //onde há barra coloca espaço
-        cpf = cpf.replace('-', ''); //onde há traço coloca espaço
-        cpf = cpf.replace(' ', ''); //onde há ponto coloca espaço
-    }
-    util.log("2: " + cpf);
-
-    var digitoDigitado = eval(cpf.charAt(9) + cpf.charAt(10));
-    var soma1 = 0,
-        soma2 = 0;
-    var vlr = 11;
-
-    for (i = 0; i < 9; i++) {
-        soma1 += eval(cpf.charAt(i) * (vlr - 1));
-        soma2 += eval(cpf.charAt(i) * vlr);
-        vlr--;
-    }
-
-    soma1 = (((soma1 * 10) % 11) == 10 ? 0 : ((soma1 * 10) % 11));
-    soma2 = (((soma2 + (2 * soma1)) * 10) % 11);
-
-    var digitoGerado = (soma1 * 10) + soma2;
-
-    if (digitoGerado != digitoDigitado) {
-        return false;
-    }
-    return true;
+exports.isCPF = function(cpf) {  
+    cpf = cpf.replace(/[^\d]+/g,'');    
+    if(cpf == '') return false; 
+    // Elimina CPFs invalidos conhecidos    
+    if (cpf.length != 11 || 
+        cpf == "00000000000" || 
+        cpf == "11111111111" || 
+        cpf == "22222222222" || 
+        cpf == "33333333333" || 
+        cpf == "44444444444" || 
+        cpf == "55555555555" || 
+        cpf == "66666666666" || 
+        cpf == "77777777777" || 
+        cpf == "88888888888" || 
+        cpf == "99999999999")
+            return false;       
+    // Valida 1o digito 
+    add = 0;    
+    for (i=0; i < 9; i ++)       
+        add += parseInt(cpf.charAt(i)) * (10 - i);  
+        rev = 11 - (add % 11);  
+        if (rev == 10 || rev == 11)     
+            rev = 0;    
+        if (rev != parseInt(cpf.charAt(9)))     
+            return false;       
+    // Valida 2o digito 
+    add = 0;    
+    for (i = 0; i < 10; i ++)        
+        add += parseInt(cpf.charAt(i)) * (11 - i);  
+    rev = 11 - (add % 11);  
+    if (rev == 10 || rev == 11) 
+        rev = 0;    
+    if (rev != parseInt(cpf.charAt(10)))
+        return false;       
+    return true;   
 }
 
-
-exports.isCNPJ = function(CNPJ){
-
-   var cnpj = CNPJ;
-   util.log(cnpj);
-   util.log(cnpj.length);
-
-   if (cnpj != '') {
-        cnpj = cnpj.replace(/[.\-\/]/g, "");
-    if (cnpj.length != 14)
+exports.isCNPJ = function(str){
+    str = str.replace('.','');
+    str = str.replace('.','');
+    str = str.replace('.','');
+    str = str.replace('-','');
+    str = str.replace('/','');
+    cnpj = str;
+    var numeros, digitos, soma, i, resultado, pos, tamanho, digitos_iguais;
+    digitos_iguais = 1;
+    if (cnpj.length < 14 && cnpj.length < 15)
         return false;
-    var dv = cnpj.substr(cnpj.length - 2, cnpj.length);
-    cnpj = cnpj.substr(0, 12);
-    /* calcular 1º dígito verificador */
-    var soma;
-    soma = cnpj[0] * 6;
-    soma += cnpj[1] * 7;
-    soma += cnpj[2] * 8;
-    soma += cnpj[3] * 9;
-    soma += cnpj[4] * 2;
-    soma += cnpj[5] * 3;
-    soma += cnpj[6] * 4;
-    soma += cnpj[7] * 5;
-    soma += cnpj[8] * 6;
-    soma += cnpj[9] * 7;
-    soma += cnpj[10] * 8;
-    soma += cnpj[11] * 9;
-    var dv1 = soma % 11;
-    if (dv1 == 10) {
-        dv1 = 0;
+    for (i = 0; i < cnpj.length - 1; i++)
+        if (cnpj.charAt(i) != cnpj.charAt(i + 1))
+    {
+        digitos_iguais = 0;
+        break;
     }
-    /* calcular 2º dígito verificador */
-    soma = cnpj[0] * 5;
-    soma += cnpj[1] * 6;
-    soma += cnpj[2] * 7;
-    soma += cnpj[3] * 8;
-    soma += cnpj[4] * 9;
-    soma += cnpj[5] * 2;
-    soma += cnpj[6] * 3;
-    soma += cnpj[7] * 4;
-    soma += cnpj[8] * 5;
-    soma += cnpj[9] * 6;
-    soma += cnpj[10] * 7;
-    soma += cnpj[11] * 8;
-    soma += dv1 * 9;
-    var dv2 = soma % 11;
-    if (dv2 == 10) {
-        dv2 = 0;
-    }
-    var digito = dv1 + "" + dv2;
-    if (dv == digito) { /* compara o dv digitado ao dv calculado */
+    if (!digitos_iguais)
+    {
+        tamanho = cnpj.length - 2
+        numeros = cnpj.substring(0,tamanho);
+        digitos = cnpj.substring(tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        for (i = tamanho; i >= 1; i--)
+        {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2)
+                pos = 9;
+        }
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado != digitos.charAt(0))
+            return false;
+        tamanho = tamanho + 1;
+        numeros = cnpj.substring(0,tamanho);
+        soma = 0;
+        pos = tamanho - 7;
+        for (i = tamanho; i >= 1; i--)
+        {
+            soma += numeros.charAt(tamanho - i) * pos--;
+            if (pos < 2)
+                pos = 9;
+        }
+        resultado = soma % 11 < 2 ? 0 : 11 - soma % 11;
+        if (resultado != digitos.charAt(1))
+            return false;
         return true;
-    } else {
-        return false;
     }
+    else
+        return false;
 }
-}
+
 
 exports.validarData = function(dataNascimento) {
     var data = dataNascimento;

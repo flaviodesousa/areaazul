@@ -33,7 +33,6 @@ var Revendedor = Bookshelf.Model.extend({
       var optionsInsert = _.merge({}, options, {method: 'insert'});
       var idPessoa = null;
       var idRevendedor = null;
-      var senha;
       var arrValidate;
       var senha = util.criptografa(dealer.senha);
       var err;
@@ -65,8 +64,7 @@ var Revendedor = Bookshelf.Model.extend({
             });
 
         }else {
-          err = new AreaAzul.BusinessException('Nao foi possivel cadastrar nova Revenda. Dados invalidos', 
-          {validationFailures: arrValidate});
+          err = new AreaAzul.BusinessException('Nao foi possivel cadastrar nova Revenda. Dados invalidos', arrValidate);
           throw err;
         }
 
@@ -104,8 +102,7 @@ var Revendedor = Bookshelf.Model.extend({
                   });
             });  
         }else {
-          err = new AreaAzul.BusinessException('Nao foi possivel cadastrar nova Revenda. Dados invalidos', 
-          {validationFailures: arrValidate});
+          err = new AreaAzul.BusinessException('Nao foi possivel cadastrar nova Revenda. Dados invalidos', arrValidate);
           throw err;
         }
       }
@@ -140,10 +137,10 @@ var Revendedor = Bookshelf.Model.extend({
       });
   }
 
-  if (!dealer.telefone) {
+  if (!dealer.celular) {
     message.push({
-        attribute: 'telefone',
-        problem: 'Telefone obrigatório!',
+        attribute: 'celular',
+        problem: 'Celular obrigatório!',
       });
   }
 
@@ -165,6 +162,20 @@ var Revendedor = Bookshelf.Model.extend({
     message.push({
         attribute: 'login',
         problem: 'Login obrigatório!',
+      });
+  }
+
+  if (validation.isCPF(dealer.cpf) === false) {
+    message.push({
+        attribute: 'cpf',
+        problem: 'CPF inválido!',
+      });
+  }
+
+  if (!validator.isEmail(dealer.email)) {
+    message.push({
+        attribute: 'email',
+        problem: 'Email inválido!',
       });
   }
   return message;
@@ -201,7 +212,7 @@ validateRevendedorPessoaJuridica: function(dealer) {
       });
   }
 
-  if (!dealer.telefone) {
+  if (!dealer.contato) {
     message.push({
         attribute: 'telefone',
         problem: 'Telefone obrigatório!',
@@ -233,6 +244,28 @@ validateRevendedorPessoaJuridica: function(dealer) {
     message.push({
         attribute: 'login',
         problem: 'Senha e confirmacao de senha devem ser iguais!',
+      });
+  }
+
+  if (validation.isCNPJ(dealer.cnpj) === false) {
+    message.push({
+        attribute: 'cnpj',
+        problem: 'Cnpj inválido!',
+      });
+  }
+
+
+  if (validation.isCPF(dealer.cpf) === false) {
+    message.push({
+        attribute: 'cpf',
+        problem: 'CPF inválido!',
+      });
+  }
+
+  if (!validator.isEmail(dealer.email)) {
+    message.push({
+        attribute: 'email',
+        problem: 'Email inválido!',
       });
   }
   return message;
