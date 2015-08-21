@@ -39,7 +39,7 @@ var Revendedor = Bookshelf.Model.extend({
 
       if (!dealer.cnpj) {
         var arrValidate = Revendedor.validateRevendedorPessoaFisica(dealer);
-        if (arrValidate.length == 0) {
+        if (arrValidate.length === 0) {
           return PessoaFisica
             ._cadastrar(dealer, options)
             .then(function(pf) {
@@ -67,10 +67,10 @@ var Revendedor = Bookshelf.Model.extend({
           err = new AreaAzul.BusinessException('Nao foi possivel cadastrar nova Revenda. Dados invalidos', arrValidate);
           throw err;
         }
-
       }else {  
         var arrValidate = Revendedor.validateRevendedorPessoaJuridica(dealer);
-        if (arrValidate.length == 0) {
+        console.dir("dealer"+dealer);
+        if (arrValidate.length === 0) {
           return PessoaJuridica
               ._cadastrar(dealer, options)
             .then(function(pj) {
@@ -130,6 +130,21 @@ var Revendedor = Bookshelf.Model.extend({
 
   validateRevendedorPessoaFisica: function(dealer) {
   var message = [];
+
+  if (!dealer.cpf) {
+    message.push({
+        attribute: 'cpf',
+        problem: 'CPF é obrigatório!',
+      });
+  }
+
+  if (validation.isCPF(dealer.cpf) === false) {
+    message.push({
+        attribute: 'cpf',
+        problem: 'CPF inválido!',
+      });
+  }
+
   if (!dealer.nome) {
     message.push({
         attribute: 'nome',
@@ -144,13 +159,6 @@ var Revendedor = Bookshelf.Model.extend({
       });
   }
 
-  if (!dealer.cpf) {
-    message.push({
-        attribute: 'cpf',
-        problem: 'CPF é obrigatório!',
-      });
-  }
-
   if (!dealer.email) {
     message.push({
         attribute: 'email',
@@ -162,13 +170,6 @@ var Revendedor = Bookshelf.Model.extend({
     message.push({
         attribute: 'login',
         problem: 'Login obrigatório!',
-      });
-  }
-
-  if (validation.isCPF(dealer.cpf) === false) {
-    message.push({
-        attribute: 'cpf',
-        problem: 'CPF inválido!',
       });
   }
 

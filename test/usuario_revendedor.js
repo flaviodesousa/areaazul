@@ -8,8 +8,8 @@ var UsuarioRevendedor = AreaAzul.models.UsuarioRevendedor;
 var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
 
 describe('models.UsuarioRevendedor', function() {
-  var cpfPreExistente = 'revenda-teste-pre-existente';
-  var cpfNaoExistente = 'revenda-teste-nao-existente';
+  var cpfPreExistente = '12341184758';
+  var cpfNaoExistente = '58316661667';
 //  var loginRevendaNaoExistente = 'revenda-nao-existente';
   var senhaRevendaExistente = 'senha-adm-pre-existente';
   var loginRevendaExistente = 'revenda-teste';

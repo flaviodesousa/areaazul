@@ -62,6 +62,20 @@ var PessoaFisica = Bookshelf.Model.extend({
         fail(err);
       });
   },
+  buscarPessoaFisica: function(cpf){
+  this.forge({cpf: cpf})
+      .fetch()
+      .then(function(pf) {
+        if (pf) { 
+          return pf; 
+        }
+        var err = new AreaAzul.BusinessException(
+          'PessoaFisica: pessoa fisica não encontrado',
+          {cpf: cpf});
+        log.warn(err.message, err.details);
+        throw err;
+      });
+  }
 });
 
 exports.PessoaFisica = PessoaFisica;

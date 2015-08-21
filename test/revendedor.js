@@ -7,12 +7,12 @@ var TestHelpers = require('../helpers/test');
 
 describe('model.revendedor', function() {
 
-  var cpfPreExistente = 'revenda-teste-pre-existente';
+  var cpfPreExistente = '75789428240';
   var nomeTeste = 'teste - preexistente';
   var emailTeste = 'preexistente@example.com';
-  var telefoneTeste = '0';
+  var telefoneTeste = '000 0000-0000';
   var data_nascimentoTeste = new Date(1981, 11, 13);
-  var cnpjPreExistente = 'revenda-teste-pessoa_juridica';
+  var cnpjPreExistente = '31604743000102';
   var razaoSocialTeste = 'razao-social-teste';
   var contatoTeste = 'contato-teste';
   var loginTeste = 'login-teste-usuario';
@@ -25,27 +25,22 @@ describe('model.revendedor', function() {
     return TestHelpers.apagarRevendedorPessoPorIdentificador(cpfPreExistente, cnpjPreExistente);
   }
 
-
   before(function(done) {
     apagarDadosDeTeste()
       .then(function() {
         done();
       })
       .catch(function(e) {
-        console.log("e -> " + e);
         done(e);
       });
   });
 
-
-
   describe('cadastrar()', function() {
-
     it('cadastrar pessoa fisica funciona', function(done) {
       Revendedor.cadastrar({
         nome: nomeTeste,
         email: emailTeste,
-        telefone: telefoneTeste,
+        celular: telefoneTeste,
         cpf: cpfPreExistente,
         data_nascimento: data_nascimentoTeste,
         autorizacao: 'autorizacao',
@@ -58,6 +53,7 @@ describe('model.revendedor', function() {
         done();
       })
       .catch(function(e) {
+        console.dir("erro"+e);
         done(e);
       });
     });
@@ -72,7 +68,7 @@ describe('model.revendedor', function() {
         contato: contatoTeste,
         email: emailTeste,
         telefone: telefoneTeste,
-        cpf: 'cpf de teste',
+        cpf: '63277083829',
         login: 'logindeteste',
         autorizacao: 'autorizacao teste',
         senha: senhaTeste,
@@ -110,9 +106,7 @@ describe('model.revendedor', function() {
         done();
       })
       .catch(function(e) {
-        console.log("e -> " + e);
         done(e);
       });
   });
-
 });

@@ -164,11 +164,9 @@ function _apagarUsuarioRevenda(idUsuario) {
         }
         pessoaId = usuario.get('pessoa_fisica_pessoa_id');
         revendedorId = usuario.get('revendedor_id');
-
         return usuario.destroy();
       })
       .then(function() {
-        console.log("revendedorId"+revendedorId);
         return _apagarRevendedor(revendedorId);
       })
       .then(function() {
@@ -178,7 +176,6 @@ function _apagarUsuarioRevenda(idUsuario) {
 
 function _apagarRevendedorJuridica(idUsuario) {
   var pessoaId = null;
-
   return Revendedor
     .forge({pessoa_id: idUsuario})
     .fetch()
@@ -186,14 +183,14 @@ function _apagarRevendedorJuridica(idUsuario) {
         if (!revenda) {
           return Promise.resolve(null);
         }
+
         pessoaId = revenda.get('pessoa_id');
-        return revenda;
-      })
-      .then(function() {
-        return _apagarRevendedor(pessoaId);
       })
       .then(function() {
         return _apagarPessoaJuridica(pessoaId);
+      })
+      .then(function(){
+        return _apagarUsuarioRevenda(pessoaId);
       });
 }
 
