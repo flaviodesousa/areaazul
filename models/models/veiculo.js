@@ -36,15 +36,13 @@ var Veiculo = Bookshelf.Model.extend({
         });
   },
 
-  procurarVeiculoPorPlaca: function(vehicle, then, fail) {
-    Veiculo
+  procurarVeiculoPorPlaca: function(vehicle) {
+    return Veiculo
       .forge({placa: vehicle.placa})
       .fetch()
       .then(function(model) {
-          then(model);
-        }).catch(function(err) {
-          fail(err);
-        });
+        return model;
+    })
   },
 
   validate: function(vehicle) {

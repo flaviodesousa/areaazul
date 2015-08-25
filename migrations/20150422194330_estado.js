@@ -5,7 +5,6 @@ exports.up = function(knex, Promise) {
     table.increments('id_estado').primary();
     table.string('nome').unique().notNullable();
     table.string('uf').unique().notNullable();
-    table.boolean('ativo').notNullable();
   });
 };
 

@@ -195,9 +195,9 @@ describe('model.Ativacao', function() {
     it('grava ativacao', function(done) {
       Ativacao
         .ativarPelaRevenda({
-          usuario_pessoa_id: idUsuarioComum,
           veiculo_id: idVeiculo,
-          revendedor_id: idUsuarioRevendedor,
+          usuario_pessoa_id: idUsuarioRevendedor,
+          placa: placaTeste,
         },
         function(model) {
           should.exist(model);
