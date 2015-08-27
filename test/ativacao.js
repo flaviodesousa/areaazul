@@ -199,6 +199,7 @@ describe('model.Ativacao', function() {
           veiculo_id: idVeiculo,
           usuario_pessoa_id: idUsuarioRevendedor,
           placa: placaTeste,
+          valor: 10.0,
         })
         .then(function() {
           done();

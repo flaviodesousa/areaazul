@@ -53,7 +53,7 @@ var Ativacao = Bookshelf.Model.extend({
                     latitude: latitude,
                     longitude: longitude,
                     altitude: altitude,
-                    usuario_pessoa_id: activation.usuario_pessoa_id,
+                    pessoa_id: activation.usuario_pessoa_id,
                     veiculo_id: activation.veiculo_id,
                     ativo: true,
                 })
@@ -102,7 +102,7 @@ var Ativacao = Bookshelf.Model.extend({
         return Ativacao
             .forge({
                 id_ativacao: desativacao.id_ativacao,
-                usuario_pessoa_id: desativacao.usuario_pessoa_id,
+                pessoa_id: desativacao.usuario_pessoa_id,
             })
             .fetch()
             .then(function(d) {
@@ -134,7 +134,7 @@ var Ativacao = Bookshelf.Model.extend({
 
     ativarPelaRevenda: function(ativacao) {
         return Bookshelf.transaction(function(t) {
-             var options = {
+            var options = {
                 transacting: t
             };
             var optionsInsert = {
@@ -148,7 +148,7 @@ var Ativacao = Bookshelf.Model.extend({
             };
             var idVeiculo = null;
 
-            console.dir("Placa: "+ativacao.placa);
+            console.dir("Placa: " + ativacao.placa);
             return Veiculo
                 .forge({
                     placa: ativacao.placa
@@ -157,36 +157,37 @@ var Ativacao = Bookshelf.Model.extend({
                 .then(function(veiculo) {
                     if (veiculo === null) {
                         return Veiculo._cadastrarVeiculo({
-                                placa: ativacao.placa,
-                                marca: ativacao.marca,
-                                cor: ativacao.cor,
-                                modelo: ativacao.modelo,
-                                estado: ativacao.estado_id,
-                            }, options);
+                            placa: ativacao.placa,
+                            marca: ativacao.marca,
+                            cor: ativacao.cor,
+                            modelo: ativacao.modelo,
+                            estado: ativacao.estado_id,
+                        }, options);
                     } else {
                         idVeiculo = veiculo.id;
                         return veiculo;
                     }
                 })
                 .then(function() {
+                    console.log("ativacao.usuario_pessoa_id: " + ativacao.usuario_pessoa_id);
                     return Ativacao
                         .forge({
                             data_ativacao: new Date(),
-                            usuario_pessoa_id: ativacao.usuario_pessoa_id,
+                            pessoa_id: ativacao.usuario_pessoa_id,
                             veiculo_id: idVeiculo,
                             ativo: true
                         })
                         .save(null, optionsInsert)
                         .then(
-                        function(a) {
-                          return MovimentacaoConta
-                            ._inserirDebito({
-                                historico: 'ativacao',
-                                tipo: 'ativacao',
-                                pessoa_id: ativacao.usuario_pessoa_id,
-                                valor: a.valor
-                            }, options);
-                        });
+                            function(a) {
+                                return MovimentacaoConta
+                                    ._inserirDebito({
+                                        historico: 'ativacao',
+                                        tipo: 'ativacao',
+                                        pessoa_id: ativacao.usuario_pessoa_id,
+                                        valor: ativacao.valor
+                                    }, options);
+                            });
                 });
         });
 

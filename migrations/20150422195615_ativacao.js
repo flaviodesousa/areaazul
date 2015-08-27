@@ -8,9 +8,10 @@ exports.up = function(knex) {
     table.decimal('latitude', 14, 10);
     table.decimal('longitude', 14, 10);
     table.decimal('altitude', 18, 10);
+    table.string('tipo');
     table.boolean('ativo').notNullable();
-    table.integer('usuario_pessoa_id').notNullable()
-      .references('pessoa_id').inTable('usuario');
+    table.integer('pessoa_id').notNullable()
+      .references('id_pessoa').inTable('pessoa');
     table.integer('veiculo_id').notNullable()
       .references('id_veiculo').inTable('veiculo');
   });
