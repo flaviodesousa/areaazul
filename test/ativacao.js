@@ -102,7 +102,7 @@ describe('model.Ativacao', function() {
           .fetch()
           .then(function(v) {
             if (v) { return v; }
-            return Veiculo.cadastrar({
+            return Veiculo._cadastrar({
               estado_id: estadoTeste,
               placa: placaTeste,
               marca: marcaTeste,
@@ -193,30 +193,21 @@ describe('model.Ativacao', function() {
 
   describe('ativarPelaRevenda()', function() {
     it('grava ativacao', function(done) {
+      console.log("idUsuarioRevendedor"+idUsuarioRevendedor);
       Ativacao
         .ativarPelaRevenda({
           veiculo_id: idVeiculo,
           usuario_pessoa_id: idUsuarioRevendedor,
           placa: placaTeste,
-        },
-        function(model) {
-          should.exist(model);
-          idAtivacao = model.id;
+        })
+        .then(function() {
           done();
-        },
-        function(err) {
-          done(err);
+        })
+        .catch(function(e) {
+          console.log("ERRO: "+e);
+          done(e);
         });
     });
   });
 
-  after(function(done) {
-    apagarDadosDeTeste()
-      .then(function() {
-        done();
-      })
-      .catch(function(e) {
-        done(e);
-      });
-  });
 });

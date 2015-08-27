@@ -18,7 +18,9 @@ var Veiculo = Bookshelf.Model.extend({
   },
 }, {
 
-  cadastrar: function(vehicle) {
+  _cadastrar: function(vehicle, options) {
+    var optionsInsert = _.merge({}, options || {}, {method: 'insert'});
+
     return Veiculo
         .forge({
           estado_id: vehicle.estado_id,
@@ -30,10 +32,14 @@ var Veiculo = Bookshelf.Model.extend({
           ano_modelo: vehicle.ano_modelo,
           ativo: true,
         })
-        .save()
+        .save(null, optionsInsert)
         .then(function(veiculo) {
           return veiculo;
         });
+  },
+
+  _cadastrarVeiculo: function(vehicle, options){
+    Veiculo._cadastrar(vehicle, options);
   },
 
   procurarVeiculoPorPlaca: function(vehicle) {

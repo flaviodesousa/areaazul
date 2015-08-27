@@ -133,14 +133,19 @@ var Ativacao = Bookshelf.Model.extend({
     },
 
     ativarPelaRevenda: function(ativacao) {
-
         return Bookshelf.transaction(function(t) {
-            var options = {
+             var options = {
                 transacting: t
             };
-            var optionsInsert = _.merge({}, options, {
+            var optionsInsert = {
+                transacting: t,
                 method: 'insert'
-            });
+            };
+            var optionsUpdate = {
+                transacting: t,
+                method: 'update',
+                patch: true
+            };
             var idVeiculo = null;
 
             console.dir("Placa: "+ativacao.placa);
@@ -151,17 +156,13 @@ var Ativacao = Bookshelf.Model.extend({
                 .fetch()
                 .then(function(veiculo) {
                     if (veiculo === null) {
-                        return Veiculo.cadastrar({
+                        return Veiculo._cadastrarVeiculo({
                                 placa: ativacao.placa,
                                 marca: ativacao.marca,
                                 cor: ativacao.cor,
                                 modelo: ativacao.modelo,
                                 estado: ativacao.estado_id,
-                            })
-                            .then(function(v) {
-                                idVeiculo = v.id;
-                                return v;
-                            })
+                            }, options);
                     } else {
                         idVeiculo = veiculo.id;
                         return veiculo;
@@ -177,15 +178,15 @@ var Ativacao = Bookshelf.Model.extend({
                         })
                         .save(null, optionsInsert)
                         .then(
-                            function(a) {
-                              return MovimentacaoConta
-                                ._inserirDebito({
-                                    historico: 'ativacao',
-                                    tipo: 'ativacao',
-                                    pessoa_id: a.usuario_pessoa_id,
-                                    valor: a.valor
-                                }, options);
-                            });
+                        function(a) {
+                          return MovimentacaoConta
+                            ._inserirDebito({
+                                historico: 'ativacao',
+                                tipo: 'ativacao',
+                                pessoa_id: ativacao.usuario_pessoa_id,
+                                valor: a.valor
+                            }, options);
+                        });
                 });
         });
 

@@ -52,7 +52,7 @@ describe('model.veiculo', function() {
   describe('cadastrar()', function() {
     it('grava veiculo', function(done) {
       Veiculo
-      .cadastrar({
+      ._cadastrar({
         estado_id: idEstado,
         placa: placaTeste,
         marca: marcaTeste,
@@ -88,14 +88,13 @@ describe('model.veiculo', function() {
   describe('procurarVeiculoPorPlaca()', function() {
     it('retorna um veiculo', function(done) {
       var v = { placa: placaTeste};
-      Veiculo.procurarVeiculoPorPlaca(v,
-          function(model) {
-            should.exist(model);
-            done();
-          },
-          function(err) {
-            done(err);
-          });
+      Veiculo.procurarVeiculoPorPlaca(v)
+      .then(function(veiculo) {
+        done();
+      })
+      .catch(function(e) {
+        done(e);
+      });
     });
   });
 
