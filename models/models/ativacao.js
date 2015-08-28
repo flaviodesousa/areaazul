@@ -147,8 +147,6 @@ var Ativacao = Bookshelf.Model.extend({
                 patch: true
             };
             var idVeiculo = null;
-
-            console.dir("Placa: " + ativacao.placa);
             return Veiculo
                 .forge({
                     placa: ativacao.placa
@@ -169,7 +167,6 @@ var Ativacao = Bookshelf.Model.extend({
                     }
                 })
                 .then(function() {
-                    console.log("ativacao.usuario_pessoa_id: " + ativacao.usuario_pessoa_id);
                     return Ativacao
                         .forge({
                             data_ativacao: new Date(),
@@ -184,7 +181,7 @@ var Ativacao = Bookshelf.Model.extend({
                                     ._inserirDebito({
                                         historico: 'ativacao',
                                         tipo: 'ativacao',
-                                        pessoa_id: ativacao.usuario_pessoa_id,
+                                        pessoa_id: a.get('pessoa_id'),
                                         valor: ativacao.valor
                                     }, options);
                             });
