@@ -132,6 +132,7 @@ var Ativacao = Bookshelf.Model.extend({
             });
     },
 
+
     ativarPelaRevenda: function(ativacao) {
         return Bookshelf.transaction(function(t) {
             var options = {
@@ -153,18 +154,19 @@ var Ativacao = Bookshelf.Model.extend({
                 })
                 .fetch()
                 .then(function(veiculo) {
-                    if (veiculo === null) {
-                        return Veiculo._cadastrarVeiculo({
-                            placa: ativacao.placa,
-                            marca: ativacao.marca,
-                            cor: ativacao.cor,
-                            modelo: ativacao.modelo,
-                            estado: ativacao.estado_id,
-                        }, options);
-                    } else {
-                        idVeiculo = veiculo.id;
+                    if (veiculo) {
                         return veiculo;
                     }
+                    return Veiculo._cadastrar({
+                        placa: ativacao.placa,
+                        marca: ativacao.marca,
+                        cor: ativacao.cor,
+                        modelo: ativacao.modelo,
+                        estado: ativacao.estado_id,
+                    }, options);
+                })
+                .then(function(v) {
+                    idVeiculo = v.id;
                 })
                 .then(function() {
                     return Ativacao
@@ -182,7 +184,7 @@ var Ativacao = Bookshelf.Model.extend({
                                         historico: 'ativacao',
                                         tipo: 'ativacao',
                                         pessoa_id: a.get('pessoa_id'),
-                                        valor: ativacao.valor
+                                        valor: 10.00
                                     }, options);
                             });
                 });
