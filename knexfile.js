@@ -10,6 +10,9 @@ module.exports = {
     migrations: {
       tableName: 'migrations',
     },
+    seeds: {
+      directory: './seeds/dev'
+    },
   },
 
   staging: {
