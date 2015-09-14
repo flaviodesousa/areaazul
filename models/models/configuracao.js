@@ -8,21 +8,14 @@ var Configuracao = Bookshelf.Model.extend({
     idAttribute: 'id_configuracao'
 },{
 
-  getConfiguracoes: function(){
-
+  getConfiguracaoTempo: function(){
     var tempos = [];
-
-    tempos.push({atribute: '60', value: 2.00});
-    tempos.push({atribute: '120', value: 4.00});
-    tempos.push({atribute: '180', value: 6.00});
-    tempos.push({atribute: '180', value: 8.00});
-
-
+    tempos.push({atribute: '60', valor: 2.00});
+    tempos.push({atribute: '120', valor: 4.00});
+    tempos.push({atribute: '180', valor: 6.00});
+    tempos.push({atribute: '180', valor: 8.00});
     return tempos;
   }
-
-
-
 });
 
 module.exports = Configuracao;
