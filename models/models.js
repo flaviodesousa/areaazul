@@ -1,5 +1,5 @@
 module.exports.Ativacao = require('./models/ativacao');
-module.exports.configuracao = require('./models/configuracao');
+module.exports.Configuracao = require('./models/configuracao');
 module.exports.consumo = require('./models/consumo');
 module.exports.Conta = require('./models/conta');
 module.exports.contrato = require('./models/contrato');
