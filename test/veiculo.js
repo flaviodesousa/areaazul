@@ -85,10 +85,10 @@ describe('model.veiculo', function() {
     });
   });
 
-  describe('procurarVeiculoPorPlaca()', function() {
+  describe('procurarVeiculo()', function() {
     it('retorna um veiculo', function(done) {
       var v = { placa: placaTeste};
-      Veiculo.procurarVeiculoPorPlaca(v)
+      Veiculo.procurarVeiculo(v)
       .then(function(veiculo) {
         done();
       })

@@ -3,9 +3,8 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var Veiculo = require('../models/veiculo');
 
-module.exports = Bookshelf.Collection.extend({
+var VeiculoCollection = Bookshelf.Collection.extend({
   model: Veiculo,
-
 }, {
 
   procurar: function(vehicle, then, fail) {
@@ -19,6 +18,10 @@ module.exports = Bookshelf.Collection.extend({
     }).catch(function(err) {
       fail(err);
     });
-  }
-
+  },
+  
+  
 });
+
+
+module.exports = VeiculoCollection;
