@@ -25,7 +25,7 @@ var Veiculo = Bookshelf.Model.extend({
 
         return Veiculo
             .forge({
-                estado_id: vehicle.estado_id,
+                cidade_id: vehicle.cidade_id,
                 placa: vehicle.placa,
                 marca: vehicle.marca,
                 modelo: vehicle.modelo,
@@ -62,8 +62,8 @@ var Veiculo = Bookshelf.Model.extend({
         var message = [];
         if (validator.isNull(vehicle.estado_id)) {
             message.push({
-                attribute: 'estado',
-                problem: 'Estado é obrigatório!',
+                attribute: 'cidade',
+                problem: 'Cidade é obrigatório!',
             });
         }
         if (validator.isNull(vehicle.placa)) {
