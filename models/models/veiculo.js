@@ -44,17 +44,17 @@ var Veiculo = Bookshelf.Model.extend({
         Veiculo._cadastrar(vehicle, options);
     },
 
-    procurarVeiculo: function(vehicle) {
+    procurarVeiculo: function(placa) {
         return Veiculo
             .forge({
-                placa: vehicle.placa
+                placa: placa
             })
             .fetch()
             .then(function(model) {
                 return model;
             })
             .catch(function(e) {
-                err(e);
+                return e;
             });
     },
 
@@ -63,7 +63,7 @@ var Veiculo = Bookshelf.Model.extend({
         if (validator.isNull(vehicle.estado_id)) {
             message.push({
                 attribute: 'cidade',
-                problem: 'Cidade é obrigatório!',
+                problem: 'Cidade é obrigatória!',
             });
         }
         if (validator.isNull(vehicle.placa)) {
