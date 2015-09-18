@@ -20,3 +20,4 @@ module.exports.UsuarioFiscal = require('./models/usuario_fiscal');
 module.exports.UsuarioRevendedor = require('./models/usuario_revendedor');
 module.exports.Veiculo = require('./models/veiculo');
 module.exports.UsuarioHasVeiculo = require('./models/usuario_has_veiculo');
+module.exports.Cidade = require('./models/cidade');

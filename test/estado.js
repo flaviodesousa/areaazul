@@ -31,7 +31,7 @@ function deleteTestData(done) {
 
 
   describe('cadastrar()', function() {
-    it('grava estados', function(done) {
+    it.skip('grava estados', function(done) {
       Estado
         .cadastrar({
           nome: nomeEstadoTeste,

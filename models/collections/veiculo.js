@@ -10,9 +10,9 @@ var VeiculoCollection = Bookshelf.Collection.extend({
   procurar: function(vehicle, then, fail) {
     Veiculo.forge().query(function(qb) {
       qb.where('veiculo.id_veiculo', vehicle.id_veiculo);
-      qb.join('estado', 'estado.id_estado', '=', 'veiculo.estado_id');
+      qb.join('cidade', 'cidade.id_cidade', '=', 'veiculo.cidade_id');
       qb.select('veiculo.*');
-      qb.select('estado.*');
+      qb.select('cidade.*');
     }).fetch().then(function(collection) {
       then(collection);
     }).catch(function(err) {

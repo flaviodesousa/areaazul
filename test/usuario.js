@@ -145,11 +145,9 @@ describe('model.usuario', function() {
 
       Usuario.alterarSenha(usuario,
       function() {
-        console.log('passei aq');
         done();
       },
       function(err) {
-        console.log('passei aq erro');
         done(err);
       });
 

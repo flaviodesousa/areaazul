@@ -49,13 +49,7 @@ var Veiculo = Bookshelf.Model.extend({
             .forge({
                 placa: placa
             })
-            .fetch()
-            .then(function(model) {
-                return model;
-            })
-            .catch(function(e) {
-                return e;
-            });
+            .fetch();
     },
 
     validate: function(vehicle) {
