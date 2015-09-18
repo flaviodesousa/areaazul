@@ -15,7 +15,7 @@ var Cidade =  Bookshelf.Model.extend({
 	      return Cidade
 	            .forge({
 	              nome: city.nome,
-	              estado_id: city.estado_id;
+	              estado_id: city.estado_id,
 	            })
 	            .save()
 	        .then(function(cidade) {
