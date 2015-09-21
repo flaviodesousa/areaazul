@@ -21,8 +21,6 @@ var Cidade =  Bookshelf.Model.extend({
 	      });
 
 	},
-
-
 });
 
 module.exports = Cidade;

@@ -45,11 +45,15 @@ var Veiculo = Bookshelf.Model.extend({
     },
 
     procurarVeiculo: function(placa) {
-        return Veiculo
-            .forge({
-                placa: placa
-            })
-            .fetch();
+        return Veiculo.forge().query(function(qb) {
+            qb.where('veiculo.placa', placa);
+            qb.join('cidade', 'veiculo.cidade_id', '=', 'cidade.id_cidade');
+            qb.join('estado', 'cidade.estado_id', '=', 'estado.id_estado');
+            qb.select('veiculo.*');
+            qb.select('cidade.*');
+            qb.select('estado.id_estado');
+            qb.select('estado.uf');
+        }).fetch();
     },
 
     validate: function(vehicle) {
@@ -120,69 +124,3 @@ var Veiculo = Bookshelf.Model.extend({
 
 
 module.exports = Veiculo;
-
-var VeiculoCollection = Bookshelf.Collection.extend({
-    model: Veiculo,
-});
-
-exports.listar = function(then, fail) {
-    VeiculoCollection.forge().query(function(qb) {
-        qb.join('estado', 'estado.id_estado', '=', 'veiculo.estado_id');
-        qb.select('veiculo.*');
-        qb.select('estado.*');
-    }).fetch().then(function(collection) {
-        util.log('Sucesso!');
-        then(collection);
-    }).catch(function(err) {
-        util.log('Ocorreu erro!');
-        fail(err);
-    });
-
-};
-
-exports.listarVeiculosUsuario = function(user, then, fail) {
-    VeiculoCollection.forge().query(function(qb) {
-        qb.where('usuario_has_veiculo.usuario_id', user.id_usuario);
-        qb.join('estado', 'estado.id_estado', '=', 'veiculo.estado_id');
-        qb.join('usuario_has_veiculo',
-            'veiculo.id_veiculo', '=', 'usuario_has_veiculo.veiculo_id');
-        qb.select('veiculo.*');
-        qb.select('estado.*');
-    }).fetch().then(function(collection) {
-        util.log('Sucesso!');
-        then(collection);
-    }).catch(function(err) {
-        util.log('Ocorreu erro!');
-        fail(err);
-    });
-
-};
-
-exports.editar = function(vehicle, then, fail) {
-    new this.Veiculo({
-        id_veiculo: vehicle.id_veiculo,
-    }).fetch().then(function(model) {
-        model.save(vehicle).then(function(model) {
-            util.log('Sucesso!');
-            then(model);
-        }).catch(function(err) {
-            util.log('Ocorreu erro!');
-            fail(err);
-        });
-    });
-};
-
-
-exports.desativar = function(vehicle, then, fail) {
-    new this.Veiculo({
-        id_veiculo: vehicle.id_veiculo,
-    }).fetch().then(function(model) {
-        model.save(vehicle).then(function(model) {
-            util.log('Sucesso!');
-            then(model);
-        }).catch(function(err) {
-            util.log('Ocorreu erro!');
-            fail(err);
-        });
-    });
-};
