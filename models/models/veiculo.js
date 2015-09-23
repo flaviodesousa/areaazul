@@ -56,70 +56,71 @@ var Veiculo = Bookshelf.Model.extend({
         }).fetch();
     },
 
-    validate: function(vehicle) {
+    validarVeiculo: function(veiculo) {
         var message = [];
-        if (validator.isNull(vehicle.estado_id)) {
+        if (validator.isNull(veiculo.estado_id)) {
             message.push({
                 attribute: 'cidade',
                 problem: 'Cidade é obrigatória!',
             });
         }
-        if (validator.isNull(vehicle.placa)) {
+        if (validator.isNull(veiculo.placa)) {
             message.push({
                 attribute: 'placa',
-                problem: 'Placa é obrigatória!',
+                problem: 'Campo placa é obrigatória!',
             });
         }
-        if (validator.isNull(vehicle.modelo)) {
+        if (validator.isNull(veiculo.modelo)) {
             message.push({
                 attribute: 'modelo',
-                problem: 'Modelo é obrigatório!',
+                problem: 'Campo modelo é obrigatório!',
             });
         }
-        if (validator.isNull(vehicle.marca)) {
+        if (validator.isNull(veiculo.marca)) {
             message.push({
                 attribute: 'marca',
-                problem: 'Marca é obrigatória!',
+                problem: 'Campo marca é obrigatório!',
             });
         }
-        if (validator.isNull(vehicle.cor)) {
+        if (validator.isNull(veiculo.cor)) {
             message.push({
                 attribute: 'cor',
-                problem: 'Cor é obrigatória!',
+                problem: 'Campo cor é obrigatório!',
             });
         }
-        if (validator.isNull(vehicle.ano_fabricado)) {
+        if (validator.isNull(veiculo.ano_fabricado)) {
             message.push({
                 attribute: 'ano_fabricado',
-                problem: 'Ano de fabricação é obrigatório!',
+                problem: 'Campo ano de fabricação é obrigatório!',
             });
         }
-        if (validator.isNull(vehicle.ano_modelo)) {
+        if (validator.isNull(veiculo.ano_modelo)) {
             message.push({
                 attribute: 'ano_modelo',
-                problem: 'Ano de modelo é obrigatório!',
+                problem: 'Campo ano de modelo é obrigatório!',
             });
         }
-        if (!validator.isNumeric(vehicle.ano_fabricado)) {
+        if (!validator.isNumeric(veiculo.ano_fabricado)) {
             message.push({
                 attribute: 'ano_fabricado',
-                problem: 'Ano de fabricação é inválido!',
+                problem: 'Ano de fabricação informado é inválido!',
             });
         }
-        if (!validator.isNumeric(vehicle.ano_modelo)) {
+        if (!validator.isNumeric(veiculo.ano_modelo)) {
             message.push({
                 attribute: 'ano_modelo',
-                problem: 'Ano de modelo é inválido!',
+                problem: 'Ano de modelo informado é inválido!',
             });
         }
-        if (!validation.validaPlaca(vehicle)) {
+        if (!validation.validaPlaca(veiculo.placa)) {
             message.push({
                 attribute: 'placa',
-                problem: 'Placa é inválida!',
+                problem: 'Placa informada é inválida!',
             });
         }
-        return true;
+        return message;
     },
+
 });
 
 

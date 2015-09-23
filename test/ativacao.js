@@ -15,6 +15,7 @@ describe('model.Ativacao', function() {
     var idUsuarioComum = null;
     var idVeiculo = null;
     var idEstado = null;
+    var idCidade = null;
     var idUsuarioRevendedor = null;
     var idPreExistenteAtivacao = null;
     var idAtivacao = null;
@@ -52,7 +53,7 @@ describe('model.Ativacao', function() {
     function apagarDadosDeTeste() {
         return TestHelpers.apagarAtivacaoId(idAtivacao)
             .then(function() {
-               TestHelpers.apagarRevendedorPessoPorIdentificador(cpfPreExistente, null);
+                TestHelpers.apagarRevendedorPessoPorIdentificador(cpfPreExistente, null);
             });
     }
 
@@ -60,7 +61,7 @@ describe('model.Ativacao', function() {
         var usuario;
         apagarDadosDeTeste()
             .then(function() {
-              return Revendedor.cadastrar({
+                return Revendedor.cadastrar({
                     nome: nomeTeste,
                     email: emailTeste,
                     celular: telefoneTeste,
@@ -69,7 +70,7 @@ describe('model.Ativacao', function() {
                     autorizacao: 'autorizacao',
                     login: loginTeste,
                     senha: senhaTeste,
-                  });
+                });
             })
             .then(function(revenda) {
                 idUsuarioRevendedor = revenda.id;
@@ -97,23 +98,11 @@ describe('model.Ativacao', function() {
                 idUsuarioComum = user.id;
             })
             .then(function() {
-                return Estado
-                    .forge({
-                        uf: estadoTesteUf
-                    })
-                    .fetch()
-                    .then(function(e) {
-                        if (e) {
-                            return e;
-                        }
-                        return Estado.cadastrar({
-                            nome: estadoTesteNome,
-                            uf: estadoTesteUf,
-                        });
+                return TestHelpers.pegarCidade()
+                    .then(function(cidade) {
+                        idCidade = cidade.id;
+                        estadoTeste = cidade.estado_id;
                     });
-            })
-            .then(function(estado) {
-                idEstado = estado.id;
             })
             .then(function() {
                 return Veiculo
@@ -126,7 +115,7 @@ describe('model.Ativacao', function() {
                             return v;
                         }
                         return Veiculo._cadastrar({
-                            estado_id: estadoTeste,
+                            cidade_id: idCidade,
                             placa: placaTeste,
                             marca: marcaTeste,
                             modelo: modeloTeste,
@@ -239,11 +228,11 @@ describe('model.Ativacao', function() {
 
     after(function(done) {
         apagarDadosDeTeste()
-        .then(function() {
-            done();
-        })
-        .catch(function(e) {
-            done(e);
-        });
+            .then(function() {
+                done();
+            })
+            .catch(function(e) {
+                done(e);
+            });
     });
 });

@@ -9,6 +9,7 @@ var Revendedor = require('./revendedor');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 var MovimentacaoConta = require('./movimentacaoconta');
 var Veiculo = require('./veiculo');
+var validator = require("validator");
 
 var Ativacao = Bookshelf.Model.extend({
     tableName: 'ativacao',
@@ -148,49 +149,79 @@ var Ativacao = Bookshelf.Model.extend({
                 patch: true
             };
             var idVeiculo = null;
-            return Veiculo
-                .forge({
-                    placa: ativacao.placa
-                })
-                .fetch()
-                .then(function(veiculo) {
-                    if (veiculo) {
-                        return veiculo;
-                    }
-                    return Veiculo._cadastrar({
-                        placa: ativacao.placa,
-                        marca: ativacao.marca,
-                        cor: ativacao.cor,
-                        modelo: ativacao.modelo,
-                        estado: ativacao.estado_id,
-                    }, options);
-                })
-                .then(function(v) {
-                    idVeiculo = v.id;
-                })
-                .then(function() {
-                    return Ativacao
-                        .forge({
-                            data_ativacao: new Date(),
-                            pessoa_id: ativacao.usuario_pessoa_id,
-                            veiculo_id: idVeiculo,
-                            ativo: true
-                        })
-                        .save(null, optionsInsert)
-                        .then(
-                            function(a) {
-                                return MovimentacaoConta
-                                    ._inserirDebito({
-                                        historico: 'ativacao',
-                                        tipo: 'ativacao',
-                                        pessoa_id: a.get('pessoa_id'),
-                                        valor: 10.00
-                                    }, options);
-                            });
-                });
+
+            var arrValidacaoAtivacao = Ativacao.validarAtivacao(ativacao);
+            if(arrValidacaoAtivacao.length === 0){
+                return Veiculo
+                    .forge({
+                        placa: ativacao.placa
+                    })
+                    .fetch()
+                    .then(function(veiculo) {
+                        if (veiculo) {
+                            return veiculo;
+                        }
+                        var arrValidacaoVeiculo = Veiculo.validarVeiculo(ativacao);
+                        if(arrValidacaoVeiculo.length === 0){
+                            return Veiculo._cadastrar({
+                                placa: ativacao.placa,
+                                marca: ativacao.marca,
+                                cor: ativacao.cor,
+                                modelo: ativacao.modelo,
+                                estado: ativacao.estado_id,
+                            }, options); 
+                        }else{
+                            err = new AreaAzul.BusinessException('Nao foi possivel ativar', arrValidacaoVeiculo);
+                            throw err;
+                        }
+                    })
+                    .then(function(v) {
+                        idVeiculo = v.id;
+                    })
+                    .then(function() {
+                        return Ativacao
+                            .forge({
+                                data_ativacao: new Date(),
+                                pessoa_id: ativacao.usuario_pessoa_id,
+                                veiculo_id: idVeiculo,
+                                ativo: true
+                            })
+                            .save(null, optionsInsert)
+                            .then(
+                                function(a) {
+                                    return MovimentacaoConta
+                                        ._inserirDebito({
+                                            historico: 'ativacao',
+                                            tipo: 'ativacao',
+                                            pessoa_id: a.get('pessoa_id'),
+                                            valor: 10.00
+                                        }, options);
+                                });
+                    });
+            }else{
+                err = new AreaAzul.BusinessException('Nao foi possivel ativar', arrValidacaoAtivacao);
+                throw err;
+            }
         });
 
 
+    },
+
+    validarAtivacao: function(ativacao) {
+        var message = [];
+        if (validator.isNull(ativacao.tempo)) {
+            message.push({
+                attribute: 'tipo_veiculo',
+                problem: 'Cidade tipo veiculo é obrigatório!',
+            });
+        }
+        if (validator.isNull(ativacao.placa)) {
+            message.push({
+                attribute: 'tempo',
+                problem: 'Campo tempo é obrigatório!',
+            });
+        }
+        return message;
     },
 
 });
