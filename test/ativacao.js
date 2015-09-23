@@ -61,6 +61,7 @@ describe('model.Ativacao', function() {
         var usuario;
         apagarDadosDeTeste()
             .then(function() {
+                
                 return Revendedor.cadastrar({
                     nome: nomeTeste,
                     email: emailTeste,
@@ -207,10 +208,15 @@ describe('model.Ativacao', function() {
 
     describe('ativarPelaRevenda()', function() {
         it('grava ativacao', function(done) {
+
+                    console.log("veiculo_id"+idVeiculo);
+         console.log("idUsuarioRevendedor"+idUsuarioRevendedor);
             Ativacao
                 .ativarPelaRevenda({
                     veiculo_id: idVeiculo,
                     usuario_pessoa_id: idUsuarioRevendedor,
+                    tipo_veiculo: 1,
+                    tempo: 60,
                     placa: placaTeste,
                     valor: 10.0,
                 })

@@ -149,6 +149,7 @@ var Ativacao = Bookshelf.Model.extend({
                 patch: true
             };
             var idVeiculo = null;
+            var err = null;
 
             var arrValidacaoAtivacao = Ativacao.validarAtivacao(ativacao);
             if(arrValidacaoAtivacao.length === 0){
@@ -209,13 +210,13 @@ var Ativacao = Bookshelf.Model.extend({
 
     validarAtivacao: function(ativacao) {
         var message = [];
-        if (validator.isNull(ativacao.tempo)) {
+        if (validator.isNull(ativacao.tipo_veiculo)) {
             message.push({
                 attribute: 'tipo_veiculo',
                 problem: 'Cidade tipo veiculo é obrigatório!',
             });
         }
-        if (validator.isNull(ativacao.placa)) {
+        if (validator.isNull(ativacao.tempo)) {
             message.push({
                 attribute: 'tempo',
                 problem: 'Campo tempo é obrigatório!',
