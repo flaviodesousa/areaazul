@@ -10,7 +10,7 @@ var Areaazul_mailer = require('areaazul-mailer');
 var moment = require('moment');
 var validator = require("validator");
 var validation = require('./validation');
-var util = require('./util');
+var util = require('../../helpers/util');
 var Conta = require('./conta');
 
 var Funcionario = Bookshelf.Model.extend({

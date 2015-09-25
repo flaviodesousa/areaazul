@@ -1,5 +1,5 @@
 var validator = require("validator");
-var util = require('./util');
+var util = require('../../helpers/util');
 
 
 exports.validarData = function(dataNascimento) {

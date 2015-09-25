@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
-var util = require('./util');
+var util = require('../../helpers/util');
 
 var Bookshelf = require('bookshelf').conexaoMain;
 

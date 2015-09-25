@@ -151,11 +151,17 @@ var Ativacao = Bookshelf.Model.extend({
             var idVeiculo = null;
             var err = null;
 
+
+
+            if(ativacao.placa){
+            var placaSemMascara = util.formata(ativacao.placa);
+
+            }
             var arrValidacaoAtivacao = Ativacao.validarAtivacao(ativacao);
             if(arrValidacaoAtivacao.length === 0){
                 return Veiculo
                     .forge({
-                        placa: ativacao.placa
+                        placa: placaSemMascara
                     })
                     .fetch()
                     .then(function(veiculo) {
@@ -165,7 +171,7 @@ var Ativacao = Bookshelf.Model.extend({
                         var arrValidacaoVeiculo = Veiculo.validarVeiculo(ativacao);
                         if(arrValidacaoVeiculo.length === 0){
                             return Veiculo._cadastrar({
-                                placa: ativacao.placa,
+                                placa: placaSemMascara,
                                 marca: ativacao.marca,
                                 cor: ativacao.cor,
                                 modelo: ativacao.modelo,

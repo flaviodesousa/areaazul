@@ -1,7 +1,7 @@
 'use script';
 
 var Bookshelf = require('bookshelf').conexaoMain;
-var util = require('./util');
+var util = require('../../helpers/util');
 
 var Configuracao = Bookshelf.Model.extend({
     tableName: 'configuracao',

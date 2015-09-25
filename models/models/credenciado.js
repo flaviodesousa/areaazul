@@ -10,7 +10,7 @@ var CredenciadoCollection = require('../collections/credenciado');
 var PessoaFisicaCollection = require('../collections/pessoafisica');
 var Areaazul_mailer = require('areaazul-mailer');
 var validation = require('./validation');
-var util = require('./util');
+var util = require('../../helpers/util');
 var validator = require("validator");
 var Conta = require('./conta');
 

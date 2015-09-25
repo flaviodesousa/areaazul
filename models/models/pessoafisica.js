@@ -3,7 +3,7 @@
 var _ = require('lodash');
 var validator = require('validator');
 var validation = require('./validation');
-var util = require('./util');
+var util = require('../../helpers/util');
 
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa').Pessoa;

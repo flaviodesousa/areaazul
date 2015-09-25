@@ -4,7 +4,7 @@ var _ = require('lodash');
 var Bookshelf = require('bookshelf').conexaoMain;
 var validator = require('validator');
 var validation = require('./validation');
-var util = require('./util');
+var util = require('../../helpers/util');
 
 var Usuario = require('./usuario');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
@@ -45,8 +45,13 @@ var Veiculo = Bookshelf.Model.extend({
     },
 
     procurarVeiculo: function(placa) {
+
+        if(placa){
+            var placaSemMascara = util.formata(placa);
+
+        }
         return Veiculo.forge().query(function(qb) {
-            qb.where('veiculo.placa', placa);
+            qb.where('veiculo.placa', placaSemMascara);
             qb.join('cidade', 'veiculo.cidade_id', '=', 'cidade.id_cidade');
             qb.join('estado', 'cidade.estado_id', '=', 'estado.id_estado');
             qb.select('veiculo.*');

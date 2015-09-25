@@ -1,7 +1,7 @@
 'use strict';
 
 var Bookshelf = require('bookshelf').conexaoMain;
-var util = require('./util');
+var util = require('../../helpers/util');
 
 
 var Estado = Bookshelf.Model.extend({
