@@ -244,7 +244,25 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     .catch(function(err) {
       fail(err);
     });
-  }
+  },
+  buscarPorId: function(id) {
+    return UsuarioRevendedor
+        .forge({
+            pessoa_fisica_pessoa_id: id
+        })
+        .fetch()
+        .then(function(u) {
+            if (u) {
+                return u;
+            }
+            var err = new AreaAzul.BusinessException(
+                'UsuarioAdministrativo: id nao encontrado', {
+                    id: id
+                });
+            log.warn(err.message, err.details);
+            throw err;
+        });
+},
 });
 
 module.exports = UsuarioRevendedor;
