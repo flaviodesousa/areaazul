@@ -75,7 +75,12 @@ var PessoaFisica = Bookshelf.Model.extend({
         log.warn(err.message, err.details);
         throw err;
       });
-  }
+      },
+    procurarCPF: function(cpf) {
+        return this.forge({
+            cpf: cpf
+        }).fetch();
+    },
 });
 
 exports.PessoaFisica = PessoaFisica;

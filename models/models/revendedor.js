@@ -132,12 +132,28 @@ var Revendedor = Bookshelf.Model.extend({
 
     validateRevendedorPessoaFisica: function(dealer) {
         var message = [];
+        var cpf = null;
+
 
         if (!dealer.cpf) {
             message.push({
                 attribute: 'cpf',
                 problem: 'CPF é obrigatório!',
             });
+        } else {
+            PessoaFisica.procurarCPF(dealer.cpf)
+                .then(function(pessoafisica) {
+                    if (pessoafisica) {
+                        cpf = pessoafisica.get('cpf');
+                    }
+                });
+
+            if (cpf) {
+                message.push({
+                    attribute: 'cpf',
+                    problem: 'CPF já cadastrado!',
+                });
+            }
         }
 
         if (validation.isCPF(dealer.cpf) === false) {
