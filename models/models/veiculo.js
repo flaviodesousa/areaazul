@@ -63,7 +63,7 @@ var Veiculo = Bookshelf.Model.extend({
 
     validarVeiculo: function(veiculo) {
         var message = [];
-        if (validator.isNull(veiculo.estado_id)) {
+        if (validator.isNull(veiculo.cidade_id)) {
             message.push({
                 attribute: 'cidade',
                 problem: 'Cidade é obrigatória!',
@@ -93,7 +93,7 @@ var Veiculo = Bookshelf.Model.extend({
                 problem: 'Campo cor é obrigatório!',
             });
         }
-        if (validator.isNull(veiculo.ano_fabricado)) {
+    /*    if (validator.isNull(veiculo.ano_fabricado)) {
             message.push({
                 attribute: 'ano_fabricado',
                 problem: 'Campo ano de fabricação é obrigatório!',
@@ -116,13 +116,8 @@ var Veiculo = Bookshelf.Model.extend({
                 attribute: 'ano_modelo',
                 problem: 'Ano de modelo informado é inválido!',
             });
-        }
-        if (!validation.validaPlaca(veiculo.placa)) {
-            message.push({
-                attribute: 'placa',
-                problem: 'Placa informada é inválida!',
-            });
-        }
+        }*/
+
         return message;
     },
 

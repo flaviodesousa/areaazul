@@ -131,36 +131,33 @@ var Revendedor = Bookshelf.Model.extend({
     },
 
     validateRevendedorPessoaFisica: function(dealer) {
+        return new Promise(function(resolve, reject) {
         var message = [];
-        var cpf = null;
-
 
         if (!dealer.cpf) {
             message.push({
                 attribute: 'cpf',
                 problem: 'CPF é obrigatório!',
             });
+            return resolve(message);
         } else {
-            PessoaFisica.procurarCPF(dealer.cpf)
+            return PessoaFisica.procurarCPF(dealer.cpf)
                 .then(function(pessoafisica) {
                     if (pessoafisica) {
-                        cpf = pessoafisica.get('cpf');
+                        message.push({
+                            attribute: 'cpf',
+                            problem: 'CPF já cadastrado!',
+                        });
                     }
+                    return message;
                 });
-
-            if (cpf) {
-                message.push({
-                    attribute: 'cpf',
-                    problem: 'CPF já cadastrado!',
-                });
-            }
         }
-
-        if (validation.isCPF(dealer.cpf) === false) {
+        if (!validation.isCPF(dealer.cpf)) {
             message.push({
                 attribute: 'cpf',
                 problem: 'CPF inválido!',
             });
+            return resolve(message);
         }
 
         if (!dealer.nome) {
@@ -168,6 +165,7 @@ var Revendedor = Bookshelf.Model.extend({
                 attribute: 'nome',
                 problem: 'Nome obrigatório!',
             });
+            return resolve(message);
         }
 
         if (!dealer.celular) {
@@ -175,6 +173,7 @@ var Revendedor = Bookshelf.Model.extend({
                 attribute: 'celular',
                 problem: 'Celular obrigatório!',
             });
+            return resolve(message);
         }
 
         if (!dealer.email) {
@@ -182,6 +181,7 @@ var Revendedor = Bookshelf.Model.extend({
                 attribute: 'email',
                 problem: 'Email obrigatório!',
             });
+            return resolve(message);
         }
 
         if (!dealer.login) {
@@ -189,6 +189,7 @@ var Revendedor = Bookshelf.Model.extend({
                 attribute: 'login',
                 problem: 'Login obrigatório!',
             });
+            return resolve(message);
         }
 
         if (!validator.isEmail(dealer.email)) {
@@ -196,8 +197,9 @@ var Revendedor = Bookshelf.Model.extend({
                 attribute: 'email',
                 problem: 'Email inválido!',
             });
+            return resolve(message);
         }
-        return message;
+        })
     },
 
     validateRevendedorPessoaJuridica: function(dealer) {
