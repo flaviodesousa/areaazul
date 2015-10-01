@@ -359,8 +359,6 @@ exports.apagarRevendedorPessoPorIdentificador = function(cpf, cnpj) {
 };
 
 exports.apagarAtivacaoId = function(id) {
-
-    console.log("ID: " + id);
     var pessoaId = null;
     var usuarioId = null;
     var veiculoId = null;
@@ -381,9 +379,6 @@ exports.apagarAtivacaoId = function(id) {
             usuarioId = ativacao.get('usuario_id');
             veiculoId = ativacao.get('veiculo_id');
             return ativacao.destroy();
-        })
-        .then(function() {
-            return _apagarUsuarioHasVeiculo(usuarioId, veiculoId);
         })
         .then(function() {
             return _apagarUsuarioRevenda(usuarioId);
@@ -430,3 +425,71 @@ exports.apagarUsuarioRevenda = function(UsuarioRevendaId) {
 exports.pegarCidade = function() {
     return Cidade.forge().fetch();
 };
+
+exports.pegarVeiculo = function() {
+    var idCidade = null;
+    this.pegarCidade()
+    .then(function(cidade) {
+            idCidade = cidade.get('id_cidade');
+    })
+
+    return Veiculo
+          .forge()
+          .fetch()
+          .then(function(veiculo){
+            if(veiculo){
+                return veiculo;
+            }else{
+                return  Veiculo
+                ._cadastrar({
+                    cidade_id: idCidade,
+                    placa: 'placaTeste',
+                    marca: 'marcaTeste',
+                    modelo: 'modeloTeste',
+                    cor: 'corTeste',
+                    ano_fabricado: 2015,
+                    ano_modelo: 2015,
+                })
+                .then(function(veiculo){
+                    return veiculo;
+                });
+
+            }
+
+          });
+};
+
+exports.pegarUsuario = function() {
+    return Usuario
+           .forge()
+           .fetch()
+           .then(function(usuario){
+            if(usuario){
+                return usuario;
+            }else{
+                 return Usuario.cadastrar({
+                            login: 'login',
+                            senha: 'senha',
+                            nome: 'usuario teste unitario',
+                            email: 'teste-unitario@areaazul.org',
+                            telefone: '0',
+                            cpf: '0',
+                            data_nascimento: new Date(1981, 4, 1),
+                            sexo: 'feminino',
+                        }).then(function(usuario){
+                            return usuario;
+                        })
+            }
+           });
+};
+
+exports.pegarRevendedor = function(){
+    return UsuarioRevendedor
+           .forge()
+           .fetch()
+           .then(function(usuario_revendedor){
+                if(usuario_revendedor){
+                    return usuario_revendedor;
+                }
+           });
+}
