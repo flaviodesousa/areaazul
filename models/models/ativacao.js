@@ -3,6 +3,7 @@
 var AreaAzul = require('../../areaazul');
 var log = AreaAzul.log;
 var _ = require('lodash');
+var util = require('../../helpers/util');
 var validator = require('validator');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Revendedor = require('./revendedor');
@@ -135,6 +136,7 @@ var Ativacao = Bookshelf.Model.extend({
 
 
     ativarPelaRevenda: function(ativacao) {
+        console.dir(ativacao);
         return Bookshelf.transaction(function(t) {
             var options = {
                 transacting: t
@@ -155,7 +157,6 @@ var Ativacao = Bookshelf.Model.extend({
 
             if(ativacao.placa){
             var placaSemMascara = util.formata(ativacao.placa);
-
             }
             var arrValidacaoAtivacao = Ativacao.validarAtivacao(ativacao);
             if(arrValidacaoAtivacao.length === 0){
@@ -167,19 +168,21 @@ var Ativacao = Bookshelf.Model.extend({
                     .then(function(veiculo) {
                         if (veiculo) {
                             return veiculo;
-                        }
-                        var arrValidacaoVeiculo = Veiculo.validarVeiculo(ativacao);
-                        if(arrValidacaoVeiculo.length === 0){
-                            return Veiculo._cadastrar({
-                                placa: placaSemMascara,
-                                marca: ativacao.marca,
-                                cor: ativacao.cor,
-                                modelo: ativacao.modelo,
-                                estado: ativacao.estado_id,
-                            }, options); 
                         }else{
-                            err = new AreaAzul.BusinessException('Nao foi possivel ativar', arrValidacaoVeiculo);
-                            throw err;
+                            var arrValidacaoVeiculo = Veiculo.validarVeiculo(ativacao);
+                            if(arrValidacaoVeiculo.length === 0){
+                                console.log(placaSemMascara);
+                                return Veiculo._cadastrar({
+                                    placa: placaSemMascara,
+                                    marca: ativacao.marca,
+                                    cor: ativacao.cor,
+                                    modelo: ativacao.modelo,
+                                    estado: ativacao.estado_id,
+                                }, options); 
+                            }else{
+                                err = new AreaAzul.BusinessException('Nao foi possivel ativar ', arrValidacaoVeiculo);
+                                throw err;
+                            }
                         }
                     })
                     .then(function(v) {

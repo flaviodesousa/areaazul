@@ -20,7 +20,9 @@ var MovimentacaoConta = Bookshelf.Model.extend({
       .forge({pessoa_id: movimentacaoconta.pessoa_id})
       .fetch()
       .then(function(c) {
+
         var saldoAtual = Number(c.get('saldo'));
+        
         var novoSaldo = math.sum(saldoAtual, movimentacaoconta.valor);
 
         if (c !== null) {
