@@ -14,121 +14,34 @@ describe('model.Ativacao', function() {
 
     var idUsuarioComum = null;
     var idVeiculo = null;
-    var idEstado = null;
     var idCidade = null;
     var idUsuarioRevendedor = null;
-    var idPreExistenteAtivacao = null;
     var idAtivacao = null;
 
-    var cpfNaoExistente = 'revendedor-teste-nao-existente';
-    var loginRevendedorNaoExistente = 'revendedor-nao-existente';
-
-    var loginUsuarioComPreExistente = 'usuario-pre-existente';
-    var cpfUsuarioComumPreExistente = 'usuario-comum-test';
-
-    var estadoTeste = null;
-    var placaTeste = 'TES1234';
-    var marcaTeste = 'Marca-teste-veiculo';
-    var modeloTeste = 'Modelo-teste-veiculo';
-    var corTeste = 'Cor Teste';
-    var anoFabricadoTeste = '2015';
-    var anoModeloTeste = '2015';
-
-    var estadoTesteNome = 'Estado';
-    var estadoTesteUf = 'UF';
-
-    var cpfPreExistente = '22258141710';
-    var nomeTeste = 'teste';
-    var emailTeste = 'teste@example.com';
-    var telefoneTeste = '000 0000-0000';
-    var data_nascimentoTeste = new Date(1981, 11, 13);
-    var contatoTeste = 'contato-teste';
-    var loginTeste = 'teste-usuario';
-    var nomeFantasiaTeste = 'nome-fantasia-teste';
-    var nomeEmpresa = 'nome-teste';
-    var senhaTeste = 'senha-teste';
-    var revendedorId = null;
-
-
-    function apagarDadosDeTeste() {
-        return TestHelpers.apagarAtivacaoId(idAtivacao)
-            .then(function() {
-                TestHelpers.apagarRevendedorPessoPorIdentificador(cpfPreExistente, null);
-            });
-    }
 
     before(function(done) {
         var usuario;
-        apagarDadosDeTeste()
-            .then(function() {
-                
-                return Revendedor.cadastrar({
-                    nome: nomeTeste,
-                    email: emailTeste,
-                    celular: telefoneTeste,
-                    cpf: cpfPreExistente,
-                    data_nascimento: data_nascimentoTeste,
-                    autorizacao: 'autorizacao',
-                    login: loginTeste,
-                    senha: senhaTeste,
-                });
-            })
-            .then(function(revenda) {
-                idUsuarioRevendedor = revenda.id;
+        return TestHelpers.pegarVeiculo()
+            .then(function(veiculo) {
+                idVeiculo = veiculo.id;
             })
             .then(function() {
-                return Usuario
-                    .forge({
-                        login: loginUsuarioComPreExistente
-                    })
-                    .fetch()
-                    .then(function(u) {
-                        if (u) {
-                            return u;
-                        }
-                        return Usuario.cadastrar({
-                            login: loginUsuarioComPreExistente,
-                            nome: 'Usuario Teste',
-                            email: 'usuario-teste@example.com',
-                            cpf: cpfUsuarioComumPreExistente,
-                        });
+                return TestHelpers.pegarUsuario()
+                    .then(function(usuario) {
+                        idUsuarioComum = usuario.id;
                     });
             })
-            .then(function(user) {
-                usuario = user;
-                idUsuarioComum = user.id;
+            .then(function() {
+                return TestHelpers.pegarRevendedor()
+                    .then(function(revendedor) {
+                        idUsuarioRevendedor = revendedor.id;
+                    });
             })
             .then(function() {
                 return TestHelpers.pegarCidade()
                     .then(function(cidade) {
                         idCidade = cidade.id;
-                        estadoTeste = cidade.estado_id;
                     });
-            })
-            .then(function() {
-                return Veiculo
-                    .forge({
-                        placa: placaTeste
-                    })
-                    .fetch()
-                    .then(function(v) {
-                        if (v) {
-                            return v;
-                        }
-                        return Veiculo._cadastrar({
-                            cidade_id: idCidade,
-                            placa: placaTeste,
-                            marca: marcaTeste,
-                            modelo: modeloTeste,
-                            cor: corTeste,
-                            ano_fabricado: anoFabricadoTeste,
-                            ano_modelo: anoModeloTeste,
-                            usuario_pessoa_id: idUsuarioComum,
-                        });
-                    });
-            })
-            .then(function(veiculo) {
-                idVeiculo = veiculo.id;
             })
             .then(function() {
                 done();
@@ -137,6 +50,7 @@ describe('model.Ativacao', function() {
                 done(e);
             });
     });
+
 
     describe('Ativar()', function() {
         it('grava ativacao', function(done) {
@@ -163,6 +77,8 @@ describe('model.Ativacao', function() {
 
 
     describe('desativar()', function() {
+
+
         it('falha para ativacao inexistente', function(done) {
             Ativacao
                 .desativar({
@@ -208,22 +124,19 @@ describe('model.Ativacao', function() {
 
     describe('ativarPelaRevenda()', function() {
         it('grava ativacao', function(done) {
-
-                    console.log("veiculo_id"+idVeiculo);
-         console.log("idUsuarioRevendedor"+idUsuarioRevendedor);
             Ativacao
                 .ativarPelaRevenda({
-                    veiculo_id: idVeiculo,
                     usuario_pessoa_id: idUsuarioRevendedor,
+                    cidade_id: idCidade,
+                    placa: 'ABC-1234',
+                    marca: 'marcaTeste',
+                    modelo: 'modeloTeste',
+                    cor: 'corTeste',
                     tipo_veiculo: 1,
                     tempo: 60,
-                    placa: placaTeste,
                     valor: 10.0,
                 })
-                .then(function(at) {
-                    should.exist(at);
-                    should.exist(at.id);
-                    idAtivacao = at.id;
+                .then(function() {
                     done();
                 })
                 .catch(function(e) {
@@ -232,13 +145,4 @@ describe('model.Ativacao', function() {
         });
     });
 
-    after(function(done) {
-        apagarDadosDeTeste()
-            .then(function() {
-                done();
-            })
-            .catch(function(e) {
-                done(e);
-            });
-    });
 });
