@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+var Promise = require('bluebird');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa');
 var PessoaFisica = require('./pessoafisica').PessoaFisica;
@@ -131,75 +132,70 @@ var Revendedor = Bookshelf.Model.extend({
     },
 
     validateRevendedorPessoaFisica: function(dealer) {
-        return new Promise(function(resolve, reject) {
-        var message = [];
+        return new Promise(function(resolve) {
+            var message = [];
 
-        if (!dealer.cpf) {
-            message.push({
-                attribute: 'cpf',
-                problem: 'CPF é obrigatório!',
-            });
-            return resolve(message);
-        } else {
-            return PessoaFisica.procurarCPF(dealer.cpf)
-                .then(function(pessoafisica) {
-                    if (pessoafisica) {
-                        message.push({
-                            attribute: 'cpf',
-                            problem: 'CPF já cadastrado!',
-                        });
-                    }
-                    return message;
+            if (!dealer.nome) {
+                message.push({
+                    attribute: 'nome',
+                    problem: 'Nome obrigatório!',
                 });
-        }
-        if (!validation.isCPF(dealer.cpf)) {
-            message.push({
-                attribute: 'cpf',
-                problem: 'CPF inválido!',
-            });
-            return resolve(message);
-        }
+            }
 
-        if (!dealer.nome) {
-            message.push({
-                attribute: 'nome',
-                problem: 'Nome obrigatório!',
-            });
-            return resolve(message);
-        }
+            if (!dealer.celular) {
+                message.push({
+                    attribute: 'celular',
+                    problem: 'Celular obrigatório!',
+                });
+            }
 
-        if (!dealer.celular) {
-            message.push({
-                attribute: 'celular',
-                problem: 'Celular obrigatório!',
-            });
-            return resolve(message);
-        }
+            if (!dealer.email) {
+                message.push({
+                    attribute: 'email',
+                    problem: 'Email obrigatório!',
+                });
+            }
 
-        if (!dealer.email) {
-            message.push({
-                attribute: 'email',
-                problem: 'Email obrigatório!',
-            });
-            return resolve(message);
-        }
+            if (!dealer.login) {
+                message.push({
+                    attribute: 'login',
+                    problem: 'Login obrigatório!',
+                });
+            }
 
-        if (!dealer.login) {
-            message.push({
-                attribute: 'login',
-                problem: 'Login obrigatório!',
-            });
-            return resolve(message);
-        }
+            if (!validator.isEmail(dealer.email)) {
+                message.push({
+                    attribute: 'email',
+                    problem: 'Email inválido!',
+                });
+            }
 
-        if (!validator.isEmail(dealer.email)) {
-            message.push({
-                attribute: 'email',
-                problem: 'Email inválido!',
+            if (!dealer.cpf) {
+                message.push({
+                    attribute: 'cpf',
+                    problem: 'CPF é obrigatório!',
+                });
+
+            } 
+            if(!validation.isCPF(dealer.cpf)) {
+                message.push({
+                    attribute: 'cpf',
+                    problem: 'CPF inválido!',
+                }); 
+            }
+
+           return PessoaFisica.procurarCPF(dealer.cpf)
+                    .then(function(pessoafisica) {
+                        if (pessoafisica) {
+                            message.push({
+                                attribute: 'cpf',
+                                problem: 'CPF já cadastrado!',
+                            });
+                        }
+
             });
-            return resolve(message);
-        }
-        })
+                return resolve(message);
+            })
     },
 
     validateRevendedorPessoaJuridica: function(dealer) {

@@ -7,7 +7,7 @@ var TestHelpers = require('../helpers/test');
 
 describe('model.revendedor', function() {
 
-  var cpfPreExistente = '75789428240';
+  var cpfPreExistente = 'fiscal-teste-fiscalizacao';
   var nomeTeste = 'teste - preexistente';
   var emailTeste = 'preexistente@example.com';
   var telefoneTeste = '000 0000-0000';
@@ -38,8 +38,8 @@ describe('model.revendedor', function() {
   describe('validateRevendedorPessoaFisica()', function() {
     it('Validar revendedor pessoa fisica funciona', function(done) {
       Revendedor.validateRevendedorPessoaFisica({
-        nome: nomeTeste,
-        email: emailTeste,
+        nome: null,
+        email: 'teste@teste.com',
         celular: telefoneTeste,
         cpf: cpfPreExistente,
         data_nascimento: data_nascimentoTeste,
@@ -47,10 +47,11 @@ describe('model.revendedor', function() {
         login: loginTeste,
         senha: senhaTeste,
       })
-      .then(function(model) {
+     .then(function() {
         done();
       })
       .catch(function(e) {
+        console.dir(e);
         done(e);
       });
     });
@@ -60,8 +61,8 @@ describe('model.revendedor', function() {
   describe('cadastrar()', function() {
     it('cadastrar pessoa fisica funciona', function(done) {
       Revendedor.cadastrar({
-        nome: nomeTeste,
-        email: emailTeste,
+        nome: null,
+        email: null,
         celular: telefoneTeste,
         cpf: cpfPreExistente,
         data_nascimento: data_nascimentoTeste,
@@ -75,7 +76,7 @@ describe('model.revendedor', function() {
         done();
       })
       .catch(function(e) {
-        console.dir("erro"+e);
+        console.dir(e);
         done(e);
       });
     });
@@ -106,7 +107,6 @@ describe('model.revendedor', function() {
 
   });
 
-  
   describe('buscarRevendedor()', function() {
     it('retorna um revendedor', function(done) {
       Revendedor.buscarRevendedor({
@@ -121,9 +121,6 @@ describe('model.revendedor', function() {
     });
   });
 
-
-
-
   after(function(done) {
     apagarDadosDeTeste()
       .then(function() {
@@ -133,6 +130,4 @@ describe('model.revendedor', function() {
         done(e);
       });
   });
-
-
 });

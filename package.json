@@ -21,7 +21,8 @@
     "validator": "^3.40.1",
     "winston": "*",
     "mathjs":"*",
-    "winston-loggly": "^1.1.0"
+    "winston-loggly": "^1.1.0",
+    "promise":"*"
   },
   "devDependencies": {
     "chai": "^2.3.0",
