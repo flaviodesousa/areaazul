@@ -112,7 +112,7 @@ var Revendedor = Bookshelf.Model.extend({
         var optionsInsert = _.merge({}, options || {}, {
             method: 'insert'
         });
-        
+
         return Revendedor
             .forge({
                 ativo: true,
@@ -132,7 +132,6 @@ var Revendedor = Bookshelf.Model.extend({
     },
 
     validateRevendedorPessoaFisica: function(dealer) {
-        return new Promise(function(resolve) {
             var message = [];
 
             if (!dealer.nome) {
@@ -176,26 +175,27 @@ var Revendedor = Bookshelf.Model.extend({
                     problem: 'CPF é obrigatório!',
                 });
 
-            } 
+            }
+
             if(!validation.isCPF(dealer.cpf)) {
                 message.push({
                     attribute: 'cpf',
                     problem: 'CPF inválido!',
-                }); 
+                });
             }
 
-           return PessoaFisica.procurarCPF(dealer.cpf)
-                    .then(function(pessoafisica) {
-                        if (pessoafisica) {
-                            message.push({
-                                attribute: 'cpf',
-                                problem: 'CPF já cadastrado!',
-                            });
-                        }
+            return PessoaFisica
+                .procurarCPF(dealer.cpf)
+                .then(function(pessoafisica) {
+                    if (pessoafisica) {
+                        message.push({
+                            attribute: 'cpf',
+                            problem: 'CPF já cadastrado!',
+                        });
+                    }
 
-            });
-                return resolve(message);
-            })
+                    return message;
+                });
     },
 
     validateRevendedorPessoaJuridica: function(dealer) {
@@ -271,7 +271,6 @@ var Revendedor = Bookshelf.Model.extend({
             });
         }
 
-
         if (validation.isCPF(dealer.cpf) === false) {
             message.push({
                 attribute: 'cpf',
@@ -285,6 +284,7 @@ var Revendedor = Bookshelf.Model.extend({
                 problem: 'Email inválido!',
             });
         }
+
         return message;
     },
 
