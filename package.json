@@ -1,6 +1,6 @@
 {
   "name": "areaazul",
-  "version": "0.3.3",
+  "version": "0.3.4",
   "private": true,
   "main": "areaazul.js",
   "scripts": {
@@ -8,27 +8,27 @@
   },
   "dependencies": {
     "areaazul-mailer": "git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git",
-    "async": "^1.2.1",
+    "async": "^1.4.2",
     "bcrypt": "^0.8.3",
-    "bluebird": "^2.9.30",
-    "bookshelf": "*",
+    "bluebird": "^2.10.2",
+    "bookshelf": "^0.8.2",
     "debug": "^2.2.0",
     "knex": "^0.8.6",
-    "lodash": "^3.7.0",
-    "moment": "*",
+    "lodash": "^3.10.1",
+    "mathjs": "^2.3.0",
+    "moment": "^2.10.6",
     "node-uuid": "^1.4.3",
-    "pg": "^4.4.0",
-    "validator": "^3.40.1",
-    "winston": "*",
-    "mathjs":"*",
-    "winston-loggly": "^1.1.0",
-    "promise":"*"
+    "pg": "^4.4.2",
+    "promise": "^7.0.4",
+    "validator": "^3.43.0",
+    "winston": "^1.0.2",
+    "winston-loggly": "^1.1.0"
   },
   "devDependencies": {
     "chai": "^2.3.0",
     "gulp": "^3.8.11",
     "gulp-release-tasks": "0.0.3",
-    "mocha": "*",
-    "yargs": "^3.9.0"
+    "mocha": "^2.3.3",
+    "yargs": "^3.26.0"
   }
 }
