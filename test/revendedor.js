@@ -35,9 +35,9 @@ describe('model.revendedor', function() {
       });
   });
 
-  describe('validateRevendedorPessoaFisica()', function() {
+  describe('validateRevenda()', function() {
     it('Validar revendedor pessoa fisica funciona', function(done) {
-      Revendedor.validateRevendedorPessoaFisica({
+      Revendedor.validarRevenda({
         nome: null,
         email: 'teste@teste.com',
         celular: telefoneTeste,
@@ -58,12 +58,38 @@ describe('model.revendedor', function() {
   });
 
 
+  describe('validarRevenda()', function() {
+    it('Validar revendedor pessoa juridica funciona', function(done) {
+      Revendedor.validarRevenda({
+        cnpj: cnpjPreExistente,
+        nome: nomeFantasiaTeste,
+        nome_fantasia: nomeFantasiaTeste,
+        razao_social: razaoSocialTeste,
+        contato: contatoTeste,
+        email: emailTeste,
+        telefone: telefoneTeste,
+        cpf: '63277083829',
+        login: 'logindeteste',
+        autorizacao: 'autorizacao teste',
+        senha: senhaTeste,
+      })
+     .then(function() {
+        done();
+      })
+      .catch(function(e) {
+        console.dir(e);
+        done(e);
+      });
+    });
+  });
+
+
   describe('cadastrar()', function() {
     it('cadastrar pessoa fisica funciona', function(done) {
       Revendedor.cadastrar({
         nome: null,
         email: null,
-        celular: telefoneTeste,
+        telefone: telefoneTeste,
         cpf: cpfPreExistente,
         data_nascimento: data_nascimentoTeste,
         autorizacao: 'autorizacao',
@@ -96,15 +122,15 @@ describe('model.revendedor', function() {
         senha: senhaTeste,
       })
       .then(function(revenda) {
+        console.dir(revenda);
         should.exist(revenda);
         done();
       })
       .catch(function(e) {
+        console.dir(e);
         done(e);
       });
     });
-
-
   });
 
   describe('buscarRevendedor()', function() {
