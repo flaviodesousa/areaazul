@@ -47,6 +47,11 @@ var PessoaJuridica = Bookshelf.Model.extend({
         return pessoaJuridica;
       });
   },
+  procurarCNPJ: function(cnpj) {
+      return this.forge({
+          cnpj: cnpj
+      }).fetch();
+  },
 });
 
 module.exports = PessoaJuridica;
