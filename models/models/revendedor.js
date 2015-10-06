@@ -206,28 +206,24 @@ var Revendedor = Bookshelf.Model.extend({
                 }
 
                 return message;
-            });
+            })
+            .then(function() {
+                return UsuarioRevendedor
+                    .procurarLogin(dealer.login)
+                    .then(function(usuariorevendedor) {
+                        if (usuariorevendedor) {
+                            message.push({
+                                attribute: 'login',
+                                problem: 'Login já cadastrado!',
+                            });
+                        }
 
-        return UsuarioRevendedor
-            .procurarLogin(dealer.login)
-            .then(function(usuariorevendedor) {
-                if (usuariorevendedor) {
-                    message.push({
-                        attribute: 'login',
-                        problem: 'Login já cadastrado!',
+                        return message;
                     });
-                }
-
-                return message;
-            });        
-
-        if(dealer.cnpj){
-            console.log("Revenda pessoa juridica");
+            })
+            .then(function (message) {
                 if (!dealer.cnpj) {
-                    message.push({
-                        attribute: 'cnpj',
-                        problem: 'CNPJ é obrigatório!',
-                    });
+                    return message;
                 }
 
                 if (!dealer.nome_fantasia) {
@@ -243,7 +239,6 @@ var Revendedor = Bookshelf.Model.extend({
                             problem: 'Razao social obrigatório!',
                         });
                 }
-
 
                 if (validation.isCNPJ(dealer.cnpj) === false) {
                     message.push({
@@ -264,11 +259,7 @@ var Revendedor = Bookshelf.Model.extend({
 
                         return message;
                     });
-        }else{
-            return message;
-        }
-
-        return message;
+            });
     },
 
 
