@@ -5,7 +5,9 @@ var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
 var BusinessException = AreaAzul.BusinessException;
 var UsuarioRevendedor = AreaAzul.models.UsuarioRevendedor;
+var UsuarioRevendedorCollection = AreaAzul.collections.UsuarioRevendedor;
 var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
+
 
 describe('models.UsuarioRevendedor', function() {
   var cpfPreExistente = '12341184758';
@@ -14,6 +16,9 @@ describe('models.UsuarioRevendedor', function() {
   var senhaRevendaExistente = 'senha-adm-pre-existente';
   var loginRevendaExistente = 'revenda-teste';
   var idUsuarioRevendedor = null;
+
+
+  var revendedor_id = null;
 
   function apagarDadosDeTeste() {
     return TestHelpers.apagarUsuarioRevenda(idUsuarioRevendedor);
@@ -32,6 +37,7 @@ describe('models.UsuarioRevendedor', function() {
         })
         .then(function(pessoa) {
           should.exist(pessoa);
+          revendedor_id = pessoa.get('revendedor_id');
           // Salvar id para testes de buscarPorId()
           idUsuarioRevendedor = pessoa.id;
           done();
@@ -39,6 +45,20 @@ describe('models.UsuarioRevendedor', function() {
         .catch(function(e) {
           done(e);
         });
+    });
+  });
+
+
+  describe('listarUsuarioRevenda()', function() {
+
+    it('lista usuario da revenda mantidos no banco de dados', function(done) {
+        UsuarioRevendedorCollection.listarUsuarioRevenda(revendedor_id,
+           function() {
+              done();
+            },
+            function(e) {
+              done();
+            });
     });
   });
 

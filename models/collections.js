@@ -14,6 +14,6 @@ exports.pessoajuridica = require('./collections/pessoajuridica');
 exports.revendedor = require('./collections/revendedor');
 exports.usuario = require('./collections/usuario');
 exports.UsuariosFiscais = require('./collections/usuarios_fiscais');
-exports.usuario_revendedor = require('./collections/usuario_revendedor');
+exports.UsuarioRevendedor = require('./collections/usuario_revendedor');
 exports.UsuarioHasVeiculos = require('./collections/usuario_has_veiculo');
 exports.Veiculos = require('./collections/veiculo');
