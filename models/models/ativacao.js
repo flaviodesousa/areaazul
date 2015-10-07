@@ -158,8 +158,7 @@ var Ativacao = Bookshelf.Model.extend({
             if(ativacao.placa){
             var placaSemMascara = util.formata(ativacao.placa);
             }
-            var arrValidacaoAtivacao = Ativacao.validarAtivacao(ativacao);
-            if(arrValidacaoAtivacao.length === 0){
+  
                 return Veiculo
                     .forge({
                         placa: placaSemMascara
@@ -169,20 +168,13 @@ var Ativacao = Bookshelf.Model.extend({
                         if (veiculo) {
                             return veiculo;
                         }else{
-                            var arrValidacaoVeiculo = Veiculo.validarVeiculo(ativacao);
-                            if(arrValidacaoVeiculo.length === 0){
-                                console.log(placaSemMascara);
-                                return Veiculo._cadastrar({
-                                    placa: placaSemMascara,
-                                    marca: ativacao.marca,
-                                    cor: ativacao.cor,
-                                    modelo: ativacao.modelo,
-                                    estado: ativacao.estado_id,
-                                }, options); 
-                            }else{
-                                err = new AreaAzul.BusinessException('Nao foi possivel ativar ', arrValidacaoVeiculo);
-                                throw err;
-                            }
+                            return Veiculo._cadastrar({
+                                placa: placaSemMascara,
+                                marca: ativacao.marca,
+                                cor: ativacao.cor,
+                                modelo: ativacao.modelo,
+                                estado: ativacao.estado_id,
+                            }, options); 
                         }
                     })
                     .then(function(v) {
@@ -208,10 +200,6 @@ var Ativacao = Bookshelf.Model.extend({
                                         }, options);
                                 });
                     });
-            }else{
-                err = new AreaAzul.BusinessException('Nao foi possivel ativar', arrValidacaoAtivacao);
-                throw err;
-            }
         });
 
 

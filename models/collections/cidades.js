@@ -11,7 +11,7 @@ var CidadeCollection = Bookshelf.Collection.extend({
     .forge()
     .query(function(qb) {
       qb.where('estado_id', '=', id_estado);
-      qb.select('cidade.*')
+      qb.select('cidade.*');
     })
     .fetch()
     .then(function(collection) {

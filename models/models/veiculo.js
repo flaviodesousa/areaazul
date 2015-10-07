@@ -93,31 +93,24 @@ var Veiculo = Bookshelf.Model.extend({
                 problem: 'Campo cor é obrigatório!',
             });
         }
-    /*    if (validator.isNull(veiculo.ano_fabricado)) {
-            message.push({
-                attribute: 'ano_fabricado',
-                problem: 'Campo ano de fabricação é obrigatório!',
-            });
-        }
-        if (validator.isNull(veiculo.ano_modelo)) {
-            message.push({
-                attribute: 'ano_modelo',
-                problem: 'Campo ano de modelo é obrigatório!',
-            });
-        }
-        if (!validator.isNumeric(veiculo.ano_fabricado)) {
-            message.push({
-                attribute: 'ano_fabricado',
-                problem: 'Ano de fabricação informado é inválido!',
-            });
-        }
-        if (!validator.isNumeric(veiculo.ano_modelo)) {
-            message.push({
-                attribute: 'ano_modelo',
-                problem: 'Ano de modelo informado é inválido!',
-            });
-        }*/
+        
 
+        if(placa){
+            var placaSemMascara = util.formata(placa);
+        }
+
+        return Veiculo
+            .procurarVeiculo(placaSemMascara)
+            .then(function(veiculo) {
+                if (pessoajuridica) {
+                    message.push({
+                        attribute: 'placa',
+                        problem: 'Veiculo já cadastrado!',
+                    });
+                }
+
+                return message;
+            });
         return message;
     },
 

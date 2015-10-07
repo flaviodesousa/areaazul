@@ -274,14 +274,11 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                 throw err;
             });
     },
-
     procurarLogin: function(login) {
         return this.forge({
             login: login
         }).fetch();
     },
-
-
 });
 
 module.exports = UsuarioRevendedor;
