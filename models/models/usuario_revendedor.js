@@ -14,6 +14,9 @@ var log = AreaAzul.log;
 var UsuarioRevendedor = Bookshelf.Model.extend({
     tableName: 'usuario_revendedor',
     idAttribute: 'pessoa_fisica_pessoa_id',
+    pessoaFisica: function() {
+    return this.hasOne(PessoaFisica, 'pessoa_id');
+}
 }, {
     autorizado: function(login, senha) {
         var UsuarioRevendedor = this;
