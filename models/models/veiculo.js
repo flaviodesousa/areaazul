@@ -5,6 +5,7 @@ var Bookshelf = require('bookshelf').conexaoMain;
 var validator = require('validator');
 var validation = require('./validation');
 var util = require('../../helpers/util');
+var AreaAzul = require('../../areaazul.js');
 
 var Usuario = require('./usuario');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
@@ -24,20 +25,33 @@ var Veiculo = Bookshelf.Model.extend({
         });
 
         return Veiculo
-            .forge({
-                cidade_id: vehicle.cidade_id,
-                placa: vehicle.placa,
-                marca: vehicle.marca,
-                modelo: vehicle.modelo,
-                cor: vehicle.cor,
-                ano_fabricado: vehicle.ano_fabricado,
-                ano_modelo: vehicle.ano_modelo,
-                ativo: true,
-            })
-            .save(null, optionsInsert)
-            .then(function(veiculo) {
-                return veiculo;
-            });
+              .validarVeiculo(vehicle)
+              .then(function(messages) {
+                    if(messages.length){
+                        throw new AreaAzul
+                            .BusinessException(
+                                'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
+                                messages);
+                    }
+                return messages;
+        })
+        .then(function(){
+             return Veiculo
+                .forge({
+                    cidade_id: vehicle.cidade_id,
+                    placa: vehicle.placa,
+                    marca: vehicle.marca,
+                    modelo: vehicle.modelo,
+                    cor: vehicle.cor,
+                    ano_fabricado: vehicle.ano_fabricado,
+                    ano_modelo: vehicle.ano_modelo,
+                    ativo: true,
+                })
+                .save(null, optionsInsert)
+                .then(function(veiculo) {
+                    return veiculo;
+                });
+        });
     },
 
     _cadastrarVeiculo: function(vehicle, options) {
@@ -62,6 +76,7 @@ var Veiculo = Bookshelf.Model.extend({
     },
 
     validarVeiculo: function(veiculo) {
+        console.dir(veiculo);
         var message = [];
         if (validator.isNull(veiculo.cidade_id)) {
             message.push({
@@ -95,14 +110,14 @@ var Veiculo = Bookshelf.Model.extend({
         }
         
 
-        if(placa){
-            var placaSemMascara = util.formata(placa);
+        if(veiculo.placa){
+            var placaSemMascara = util.formata(veiculo.placa);
         }
 
         return Veiculo
             .procurarVeiculo(placaSemMascara)
             .then(function(veiculo) {
-                if (pessoajuridica) {
+                if (veiculo) {
                     message.push({
                         attribute: 'placa',
                         problem: 'Veiculo já cadastrado!',
