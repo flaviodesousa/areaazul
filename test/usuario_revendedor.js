@@ -28,7 +28,7 @@ describe('models.UsuarioRevendedor', function() {
 
     it('cadastra usuario revendedor com cpf novo', function(done) {
         UsuarioRevendedor.cadastrar({
-          login: loginRevendaExistente,
+          login: 'loginRevendaExistente',
           nome: 'Revenda Teste',
           autorizacao: 'funcionario',
           senha: senhaRevendaExistente,
@@ -85,6 +85,7 @@ describe('models.UsuarioRevendedor', function() {
           done('Nao deve aceitar senha errada');
         })
         .catch(function(err) {
+          console.dir(err);
           should.exist(err);
           err.should.be.an.instanceof(BusinessException);
           err.should.have.property(

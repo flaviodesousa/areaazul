@@ -9,6 +9,7 @@ var validator = require('validator');
 var _ = require('lodash');
 var AreaAzul = require('../../areaazul.js');
 var log = AreaAzul.log;
+var validation = require('./validation');
 
 
 var UsuarioRevendedor = Bookshelf.Model.extend({
@@ -63,44 +64,59 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                 var trxIns = _.merge({}, trx, {
                     method: 'insert'
                 });
-                // Verifica se a pessoa fisica ja' existe
-                return PessoaFisica
-                    .forge({
-                        cpf: user_reveller.cpf
-                    })
-                    .fetch()
-                    .then(function(pessoaFisica) {
-                        // Se pessoa fisica ja' existir, conectar a ela
-                        if (pessoaFisica !== null) {
-                            return pessoaFisica;
-                        }
-                        // Caso nao exista, criar a pessoa fisica
-                        return PessoaFisica
-                            ._cadastrar(user_reveller, trx);
-                    })
-                    .then(function(pessoaFisica) {
-                        console.log("user_reveller" + user_reveller.login);
-                        return Usuario_Revendedor
-                            .forge({
-                                login: user_reveller.login,
-                                senha: senha,
-                                acesso_confirmado: false,
-                                ativo: true,
-                                autorizacao: user_reveller.autorizacao,
-                                revendedor_id: user_reveller.revendedor_id,
-                                pessoa_fisica_pessoa_id: pessoaFisica.get('pessoa_id'),
-                            })
-                            .save(null, trxIns);
-                    })
-                    .then(function(u_r) {
-                        usuario_revendedor = u_r;
-                        return u_r;
-                    });
-            })
-            .then(function() {
-                return usuario_revendedor;
-            });
-    },
+               
+
+            return UsuarioRevendedor
+                .validarUsuarioRevenda(user_reveller)
+                .then(function(messages) {
+                    if (messages.length) {
+                        throw new AreaAzul
+                            .BusinessException(
+                                'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
+                                messages);
+                    }
+                    console.dir(messages);
+                    return messages;
+                })
+                .then(function() {
+                    return PessoaFisica
+                        .forge({
+                            cpf: user_reveller.cpf
+                        })
+                        .fetch()
+                        .then(function(pessoaFisica) {
+                            // Se pessoa fisica ja' existir, conectar a ela
+                            if (pessoaFisica !== null) {
+                                return pessoaFisica;
+                            }
+                            // Caso nao exista, criar a pessoa fisica
+                            return PessoaFisica
+                                ._cadastrar(user_reveller, trx);
+                        })
+                })
+                .then(function(pessoaFisica) {
+                    console.log("user_reveller" + user_reveller.login);
+                    return Usuario_Revendedor
+                        .forge({
+                            login: user_reveller.login,
+                            senha: senha,
+                            acesso_confirmado: false,
+                            ativo: true,
+                            autorizacao: user_reveller.autorizacao,
+                            revendedor_id: user_reveller.revendedor_id,
+                            pessoa_fisica_pessoa_id: pessoaFisica.get('pessoa_id'),
+                        })
+                        .save(null, trxIns);
+                })
+                .then(function(u_r) {
+                    usuario_revendedor = u_r;
+                    return u_r;
+                });
+        })
+        .then(function() {
+            return usuario_revendedor;
+        });
+},
     search: function(entidade, func) {
         entidade.fetch().then(function(model, err) {
             if (model !== null)
@@ -274,11 +290,74 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                 throw err;
             });
     },
+
+
+ validarUsuarioRevenda: function(user_reveller) {
+        var message = [];
+
+        if (!user_reveller.nome) {
+            message.push({
+                attribute: 'nome',
+                problem: 'Nome obrigatório!',
+            });
+        }
+
+        if (!user_reveller.email) {
+            message.push({
+                attribute: 'email',
+                problem: 'Email obrigatório!',
+            });
+        }
+
+        if (!user_reveller.login) {
+            message.push({
+                attribute: 'login',
+                problem: 'Login obrigatório!',
+            });
+        }
+
+        if (!validator.isEmail(user_reveller.email)) {
+            message.push({
+                attribute: 'email',
+                problem: 'Email inválido!',
+            });
+        }
+
+        if (!user_reveller.cpf) {
+            message.push({
+                attribute: 'cpf',
+                problem: 'CPF é obrigatório!',
+            });
+
+        }
+
+        if (!validation.isCPF(user_reveller.cpf)) {
+            message.push({
+                attribute: 'cpf',
+                problem: 'CPF inválido!',
+            });
+        }
+
+        return UsuarioRevendedor
+            .procurarLogin(user_reveller.login)
+            .then(function(usuariorevendedor) {
+                if (usuariorevendedor) {
+                    message.push({
+                        attribute: 'login',
+                        problem: 'Login já cadastrado!',
+                    });
+                }
+
+                return message;
+        });
+    },
     procurarLogin: function(login) {
         return this.forge({
             login: login
         }).fetch();
     },
+
+
 });
 
 module.exports = UsuarioRevendedor;
