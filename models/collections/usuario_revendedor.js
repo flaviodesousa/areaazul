@@ -18,18 +18,15 @@ var UsuarioRevendedorCollection = Bookshelf.Collection.extend({
         })
         .where('usuario_revendedor.revendedor_id', revendedor_id)
         .select('pessoa_fisica.*')
-        .select('pessoa.*');
+        .select('pessoa.*')
+        .select('usuario_revendedor.*');
       console.log('sql' + qb);
     })
     .fetch()
     .then(function(collection) {
-      console.dir(collection.models);
-      console.log(collection.models);
       func(collection);
     })
     .catch(function(e) {
-      console.log('e');
-      console.dir(e);
       err(e);
     });
   },
