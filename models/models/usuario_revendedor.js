@@ -58,21 +58,10 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
             senha = util.criptografa(util.generate());
         } else {
             senha = util.criptografa(user_reveller.senha);
+            user_reveller.senha = senha;
         }
 
-        return Bookshelf.transaction(function(t) {
-                var trx = {
-                    transacting: t
-                };
-                var trxIns = _.merge({}, trx, {
-                    method: 'insert'
-                });
-
-                var trxuP = _.merge({}, trx, {
-                    method: 'update'
-                });
-
-                return UsuarioRevendedor
+        return UsuarioRevendedor
                     .validarUsuarioRevenda(user_reveller)
                     .then(function(messages) {
                         if (messages.length) {
@@ -84,36 +73,73 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                         console.dir(messages);
                         return messages;
                     })
-                    .then(function(pessoaFisica) {
-                        console.log("user_reveller" + user_reveller.login);
-                        return Usuario_Revendedor
+                    .then(function() {
+                        return PessoaFisica
                             .forge({
-                                login: user_reveller.login,
-                                senha: senha,
-                                acesso_confirmado: false,
-                                ativo: true,
-                                autorizacao: user_reveller.autorizacao,
-                                revendedor_id: user_reveller.revendedor_id,
-                                pessoa_fisica_pessoa_id: pessoaFisica.get('pessoa_id'),
+                                cpf: user_reveller.cpf
                             })
-                            .save(null, trxIns);
+                            .fetch()
+                            .then(function(pessoaFisica) {
+                                // Se pessoa fisica ja' existir, conectar a ela
+                                if (pessoaFisica !== null) {
+                                    return pessoaFisica;
+                                }
+                                // Caso nao exista, criar a pessoa fisica
+                                return PessoaFisica
+                                    ._cadastrar(user_reveller, trx);
+                            })
                     })
                     .then(function(u_r) {
                         usuario_revendedor = u_r;
                         return u_r;
                     });
+
+    },
+
+    _inserir: function(entidade, options) {
+        return UsuarioRevendedor._salvarUsuarioRevenda(entidade, options);
+    },
+
+    inserir: function(entidade) {
+        return Bookshelf.transaction(function(t) {
+            var trx = {
+                    transacting: t
+                };
+            var trxIns = _.merge({}, trx, { method: 'insert'});
+            return UsuarioRevendedor._salvar(entidade,trxIns);
+        });
+    },
+
+    _alterar: function(entidade, options) {
+        return UsuarioRevendedor._salvarUsuarioRevenda(entidade, options);
+    },
+
+    alterar: function(entidade) {
+        return Bookshelf.transaction(function(t) {
+            var trx = {
+                    transacting: t
+                };
+                var trxUpd = _.merge({}, trx, {method: 'update'}, {patch: true });
+            return UsuarioRevendedor._alterar(entidade, trxUpd);
+        });
+    },
+
+    _salvarUsuarioRevenda: function(entidade, options) {
+        var Usuario_Revendedor = this;
+        var senha;
+
+       
+
+        return Usuario_Revendedor
+            .forge({
+                login: entidade.login,
+                senha: entidade.senha,
+                acesso_confirmado: false,
+                ativo: true,
+                autorizacao: entidade.autorizacao,
+                revendedor_id: entidade.revendedor_id,
             })
-            .then(function() {
-                return usuario_revendedor;
-            });
-    },
-
-    _cadastrar: function(){
-
-    },
-
-    _cadastrarUsuarioRevendedor: function(){
-
+            .save(null, options);
     },
 
     search: function(entidade, func) {
