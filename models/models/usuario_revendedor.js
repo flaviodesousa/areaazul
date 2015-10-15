@@ -49,98 +49,114 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
             });
     },
 
-    cadastrar: function(user_reveller) {
+    _salvarUsuarioRevenda: function(entidade, options, t) {
         var Usuario_Revendedor = this;
         var usuario_revendedor = null;
-
         var senha;
-        if (!user_reveller.senha) {
+
+        if (!entidade.senha) {
             senha = util.criptografa(util.generate());
         } else {
-            senha = util.criptografa(user_reveller.senha);
-            user_reveller.senha = senha;
+            senha = util.criptografa(entidade.senha);
+            entidade.senha = senha;
         }
 
         return UsuarioRevendedor
-                    .validarUsuarioRevenda(user_reveller)
-                    .then(function(messages) {
-                        if (messages.length) {
-                            throw new AreaAzul
-                                .BusinessException(
-                                    'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
-                                    messages);
+            .validarUsuarioRevenda(entidade, options.method)
+            .then(function(messages) {
+                console.log("primeiro then");
+                if (messages.length) {
+                    throw new AreaAzul
+                        .BusinessException(
+                            'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
+                            messages);
+                }
+                return messages;
+            })
+            .then(function() {
+                console.log("segundo then");
+                return PessoaFisica
+                    .forge({
+                        cpf: entidade.cpf
+                    })
+                    .fetch()
+                    .then(function(pessoaFisica) {
+                        // Se pessoa fisica ja' existir, conectar a ela
+                        if (pessoaFisica !== null) {
+                            return pessoaFisica;
                         }
-                        console.dir(messages);
-                        return messages;
-                    })
-                    .then(function() {
+                        // Caso nao exista, criar a pessoa fisica
                         return PessoaFisica
-                            .forge({
-                                cpf: user_reveller.cpf
-                            })
-                            .fetch()
-                            .then(function(pessoaFisica) {
-                                // Se pessoa fisica ja' existir, conectar a ela
-                                if (pessoaFisica !== null) {
-                                    return pessoaFisica;
-                                }
-                                // Caso nao exista, criar a pessoa fisica
-                                return PessoaFisica
-                                    ._cadastrar(user_reveller, trx);
-                            })
+                            ._cadastrar(entidade, t);
                     })
-                    .then(function(u_r) {
-                        usuario_revendedor = u_r;
-                        return u_r;
-                    });
+            }).then(function(pessoaFisica) {
+                console.log("terceiro then");
+                console.log("ID:" + pessoaFisica.get('pessoa_id'));
+                console.dir(options);
+                var dadosUsuarioRevendedor = {
+                    login: entidade.login,
+                    senha: senha,
+                    acesso_confirmado: false,
+                    ativo: true,
+                    autorizacao: entidade.autorizacao,
+                    revendedor_id: entidade.revendedor_id,
+                    pessoa_fisica_pessoa_id: pessoaFisica.get('pessoa_id'),
+                }
+                
+                if (options.method === 'insert') {
+                    console.log("if");
+
+                    return Usuario_Revendedor
+                        .forge(dadosUsuarioRevendedor)
+                        .save(null, options);
+                } else {
+                    console.log("else");
+                    return Usuario_Revendedor
+                        .forge()
+                        .save(dadosUsuarioRevendedor, options);
+                }
+            })
+            .then(function(u_r) {
+                usuario_revendedor = u_r;
+                return u_r;
+            });
 
     },
 
-    _inserir: function(entidade, options) {
-        return UsuarioRevendedor._salvarUsuarioRevenda(entidade, options);
+    _inserir: function(entidade, options, t) {
+        return UsuarioRevendedor._salvarUsuarioRevenda(entidade, options, t);
     },
 
     inserir: function(entidade) {
         return Bookshelf.transaction(function(t) {
             var trx = {
-                    transacting: t
-                };
-            var trxIns = _.merge({}, trx, { method: 'insert'});
-            return UsuarioRevendedor._salvar(entidade,trxIns);
+                transacting: t
+            };
+            var trxIns = _.merge({}, trx, {
+                method: 'insert'
+            });
+            return UsuarioRevendedor._inserir(entidade, trxIns, trx);
         });
     },
 
-    _alterar: function(entidade, options) {
-        return UsuarioRevendedor._salvarUsuarioRevenda(entidade, options);
+    _alterar: function(entidade, options, t) {
+        return UsuarioRevendedor._salvarUsuarioRevenda(entidade, options, t);
     },
 
     alterar: function(entidade) {
         return Bookshelf.transaction(function(t) {
             var trx = {
-                    transacting: t
-                };
-                var trxUpd = _.merge({}, trx, {method: 'update'}, {patch: true });
-            return UsuarioRevendedor._alterar(entidade, trxUpd);
+                transacting: t
+            };
+            var trxUpd = _.merge({}, trx, {
+                method: 'update'
+            }, {
+                patch: true
+            });
+            return UsuarioRevendedor._alterar(entidade, trxUpd, trx);
         });
     },
 
-    _salvarUsuarioRevenda: function(entidade, options) {
-        var Usuario_Revendedor = this;
-        var senha;
-
-       
-
-        return Usuario_Revendedor
-            .forge({
-                login: entidade.login,
-                senha: entidade.senha,
-                acesso_confirmado: false,
-                ativo: true,
-                autorizacao: entidade.autorizacao,
-                revendedor_id: entidade.revendedor_id,
-            })
-            .save(null, options);
-    },
 
     search: function(entidade, func) {
         entidade.fetch().then(function(model, err) {
@@ -199,9 +215,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                     .select('pessoa_fisica.*')
                     .select('pessoa.*')
                     .select('usuario_revendedor.*');
-                console.log('sql' + qb);
             }).fetch().then(function(model) {
-                util.log(model);
                 func(model);
             });
     },
@@ -384,7 +398,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     },
 
 
-    validarUsuarioRevenda: function(user_reveller) {
+    validarUsuarioRevenda: function(user_reveller, operacao) {
         var message = [];
 
         if (!user_reveller.nome) {
@@ -430,10 +444,12 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
             });
         }
 
+
+
         return UsuarioRevendedor
             .procurarLogin(user_reveller.login)
             .then(function(usuariorevendedor) {
-                if (usuariorevendedor) {
+                if (usuariorevendedor && operacao === 'insert') {
                     message.push({
                         attribute: 'login',
                         problem: 'Login já cadastrado!',
@@ -442,6 +458,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
 
                 return message;
             });
+
+
     },
     procurarLogin: function(login) {
         return this.forge({
