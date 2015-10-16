@@ -65,7 +65,6 @@ console.dir(options);
               console.log("-------pessoa 1--------");
               console.dir(pessoa);
                   return pessoa
-                      .forge()
                       .save({
                         nome: pf.nome,
                         email: pf.email,
@@ -83,8 +82,7 @@ console.dir(options);
                     .fetch()
                     .then(function(pessoaFisica) {
                             
-                             pessoaFisica
-                            .forge()
+                            return pessoaFisica
                             .save({
                                 cpf: pf.cpf,
                                 data_nascimento: pf.data_nascimento,
