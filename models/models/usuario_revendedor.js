@@ -64,7 +64,6 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         return UsuarioRevendedor
             .validarUsuarioRevenda(entidade, options.method)
             .then(function(messages) {
-                console.log("primeiro then");
                 if (messages.length) {
                     throw new AreaAzul
                         .BusinessException(
@@ -82,17 +81,27 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                     .fetch()
                     .then(function(pessoaFisica) {
                         // Se pessoa fisica ja' existir, conectar a ela
+                        console.log("----------------------------");
+                        console.dir(t);
+                        console.log("---------Entidade-----------");
+                        console.dir(entidade);
+                        console.log("---------Fisica-------------");
+                        console.dir(pessoaFisica);
                         if (pessoaFisica !== null) {
-                            return pessoaFisica;
-                        }
-                        // Caso nao exista, criar a pessoa fisica
+
+                            return PessoaFisica.alterar(entidade, t, pessoaFisica.id);
+                        }else{
+                            // Caso nao exista, criar a pessoa fisica
+
                         return PessoaFisica
-                            ._cadastrar(entidade, t);
+                            ._cadastrar(entidade, t);    
+                        }
+                        
                     })
             }).then(function(pessoaFisica) {
-                console.log("terceiro then");
-                console.log("ID:" + pessoaFisica.get('pessoa_id'));
-                console.dir(options);
+                console.log("_______________________");
+                console.dir(pessoaFisica);
+
                 var dadosUsuarioRevendedor = {
                     login: entidade.login,
                     senha: senha,
@@ -100,17 +109,15 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                     ativo: true,
                     autorizacao: entidade.autorizacao,
                     revendedor_id: entidade.revendedor_id,
-                    pessoa_fisica_pessoa_id: pessoaFisica.get('pessoa_id'),
+                    pessoa_fisica_pessoa_id: pessoaFisica.id,
                 }
                 
                 if (options.method === 'insert') {
-                    console.log("if");
 
                     return Usuario_Revendedor
                         .forge(dadosUsuarioRevendedor)
                         .save(null, options);
                 } else {
-                    console.log("else");
                     return Usuario_Revendedor
                         .forge()
                         .save(dadosUsuarioRevendedor, options);
@@ -228,7 +235,6 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
             })
             .fetch()
             .then(function(revenda) {
-                console.dir(revenda);
                 if (revenda) {
 
                     var status;
@@ -252,14 +258,12 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                         'Desativacao: Usuario não encontrado', {
                             desativacao: desativacao
                         });
-                    console.dir(err);
                     throw err;
                 }
                 return revenda;
 
             })
             .then(function(desativacao) {
-                console.dir(desativacao);
                 return desativacao;
             });
     },
@@ -455,7 +459,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                         problem: 'Login já cadastrado!',
                     });
                 }
-
+                console.log("message");
+                console.dir(message);
                 return message;
             });
 

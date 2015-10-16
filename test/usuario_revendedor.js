@@ -41,7 +41,7 @@ describe('models.UsuarioRevendedor', function() {
     describe('cadastrar()', function() {
 
         it('cadastra usuario revendedor com cpf novo', function(done) {
-            UsuarioRevendedor.cadastrar({
+            UsuarioRevendedor.inserir({
                 login: 'loginRevendaExistente',
                 nome: 'Revenda Teste',
                 autorizacao: 'funcionario',
@@ -62,6 +62,34 @@ describe('models.UsuarioRevendedor', function() {
             });
         });
     });
+
+    describe('alterar()', function() {
+
+        it('altera usuario revendedor', function(done) {
+            UsuarioRevendedor.alterar({
+                login: 'loginRevendaExistente',
+                nome: 'Revenda Teste',
+                autorizacao: 'funcionario',
+                senha: senhaRevendaExistente,
+                email: 'revenda@teste.com',
+                cpf: cpfNaoExistente,
+                revendedor_id: revendedor_id
+            })
+            .then(function(pessoa) {
+                should.exist(pessoa);
+                revendedor_id = pessoa.get('revendedor_id');
+                // Salvar id para testes de buscarPorId()
+                idUsuarioRevendedor = pessoa.id;
+                done();
+            })
+            .catch(function(e) {
+                done(e);
+            });
+        });
+    });
+
+
+
 
     describe('listarUsuarioRevenda()', function() {
 

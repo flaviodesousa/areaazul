@@ -48,6 +48,55 @@ var PessoaFisica = Bookshelf.Model.extend({
         return pessoaFisica;
       });
   },
+   alterar: function(pf, options, id) {
+        var optionsUpdate = _.merge({}, options, {
+            method: 'update'
+        }, {
+            patch: true
+        });
+console.log("---------OPTIONS DO ALTERAR---------");
+console.dir(options);
+        return Pessoa
+            .forge({
+                id_pessoa: id
+            })
+            .fetch()
+            .then(function(pessoa) {
+              console.log("-------pessoa 1--------");
+              console.dir(pessoa);
+                  return pessoa
+                      .forge()
+                      .save({
+                        nome: pf.nome,
+                        email: pf.email,
+                        telefone: pf.telefone,
+                        ativo: true,
+                    }, optionsUpdate);
+            })
+            .then(function(pessoa) {
+              console.log("------pessoa 2---------");
+              console.dir(pessoa);
+                return PessoaFisica
+                    .forge({
+                        pessoa_id: pessoa.id
+                    })
+                    .fetch()
+                    .then(function(pessoaFisica) {
+                            
+                             pessoaFisica
+                            .forge()
+                            .save({
+                                cpf: pf.cpf,
+                                data_nascimento: pf.data_nascimento,
+                                ativo: true,
+                                pessoa_id: pessoa.id,
+                            }, optionsUpdate);
+                        })
+
+            });
+},
+
+
   CPFnovo: function(person, then, fail) {
     this
       .forge({cpf: person.cpf})
