@@ -54,16 +54,13 @@ var PessoaFisica = Bookshelf.Model.extend({
         }, {
             patch: true
         });
-console.log("---------OPTIONS DO ALTERAR---------");
-console.dir(options);
+
         return Pessoa
             .forge({
                 id_pessoa: id
             })
             .fetch()
             .then(function(pessoa) {
-              console.log("-------pessoa 1--------");
-              console.dir(pessoa);
                   return pessoa
                       .save({
                         nome: pf.nome,
@@ -73,8 +70,6 @@ console.dir(options);
                     }, optionsUpdate);
             })
             .then(function(pessoa) {
-              console.log("------pessoa 2---------");
-              console.dir(pessoa);
                 return PessoaFisica
                     .forge({
                         pessoa_id: pessoa.id

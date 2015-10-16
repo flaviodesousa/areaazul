@@ -73,22 +73,13 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                 return messages;
             })
             .then(function() {
-                console.log("segundo then");
                 return PessoaFisica
                     .forge({
                         cpf: entidade.cpf
                     })
                     .fetch()
                     .then(function(pessoaFisica) {
-                        // Se pessoa fisica ja' existir, conectar a ela
-                        console.log("----------------------------");
-                        console.dir(t);
-                        console.log("---------Entidade-----------");
-                        console.dir(entidade);
-                        console.log("---------Fisica-------------");
-                        console.dir(pessoaFisica);
                         if (pessoaFisica !== null) {
-
                             return PessoaFisica.alterar(entidade, t, pessoaFisica.id);
                         }else{
                             // Caso nao exista, criar a pessoa fisica
@@ -96,24 +87,18 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                         return PessoaFisica
                             ._cadastrar(entidade, t);    
                         }
-                        
                     })
             }).then(function(pessoaFisica) {
-                console.log("_______________________");
-                console.dir(pessoaFisica);
-
                 var dadosUsuarioRevendedor = {
                     login: entidade.login,
                     senha: senha,
                     acesso_confirmado: false,
                     ativo: true,
-                    autorizacao: entidade.autorizacao,
                     revendedor_id: entidade.revendedor_id,
                     pessoa_fisica_pessoa_id: pessoaFisica.id,
                 }
                 
                 if (options.method === 'insert') {
-
                     return Usuario_Revendedor
                         .forge(dadosUsuarioRevendedor)
                         .save(null, options);
@@ -180,8 +165,6 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         new this.Usuario_Revendedor({
             id_usuario_revendedor: user.id_usuario_revendedor
         }).fetch().then(function(model) {
-            //   console.log("model"+model.attributes);
-            console.log("model" + model);
             if (model !== null) {
                 var pwd = model.attributes.senha;
             }
