@@ -7,7 +7,7 @@ var TestHelpers = require('../helpers/test');
 
 describe('model.revendedor', function() {
 
-  var cpfPreExistente = 'fiscal-teste-fiscalizacao';
+  var cpfPreExistente = '96818717748';
   var nomeTeste = 'teste - preexistente';
   var emailTeste = 'preexistente@example.com';
   var telefoneTeste = '000 0000-0000';
@@ -38,7 +38,7 @@ describe('model.revendedor', function() {
   describe('validateRevenda()', function() {
     it('Validar revendedor pessoa fisica funciona', function(done) {
       Revendedor.validarRevenda({
-        nome: null,
+        nome: 'revenda-teste',
         email: 'teste@teste.com',
         celular: telefoneTeste,
         cpf: cpfPreExistente,
@@ -51,7 +51,6 @@ describe('model.revendedor', function() {
         done();
       })
       .catch(function(e) {
-        console.dir(e);
         done(e);
       });
     });
