@@ -38,7 +38,7 @@ var Veiculo = Bookshelf.Model.extend({
         .then(function(){
              return Veiculo
                 .forge({
-                    cidade_id: vehicle.cidade_id,
+                    cidade_id: vehicle.cidade,
                     placa: vehicle.placa,
                     marca: vehicle.marca,
                     modelo: vehicle.modelo,
@@ -78,7 +78,7 @@ var Veiculo = Bookshelf.Model.extend({
     validarVeiculo: function(veiculo) {
         console.dir(veiculo);
         var message = [];
-        if (validator.isNull(veiculo.cidade_id)) {
+        if (validator.isNull(veiculo.cidade)) {
             message.push({
                 attribute: 'cidade',
                 problem: 'Cidade é obrigatória!',

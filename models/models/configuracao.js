@@ -8,6 +8,15 @@ var Configuracao = Bookshelf.Model.extend({
     idAttribute: 'id_configuracao'
 }, {
 
+    _calcular_valor_tempo: function(config){
+        var tempos =[];
+
+
+
+
+
+
+    },
     getConfiguracaoTempo: function() {
         var tempos = [];
         tempos.push({

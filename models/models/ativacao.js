@@ -134,9 +134,7 @@ var Ativacao = Bookshelf.Model.extend({
             });
     },
 
-
     ativarPelaRevenda: function(ativacao) {
-        console.dir(ativacao);
         return Bookshelf.transaction(function(t) {
             var options = {
                 transacting: t
@@ -152,55 +150,52 @@ var Ativacao = Bookshelf.Model.extend({
             };
             var idVeiculo = null;
             var err = null;
-
-
-
             if(ativacao.placa){
-            var placaSemMascara = util.formata(ativacao.placa);
+                var placaSemMascara = util.formata(ativacao.placa);
             }
-  
-                return Veiculo
-                    .forge({
-                        placa: placaSemMascara
-                    })
-                    .fetch()
-                    .then(function(veiculo) {
-                        if (veiculo) {
-                            return veiculo;
-                        }else{
-                            return Veiculo._cadastrar({
-                                placa: placaSemMascara,
-                                marca: ativacao.marca,
-                                cor: ativacao.cor,
-                                modelo: ativacao.modelo,
-                                estado: ativacao.estado_id,
-                            }, options); 
-                        }
-                    })
-                    .then(function(v) {
-                        idVeiculo = v.id;
-                    })
-                    .then(function() {
-                        return Ativacao
-                            .forge({
-                                data_ativacao: new Date(),
-                                pessoa_id: ativacao.usuario_pessoa_id,
-                                veiculo_id: idVeiculo,
-                                ativo: true
-                            })
-                            .save(null, optionsInsert)
-                            .then(
-                                function(a) {
-                                    return MovimentacaoConta
-                                        ._inserirDebito({
-                                            historico: 'ativacao',
-                                            tipo: 'ativacao',
-                                            pessoa_id: a.get('pessoa_id'),
-                                            valor: 10.00
-                                        }, options);
-                                });
-                    });
-        });
+
+            return Veiculo
+                .forge({
+                    placa: placaSemMascara
+                })
+                .fetch()
+                .then(function(veiculo) {
+                    if (veiculo) {
+                        return veiculo;
+                    }else{
+                        return Veiculo._cadastrar({
+                            placa: placaSemMascara,
+                            marca: ativacao.marca,
+                            cor: ativacao.cor,
+                            modelo: ativacao.modelo,
+                            cidade: ativacao.cidade,
+                        }, options); 
+                    }
+                })
+                .then(function(v) {
+                    idVeiculo = v.id;
+                })
+                .then(function() {
+                    return Ativacao
+                        .forge({
+                            data_ativacao: new Date(),
+                            pessoa_id: ativacao.usuario_pessoa_id,
+                            veiculo_id: idVeiculo,
+                            ativo: true
+                        })
+                        .save(null, optionsInsert)
+                        .then(
+                            function(a) {
+                                return MovimentacaoConta
+                                    ._inserirDebito({
+                                        historico: 'ativacao',
+                                        tipo: 'ativacao',
+                                        pessoa_id: a.get('pessoa_id'),
+                                        valor: 10.00
+                                    }, options);
+                            });
+                });
+    });
 
 
     },
