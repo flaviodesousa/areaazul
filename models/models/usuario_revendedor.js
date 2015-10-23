@@ -92,6 +92,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                 var dadosUsuarioRevendedor = {
                     login: entidade.login,
                     senha: senha,
+                    autorizacao: entidade.autorizacao,
                     acesso_confirmado: false,
                     ativo: true,
                     revendedor_id: entidade.revendedor_id,
@@ -227,8 +228,6 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                     } else {
                         status = false;
                     }
-
-                    console.log("passei aq" + revenda.get('ativo'));
                     revenda
                         .save({
                             ativo: status
@@ -442,8 +441,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                         problem: 'Login já cadastrado!',
                     });
                 }
-                console.log("message");
-                console.dir(message);
+
                 return message;
             });
 

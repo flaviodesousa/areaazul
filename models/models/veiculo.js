@@ -76,7 +76,7 @@ var Veiculo = Bookshelf.Model.extend({
     },
 
     validarVeiculo: function(veiculo) {
-        console.dir(veiculo);
+
         var message = [];
         if (validator.isNull(veiculo.cidade)) {
             message.push({
