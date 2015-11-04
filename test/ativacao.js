@@ -4,6 +4,7 @@ var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
 var Ativacao = AreaAzul.models.Ativacao;
+var Ativacoes = AreaAzul.collections.Ativacoes;
 var UsuarioRevendedor = AreaAzul.models.UsuarioRevendedor;
 var Veiculo = AreaAzul.models.Veiculo;
 var Usuario = AreaAzul.models.Usuario;
@@ -139,6 +140,19 @@ describe('model.Ativacao', function() {
                     tempo: 60,
                     valor: 10.0,
                 })
+                .then(function() {
+                    done();
+                })
+                .catch(function(e) {
+                    done(e);
+                });
+        });
+    });
+
+     describe('listarAtivacoes()', function() {
+
+        it('lista veiculos que estão ativados e não estao fiscalizados.', function(done) {
+            Ativacoes._listarAtivacoes()
                 .then(function() {
                     done();
                 })

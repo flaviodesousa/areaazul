@@ -29,4 +29,5 @@ module.exports = Bookshelf.Collection.extend({
         fail(err);
       });
   },
+
 });
