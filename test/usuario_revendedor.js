@@ -16,7 +16,8 @@ describe('models.UsuarioRevendedor', function() {
     var senhaRevendaExistente = 'senha-adm-pre-existente';
     var loginRevendaExistente = 'revenda-teste';
     var idUsuarioRevendedor = null;
-
+    var loginAutorizado = null;
+    var senhaAutorizado = 'senha-teste';
     var revendedor_id = null;
 
     function apagarDadosDeTeste() {
@@ -25,9 +26,12 @@ describe('models.UsuarioRevendedor', function() {
 
     before(function(done) {
           var usuario;
-          return TestHelpers.pegarRevendedor()
+          return TestHelpers.pegarUsuarioRevendedor()
               .then(function(revendedor) {
+
                   revendedor_id = revendedor.id;
+                  loginAutorizado = revendedor.get('login');
+                 // senhaAutorizado = revendedor.get('senha');
               })
               .then(function() {
                   done();
@@ -42,7 +46,7 @@ describe('models.UsuarioRevendedor', function() {
 
         it('cadastra usuario revendedor com cpf novo', function(done) {
             UsuarioRevendedor.inserir({
-                login: 'loginRevendaExistente',
+                login: loginRevendaExistente,
                 nome: 'Revenda Teste',
                 autorizacao: 'funcionario',
                 senha: senhaRevendaExistente,
@@ -51,6 +55,7 @@ describe('models.UsuarioRevendedor', function() {
                 revendedor_id: revendedor_id
             })
             .then(function(pessoa) {
+
                 should.exist(pessoa);
                 revendedor_id = pessoa.get('revendedor_id');
                 // Salvar id para testes de buscarPorId()
@@ -108,9 +113,10 @@ describe('models.UsuarioRevendedor', function() {
 
         it('aceita credencial valida', function(done) {
             UsuarioRevendedor.autorizado(
-                loginRevendaExistente,
-                senhaRevendaExistente)
+                loginAutorizado,
+                senhaAutorizado)
                 .then(function(usuarioRevendedor) {
+
                     should.exist(usuarioRevendedor);
                     done();
                 })
@@ -121,15 +127,14 @@ describe('models.UsuarioRevendedor', function() {
 
         it('recusa credencial invalida', function(done) {
             UsuarioRevendedor.autorizado(
-                loginRevendaExistente,
-                senhaRevendaExistente + '0')
+                loginAutorizado,
+                senhaAutorizado + '0')
                 .then(function() {
                     done('Nao deve aceitar senha errada');
                 })
                 .catch(function(err) {
-                    console.dir(err);
                     should.exist(err);
-                    err.should.be.an.instanceof(BusinessException);
+                      err.should.be.an.instanceof(BusinessException);
                     err.should.have.property(
                         'message',
                         'UsuarioRevendedor: senha incorreta');
@@ -140,8 +145,8 @@ describe('models.UsuarioRevendedor', function() {
         it('recusa login invalido', function(done) {
 
             UsuarioRevendedor.autorizado(
-                loginRevendaExistente + '0',
-                senhaRevendaExistente)
+                loginAutorizado + '0',
+                senhaAutorizado)
                 .then(function() {
                     done('Nao deve aceitar login errado');
                 })

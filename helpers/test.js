@@ -483,7 +483,7 @@ exports.pegarUsuario = function() {
            });
 };
 
-exports.pegarRevendedor = function(){
+exports.pegarUsuarioRevendedor = function(){
     return UsuarioRevendedor
            .forge()
            .fetch()

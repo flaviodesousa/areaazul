@@ -36,7 +36,7 @@ describe('model.veiculo', function() {
     it('grava veiculo', function(done) {
       Veiculo
       ._cadastrar({
-        cidade_id: idCidade,
+        cidade: idCidade,
         placa: placaTeste,
         marca: marcaTeste,
         modelo: modeloTeste,
@@ -56,6 +56,7 @@ describe('model.veiculo', function() {
 
   describe('Procurar()', function() {
     it('retorna um veiculo', function(done) {
+      
       var v = { id_veiculo: idVeiculo };
       Veiculos.procurar(v,
         function(model) {

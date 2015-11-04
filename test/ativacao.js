@@ -43,7 +43,8 @@ describe('model.Ativacao', function() {
                         idCidade = cidade.id;
                     });
             })
-            .then(function() {
+            .then(function(p) {
+                console.log("p"+p);
                 done();
             })
             .catch(function(e) {
@@ -54,6 +55,8 @@ describe('model.Ativacao', function() {
 
     describe('Ativar()', function() {
         it('grava ativacao', function(done) {
+            console.log("idUsuarioComum"+idUsuarioComum);
+            console.log("idVeiculo"+idVeiculo);
             var ativacao = {
                 usuario_pessoa_id: idUsuarioComum,
                 veiculo_id: idVeiculo,

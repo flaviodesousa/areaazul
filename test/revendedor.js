@@ -86,8 +86,8 @@ describe('model.revendedor', function() {
   describe('cadastrar()', function() {
     it('cadastrar pessoa fisica funciona', function(done) {
       Revendedor.cadastrar({
-        nome: null,
-        email: null,
+        nome: 'nome',
+        email: 'email@teste.com',
         telefone: telefoneTeste,
         cpf: cpfPreExistente,
         data_nascimento: data_nascimentoTeste,
