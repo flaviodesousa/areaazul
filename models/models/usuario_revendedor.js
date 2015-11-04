@@ -93,6 +93,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                     login: entidade.login,
                     senha: senha,
                     acesso_confirmado: false,
+                    autorizacao: entidade.autorizacao,
                     ativo: true,
                     revendedor_id: entidade.revendedor_id,
                     pessoa_fisica_pessoa_id: pessoaFisica.id,
