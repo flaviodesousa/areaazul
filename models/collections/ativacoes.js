@@ -14,7 +14,7 @@ module.exports = Bookshelf.Collection.extend({
           this.on('veiculo.id_veiculo', '=','ativacao.veiculo_id');
         })
         .leftJoin('fiscalizacao', function() {
-          this.on('fiscalizacao.veiculo_id', 'not in (', 'a.veiculo_id)');
+          this.on('fiscalizacao.veiculo_id', '!=', 'ativacao.veiculo_id');
         })
 
         .select('ativacao.*')
