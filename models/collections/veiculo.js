@@ -19,6 +19,14 @@ var VeiculoCollection = Bookshelf.Collection.extend({
       fail(err);
     });
   },
+
+  listar: function(func) {
+        VeiculoCollection.forge().query(function(qb) {
+            qb.select('veiculo.*')
+        }).fetch().then(function(collection) {
+            func(collection);
+        });
+    },
   
   
 });
