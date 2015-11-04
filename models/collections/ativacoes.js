@@ -1,5 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var Ativacao = require('../models/ativacao');
+var _ = require('lodash');
 
 module.exports = Bookshelf.Collection.extend({
   model: Ativacao,
