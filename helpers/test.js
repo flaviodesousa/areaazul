@@ -191,6 +191,12 @@ function _apagarUsuarioRevenda(idUsuario) {
             }
             pessoaId = usuario.get('pessoa_fisica_pessoa_id');
             revendedorId = usuario.get('revendedor_id');
+            return usuario;
+
+        })
+        .then(function(usuario) {
+            console.log("usuario_____________________________________________");
+            console.dir(usuario);
             return usuario.destroy();
         })
         .then(function() {
@@ -317,45 +323,45 @@ exports.apagarUsuarioAdministrativoPorLogin = function(login) {
 
 exports.apagarRevendedorPessoPorIdentificador = function(cpf, cnpj) {
     var pessoaId = null;
-
-    if (!cpf) {
-        return Promise.resolve(null);
+    if (cpf !== null) {
+        return PessoaFisica
+            .forge({
+                cpf: cpf
+            })
+            .fetch()
+            .then(function(pf) {
+                if (pf === null) {
+                    return Promise.resolve(null);
+                }
+                return pf;
+            })
+            .then(function(pf) {
+                if (pf === null) {
+                    return Promise.resolve(null);
+                }
+                return _apagarUsuarioRevenda(pf.get('pessoa_id'));
+            });
     }
-    if (!cnpj) {
-        return Promise.resolve(null);
+    if (cnpj !== null) {
+
+        return PessoaJuridica
+            .forge({
+                cnpj: cnpj
+            })
+            .fetch()
+            .then(function(pj) {
+                if (pj === null) {
+                    return Promise.resolve(null);
+                }
+                return pj;
+            })
+            .then(function(pj) {
+                if (pj === null) {
+                    return Promise.resolve(null);
+                }
+                return _apagarRevendedorJuridica(pj.get('pessoa_id'));
+            });
     }
-
-
-    return PessoaFisica
-        .forge({
-            cpf: cpf
-        })
-        .fetch()
-        .then(function(pf) {
-            if (!pf) {
-                return Promise.resolve(null);
-            }
-            pessoaId = pf.get('pessoa_id');
-        })
-        .then(function() {
-            return _apagarUsuarioRevenda(pessoaId);
-        })
-        .then(function() {
-            return PessoaJuridica
-                .forge({
-                    cnpj: cnpj
-                })
-                .fetch()
-                .then(function(pj) {
-                    if (!pj) {
-                        return Promise.resolve(null);
-                    }
-                    pessoaId = pj.get('pessoa_id');
-                })
-                .then(function() {
-                    return _apagarRevendedorJuridica(pessoaId);
-                });
-        });
 };
 
 exports.apagarAtivacaoId = function(id) {
@@ -429,67 +435,67 @@ exports.pegarCidade = function() {
 exports.pegarVeiculo = function() {
     var idCidade = null;
     this.pegarCidade()
-    .then(function(cidade) {
+        .then(function(cidade) {
             idCidade = cidade.get('id_cidade');
-    })
+        })
 
     return Veiculo
-          .forge()
-          .fetch()
-          .then(function(veiculo){
-            if(veiculo){
+        .forge()
+        .fetch()
+        .then(function(veiculo) {
+            if (veiculo) {
                 return veiculo;
-            }else{
-                return  Veiculo
-                ._cadastrar({
-                    cidade_id: idCidade,
-                    placa: 'placaTeste',
-                    marca: 'marcaTeste',
-                    modelo: 'modeloTeste',
-                    cor: 'corTeste',
-                    ano_fabricado: 2015,
-                    ano_modelo: 2015,
-                })
-                .then(function(veiculo){
-                    return veiculo;
-                });
+            } else {
+                return Veiculo
+                    ._cadastrar({
+                        cidade_id: idCidade,
+                        placa: 'placaTeste',
+                        marca: 'marcaTeste',
+                        modelo: 'modeloTeste',
+                        cor: 'corTeste',
+                        ano_fabricado: 2015,
+                        ano_modelo: 2015,
+                    })
+                    .then(function(veiculo) {
+                        return veiculo;
+                    });
 
             }
 
-          });
+        });
 };
 
 exports.pegarUsuario = function() {
     return Usuario
-           .forge()
-           .fetch()
-           .then(function(usuario){
-            if(usuario){
+        .forge()
+        .fetch()
+        .then(function(usuario) {
+            if (usuario) {
                 return usuario;
-            }else{
-                 return Usuario.cadastrar({
-                            login: 'login',
-                            senha: 'senha',
-                            nome: 'usuario teste unitario',
-                            email: 'teste-unitario@areaazul.org',
-                            telefone: '0',
-                            cpf: '0',
-                            data_nascimento: new Date(1981, 4, 1),
-                            sexo: 'feminino',
-                        }).then(function(usuario){
-                            return usuario;
-                        })
+            } else {
+                return Usuario.cadastrar({
+                    login: 'login',
+                    senha: 'senha',
+                    nome: 'usuario teste unitario',
+                    email: 'teste-unitario@areaazul.org',
+                    telefone: '0',
+                    cpf: '0',
+                    data_nascimento: new Date(1981, 4, 1),
+                    sexo: 'feminino',
+                }).then(function(usuario) {
+                    return usuario;
+                })
             }
-           });
+        });
 };
 
-exports.pegarUsuarioRevendedor = function(){
+exports.pegarUsuarioRevendedor = function() {
     return UsuarioRevendedor
-           .forge()
-           .fetch()
-           .then(function(usuario_revendedor){
-                if(usuario_revendedor){
-                    return usuario_revendedor;
-                }
-           });
+        .forge()
+        .fetch()
+        .then(function(usuario_revendedor) {
+            if (usuario_revendedor) {
+                return usuario_revendedor;
+            }
+        });
 }
