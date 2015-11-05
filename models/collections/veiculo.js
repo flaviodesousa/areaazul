@@ -57,13 +57,29 @@ var VeiculoCollection = Bookshelf.Collection.extend({
                 });
     },
 
-    _listaTodos: function(func) {
-        VeiculoCollection.forge().query(function(qb) {
-            qb.select('veiculo.*')
+    _listarVeiculosIrregulares: function(func) {
+
+        return VeiculoCollection.forge().query(function(qb) {
+            var data = new Date();
+            qb
+                .innerJoin('fiscalizacao', function() {
+                    this.on('fiscalizacao.placa', '!=', 'veiculo.placa');
+                })
+                .leftJoin('ativacao', function() {
+                    this.on('ativacao.veiculo_id', '!=', 'fiscalizacao.veiculo_id');
+                })
+                .where('fiscalizacao.timestamp', '>', moment().subtract(75, 'minutes').calendar())
+/*                and "ativacao"."data_ativacao" > moment().subtract(120, 'minutes').calendar()*/
+                .select('veiculo.*')
+                .select('fiscalizacao.*');
+
+            console.log('sql' + qb);
+
         }).fetch().then(function(collection) {
             return collection;
         });
     },
+
 
 
 });

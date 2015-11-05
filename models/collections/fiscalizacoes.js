@@ -78,6 +78,8 @@ var FiscalizacaoCollection = Bookshelf.Collection.extend({
         });
     },
 
+
+
 });
 
 module.exports = FiscalizacaoCollection;

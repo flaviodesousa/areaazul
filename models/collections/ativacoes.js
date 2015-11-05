@@ -27,14 +27,6 @@ var AtivacaoCollection = Bookshelf.Collection.extend({
             });
     },
 
-    _listaTodos: function(func) {
-        AtivacaoCollection.forge().query(function(qb) {
-            qb.select('ativacao.*')
-        }).fetch().then(function(collection) {
-            return collection;
-        });
-    },
-
 });
 
 
