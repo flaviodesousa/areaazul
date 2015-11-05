@@ -33,7 +33,7 @@ describe('model.Ativacao', function() {
                     });
             })
             .then(function() {
-                return TestHelpers.pegarRevendedor()
+                return TestHelpers.pegarUsuarioRevendedor()
                     .then(function(revendedor) {
                         idUsuarioRevendedor = revendedor.id;
                     });
