@@ -36,23 +36,21 @@ var VeiculoCollection = Bookshelf.Collection.extend({
 
         }).then(function(arrayCampos) {
 
-            return Fiscalizacoes._listarFiscalizacoes()
+            return Ativacoes._listarAtivacoesExpirando()
                 .then(function(collectionVeiculosSomenteFiscalizados) {
 
-                    arrayCampos["fiscalizado"] = collectionVeiculosSomenteFiscalizados;
+                    arrayCampos["expirando"] = collectionVeiculosSomenteFiscalizados;
                     return arrayCampos;
 
                 })
 
         }).then(function(arrayCampos) {
 
-            return Fiscalizacoes._listarFiscalizacoesToleradas()
+            return Ativacoes._listarAtivacoesExpiraram()
                 .then(function(collectionVeiculosTolerancia) {
 
-                    arrayCampos["tolerancia"] = collectionVeiculosTolerancia;
+                    arrayCampos["expirou"] = collectionVeiculosTolerancia;
                     func(arrayCampos);
-                    console.log("-------------------------------------");
-                    console.dir(arrayCampos);
                      })
                 });
     },
