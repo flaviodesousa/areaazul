@@ -195,7 +195,7 @@ function _apagarUsuarioRevenda(idUsuario) {
 
         })
         .then(function(usuario) {
-            console.log("usuario_____________________________________________");
+            console.log("usuario");
             console.dir(usuario);
             return usuario.destroy();
         })
@@ -218,15 +218,33 @@ function _apagarRevendedorJuridica(idUsuario) {
             if (!revenda) {
                 return Promise.resolve(null);
             }
-
             pessoaId = revenda.get('pessoa_id');
+            return revenda;
+
+        })
+        .then(function() {
+            return UsuarioRevendedor
+                .forge({
+                    pessoa_fisica_pessoa_id: idUsuario
+                })
+                .fetch()
+                .then(function(usuario) {
+                    if (!usuario) {
+                        return Promise.resolve(null);
+                    }
+                    pessoaId = usuario.get('pessoa_fisica_pessoa_id');
+                    revendedorId = usuario.get('revendedor_id');
+                    return usuario.destroy;
+                });
+
+        })
+        .then(function() {
+            return _apagarRevendedor(pessoaId);
         })
         .then(function() {
             return _apagarPessoaJuridica(pessoaId);
-        })
-        .then(function() {
-            return _apagarUsuarioRevenda(pessoaId);
         });
+
 }
 
 exports.apagarUsuarioFiscalPorCPF = function(cpf) {
@@ -323,7 +341,8 @@ exports.apagarUsuarioAdministrativoPorLogin = function(login) {
 
 exports.apagarRevendedorPessoPorIdentificador = function(cpf, cnpj) {
     var pessoaId = null;
-    if (cpf !== null) {
+    if (cpf !== null || cnpj !== null) {
+        console.log("cpf" + cpf);
         return PessoaFisica
             .forge({
                 cpf: cpf
@@ -340,28 +359,32 @@ exports.apagarRevendedorPessoPorIdentificador = function(cpf, cnpj) {
                     return Promise.resolve(null);
                 }
                 return _apagarUsuarioRevenda(pf.get('pessoa_id'));
-            });
+            })
+            .then(function() {
+                return PessoaJuridica
+                    .forge({
+                        cnpj: cnpj
+                    })
+                    .fetch()
+                    .then(function(pj) {
+                        console.log("pj");
+                        console.dir(pj);
+                        if (pj === null) {
+                            return Promise.resolve(null);
+                        }
+                        return pj;
+                    })
+                    .then(function(pj) {
+                        if (pj === null) {
+                            return Promise.resolve(null);
+                        }
+                        console.log("pj");
+                        console.dir(pj);
+                        return _apagarRevendedorJuridica(pj.get('pessoa_id'));
+                    });
+            })
     }
-    if (cnpj !== null) {
 
-        return PessoaJuridica
-            .forge({
-                cnpj: cnpj
-            })
-            .fetch()
-            .then(function(pj) {
-                if (pj === null) {
-                    return Promise.resolve(null);
-                }
-                return pj;
-            })
-            .then(function(pj) {
-                if (pj === null) {
-                    return Promise.resolve(null);
-                }
-                return _apagarRevendedorJuridica(pj.get('pessoa_id'));
-            });
-    }
 };
 
 exports.apagarAtivacaoId = function(id) {
@@ -459,9 +482,7 @@ exports.pegarVeiculo = function() {
                     .then(function(veiculo) {
                         return veiculo;
                     });
-
             }
-
         });
 };
 
