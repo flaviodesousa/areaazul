@@ -2,6 +2,7 @@
 
 var Bookshelf = require('bookshelf').conexaoMain;
 var util = require('../../helpers/util');
+var _ = require('lodash');
 
 var Configuracao = Bookshelf.Model.extend({
     tableName: 'configuracao',
@@ -10,6 +11,7 @@ var Configuracao = Bookshelf.Model.extend({
 
     _calcular_valor_tempo: function(config){
         var tempos =[];
+
 
 
 
@@ -36,7 +38,25 @@ var Configuracao = Bookshelf.Model.extend({
             preco: 8.00
         });
         return tempos;
+    },
+
+    _salvar: function(){
+        return Configuracao
+               .forge({
+                    
+
+                })
+               .save(null, optionsInsert)
+                .then(function(configuracao) {
+                    return configuracao;
+                });
+
+    },
+
+    cadastrar: function(){
+
     }
+
 });
 
 module.exports = Configuracao;

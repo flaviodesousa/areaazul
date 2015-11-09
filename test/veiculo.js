@@ -81,6 +81,21 @@ describe('model.veiculo', function() {
     });
   });
 
+describe('listar()', function() {
+    it('retorna uma lista de veiculos ', function(done) {
+      Veiculos.listar(
+        function(collection) {
+          console.dir(collection);
+          should.exist(collection);
+          done();
+        },
+        function(err) {
+          console.dir(err);
+          done(err);
+        });
+    });
+});
+
   after(function(done) {
     apagarDadosDeTeste(placaTeste)
       .then(function() {

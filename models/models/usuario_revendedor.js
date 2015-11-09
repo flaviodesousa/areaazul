@@ -386,6 +386,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
 
 
     validarUsuarioRevenda: function(user_reveller, operacao) {
+        console.dir(user_reveller);
         var message = [];
 
         if (!user_reveller.nome) {

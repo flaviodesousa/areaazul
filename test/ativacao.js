@@ -19,7 +19,6 @@ describe('model.Ativacao', function() {
     var idUsuarioRevendedor = null;
     var idAtivacao = null;
 
-
     before(function(done) {
         var usuario;
         return TestHelpers.pegarVeiculo()
@@ -128,10 +127,12 @@ describe('model.Ativacao', function() {
 
     describe('ativarPelaRevenda()', function() {
         it('grava ativacao', function(done) {
+
+            console.log("idCidade"+idCidade);
             Ativacao
                 .ativarPelaRevenda({
                     usuario_pessoa_id: idUsuarioRevendedor,
-                    cidade_id: idCidade,
+                    cidade: idCidade,
                     placa: 'ABC-1234',
                     marca: 'marcaTeste',
                     modelo: 'modeloTeste',
@@ -144,6 +145,7 @@ describe('model.Ativacao', function() {
                     done();
                 })
                 .catch(function(e) {
+                    console.dir(e);
                     done(e);
                 });
         });

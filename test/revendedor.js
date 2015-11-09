@@ -121,12 +121,10 @@ describe('model.revendedor', function() {
         senha: senhaTeste,
       })
       .then(function(revenda) {
-        console.dir(revenda);
         should.exist(revenda);
         done();
       })
       .catch(function(e) {
-        console.dir(e);
         done(e);
       });
     });
