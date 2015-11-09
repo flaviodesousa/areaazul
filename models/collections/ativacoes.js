@@ -38,8 +38,8 @@ var AtivacaoCollection = Bookshelf.Collection.extend({
                 .leftJoin('fiscalizacao', function() {
                     this.on('fiscalizacao.veiculo_id', '!=', 'ativacao.veiculo_id');
                 })
-                .where('ativacao.data_ativacao', '>=', moment().subtract(7, 'minutes').calendar())
-                .andWhere('ativacao.data_ativacao','<=',moment().subtract(3, 'minutes').calendar())
+                .where('ativacao.data_ativacao', '<=', moment().subtract(2, 'minutes').calendar())
+                .andWhere('ativacao.data_ativacao','>=',moment().subtract(4, 'minutes').calendar())
                 .select('ativacao.*')
                 .select('veiculo.*');
             console.log('sql' + qb);
@@ -60,7 +60,8 @@ var AtivacaoCollection = Bookshelf.Collection.extend({
                 .leftJoin('fiscalizacao', function() {
                     this.on('fiscalizacao.veiculo_id', '!=', 'ativacao.veiculo_id');
                 })
-                .where('ativacao.data_ativacao', '<=', moment().subtract(2, 'minutes').calendar())
+                .where('ativacao.data_ativacao', '<=', moment().subtract(5, 'minutes').calendar())
+                .andWhere('ativacao.data_ativacao','>=',moment().subtract(6, 'minutes').calendar())
                 .select('ativacao.*')
                 .select('veiculo.*');
             console.log('sql' + qb);
