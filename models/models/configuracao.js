@@ -9,8 +9,8 @@ var Configuracao = Bookshelf.Model.extend({
     idAttribute: 'id_configuracao'
 }, {
 
-    _calcular_valor_tempo: function(config){
-        var tempos =[];
+    _calcular_valor_tempo: function(config) {
+        var tempos = [];
 
 
 
@@ -40,23 +40,42 @@ var Configuracao = Bookshelf.Model.extend({
         return tempos;
     },
 
-    _salvar: function(){
-        return Configuracao
-               .forge({
-                    
+    alterar: function(config, options) {
+        return Bookshelf.transaction(function(t) {
+            var optionsUpdate = _.merge({}, options || {}, {
+                method: 'update'
+            }, {
+                patch: true
+            });
+            var optionsInsert = _.merge({}, options || {}, {method: 'insert'});
 
-                })
-               .save(null, optionsInsert)
+
+
+            return Configuracao
+                .forge()
+                .fetch()
                 .then(function(configuracao) {
-                    return configuracao;
+                    var configuracoes = {
+                            valor_ativacao: config.valor_ativacao,
+                            tempo_tolerancia: config.tempo_tolerancia,
+                            franquia: config.franquia,
+                            ciclo_ativacao: config.ciclo_ativacao,
+                            ciclo_fiscalizacao: config.ciclo_fiscalizacao,
+                    };
+
+
+                    console.log("configuracao");
+                    console.dir(configuracao);
+                    if(configuracao == null){
+                        return Configuracao
+                                .forge(configuracoes)
+                                .save(null, optionsInsert);
+                    }
+                    return configuracao
+                        .save(configuracoes, optionsUpdate);
                 });
-
-    },
-
-    cadastrar: function(){
-
+        });
     }
-
 });
 
 module.exports = Configuracao;
