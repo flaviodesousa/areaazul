@@ -3,16 +3,14 @@
 exports.up = function(knex, Promise) {
     return knex.schema.createTable('configuracao', function(table) {
         table.increments('id_configuracao').primary();
-        table.bigInteger('tempo_limite_estacionamento').notNullable();
-        table.bigInteger('tempo_maximo');
-        table.bigInteger('tempo_tolerancia');
-        table.decimal('valor_unitario');
-        table.decimal('comissao_credenciado');
-        table.decimal('comissao_revendedor');
-        table.boolean('ativo').notNullable();
+        table.decimal('franquia').notNullable();
+        table.decimal('tempo_tolerancia').notNullable();
+        table.decimal('ciclo_ativacao').notNullable();
+        table.decimal('ciclo_fiscalizacao').notNullable();
+        table.decimal('valor_ativacao').notNullable();
     });
 };
 
 exports.down = function(knex, Promise) {
-	return knex.schema.dropTable('configuracao');
+    return knex.schema.dropTable('configuracao');
 };
