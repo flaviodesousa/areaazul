@@ -62,10 +62,7 @@ var Configuracao = Bookshelf.Model.extend({
                             ciclo_ativacao: config.ciclo_ativacao,
                             ciclo_fiscalizacao: config.ciclo_fiscalizacao,
                     };
-
-
-                    console.log("configuracao");
-                    console.dir(configuracao);
+                    
                     if(configuracao == null){
                         return Configuracao
                                 .forge(configuracoes)
@@ -75,7 +72,13 @@ var Configuracao = Bookshelf.Model.extend({
                         .save(configuracoes, optionsUpdate);
                 });
         });
-    }
+    },
+
+    buscarConfiguracao: function(){
+        return Configuracao
+               .forge()
+               .fetch();
+    },
 });
 
 module.exports = Configuracao;
