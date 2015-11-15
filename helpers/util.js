@@ -80,14 +80,14 @@ exports.geradorUUIDAleatorio = function() {
   return uuid.v4();
 };
 
-exports.formata = function(valor, mask, evt) {
-    var valorComMascara = valor;
+exports.placaSemMascara = function(valor) {
+  var valorComMascara = valor;
 
-    valorComMascara = valorComMascara.replace(".", "");
-      valorComMascara = valorComMascara.replace("-", "");
-      valorComMascara = valorComMascara.replace("/", "");
-      valorComMascara = valorComMascara.replace("_", "");
-      valorComMascara = valorComMascara.replace("*", "");
+  valorComMascara = valorComMascara.replace('.', '');
+  valorComMascara = valorComMascara.replace('-', '');
+  valorComMascara = valorComMascara.replace('/', '');
+  valorComMascara = valorComMascara.replace('_', '');
+  valorComMascara = valorComMascara.replace('*', '');
 
-    return valorComMascara;
+  return valorComMascara;
 };

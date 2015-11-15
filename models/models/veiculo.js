@@ -11,123 +11,121 @@ var Usuario = require('./usuario');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 
 var Veiculo = Bookshelf.Model.extend({
-    tableName: 'veiculo',
-    idAttribute: 'id_veiculo',
-    usuarios: function() {
-        return this.belongsToMany(Usuario)
-            .through(UsuarioHasVeiculo);
-    },
+  tableName: 'veiculo',
+  idAttribute: 'id_veiculo',
+  usuarios: function() {
+    return this.belongsToMany(Usuario)
+        .through(UsuarioHasVeiculo);
+  },
 }, {
 
-    _cadastrar: function(vehicle, options) {
-        var optionsInsert = _.merge({}, options || {}, {
-            method: 'insert'
-        });
+  _cadastrar: function(vehicle, options) {
+    var optionsInsert = _.merge({}, options || {}, {
+      method: 'insert',
+    });
 
-        return Veiculo
-              .validarVeiculo(vehicle)
+    return Veiculo
+          .validarVeiculo(vehicle)
               .then(function(messages) {
-                    if(messages.length){
-                        throw new AreaAzul
-                            .BusinessException(
-                                'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
-                                messages);
-                    }
+                if (messages.length) {
+                  throw new AreaAzul
+                      .BusinessException(
+                          'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
+                          messages);
+                }
                 return messages;
-        })
-        .then(function(){
-             return Veiculo
+              })
+        .then(function() {
+          return Veiculo
                 .forge({
-                    cidade_id: vehicle.cidade,
-                    placa: vehicle.placa,
-                    marca: vehicle.marca,
-                    modelo: vehicle.modelo,
-                    cor: vehicle.cor,
-                    ano_fabricado: vehicle.ano_fabricado,
-                    ano_modelo: vehicle.ano_modelo,
-                    ativo: true,
+                  cidade_id: vehicle.cidade,
+                  placa: vehicle.placa,
+                  marca: vehicle.marca,
+                  modelo: vehicle.modelo,
+                  cor: vehicle.cor,
+                  ano_fabricado: vehicle.ano_fabricado,
+                  ano_modelo: vehicle.ano_modelo,
+                  ativo: true,
                 })
                 .save(null, optionsInsert)
                 .then(function(veiculo) {
-                    return veiculo;
+                  return veiculo;
                 });
         });
-    },
+  },
 
-    _cadastrarVeiculo: function(vehicle, options) {
-        Veiculo._cadastrar(vehicle, options);
-    },
+  _cadastrarVeiculo: function(vehicle, options) {
+    Veiculo._cadastrar(vehicle, options);
+  },
 
-    procurarVeiculo: function(placa) {
+  procurarVeiculo: function(placa) {
+    var placaSemMascara = '';
+    if (placa) {
+      placaSemMascara = util.placaSemMascara(placa);
+    }
+    return Veiculo.forge().query(function(qb) {
+      qb.where('veiculo.placa', placaSemMascara);
+      qb.join('cidade', 'veiculo.cidade_id', '=', 'cidade.id_cidade');
+      qb.join('estado', 'cidade.estado_id', '=', 'estado.id_estado');
+      qb.select('veiculo.*');
+      qb.select('cidade.*');
+      qb.select('estado.id_estado');
+      qb.select('estado.uf');
+    }).fetch();
+  },
 
-        if(placa){
-            var placaSemMascara = util.formata(placa);
+  validarVeiculo: function(veiculo) {
 
-        }
-        return Veiculo.forge().query(function(qb) {
-            qb.where('veiculo.placa', placaSemMascara);
-            qb.join('cidade', 'veiculo.cidade_id', '=', 'cidade.id_cidade');
-            qb.join('estado', 'cidade.estado_id', '=', 'estado.id_estado');
-            qb.select('veiculo.*');
-            qb.select('cidade.*');
-            qb.select('estado.id_estado');
-            qb.select('estado.uf');
-        }).fetch();
-    },
+    var message = [];
+    if (validator.isNull(veiculo.cidade)) {
+      message.push({
+        attribute: 'cidade',
+        problem: 'Cidade é obrigatória!',
+      });
+    }
+    if (validator.isNull(veiculo.placa)) {
+      message.push({
+        attribute: 'placa',
+        problem: 'Campo placa é obrigatória!',
+      });
+    }
+    if (validator.isNull(veiculo.modelo)) {
+      message.push({
+        attribute: 'modelo',
+        problem: 'Campo modelo é obrigatório!',
+      });
+    }
+    if (validator.isNull(veiculo.marca)) {
+      message.push({
+        attribute: 'marca',
+        problem: 'Campo marca é obrigatório!',
+      });
+    }
+    if (validator.isNull(veiculo.cor)) {
+      message.push({
+        attribute: 'cor',
+        problem: 'Campo cor é obrigatório!',
+      });
+    }
 
-    validarVeiculo: function(veiculo) {
+    var placaSemMascara = '';
+    if (veiculo.placa) {
+      placaSemMascara = util.placaSemMascara(veiculo.placa);
+    }
 
-        var message = [];
-        if (validator.isNull(veiculo.cidade)) {
-            message.push({
-                attribute: 'cidade',
-                problem: 'Cidade é obrigatória!',
-            });
-        }
-        if (validator.isNull(veiculo.placa)) {
-            message.push({
-                attribute: 'placa',
-                problem: 'Campo placa é obrigatória!',
-            });
-        }
-        if (validator.isNull(veiculo.modelo)) {
-            message.push({
-                attribute: 'modelo',
-                problem: 'Campo modelo é obrigatório!',
-            });
-        }
-        if (validator.isNull(veiculo.marca)) {
-            message.push({
-                attribute: 'marca',
-                problem: 'Campo marca é obrigatório!',
-            });
-        }
-        if (validator.isNull(veiculo.cor)) {
-            message.push({
-                attribute: 'cor',
-                problem: 'Campo cor é obrigatório!',
-            });
-        }
-        
-
-        if(veiculo.placa){
-            var placaSemMascara = util.formata(veiculo.placa);
-        }
-
-        return Veiculo
-            .procurarVeiculo(placaSemMascara)
+    return Veiculo
+        .procurarVeiculo(placaSemMascara)
             .then(function(veiculo) {
-                if (veiculo) {
-                    message.push({
-                        attribute: 'placa',
-                        problem: 'Veiculo já cadastrado!',
-                    });
-                }
+              if (veiculo) {
+                message.push({
+                  attribute: 'placa',
+                  problem: 'Veiculo já cadastrado!',
+                });
+              }
 
-                return message;
+              return message;
             });
-        return message;
-    },
+  },
 
 });
 
