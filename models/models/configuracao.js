@@ -12,12 +12,6 @@ var Configuracao = Bookshelf.Model.extend({
     _calcular_valor_tempo: function(config) {
         var tempos = [];
 
-
-
-
-
-
-
     },
     getConfiguracaoTempo: function() {
         var tempos = [];
@@ -47,38 +41,93 @@ var Configuracao = Bookshelf.Model.extend({
             }, {
                 patch: true
             });
-            var optionsInsert = _.merge({}, options || {}, {method: 'insert'});
+            var optionsInsert = _.merge({}, options || {}, {
+                method: 'insert'
+            });
 
+            return /*Configuracao.validar(configuracao)
+               .then(function(messages){
 
-
-            return Configuracao
-                .forge()
-                .fetch()
-                .then(function(configuracao) {
-                    var configuracoes = {
+                console.dir(messages);
+                if (messages.length) {
+                        throw new AreaAzul
+                            .BusinessException(
+                                'Nao foi possivel alterar as configurações. Dados invalidos',
+                                messages);
+                    }
+                    return messages;
+               })
+               .then(function(messages){*/
+                 Configuracao
+                    .forge()
+                    .fetch()
+                    .then(function(configuracao) {
+                        var configuracoes = {
                             valor_ativacao: config.valor_ativacao,
                             tempo_tolerancia: config.tempo_tolerancia,
                             franquia: config.franquia,
                             ciclo_ativacao: config.ciclo_ativacao,
                             ciclo_fiscalizacao: config.ciclo_fiscalizacao,
-                    };
-                    
-                    if(configuracao == null){
-                        return Configuracao
+                        };
+                        if (configuracao == null) {
+                            return Configuracao
                                 .forge(configuracoes)
                                 .save(null, optionsInsert);
-                    }
-                    return configuracao
-                        .save(configuracoes, optionsUpdate);
-                });
+                        }
+                        return configuracao
+                            .save(configuracoes, optionsUpdate);
+                    });
+         //  });
         });
     },
 
-    buscarConfiguracao: function(){
+    buscarConfiguracao: function() {
         return Configuracao
-               .forge()
-               .fetch();
+            .forge()
+            .fetch();
     },
+
+    validar: function(config) {
+
+        console.dir(config);
+
+        var message = [];
+
+        if (validator.isNull(config.valor_ativacao)) {
+            message.push({
+                attribute: 'valor_ativacao',
+                problem: 'Campo valor de ativação é obrigatório!',
+            });
+        }
+        if (validator.isNull(config.tempo_tolerancia)) {
+            message.push({
+                attribute: 'tempo_tolerancia',
+                problem: 'Campo tempo de tolerancia é obrigatório!',
+            });
+        }
+
+        if (validator.isNull(config.franquia)) {
+            message.push({
+                attribute: 'franquia',
+                problem: 'Campo franquia é obrigatório!',
+            });
+        }
+        if (validator.isNull(config.ciclo_ativacao)) {
+            message.push({
+                attribute: 'ciclo_ativacao',
+                problem: 'Campo ciclo de ativacao é obrigatório!',
+            });
+        }
+
+        if (validator.isNull(config.ciclo_fiscalizacao)) {
+            message.push({
+                attribute: 'ciclo_fiscalizacao',
+                problem: 'Campo ciclo de fiscalizacao é obrigatório!',
+            });
+        }
+
+        return message;
+    }
 });
 
 module.exports = Configuracao;
