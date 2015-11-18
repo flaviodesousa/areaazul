@@ -45,19 +45,7 @@ var Configuracao = Bookshelf.Model.extend({
                 method: 'insert'
             });
 
-            return /*Configuracao.validar(configuracao)
-               .then(function(messages){
-
-                console.dir(messages);
-                if (messages.length) {
-                        throw new AreaAzul
-                            .BusinessException(
-                                'Nao foi possivel alterar as configurações. Dados invalidos',
-                                messages);
-                    }
-                    return messages;
-               })
-               .then(function(messages){*/
+            return 
                  Configuracao
                     .forge()
                     .fetch()
@@ -77,7 +65,6 @@ var Configuracao = Bookshelf.Model.extend({
                         return configuracao
                             .save(configuracoes, optionsUpdate);
                     });
-         //  });
         });
     },
 
