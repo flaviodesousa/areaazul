@@ -174,22 +174,12 @@ var Ativacao = Bookshelf.Model.extend({
                     }
                 })
                 .then(function(v) {
-                    console.log("----------------VALOR DO V--------------------------");
-                    return Ativacao.forge({
-                            veiculo_id: v.id,
-                        }).fetch()
-                        .then(function(ativacao) {
-                            //VALIDAÇÃO DE INTERVALO DE ATIVAÇÃO.
-                            console.log("ATIVAÇÃO NO MODEL DE ATIVAÇÃO:");
-                            console.dir(ativacao);
-                            if (ativacao.data_ativacao > moment().subtract(60, 'minutes').calendar()) {
-
-                                console.log("RETORNOU POR JÁ ESTAR ATIVO A MENOS DE 60 MINUTOS:"+ativacao.data_ativacao+"//"+moment().subtract(60, 'minutes').calendar());
+                    return Ativacao.verificaAtivacao(v.id)
+                        .then(function(result) {
+                            if (result) {
+                                ativacao = null;
                                 return ativacao;
-
                             } else {
-
-                                console.log("RETORNOU POR JÁ ESTAR ATIVO A MAIS DE 60 MINUTOS:"+ativacao.data_ativacao+"//"+moment().subtract(60, 'minutes').calendar());
                                 return Ativacao
                                     .forge({
                                         data_ativacao: new Date(),
@@ -210,6 +200,8 @@ var Ativacao = Bookshelf.Model.extend({
                                         });
 
                             }
+
+
                         })
 
                 });
@@ -233,6 +225,31 @@ var Ativacao = Bookshelf.Model.extend({
             });
         }
         return message;
+    },
+
+    verificaAtivacao: function(id_veiculo) {
+
+        return Ativacao
+             .forge()
+             .query(function(qb) {
+            qb
+                .innerJoin('veiculo', function() {
+                    this.on('veiculo.id_veiculo', '=', 'ativacao.veiculo_id');
+                })
+                .where('ativacao.data_ativacao', '>=', moment().subtract(60, 'minutes').calendar())
+                .andWhere('ativacao.veiculo_id','=',id_veiculo)
+                .select('ativacao.*')
+                .select('veiculo.*');
+             console.log('sql' + qb);
+            
+        })
+        .fetch()
+        .then(function(collection) {
+            return collection;
+        }).catch(function(err) {
+            console.dir(err);
+            return err;
+        });
     },
 
 });
