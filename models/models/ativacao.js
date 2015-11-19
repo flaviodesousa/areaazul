@@ -3,6 +3,7 @@
 var AreaAzul = require('../../areaazul');
 var log = AreaAzul.log;
 var util = require('../../helpers/util');
+var Ativacoes = require('../collections/ativacoes');
 var validator = require('validator');
 var Bookshelf = require('bookshelf').conexaoMain;
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
@@ -251,6 +252,8 @@ var Ativacao = Bookshelf.Model.extend({
             return err;
         });
     },
+
+
 
 });
 
