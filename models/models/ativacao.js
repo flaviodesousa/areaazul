@@ -234,40 +234,43 @@ var Ativacao = Bookshelf.Model.extend({
         attribute: 'placa',
         problem: 'Campo placa é obrigatório!',
       });
-    } else
-        if (validator.isNull(ativacao.cidade)) {
-          message.push({
+    }
+    if (validator.isNull(ativacao.cidade)) {
+      message.push({
             attribute: 'cidade',
             problem: 'Campo cidade é obrigatório!',
           });
-        } else
-        if (validator.isNull(ativacao.marca)) {
-          message.push({
+    }
+    if (validator.isNull(ativacao.marca)) {
+      message.push({
             attribute: 'marca',
             problem: 'Campo marca é obrigatório!',
           });
-        } else if (validator.isNull(ativacao.modelo)) {
-          message.push({
+    }
+    if (validator.isNull(ativacao.modelo)) {
+      message.push({
             attribute: 'modelo',
             problem: 'Campo modelo é obrigatório!',
           });
-        } else if (validator.isNull(ativacao.cor)) {
-          message.push({
+    }
+    if (validator.isNull(ativacao.cor)) {
+      message.push({
             attribute: 'cor',
             problem: 'Campo cor é obrigatório!',
           });
-        } else if (validator.isNull(ativacao.tempo)) {
-          message.push({
+    }
+    if (validator.isNull(ativacao.tempo)) {
+      message.push({
             attribute: 'tempo',
             problem: 'Campo tempo é obrigatório!',
           });
-        } else if (validator.isNull(ativacao.celular)) {
-          message.push({
+    }
+    if (validator.isNull(ativacao.celular)) {
+      message.push({
             attribute: 'celular',
             problem: 'Campo celular é obrigatório!',
           });
-        }
-
+    }
 
     return Ativacao
         .verificaSaldo(ativacao.usuario_pessoa_id)
