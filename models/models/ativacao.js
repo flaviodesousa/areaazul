@@ -51,57 +51,54 @@ var Ativacao = Bookshelf.Model.extend({
       };
       var ativacao;
 
-      return
-        Ativacao
-                .forge({
-                  data_ativacao: new Date(),
-                  latitude: latitude,
-                  longitude: longitude,
-                  altitude: altitude,
-                  pessoa_id: activation.usuario_pessoa_id,
-                  veiculo_id: activation.veiculo_id,
-                  ativo: true,
-                })
-                .save(null, optionsInsert)
-                .then(function(a) {
-                  ativacao = a;
-                  return UsuarioHasVeiculo
+      return Ativacao
+        .forge({
+          data_ativacao: new Date(),
+          latitude: latitude,
+          longitude: longitude,
+          altitude: altitude,
+          pessoa_id: activation.usuario_pessoa_id,
+          veiculo_id: activation.veiculo_id,
+          ativo: true,
+        })
+        .save(null, optionsInsert)
+        .then(function(a) {
+          ativacao = a;
+          return UsuarioHasVeiculo
+            .forge({
+              usuario_pessoa_id: activation.usuario_pessoa_id,
+              veiculo_id: activation.veiculo_id,
+            })
+            .fetch()
+            .then(function(usuariohasveiculo) {
+              if (usuariohasveiculo === null) {
+                return UsuarioHasVeiculo
                         .forge({
                           usuario_pessoa_id: activation.usuario_pessoa_id,
                           veiculo_id: activation.veiculo_id,
+                          ultima_ativacao: new Date(),
                         })
-                        .fetch()
-                        .then(function(usuariohasveiculo) {
-
-                          if (usuariohasveiculo === null) {
-                            return UsuarioHasVeiculo
-                                    .forge({
-                                      usuario_pessoa_id: activation.usuario_pessoa_id,
-                                      veiculo_id: activation.veiculo_id,
-                                      ultima_ativacao: new Date(),
-                                    })
-                                    .save(null, optionsInsert);
-                          } else {
-
-                            return usuariohasveiculo
-                                    .save({
-                                      ultima_ativacao: new Date(),
-                                    }, optionsUpdate);
-                          }
-                        })
-                        .then(function() {
-                          return MovimentacaoConta
-                                ._inserirDebito({
-                                  historico: 'ativacao',
-                                  tipo: 'ativacao',
-                                  pessoa_id: activation.usuario_pessoa_id,
-                                  valor: activation.valor,
-                                }, options);
-                        });
-                })
-                .then(function() {
-                  return ativacao;
-                });
+                        .save(null, optionsInsert);
+              } else {
+                return usuariohasveiculo
+                        .save({
+                          ultima_ativacao: new Date(),
+                        }, optionsUpdate);
+              }
+            })
+            .then(function() {
+              return MovimentacaoConta
+                    ._inserirDebito({
+                      historico: 'ativacao',
+                      tipo: 'ativacao',
+                      pessoa_id: activation.usuario_pessoa_id,
+                      valor: activation.valor,
+                    }, options);
+            });
+        })
+        .then(function() {
+          return ativacao;
+        });
     });
   },
 
