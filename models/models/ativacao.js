@@ -1,7 +1,6 @@
 'use strict';
 
 var AreaAzul = require('../../areaazul');
-var Promise = require('bluebird');
 var log = AreaAzul.log;
 var util = require('../../helpers/util');
 var validator = require('validator');
@@ -9,9 +8,7 @@ var Bookshelf = require('bookshelf').conexaoMain;
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 var MovimentacaoConta = require('./movimentacaoconta');
 var Conta = require('./conta');
-var Veiculo = require('./veiculo');
 var validator = require('validator');
-var validation = require('./validation');
 var moment = require('moment');
 
 var Ativacao = Bookshelf.Model.extend({
@@ -137,10 +134,6 @@ var Ativacao = Bookshelf.Model.extend({
   },
 
   ativarPelaRevenda: function(ativacao) {
-
-
-
-
 
     return Bookshelf.transaction(function(t) {
       var options = {
@@ -274,63 +267,49 @@ var Ativacao = Bookshelf.Model.extend({
 
     return Ativacao
         .verificaSaldo(ativacao.usuario_pessoa_id)
-            .then(function(conta) {
-              console.log('SALDO');
-              console.log(conta);
-              if (conta) {
-                console.log(conta);
-                message.push({
-                  attribute: 'saldo',
-                  problem: 'Usuário não possui saldo em conta!',
-                });
-              }
-
-              return message;
+        .then(function(conta) {
+          if (conta) {
+            message.push({
+              attribute: 'saldo',
+              problem: 'Usuário não possui saldo em conta!',
             });
+          }
+          return message;
+        });
 
 
   },
 
   verificaSaldo: function(id) {
-    Conta.forge()
-            .query(function(qb) {
-              qb
-                    .innerJoin('pessoa', function() {
-                      this.on('pessoa.id_pessoa', '=', 'conta.pessoa_id');
-                    })
-                    .where('conta.pessoa_id', id)
-                    .select('pessoa.*')
-                    .select('conta.*');
-              console.log('SQL: ' + qb);
-            }).fetch()
-            .then(function(model) {
-              return model;
-            });
+    return Conta
+        .forge()
+        .query(function(qb) {
+          qb
+            .innerJoin('pessoa', function() {
+              this.on('pessoa.id_pessoa', '=', 'conta.pessoa_id');
+            })
+            .where('conta.pessoa_id', id)
+            .select('pessoa.*')
+            .select('conta.*');
+        })
+        .fetch();
   },
 
-  verificaAtivacao: function(id_veiculo) {
+  verificaAtivacao: function(idVeiculo) {
 
     return Ativacao
         .forge()
-            .query(function(qb) {
-              qb
-                    .innerJoin('veiculo', function() {
-                      this.on('veiculo.id_veiculo', '=', 'ativacao.veiculo_id');
-                    })
-                    .where('ativacao.data_ativacao', '>=', moment().subtract(60, 'minutes').calendar())
-                    .andWhere('ativacao.veiculo_id', '=', id_veiculo)
-                    .select('ativacao.*')
-                    .select('veiculo.*');
-              console.log('sql' + qb);
-
+        .query(function(qb) {
+          qb
+            .innerJoin('veiculo', function() {
+              this.on('veiculo.id_veiculo', '=', 'ativacao.veiculo_id');
             })
-            .fetch()
-            .then(function(collection) {
-              return collection;
-            }).catch(function(err) {
-              console.dir(err);
-              return err;
-            });
+            .where('ativacao.data_ativacao', '>=', moment().subtract(60, 'minutes').calendar())
+            .andWhere('ativacao.veiculo_id', '=', idVeiculo)
+            .select('ativacao.*')
+            .select('veiculo.*');
+        })
+        .fetch();
   },
 
 });

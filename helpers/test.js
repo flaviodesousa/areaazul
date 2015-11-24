@@ -456,34 +456,33 @@ exports.pegarCidade = function() {
 };
 
 exports.pegarVeiculo = function() {
-    var idCidade = null;
-    this.pegarCidade()
-        .then(function(cidade) {
-            idCidade = cidade.get('id_cidade');
-        })
-
-    return Veiculo
-        .forge()
-        .fetch()
-        .then(function(veiculo) {
-            if (veiculo) {
-                return veiculo;
-            } else {
-                return Veiculo
-                    ._cadastrar({
-                        cidade_id: idCidade,
-                        placa: 'placaTeste',
-                        marca: 'marcaTeste',
-                        modelo: 'modeloTeste',
-                        cor: 'corTeste',
-                        ano_fabricado: 2015,
-                        ano_modelo: 2015,
-                    })
-                    .then(function(veiculo) {
-                        return veiculo;
-                    });
-            }
-        });
+  var idCidade = null;
+  return this.pegarCidade()
+    .then(function(cidade) {
+      idCidade = cidade.get('id_cidade');
+      return cidade;
+    })
+    .then(function() {
+      return Veiculo
+        .forge({placa: 'placaTeste'})
+        .fetch();
+    })
+    .then(function(veiculo) {
+      if (veiculo) {
+        return veiculo;
+      } else {
+        return Veiculo
+          ._cadastrar({
+                cidade_id: idCidade,
+                placa: 'placaTeste',
+                marca: 'marcaTeste',
+                modelo: 'modeloTeste',
+                cor: 'corTeste',
+                ano_fabricado: 2015,
+                ano_modelo: 2015,
+            });
+      }
+    });
 };
 
 exports.pegarUsuario = function() {
@@ -519,4 +518,4 @@ exports.pegarUsuarioRevendedor = function() {
                 return usuario_revendedor;
             }
         });
-}
+};

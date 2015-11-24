@@ -5,163 +5,154 @@ var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
 var Ativacao = AreaAzul.models.Ativacao;
 var Ativacoes = AreaAzul.collections.Ativacoes;
-var UsuarioRevendedor = AreaAzul.models.UsuarioRevendedor;
-var Veiculo = AreaAzul.models.Veiculo;
-var Usuario = AreaAzul.models.Usuario;
-var Estado = AreaAzul.models.Estado;
-var Revendedor = AreaAzul.models.Revendedor;
 
 describe('model.Ativacao', function() {
 
-    var idUsuarioComum = null;
-    var idVeiculo = null;
-    var idCidade = null;
-    var idUsuarioRevendedor = null;
-    var idAtivacao = null;
+  var idUsuarioComum = null;
+  var idVeiculo = null;
+  var idCidade = null;
+  var idUsuarioRevendedor = null;
+  var idAtivacao = null;
 
-    before(function(done) {
-        var usuario;
-        return TestHelpers.pegarVeiculo()
-            .then(function(veiculo) {
-                idVeiculo = veiculo.id;
-            })
-            .then(function() {
-                return TestHelpers.pegarUsuario()
-                    .then(function(usuario) {
-                        idUsuarioComum = usuario.id;
-                    });
-            })
-            .then(function() {
-                return TestHelpers.pegarUsuarioRevendedor()
-                    .then(function(revendedor) {
-                        idUsuarioRevendedor = revendedor.id;
-                    });
-            })
-            .then(function() {
-                return TestHelpers.pegarCidade()
-                    .then(function(cidade) {
-                        idCidade = cidade.id;
-                    });
-            })
-            .then(function(p) {
-                console.log("p"+p);
-                done();
-            })
-            .catch(function(e) {
-                done(e);
-            });
-    });
+  before(function(done) {
+    return TestHelpers.pegarVeiculo()
+        .then(function(veiculo) {
+          idVeiculo = veiculo.id;
+        })
+        .then(function() {
+          return TestHelpers.pegarUsuario()
+                .then(function(usuario) {
+                  idUsuarioComum = usuario.id;
+                });
+        })
+        .then(function() {
+          return TestHelpers.pegarUsuarioRevendedor()
+                .then(function(revendedor) {
+                  idUsuarioRevendedor = revendedor.id;
+                });
+        })
+        .then(function() {
+          return TestHelpers.pegarCidade()
+                .then(function(cidade) {
+                  idCidade = cidade.id;
+                });
+        })
+        .then(function() {
+          done();
+        })
+        .catch(function(e) {
+          console.dir(e);
+          done(e);
+        });
+  });
 
 
-    describe('Ativar()', function() {
-        it('grava ativacao', function(done) {
-            console.log("idUsuarioComum"+idUsuarioComum);
-            console.log("idVeiculo"+idVeiculo);
-            var ativacao = {
-                usuario_pessoa_id: idUsuarioComum,
-                veiculo_id: idVeiculo,
-                valor: 10.0,
-            };
+  describe('Ativar()', function() {
+    it('grava ativacao', function(done) {
+      console.log('idUsuarioComum' + idUsuarioComum);
+      console.log('idVeiculo' + idVeiculo);
+      var ativacao = {
+        usuario_pessoa_id: idUsuarioComum,
+        veiculo_id: idVeiculo,
+        valor: 10.0,
+      };
 
-            Ativacao
-                .ativar(ativacao)
+      Ativacao
+          .ativar(ativacao)
                 .then(function(at) {
-                    should.exist(at);
-                    should.exist(at.id);
-                    idAtivacao = at.id;
-                    done();
+                  should.exist(at);
+                  should.exist(at.id);
+                  idAtivacao = at.id;
+                  done();
                 })
                 .catch(function(e) {
-                    done(e);
+                  done(e);
                 });
-        });
     });
+  });
 
 
 
-    describe('desativar()', function() {
+  describe('desativar()', function() {
 
 
-        it('falha para ativacao inexistente', function(done) {
-            Ativacao
+    it('falha para ativacao inexistente', function(done) {
+      Ativacao
                 .desativar({
-                    id_ativacao: 0,
-                    usuario_pessoa_id: idUsuarioComum,
+                  id_ativacao: 0,
+                  usuario_pessoa_id: idUsuarioComum,
                 })
                 .then(function() {
-                    done('Nao deveria ter desativado uma ativacao inexistente');
+                  done('Nao deveria ter desativado uma ativacao inexistente');
                 })
                 .catch(function(e) {
-                    should.exist(e);
-                    done();
+                  should.exist(e);
+                  done();
                 });
-        });
-        it('falha se usuario diferente do ativador', function(done) {
-            Ativacao
-                .desativar({
-                    id_ativacao: idAtivacao,
-                    usuario_pessoa_id: 0,
-                })
-                .then(function() {
-                    done('Nao deveria ter desativado com usuario diferente');
-                })
-                .catch(function(e) {
-                    should.exist(e);
-                    done();
-                });
-        });
-        it('desativa ativacao existente', function(done) {
-            Ativacao
-                .desativar({
-                    id_ativacao: idAtivacao,
-                    usuario_pessoa_id: idUsuarioComum,
-                })
-                .then(function() {
-                    done();
-                })
-                .catch(function(e) {
-                    done(e);
-                });
+    });
+    it('falha se usuario diferente do ativador', function(done) {
+      Ativacao
+        .desativar({
+          id_ativacao: idAtivacao,
+          usuario_pessoa_id: 0,
+        })
+        .then(function() {
+          done('Nao deveria ter desativado com usuario diferente');
+        })
+        .catch(function(e) {
+          should.exist(e);
+          done();
         });
     });
-
-    describe('ativarPelaRevenda()', function() {
-        it('grava ativacao', function(done) {
-
-            console.log("idCidade"+idCidade);
-            Ativacao
-                .ativarPelaRevenda({
-                    usuario_pessoa_id: idUsuarioRevendedor,
-                    cidade: idCidade,
-                    placa: 'ABC-1234',
-                    marca: 'marcaTeste',
-                    modelo: 'modeloTeste',
-                    cor: 'corTeste',
-                    tipo_veiculo: 1,
-                    tempo: 60,
-                    valor: 10.0,
-                })
-                .then(function() {
-                    done();
-                })
-                .catch(function(e) {
-                    console.dir(e);
-                    done(e);
-                });
+    it('desativa ativacao existente', function(done) {
+      Ativacao
+        .desativar({
+          id_ativacao: idAtivacao,
+          usuario_pessoa_id: idUsuarioComum,
+        })
+        .then(function() {
+          done();
+        })
+        .catch(function(e) {
+          done(e);
         });
     });
+  });
 
-     describe('listarAtivacoes()', function() {
-
-        it('lista veiculos que estão ativados e não estao fiscalizados.', function(done) {
-            Ativacoes._listarAtivacoes()
-                .then(function() {
-                    done();
-                })
-                .catch(function(e) {
-                    done(e);
-                });
+  describe('ativarPelaRevenda()', function() {
+    it('grava ativacao', function(done) {
+      Ativacao
+        .ativarPelaRevenda({
+          usuario_pessoa_id: idUsuarioRevendedor,
+          cidade: idCidade,
+          placa: 'ABC-1234',
+          marca: 'marcaTeste',
+          modelo: 'modeloTeste',
+          cor: 'corTeste',
+          tipo_veiculo: 1,
+          tempo: 60,
+          valor: 10.0,
+        })
+        .then(function() {
+          done();
+        })
+        .catch(function(e) {
+          done(e);
         });
     });
+  });
+
+  describe('listarAtivacoes()', function() {
+
+    it('lista veiculos que estão ativados e não estao fiscalizados.', function(done) {
+      Ativacoes._listarAtivacoes()
+                .then(function() {
+                  done();
+                })
+                .catch(function(e) {
+                  done(e);
+                });
+    });
+  });
 
 });

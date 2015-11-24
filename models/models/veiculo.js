@@ -30,7 +30,7 @@ var Veiculo = Bookshelf.Model.extend({
                 if (messages.length) {
                   throw new AreaAzul
                       .BusinessException(
-                          'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
+                          'Nao foi possivel cadastrar novo Veiculo. Dados invalidos',
                           messages);
                 }
                 return messages;
@@ -77,7 +77,7 @@ var Veiculo = Bookshelf.Model.extend({
   validarVeiculo: function(veiculo) {
 
     var message = [];
-    if (validator.isNull(veiculo.cidade)) {
+    if (validator.isNull(veiculo.cidade_id)) {
       message.push({
         attribute: 'cidade',
         problem: 'Cidade é obrigatória!',

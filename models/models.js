@@ -14,7 +14,8 @@ module.exports.PessoaJuridica = require('./models/pessoajuridica');
 module.exports.recuperacao_senha = require('./models/recuperacao_senha');
 module.exports.Revendedor = require('./models/revendedor');
 module.exports.Usuario = require('./models/usuario');
-module.exports.UsuarioAdministrativo = require('./models/usuario_administrativo');
+module.exports.UsuarioAdministrativo =
+  require('./models/usuario_administrativo');
 module.exports.UsuarioFiscal = require('./models/usuario_fiscal');
 module.exports.UsuarioRevendedor = require('./models/usuario_revendedor');
 module.exports.Veiculo = require('./models/veiculo');
