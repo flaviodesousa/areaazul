@@ -8,6 +8,8 @@ exports.up = function(knex) {
     table.decimal('ciclo_ativacao').notNullable();
     table.decimal('ciclo_fiscalizacao').notNullable();
     table.decimal('valor_ativacao').notNullable();
+    table.integer('cidade_id').notNullable()
+      .references('id_cidade').inTable('cidade');
   });
 };
 
