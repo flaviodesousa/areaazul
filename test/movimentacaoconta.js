@@ -26,23 +26,17 @@ describe('model.movimentacaoConta', function() {
   before(function(done) {
     apagarDadosDeTeste()
       .then(function() {
-        return Usuario.cadastrar({
-          login: loginDeTeste,
-          senha: senhaDeTeste,
-          nome: 'usuario teste',
-          email: 'teste-unitario@areaazul.org',
-          telefone: '0',
-          cpf: '757',
-          data_nascimento: new Date(1981, 4, 1),
-          sexo: 'feminino',
-        })
-        .then(function(usuario) {
-          usuarioId = usuario.id;
-          done();
-        })
-        .catch(function(e) {
-          done(e);
-        });
+          return TestHelpers.pegarUsuarioRevendedor()
+                  .then(function(revendedor) {
+                    usuarioId = revendedor.id;
+          })
+          .then(function() {
+            done();
+          })
+          .catch(function(e) {
+            console.dir(e);
+            done(e);
+          });
       });
   });
 
@@ -88,15 +82,6 @@ describe('model.movimentacaoConta', function() {
           done(err);
         });
     });
-  });
-  after(function(done) {
-    apagarDadosDeTeste()
-      .then(function() {
-        done();
-      })
-      .catch(function(e) {
-        done(e);
-      });
   });
 
 });

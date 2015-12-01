@@ -198,13 +198,8 @@ var Ativacao = Bookshelf.Model.extend({
                                         valor: 10.00,
                                     }, options);
                             });
-
                 });
-
-
         });
-
-
     },
 
     validarAtivacao: function(ativacao) {
@@ -232,7 +227,7 @@ var Ativacao = Bookshelf.Model.extend({
                 return Ativacao
                     .verificaSaldo(ativacao.usuario_pessoa_id)
                     .then(function(conta) {
-                        if (conta.get("saldo") <= 0) {
+                        if (conta.get('saldo') <= 0) {
                             message.push({
                                 attribute: 'saldo',
                                 problem: 'Usuário não possui saldo em conta!',

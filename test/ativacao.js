@@ -41,7 +41,6 @@ describe('model.Ativacao', function() {
           done();
         })
         .catch(function(e) {
-          console.dir(e);
           done(e);
         });
   });
@@ -49,8 +48,6 @@ describe('model.Ativacao', function() {
 
   describe('Ativar()', function() {
     it('grava ativacao', function(done) {
-      console.log('idUsuarioComum' + idUsuarioComum);
-      console.log('idVeiculo' + idVeiculo);
       var ativacao = {
         usuario_pessoa_id: idUsuarioComum,
         veiculo_id: idVeiculo,
@@ -121,6 +118,8 @@ describe('model.Ativacao', function() {
 
   describe('ativarPelaRevenda()', function() {
     it('grava ativacao', function(done) {
+
+      console.log('idUsuarioRevendedor'+idUsuarioRevendedor);
       Ativacao
         .ativarPelaRevenda({
           usuario_pessoa_id: idUsuarioRevendedor,
@@ -154,5 +153,4 @@ describe('model.Ativacao', function() {
                 });
     });
   });
-
 });

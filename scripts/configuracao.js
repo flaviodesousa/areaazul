@@ -15,18 +15,20 @@ if (!a.valor_ativacao || !a.tempo_tolerancia) {
     process.exit(0);
 }
 
-AreaAzul.models.Configuracao.alterar({
-    valor_ativacao: a.valor_ativacao,
-    tempo_tolerancia: a.tempo_tolerancia,
-    franquia: a.franquia || 10.0,
-    ciclo_ativacao: a.ciclo_ativacao || 60.0,
-    ciclo_fiscalizacao: a.ciclo_fiscalizacao || 60.0,
-})
+    AreaAzul.models.Configuracao.alterar({
+        valor_ativacao: a.valor_ativacao,
+        tempo_tolerancia: a.tempo_tolerancia,
+        franquia: a.franquia || 10.0,
+        ciclo_ativacao: a.ciclo_ativacao || 60.0,
+        ciclo_fiscalizacao: a.ciclo_fiscalizacao || 60.0,
+    })
     .then(function(conf) {
         console.dir(conf);
         console.log('Configuracao ID=' + conf.id);
     })
-    .then(function() {
+    .then(function(teste) {
+        console.log('teste --- ');
+        console.dir(teste);
         process.exit(0);
     })
     .catch(function(e) {

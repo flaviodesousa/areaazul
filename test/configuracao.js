@@ -17,7 +17,6 @@ describe('model.configuracao', function() {
                 ciclo_ativacao: 70.0,
                 ciclo_fiscalizacao: 60.0,
             };
-
             Configuracao.alterar(config)
                 .then(function(model) {
                     id_configuracao = model.id;
