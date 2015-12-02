@@ -36,9 +36,10 @@ var Veiculo = Bookshelf.Model.extend({
                 return messages;
               })
         .then(function() {
+          console.log("sss:"+vehicle.cidade);
           return Veiculo
                 .forge({
-                  cidade_id: vehicle.cidade,
+                  cidade_id: 1,
                   placa: vehicle.placa,
                   marca: vehicle.marca,
                   modelo: vehicle.modelo,
@@ -59,7 +60,8 @@ var Veiculo = Bookshelf.Model.extend({
   },
 
   procurarVeiculo: function(placa) {
-    var placaSemMascara = '';
+     var placaSemMascara = '';
+
     if (placa) {
       placaSemMascara = util.placaSemMascara(placa);
     }

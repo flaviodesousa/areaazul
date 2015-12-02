@@ -12,6 +12,7 @@ var validator = require('validator');
 var moment = require('moment');
 var Veiculo = require('./veiculo');
 
+
 var Ativacao = Bookshelf.Model.extend({
     tableName: 'ativacao',
     idAttribute: 'id_ativacao',
@@ -33,7 +34,7 @@ var Ativacao = Bookshelf.Model.extend({
         if (validator.isNull(altitude)) {
             altitude = null;
         }
-
+ 
         return Bookshelf.transaction(function(t) {
             var options = {
                 transacting: t,
@@ -149,9 +150,8 @@ var Ativacao = Bookshelf.Model.extend({
             if (ativacao.placa) {
                 placaSemMascara = util.placaSemMascara(ativacao.placa);
             }
-
             return Ativacao
-                .validarAtivacao(ativacao)
+                .validarAtivacao(ativacao,placaSemMascara)
                 .then(function(messages) {
                     if (messages.length) {
                         throw new AreaAzul
@@ -175,7 +175,7 @@ var Ativacao = Bookshelf.Model.extend({
                             marca: ativacao.marca,
                             cor: ativacao.cor,
                             modelo: ativacao.modelo,
-                            cidade_id: ativacao.cidade,
+                            cidade_id: 1/*ativacao.cidade*/,
                         }, options);
                     }
                 })
@@ -202,10 +202,30 @@ var Ativacao = Bookshelf.Model.extend({
         });
     },
 
-    validarAtivacao: function(ativacao) {
+    validarAtivacao: function(ativacao, placa) {
 
         var message = [];
 
+        
+        
+        if (validator.isNull(ativacao.marca)) {
+            message.push({
+                attribute: 'marca',
+                problem: 'Campo marca é obrigatório!',
+            });
+        }
+        if (validator.isNull(ativacao.modelo)) {
+            message.push({
+                attribute: 'modelo',
+                problem: 'Campo modelo é obrigatório!',
+            });
+        }
+        if (validator.isNull(ativacao.cor)) {
+            message.push({
+                attribute: 'cor',
+                problem: 'Campo cor é obrigatório!',
+            });
+        }
         if (validator.isNull(ativacao.tempo)) {
             message.push({
                 attribute: 'tempo',
@@ -213,7 +233,7 @@ var Ativacao = Bookshelf.Model.extend({
             });
         }
         return Ativacao
-            .verificaAtivacao(ativacao.placa)
+            .verificaAtivacao(placa)
             .then(function(ativado) {
                 if (ativado) {
                     message.push({
@@ -270,6 +290,7 @@ var Ativacao = Bookshelf.Model.extend({
                     .andWhere('veiculo.placa', '=', placa)
                     .select('ativacao.*')
                     .select('veiculo.*');
+                    console.log("SQL"+qb);
             })
             .fetch();
     },
