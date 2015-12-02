@@ -432,6 +432,12 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
             });
         }
 
+        if (!user_reveller.termo_servico) {
+            message.push({
+                attribute: 'termo_servico',
+                problem: 'Para realizar o cadastro precisa aceitar nossos termos de serviço!',
+            });
+        }
 
 
         return UsuarioRevendedor

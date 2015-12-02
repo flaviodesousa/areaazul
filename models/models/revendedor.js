@@ -195,6 +195,14 @@ var Revendedor = Bookshelf.Model.extend({
             });
         }
 
+        if (!dealer.termo_servico) {
+            message.push({
+                attribute: 'termo_servico',
+                problem: 'Para realizar o cadastro precisa aceitar nossos termos de serviço!',
+            });
+        }
+
+
         return PessoaFisica
             .procurarCPF(dealer.cpf)
             .then(function(pessoafisica) {
