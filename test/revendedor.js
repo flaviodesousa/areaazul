@@ -20,6 +20,7 @@ describe('model.revendedor', function() {
   var nomeEmpresa = 'nome-teste';
   var senhaTeste = 'senha-teste';
   var revendedorId = null;
+  var termo_servico = true;
 
   function apagarDadosDeTeste() {
     return TestHelpers.apagarRevendedorPessoPorIdentificador(cpfPreExistente, cnpjPreExistente);
@@ -46,6 +47,7 @@ describe('model.revendedor', function() {
         autorizacao: 'autorizacao',
         login: loginTeste,
         senha: senhaTeste,
+        termo_servico: termo_servico,
       })
      .then(function() {
         done();
@@ -71,6 +73,7 @@ describe('model.revendedor', function() {
         login: 'logindeteste',
         autorizacao: 'autorizacao teste',
         senha: senhaTeste,
+        termo_servico: termo_servico,
       })
      .then(function() {
         done();
@@ -94,6 +97,7 @@ describe('model.revendedor', function() {
         autorizacao: 'autorizacao',
         login: loginTeste,
         senha: senhaTeste,
+        termo_servico: termo_servico,
       })
       .then(function(revenda) {
         should.exist(revenda);
@@ -119,6 +123,7 @@ describe('model.revendedor', function() {
         login: 'logindeteste',
         autorizacao: 'autorizacao teste',
         senha: senhaTeste,
+        termo_servico: termo_servico,
       })
       .then(function(revenda) {
         should.exist(revenda);

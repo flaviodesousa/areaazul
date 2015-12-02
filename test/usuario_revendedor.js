@@ -19,6 +19,7 @@ describe('models.UsuarioRevendedor', function() {
     var loginAutorizado = null;
     var senhaAutorizado = 'senha-teste';
     var revendedor_id = null;
+    var termo_servico = true;
 
     function apagarDadosDeTeste() {
         return TestHelpers.apagarUsuarioRevenda(idUsuarioRevendedor);
@@ -52,7 +53,8 @@ describe('models.UsuarioRevendedor', function() {
                 senha: senhaRevendaExistente,
                 email: 'revenda@teste.com',
                 cpf: cpfNaoExistente,
-                revendedor_id: revendedor_id
+                revendedor_id: revendedor_id,
+                termo_servico: termo_servico,
             })
             .then(function(pessoa) {
 
@@ -78,7 +80,8 @@ describe('models.UsuarioRevendedor', function() {
                 senha: senhaRevendaExistente,
                 email: 'revenda@teste.com',
                 cpf: cpfNaoExistente,
-                revendedor_id: revendedor_id
+                revendedor_id: revendedor_id,
+                termo_servico: termo_servico,
             })
             .then(function(pessoa) {
                 should.exist(pessoa);
@@ -192,9 +195,6 @@ describe('models.UsuarioRevendedor', function() {
                 });
         });
     });
-
-
-
 
     after(function(done) {
         apagarDadosDeTeste()
