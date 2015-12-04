@@ -134,7 +134,7 @@ var Revendedor = Bookshelf.Model.extend({
                 return Conta
                     .forge({
                         data_abertura: new Date(),
-                        saldo: 0,
+                        saldo: 50,
                         ativo: true,
                         pessoa_id: pessoa.id,
                     })

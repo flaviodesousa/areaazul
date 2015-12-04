@@ -35,6 +35,8 @@ var Configuracao = Bookshelf.Model.extend({
     },
 
     alterar: function(config, options) {
+        console.log('teste-teste');
+        console.dir(config);
         return Bookshelf.transaction(function(t) {
             var optionsUpdate = _.merge({}, options || {}, {
                 method: 'update'
