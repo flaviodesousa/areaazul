@@ -11,6 +11,7 @@ var Conta = require('./conta');
 var validator = require('validator');
 var moment = require('moment');
 var Veiculo = require('./veiculo');
+var UsuarioRevendedor = require('./usuario_revendedor');
 
 
 var Ativacao = Bookshelf.Model.extend({
@@ -188,16 +189,20 @@ var Ativacao = Bookshelf.Model.extend({
                             ativo: true,
                         })
                         .save(null, optionsInsert)
-                        .then(
-                            function(a) {
-                                return MovimentacaoConta
-                                    ._inserirDebito({
-                                        historico: 'ativacao',
-                                        tipo: 'ativacao',
-                                        pessoa_id: a.get('pessoa_id'),
-                                        valor: 10.00,
-                                    }, options);
-                            });
+                        .then(function(a) {
+                            return UsuarioRevendedor
+                                   .forge({pessoa_fisica_pessoa_id: a.get('pessoa_id')})
+                                   .fetch();
+                        })
+                        .then(function(usuario){
+                            return MovimentacaoConta
+                            ._inserirDebito({
+                                historico: 'ativacao',
+                                tipo: 'ativacao',
+                                pessoa_id: usuario.get('revendedor_id'),
+                                valor: 10.00,
+                            }, options);
+                        });
                 });
         });
     },
@@ -247,6 +252,7 @@ var Ativacao = Bookshelf.Model.extend({
                 return Ativacao
                     .verificaSaldo(ativacao.usuario_pessoa_id)
                     .then(function(conta) {
+                        console.dir(conta);
                         if (conta.get('saldo') <= 0) {
                             message.push({
                                 attribute: 'saldo',
@@ -261,7 +267,6 @@ var Ativacao = Bookshelf.Model.extend({
     },
 
 
-
     verificaSaldo: function(id) {
         return Conta
             .forge()
@@ -270,15 +275,23 @@ var Ativacao = Bookshelf.Model.extend({
                     .innerJoin('pessoa', function() {
                         this.on('pessoa.id_pessoa', '=', 'conta.pessoa_id');
                     })
-                    .where('conta.pessoa_id', id)
+                    .innerJoin('revendedor', function() {
+                        this.on('revendedor.pessoa_id', '=', 'pessoa.id_pessoa');
+                    })
+                    .innerJoin('usuario_revendedor', function() {
+                        this.on('usuario_revendedor.revendedor_id', '=', 'revendedor.pessoa_id');
+                    })
+                    .where('usuario_revendedor.pessoa_fisica_pessoa_id', id)
                     .select('pessoa.*')
-                    .select('conta.*');
+                    .select('conta.*')
+                    .select('revendedor.*')
+                    .select('usuario_revendedor.*');
+                    console.log(qb);
             })
             .fetch();
     },
 
     verificaAtivacao: function(placa) {
-
         return Ativacao
             .forge()
             .query(function(qb) {
