@@ -152,12 +152,6 @@ var Revendedor = Bookshelf.Model.extend({
             });
         }
 
-        if (!dealer.telefone) {
-            message.push({
-                attribute: 'telefone',
-                problem: 'Telefone é obrigatório!',
-            });
-        }
 
         if (!dealer.email) {
             message.push({
