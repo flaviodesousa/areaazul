@@ -27,6 +27,7 @@ var Veiculo = Bookshelf.Model.extend({
     return Veiculo
           .validarVeiculo(vehicle)
               .then(function(messages) {
+                console.dir(messages);
                 if (messages.length) {
                   throw new AreaAzul
                       .BusinessException(
@@ -36,10 +37,9 @@ var Veiculo = Bookshelf.Model.extend({
                 return messages;
               })
         .then(function() {
-          console.log("sss:"+vehicle.cidade);
           return Veiculo
                 .forge({
-                  cidade_id: 1,
+                  cidade_id: vehicle.cidade_id,
                   placa: vehicle.placa,
                   marca: vehicle.marca,
                   modelo: vehicle.modelo,
@@ -55,8 +55,14 @@ var Veiculo = Bookshelf.Model.extend({
         });
   },
 
+
+  cadastrar: function(vehicle){
+    var options;
+    return Veiculo._cadastrarVeiculo(vehicle, options);
+  },
+
   _cadastrarVeiculo: function(vehicle, options) {
-    Veiculo._cadastrar(vehicle, options);
+    return Veiculo._cadastrar(vehicle, options);
   },
 
   procurarVeiculo: function(placa) {
@@ -130,6 +136,4 @@ var Veiculo = Bookshelf.Model.extend({
   },
 
 });
-
-
 module.exports = Veiculo;
