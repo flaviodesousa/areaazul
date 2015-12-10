@@ -29,6 +29,56 @@ var Usuario = Bookshelf.Model.extend({
 
 }, {
 
+    buscarPorId: function(id) {
+        var Usuario = this;
+
+        return Usuario
+            .forge({
+                pessoa_id: id
+            })
+            .fetch()
+            .then(function(u) {
+                if (u) {
+                    return u;
+                }
+                var err = new AreaAzul.BusinessException(
+                    'Usuario: id nao encontrado', {
+                        id: id
+                    });
+                log.warn(err.message, err.details);
+                throw err;
+            });
+    },
+
+    autorizado: function(login, senha) {
+        var Usuario = this;
+        var err;
+        return Usuario
+            .forge({
+                login: login
+            })
+            .fetch()
+            .then(function(usuario) {
+                if (usuario === null) {
+                    err = new AreaAzul.BusinessException(
+                        'Usuario: login invalido', {
+                            login: login
+                        });
+                    log.warn(err.message, err.details);
+                    throw err;
+                }
+                if (util.senhaValida(senha, usuario.get('senha'))) {
+                    return usuario;
+                } else {
+                    err = new AreaAzul.BusinessException(
+                        'Usuario: senha incorreta', {
+                            login: login
+                        });
+                    log.warn(err.message, err.details);
+                    throw err;
+                }
+            });
+    },
 
     inserir: function(entidade) {
 
@@ -43,34 +93,6 @@ var Usuario = Bookshelf.Model.extend({
             return Usuario._inserir(entidade, trxIns, trx);
         });
     },
-
-
-
-
-    autorizado: function(login, senha) {
-        var Usuario = this;
-        var err;
-        return Usuario
-            .forge({
-                login: login
-            })
-            .fetch()
-            .then(function(usuario) {
-                if (usuario === null) {
-                    err = new Error('login invalido: ' + login);
-                    err.authentication_event = true;
-                    throw err;
-                }
-                if (util.senhaValida(senha, usuario.get('senha'))) {
-                    return usuario;
-                } else {
-                    err = new Error('senha incorreta');
-                    err.authentication_event = true;
-                    throw err;
-                }
-            });
-    },
-
 
     _salvarUsuario: function(entidade, options, t) {
 
