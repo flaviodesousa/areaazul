@@ -12,6 +12,7 @@ var util = require('../../helpers/util');
 var Conta = require('./conta');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 var Veiculo = require('./veiculo').Veiculo;
+var AreaAzul = require('../../areaazul.js');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -23,7 +24,27 @@ var Usuario = Bookshelf.Model.extend({
         return this.hasMany(Veiculo)
             .through(UsuarioHasVeiculo);
     },
+
+
+
 }, {
+
+
+    inserir: function(entidade) {
+
+        console.log('Consegui chegar!!!!');
+        return Bookshelf.transaction(function(t) {
+            var trx = {
+                transacting: t
+            };
+            var trxIns = _.merge({}, trx, {
+                method: 'insert'
+            });
+            return Usuario._inserir(entidade, trxIns, trx);
+        });
+    },
+
+
 
 
     autorizado: function(login, senha) {
@@ -51,7 +72,7 @@ var Usuario = Bookshelf.Model.extend({
     },
 
 
-    _salvarUsuarioRevenda: function(entidade, options, t) {
+    _salvarUsuario: function(entidade, options, t) {
 
         var UsuarioAtual = this;
         var usuario = null;
@@ -60,10 +81,7 @@ var Usuario = Bookshelf.Model.extend({
         var login;
         var senha;
         var senhaGerada;
-
-
-
-
+    
         if (!entidade.senha) {
             senha = util.criptografa(util.generate());
         } else {
@@ -76,10 +94,10 @@ var Usuario = Bookshelf.Model.extend({
         } else {
             login = entidade.login;
         }
-
         return Usuario
             .validate(entidade, options.method)
             .then(function(messages) {
+                
                 if (messages.length) {
                     throw new AreaAzul
                         .BusinessException(
@@ -97,13 +115,11 @@ var Usuario = Bookshelf.Model.extend({
                         if (pessoaFisica !== null) {
                             return PessoaFisica.alterar(entidade, t, pessoaFisica.id);
                         } else {
-                            // Caso nao exista, criar a pessoa fisica
-
                             return PessoaFisica
                                 ._cadastrar(entidade, t);
                         }
                     })
-            }).then(function(pessoaFisica) {
+            }).then(function(pf) {
                 var dadosUsuario = {
                     pessoa_id: pf.id,
                     login: login,
@@ -144,17 +160,7 @@ var Usuario = Bookshelf.Model.extend({
         return Usuario._salvarUsuario(entidade, options, t);
     },
 
-    inserir: function(entidade) {
-        return Bookshelf.transaction(function(t) {
-            var trx = {
-                transacting: t
-            };
-            var trxIns = _.merge({}, trx, {
-                method: 'insert'
-            });
-            return Usuario._inserir(entidade, trxIns, trx);
-        });
-    },
+
 
     _alterar: function(entidade, options, t) {
         return Usuario._salvarUsuario(entidade, options, t);
@@ -246,14 +252,6 @@ var Usuario = Bookshelf.Model.extend({
     validate: function(user, operacao) {
         var message = [];
 
-        if (validator.isNull(user.nome)) {
-            message.push({
-                attribute: 'nome',
-                problem: 'Nome obrigatório',
-            });
-        }
-
-
         if (validator.isNull(user.cpf)) {
             message.push({
                 attribute: 'cpf',
@@ -265,6 +263,20 @@ var Usuario = Bookshelf.Model.extend({
             message.push({
                 attribute: 'cpf',
                 problem: 'CPF inválido!',
+            });
+        }
+
+         if (user.data_nascimento === '') {
+            message.push({
+                attribute: 'data_nascimento',
+                problem: 'Data de nascimento é obrigatório!',
+            });
+        }
+
+        if (validator.isNull(user.nome)) {
+            message.push({
+                attribute: 'nome',
+                problem: 'Nome obrigatório',
             });
         }
 
@@ -282,14 +294,18 @@ var Usuario = Bookshelf.Model.extend({
             });
         }
 
-        if (user.data_nascimento === '') {
-            message.push({
-                attribute: 'data_nascimento',
-                problem: 'Data de nascimento é obrigatório!',
-            });
-        }
+        return PessoaFisica
+            .procurarCPF(user.cpf)
+            .then(function(pessoafisica) {
+                if (pessoafisica) {
+                    message.push({
+                        attribute: 'cpf',
+                        problem: 'CPF já cadastrado!',
+                    });
+                }
 
-        return message;
+                return message;
+            });
     },
 
     validateNomeUsuario: function(user) {
