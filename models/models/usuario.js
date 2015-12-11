@@ -13,6 +13,8 @@ var Conta = require('./conta');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 var Veiculo = require('./veiculo').Veiculo;
 var AreaAzul = require('../../areaazul.js');
+var AreaAzul = require('../../areaazul');
+var log = AreaAzul.log;
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
