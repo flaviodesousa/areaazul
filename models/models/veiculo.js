@@ -27,7 +27,6 @@ var Veiculo = Bookshelf.Model.extend({
     return Veiculo
           .validarVeiculo(vehicle)
               .then(function(messages) {
-                console.dir(messages);
                 if (messages.length) {
                   throw new AreaAzul
                       .BusinessException(
@@ -52,17 +51,31 @@ var Veiculo = Bookshelf.Model.extend({
                 .then(function(veiculo) {
                   return veiculo;
                 });
+        })
+        .then(function(veiculo){
+            if(vehicle.usuario_pessoa_id){
+                return UsuarioHasVeiculo.cadastrar({
+                  usuario_pessoa_id: usuario_has_veiculo.usuario_pessoa_id,
+                  veiculo_id: usuario_has_veiculo.veiculo_id,
+                });
+            }
+            return veiculo;
         });
   },
 
 
   cadastrar: function(vehicle){
     var options;
-    return Veiculo._cadastrarVeiculo(vehicle, options);
+    return Veiculo._cadastrarVeiculo(vehicle);
   },
 
-  _cadastrarVeiculo: function(vehicle, options) {
-    return Veiculo._cadastrar(vehicle, options);
+  _cadastrarVeiculo: function(vehicle) {
+
+    return Bookshelf.transaction(function(t) {
+
+       return Veiculo._cadastrar(vehicle, { transacting: t });
+       
+    });
   },
 
   procurarVeiculo: function(placa) {
