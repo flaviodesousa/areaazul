@@ -47,7 +47,7 @@ describe('model.usuario', function() {
       };
 
       Usuario
-        .cadastrar(usuario)
+        .inserir(usuario)
         .then(function() {
           done();
         })
@@ -105,10 +105,10 @@ describe('model.usuario', function() {
   describe('validade()', function() {
     it.skip('valida usuario', function(done) {
       var usuario = {
-        nome: '',
+        nome: 'teste',
         email: 'sirline',
-        telefone: '',
-        cpf: '7507584913',
+        telefone: '06220000000',
+        cpf: '75075849172',
         data_nascimento: '02/02/2002',
         sexo: '',
       };
