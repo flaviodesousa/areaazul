@@ -493,7 +493,7 @@ exports.pegarUsuario = function() {
             if (usuario) {
                 return usuario;
             } else {
-                return Usuario.cadastrar({
+                return Usuario.inserir({
                     login: 'login',
                     senha: 'senha',
                     nome: 'usuario teste unitario',
