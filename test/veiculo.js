@@ -34,9 +34,12 @@ describe('model.veiculo', function() {
 
   describe('cadastrar()', function() {
     it('grava veiculo', function(done) {
+
+
+      console.log('idCidade'+idCidade);
       Veiculo
       ._cadastrar({
-        cidade: idCidade,
+        cidade_id: idCidade,
         placa: placaTeste,
         marca: marcaTeste,
         modelo: modeloTeste,
