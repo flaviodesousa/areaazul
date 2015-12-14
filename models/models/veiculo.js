@@ -58,10 +58,10 @@ var Veiculo = Bookshelf.Model.extend({
         })
         .then(function(veiculo){
             if(vehicle.usuario_pessoa_id){
-                return UsuarioHasVeiculo.cadastrar({
+                return UsuarioHasVeiculo._salvar({
                   usuario_pessoa_id: vehicle.usuario_pessoa_id,
                   veiculo_id: veiculo.id,
-                });
+                }, options);
             }
             return veiculo;
         });
