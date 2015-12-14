@@ -24,15 +24,22 @@ var Veiculo = Bookshelf.Model.extend({
       method: 'insert',
     });
 
+
+
+console.dir(vehicle);
     return Veiculo
           .validarVeiculo(vehicle)
               .then(function(messages) {
                 if (messages.length) {
+
+                   console.dir(messages);
+
                   throw new AreaAzul
                       .BusinessException(
                           'Nao foi possivel cadastrar novo Veiculo. Dados invalidos',
                           messages);
                 }
+
                 return messages;
               })
         .then(function() {
@@ -55,8 +62,8 @@ var Veiculo = Bookshelf.Model.extend({
         .then(function(veiculo){
             if(vehicle.usuario_pessoa_id){
                 return UsuarioHasVeiculo.cadastrar({
-                  usuario_pessoa_id: usuario_has_veiculo.usuario_pessoa_id,
-                  veiculo_id: usuario_has_veiculo.veiculo_id,
+                  usuario_pessoa_id: vehicle.usuario_pessoa_id,
+                  veiculo_id: veiculo.id,
                 });
             }
             return veiculo;
