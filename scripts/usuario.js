@@ -17,17 +17,16 @@ if (!a.login || !a.senha) {
   process.exit(0);
 }
 
-AreaAzul.models.Usuario.cadastrar({
-  login: a.cpf,
+AreaAzul.models.Usuario.inserir({
+  login: a.login,
   senha: a.senha,
-  nome: a.nome || a.login,
+  nome: a.nome || 'usuarioareaazul',
   email: a.email || 'usuario@areaazul.org',
   telefone: a.telefone || '1234567890',
-  cpf: a.cpf,
+  cpf: a.login,
   data_nascimento: a.nascimento && moment(a.nascimento) || moment(),
 })
   .then(function(u) {
-    console.dir(u.toJSON());
     console.log('Usuario ID=' + u.id);
   })
   .then(function() {
