@@ -499,7 +499,7 @@ exports.pegarUsuario = function() {
                     nome: 'usuario teste unitario',
                     email: 'teste-unitario@areaazul.org',
                     telefone: '0',
-                    cpf: '0',
+                    cpf: '69425782660',
                     data_nascimento: new Date(1981, 4, 1),
                     sexo: 'feminino',
                 }).then(function(usuario) {
