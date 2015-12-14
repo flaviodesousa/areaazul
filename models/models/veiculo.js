@@ -28,9 +28,6 @@ var Veiculo = Bookshelf.Model.extend({
           .validarVeiculo(vehicle)
               .then(function(messages) {
                 if (messages.length) {
-
-                   console.dir(messages);
-
                   throw new AreaAzul
                       .BusinessException(
                           'Nao foi possivel cadastrar novo Veiculo. Dados invalidos',
