@@ -13,7 +13,6 @@ var Conta = require('./conta');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 var Veiculo = require('./veiculo').Veiculo;
 var AreaAzul = require('../../areaazul.js');
-var AreaAzul = require('../../areaazul');
 var log = AreaAzul.log;
 
 var Usuario = Bookshelf.Model.extend({
@@ -82,7 +81,6 @@ var Usuario = Bookshelf.Model.extend({
 
     inserir: function(entidade) {
 
-        console.log('Consegui chegar!!!!');
         return Bookshelf.transaction(function(t) {
             var trx = {
                 transacting: t
@@ -105,6 +103,7 @@ var Usuario = Bookshelf.Model.extend({
         var senhaGerada;
     
         if (!entidade.senha) {
+
             senha = util.criptografa(util.generate());
         } else {
             senha = util.criptografa(entidade.senha);
@@ -119,7 +118,6 @@ var Usuario = Bookshelf.Model.extend({
         return Usuario
             .validate(entidade, options.method)
             .then(function(messages) {
-                
                 if (messages.length) {
                     throw new AreaAzul
                         .BusinessException(
@@ -273,6 +271,12 @@ var Usuario = Bookshelf.Model.extend({
 
     validate: function(user, operacao) {
         var message = [];
+
+  console.log(validator.isNull(user.cpf));
+        console.log(!validation.isCPF(user.cpf));
+      
+
+
 
         if (validator.isNull(user.cpf)) {
             message.push({

@@ -21,6 +21,7 @@ exports.validarData = function(dataNascimento) {
 }
 
 exports.isCPF = function(cpf) {  
+  
     cpf = cpf.replace(/[^\d]+/g,'');    
     if(cpf == '') return false; 
     // Elimina CPFs invalidos conhecidos    

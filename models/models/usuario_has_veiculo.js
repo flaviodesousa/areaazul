@@ -41,9 +41,6 @@ var UsuarioHasVeiculo =  Bookshelf.Model.extend({
 
 			console.log(usuariohasveiculo);
 		   if (usuariohasveiculo === null) {
-
-		   		console.log('usuario_has_veiculo 1 ');
-		   		console.dir(usuario_has_veiculo);
 		        return UsuarioHasVeiculo
 		            .forge({
 		                usuario_pessoa_id: usuario_has_veiculo.usuario_pessoa_id,
@@ -52,8 +49,6 @@ var UsuarioHasVeiculo =  Bookshelf.Model.extend({
 		            })
 		            .save(null, optionsInsert);
 		    } else {
-
-		    	console.log('usuario_has_veiculo 2');
 		        return usuariohasveiculo
 		            .save({
 		                ultima_ativacao: new Date(),
