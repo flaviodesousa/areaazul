@@ -23,22 +23,27 @@ describe('model.veiculo', function() {
   var idEstado = null;
   var idCidade = null;
   var idVeiculo = null;
+  var idUsuarioComum = null;
 
   before(function() {
     return TestHelpers.pegarCidade()
           .then(function(cidade){
               idCidade = cidade.id;
               idEstado = cidade.estado_id;
+          })
+          .then(function() {
+            return TestHelpers.pegarUsuario()
+                .then(function(usuario) {
+                  idUsuarioComum = usuario.id;
           });
+      });
   });
 
   describe('cadastrar()', function() {
     it('grava veiculo', function(done) {
-
-
-      console.log('idCidade'+idCidade);
       Veiculo
-      ._cadastrar({
+      .cadastrar({
+        usuario_pessoa_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: placaTeste,
         marca: marcaTeste,

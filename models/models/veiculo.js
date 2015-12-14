@@ -19,14 +19,11 @@ var Veiculo = Bookshelf.Model.extend({
   },
 }, {
 
-  _cadastrar: function(vehicle, options) {
+  _salvar: function(vehicle, options) {
     var optionsInsert = _.merge({}, options || {}, {
       method: 'insert',
     });
 
-
-
-console.dir(vehicle);
     return Veiculo
           .validarVeiculo(vehicle)
               .then(function(messages) {
@@ -77,13 +74,31 @@ console.dir(vehicle);
   },
 
   _cadastrarVeiculo: function(vehicle) {
-
     return Bookshelf.transaction(function(t) {
-
-       return Veiculo._cadastrar(vehicle, { transacting: t });
+       return Veiculo._salvar(vehicle, { transacting: t });
        
     });
   },
+
+  _alterar: function(entidade, options, t) {
+        return Usuario._salvar(entidade, options, t);
+  },
+
+  alterar: function(entidade) {
+        return Bookshelf.transaction(function(t) {
+            var trx = {
+                transacting: t
+            };
+            var trxUpd = _.merge({}, trx, {
+                method: 'update'
+            }, {
+                patch: true
+            });
+            return Veiculo._alterar(entidade, trxUpd, trx);
+        });
+    },
+
+
 
   procurarVeiculo: function(placa) {
      var placaSemMascara = '';

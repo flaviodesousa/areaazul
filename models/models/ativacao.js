@@ -171,12 +171,12 @@ var Ativacao = Bookshelf.Model.extend({
                     if (veiculo) {
                         return veiculo;
                     } else {
-                        return Veiculo._cadastrar({
+                        return Veiculo.cadastrar({
                             placa: placaSemMascara,
                             marca: ativacao.marca,
                             cor: ativacao.cor,
                             modelo: ativacao.modelo,
-                            cidade_id: 1/*ativacao.cidade*/,
+                            cidade_id: ativacao.cidade,
                         }, options);
                     }
                 })

@@ -472,7 +472,7 @@ exports.pegarVeiculo = function() {
         return veiculo;
       } else {
         return Veiculo
-          ._cadastrar({
+          .cadastrar({
                 cidade_id: idCidade,
                 placa: 'placaTeste',
                 marca: 'marcaTeste',
