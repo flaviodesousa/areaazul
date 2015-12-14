@@ -27,8 +27,6 @@ var Usuario = Bookshelf.Model.extend({
             .through(UsuarioHasVeiculo);
     },
 
-
-
 }, {
 
     buscarPorId: function(id) {
