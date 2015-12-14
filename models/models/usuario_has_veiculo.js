@@ -25,33 +25,33 @@ var UsuarioHasVeiculo =  Bookshelf.Model.extend({
 	},
 
 
-	_salvar: function(usuario_has_veiculo){
+	_salvar: function(usuario_has_veiculo, options){
 
 		var optionsInsert = _.merge({}, options || {}, {method: 'insert'}),
         	optionsUpdate = _.merge({}, options || {}, {method: 'update'}, {patch: true });
 
-        return UsuarioHasVeiculo
-		       .forge({
-		            usuario_pessoa_id: usuario_has_veiculo.usuario_pessoa_id,
-		            veiculo_id: usuario_has_veiculo.veiculo_id,
-		        })
-		        .fetch()
-		        .then(function(usuariohasveiculo) {
-		           if (usuariohasveiculo === null) {
-		                return UsuarioHasVeiculo
-		                    .forge({
-		                        usuario_pessoa_id: activation.usuario_pessoa_id,
-		                        veiculo_id: activation.veiculo_id,
-		                        ultima_ativacao: new Date(),
-		                    })
-		                    .save(null, optionsInsert);
-		            } else {
-		                return usuariohasveiculo
-		                    .save({
-		                        ultima_ativacao: new Date(),
-		                    }, optionsUpdate);
-		            }
-   		});
+		return UsuarioHasVeiculo
+		.forge({
+		    usuario_pessoa_id: usuario_has_veiculo.usuario_pessoa_id,
+		    veiculo_id: usuario_has_veiculo.veiculo_id,
+		})
+		.fetch()
+		.then(function(usuariohasveiculo) {
+		   if (usuariohasveiculo === null) {
+		        return UsuarioHasVeiculo
+		            .forge({
+		                usuario_pessoa_id: usuario_has_veiculo.usuario_pessoa_id,
+		                veiculo_id: usuario_has_veiculo.veiculo_id,
+		                ultima_ativacao: new Date(),
+		            })
+		            .save(null, optionsInsert);
+		    } else {
+		        return usuariohasveiculo
+		            .save({
+		                ultima_ativacao: new Date(),
+		            }, optionsUpdate);
+		    }
+		});
     }
 });
 
