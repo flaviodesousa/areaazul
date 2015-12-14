@@ -19,7 +19,7 @@ var Veiculo = Bookshelf.Model.extend({
   },
 }, {
 
-  _salvar: function(vehicle, options) {
+  _cadastrar: function(vehicle, options) {
     var optionsInsert = _.merge({}, options || {}, {
       method: 'insert',
     });
@@ -28,15 +28,11 @@ var Veiculo = Bookshelf.Model.extend({
           .validarVeiculo(vehicle)
               .then(function(messages) {
                 if (messages.length) {
-
-                   console.dir(messages);
-
                   throw new AreaAzul
                       .BusinessException(
                           'Nao foi possivel cadastrar novo Veiculo. Dados invalidos',
                           messages);
                 }
-
                 return messages;
               })
         .then(function() {
@@ -58,10 +54,10 @@ var Veiculo = Bookshelf.Model.extend({
         })
         .then(function(veiculo){
             if(vehicle.usuario_pessoa_id){
-                return UsuarioHasVeiculo._salvar({
-                  usuario_pessoa_id: vehicle.usuario_pessoa_id,
-                  veiculo_id: veiculo.id,
-                }, options);
+                return UsuarioHasVeiculo.cadastrar({
+                  usuario_pessoa_id: usuario_has_veiculo.usuario_pessoa_id,
+                  veiculo_id: usuario_has_veiculo.veiculo_id,
+                });
             }
             return veiculo;
         });
@@ -74,31 +70,13 @@ var Veiculo = Bookshelf.Model.extend({
   },
 
   _cadastrarVeiculo: function(vehicle) {
+
     return Bookshelf.transaction(function(t) {
-       return Veiculo._salvar(vehicle, { transacting: t });
+
+       return Veiculo._cadastrar(vehicle, { transacting: t });
        
     });
   },
-
-  _alterar: function(entidade, options, t) {
-        return Usuario._salvar(entidade, options, t);
-  },
-
-  alterar: function(entidade) {
-        return Bookshelf.transaction(function(t) {
-            var trx = {
-                transacting: t
-            };
-            var trxUpd = _.merge({}, trx, {
-                method: 'update'
-            }, {
-                patch: true
-            });
-            return Veiculo._alterar(entidade, trxUpd, trx);
-        });
-    },
-
-
 
   procurarVeiculo: function(placa) {
      var placaSemMascara = '';
