@@ -251,7 +251,7 @@ var Usuario = Bookshelf.Model.extend({
     },
 
 
-    procurar: function(user, then, fail) {
+    procurar: function(user_id) {
         Usuario.forge().query(function(qb) {
             qb.join('pessoa',
                 'pessoa.id_pessoa', '=', 'usuario.pessoa_id');
@@ -259,12 +259,12 @@ var Usuario = Bookshelf.Model.extend({
                 'pessoa_fisica.pessoa_id', '=', 'pessoa.id_pessoa');
             qb.join('conta',
                 'pessoa.id_pessoa', '=', 'conta.pessoa_id');
-            qb.where('usuario.id_usuario', user.id_usuario);
+            qb.where('usuario.id_usuario', user_id);
             qb.select('usuario.*', 'pessoa.*', 'pessoa_fisica.*', 'conta.*');
         }).fetch().then(function(model) {
-            then(model);
+            return model;
         }).catch(function(err) {
-            fail(err);
+            return err;
         });
     },
 
