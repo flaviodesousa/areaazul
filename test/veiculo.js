@@ -89,6 +89,40 @@ describe('model.veiculo', function() {
     });
   });
 
+    describe('desativar()', function() {
+
+
+        it('falha para veiculo inexistente', function(done) {
+            Veiculo
+                .desativar({
+                     id_veiculo: 0
+                })
+                .then(function() {
+                    done();
+                })
+                .catch(function(e) {
+                    should.exist(e);
+                    done();
+                });
+        });
+
+        it('desativa veiculo existente', function(done) {
+            Veiculo
+                .desativar({
+                   id_veiculo : idVeiculo 
+                })
+                .then(function() {
+                    done();
+                })
+                .catch(function(e) {
+                  console.dir(e);
+                  console.log(e);
+                    done(e);
+                });
+        });
+    });
+
+
 describe('listar()', function() {
     it('retorna uma lista de veiculos ', function(done) {
       Veiculos.listar(
