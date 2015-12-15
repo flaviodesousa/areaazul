@@ -79,7 +79,6 @@ var Veiculo = Bookshelf.Model.extend({
   },
 
   desativar: function(id){
-    console.log("id: "+id);
     Veiculo
     .forge({id_veiculo: id})
     .fetch()
@@ -107,13 +106,16 @@ var Veiculo = Bookshelf.Model.extend({
                 });
             throw err;
         }
-        return revenda;
+        return veiculo;
 
     })
     .then(function(desativacao) {
         return desativacao;
     });
-    },
+  },
+
+
+
   procurarVeiculo: function(placa) {
      var placaSemMascara = '';
 
