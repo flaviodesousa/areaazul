@@ -54,10 +54,10 @@ var Veiculo = Bookshelf.Model.extend({
         })
         .then(function(veiculo){
             if(vehicle.usuario_pessoa_id){
-                return UsuarioHasVeiculo.cadastrar({
-                  usuario_pessoa_id: usuario_has_veiculo.usuario_pessoa_id,
-                  veiculo_id: usuario_has_veiculo.veiculo_id,
-                });
+                return UsuarioHasVeiculo._salvar({
+                  usuario_pessoa_id: vehicle.usuario_pessoa_id,
+                  veiculo_id: veiculo.id,
+                }, options);
             }
             return veiculo;
         });
@@ -77,6 +77,44 @@ var Veiculo = Bookshelf.Model.extend({
        
     });
   },
+
+  desativar: function(id){
+    Veiculo
+    .forge({id_veiculo: id})
+    .fetch()
+    .then(function(veiculo) {
+        if (veiculo) {
+
+            var status;
+
+            if (veiculo.get('ativo') === false) {
+                status = true;
+            } else {
+                status = false;
+            }
+            veiculo
+                .save({
+                    ativo: status
+                }, {
+                    patch: true
+                });
+
+        } else {
+            var err = new AreaAzul.BusinessException(
+                'Desativacao: Veiculo não encontrado', {
+                    desativacao: id
+                });
+            throw err;
+        }
+        return veiculo;
+
+    })
+    .then(function(desativacao) {
+        return desativacao;
+    });
+  },
+
+
 
   procurarVeiculo: function(placa) {
      var placaSemMascara = '';
