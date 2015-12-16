@@ -79,7 +79,7 @@ var Veiculo = Bookshelf.Model.extend({
   },
 
   desativar: function(id){
-    Veiculo
+    return Veiculo
     .forge({id_veiculo: id})
     .fetch()
     .then(function(veiculo) {
@@ -92,7 +92,7 @@ var Veiculo = Bookshelf.Model.extend({
             } else {
                 status = false;
             }
-            veiculo
+           return veiculo
                 .save({
                     ativo: status
                 }, {
