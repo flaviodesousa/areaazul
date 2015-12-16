@@ -79,7 +79,6 @@ describe('model.revendedor', function() {
         done();
       })
       .catch(function(e) {
-        console.dir(e);
         done(e);
       });
     });
@@ -105,7 +104,6 @@ describe('model.revendedor', function() {
         done();
       })
       .catch(function(e) {
-        console.dir(e);
         done(e);
       });
     });

@@ -15,39 +15,42 @@ describe('model.Ativacao', function() {
   var idAtivacao = null;
 
   function apagarDadosDeTeste(){
-    TestHelpers.apagarAtivacao(idAtivacao);
+    return TestHelpers.apagarAtivacao(idAtivacao);
   }
 
 
   before(function(done) {
-    return TestHelpers.pegarVeiculo()
-        .then(function(veiculo) {
-          idVeiculo = veiculo.id;
-        })
-        .then(function() {
-          return TestHelpers.pegarUsuario()
-                .then(function(usuario) {
-                  idUsuarioComum = usuario.id;
-                });
-        })
-        .then(function() {
-          return TestHelpers.pegarUsuarioRevendedor()
-                .then(function(revendedor) {
-                  idUsuarioRevendedor = revendedor.id;
-                });
-        })
-        .then(function() {
-          return TestHelpers.pegarCidade()
-                .then(function(cidade) {
-                  idCidade = cidade.id;
-                });
-        })
-        .then(function() {
-          done();
-        })
-        .catch(function(e) {
-          done(e);
-        });
+    apagarDadosDeTeste()
+    .then(function() {
+      return TestHelpers.pegarVeiculo()
+          .then(function(veiculo) {
+            idVeiculo = veiculo.id;
+          })
+          .then(function() {
+            return TestHelpers.pegarUsuario()
+                  .then(function(usuario) {
+                    idUsuarioComum = usuario.id;
+                  });
+          })
+          .then(function() {
+            return TestHelpers.pegarUsuarioRevendedor()
+                  .then(function(revendedor) {
+                    idUsuarioRevendedor = revendedor.id;
+                  });
+          })
+          .then(function() {
+            return TestHelpers.pegarCidade()
+                  .then(function(cidade) {
+                    idCidade = cidade.id;
+                  });
+          })
+          .then(function() {
+            done();
+          })
+          .catch(function(e) {
+            done(e);
+          });
+    });
   });
 
 
@@ -137,11 +140,10 @@ describe('model.Ativacao', function() {
           valor: 10.0,
         })
         .then(function(ativacao) {
-          idAtivacao = ativacao.id;
+          ativacao.destroy();
           done();
         })
         .catch(function(e) {
-          console.dir(e);
           done(e);
         });
     });

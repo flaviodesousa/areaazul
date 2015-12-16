@@ -160,7 +160,7 @@ var Ativacao = Bookshelf.Model.extend({
                                 'Nao foi possivel ativar veículo. Dados invalidos',
                                 messages);
                     }
-                    console.dir(messages);
+
                     return messages;
                 }).then(function() {
                     return Veiculo
@@ -252,7 +252,7 @@ var Ativacao = Bookshelf.Model.extend({
                 return Ativacao
                     .verificaSaldo(ativacao.usuario_pessoa_id)
                     .then(function(conta) {
-                        console.dir(conta);
+
                         if (conta.get('saldo') <= 0) {
                             message.push({
                                 attribute: 'saldo',
@@ -286,7 +286,6 @@ var Ativacao = Bookshelf.Model.extend({
                     .select('conta.*')
                     .select('revendedor.*')
                     .select('usuario_revendedor.*');
-                    console.log(qb);
             })
             .fetch();
     },
@@ -303,7 +302,6 @@ var Ativacao = Bookshelf.Model.extend({
                     .andWhere('veiculo.placa', '=', placa)
                     .select('ativacao.*')
                     .select('veiculo.*');
-                    console.log("SQL"+qb);
             })
             .fetch();
     },

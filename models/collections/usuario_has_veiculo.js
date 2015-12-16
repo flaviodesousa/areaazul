@@ -25,7 +25,6 @@ listarVeiculos: function(user) {
         .select('usuario.*')
         .select('pessoa_fisica.*')
         .select('pessoa.*');
-        console.log("Select: "+qb);
         }).fetch().then(function(collection) {
           return collection;
         });

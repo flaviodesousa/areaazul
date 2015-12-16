@@ -39,7 +39,6 @@ describe('model.configuracao', function() {
                     done();
                 })
                 .catch(function(err) {
-                    console.dir(err);
                     done(err);
                 });
         });

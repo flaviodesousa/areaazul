@@ -70,9 +70,6 @@ var VeiculoCollection = Bookshelf.Collection.extend({
 /*                and "ativacao"."data_ativacao" > moment().subtract(120, 'minutes').calendar()*/
                 .select('veiculo.*')
                 .select('fiscalizacao.*');
-
-            console.log('sql' + qb);
-
         }).fetch().then(function(collection) {
             return collection;
         });

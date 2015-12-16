@@ -37,9 +37,6 @@ var UsuarioHasVeiculo =  Bookshelf.Model.extend({
 		})
 		.fetch()
 		.then(function(usuariohasveiculo) {
-
-
-			console.log(usuariohasveiculo);
 		   if (usuariohasveiculo === null) {
 		        return UsuarioHasVeiculo
 		            .forge({

@@ -28,7 +28,6 @@ var RecuperacaoSenha = Bookshelf.Model.extend({
             qb.join('usuario_revendedor','usuario_revendedor.pessoa_fisica_pessoa_id','=','pessoa.id_pessoa');
       qb.where('recuperacao_senha.id_recuperacao_senha', '=', password_recovery.id_recuperacao_senha);
       qb.select('recuperacao_senha.*', 'pessoa.*','usuario_revendedor.*');
-      console.log("sql"+qb);
     }).fetch().then(function (model) {
       if(model!==null){
           then(model);

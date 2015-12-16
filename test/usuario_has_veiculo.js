@@ -25,7 +25,6 @@ describe('model.usuario_has_veiculo', function() {
           done();
         })
         .catch(function(e) {
-          console.dir(e);
           done(e);
         });
   });

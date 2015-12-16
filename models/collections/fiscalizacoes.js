@@ -46,9 +46,6 @@ var FiscalizacaoCollection = Bookshelf.Collection.extend({
                 .where('fiscalizacao.timestamp', '>', moment().subtract(60, 'minutes').calendar())
                 .select('veiculo.*')
                 .select('fiscalizacao.*');
-
-            console.log('sql' + qb);
-
         }).fetch().then(function(collectionVeiculosSomenteFiscalizados) {
 
             return collectionVeiculosSomenteFiscalizados;

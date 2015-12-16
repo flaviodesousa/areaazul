@@ -20,7 +20,6 @@ var UsuarioRevendedorCollection = Bookshelf.Collection.extend({
         .select('pessoa_fisica.*')
         .select('pessoa.*')
         .select('usuario_revendedor.*');
-      console.log('sql' + qb);
     })
     .fetch()
     .then(function(collection) {

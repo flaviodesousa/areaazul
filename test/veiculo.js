@@ -99,8 +99,6 @@ describe('model.veiculo', function() {
                     done();
                 })
                 .catch(function(e) {
-                  console.dir(e);
-                  console.log(e);
                     done(e);
                 });
         });
@@ -111,12 +109,10 @@ describe('listar()', function() {
     it('retorna uma lista de veiculos ', function(done) {
       Veiculos.listar(
         function(collection) {
-          console.dir(collection);
           should.exist(collection);
           done();
         },
         function(err) {
-          console.dir(err);
           done(err);
         });
     });

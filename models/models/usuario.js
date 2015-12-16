@@ -224,7 +224,6 @@ var Usuario = Bookshelf.Model.extend({
                     pwd = model.attributes.senha;
                 }
                 var hash = bcrypt.compareSync(user.senha, pwd);
-                console.log('hash' + hash);
                 if (hash !== false) {
                     var novaSenha = util.criptografa(user.nova_senha);
 
@@ -261,7 +260,6 @@ var Usuario = Bookshelf.Model.extend({
                 'pessoa.id_pessoa', '=', 'conta.pessoa_id');
             qb.where('usuario.pessoa_id', user_id);
             qb.select('usuario.*', 'pessoa.*', 'pessoa_fisica.*', 'conta.*');
-            console.log("Query: "+qb);
         }).fetch().then(function(model) {
             func(model);
         }).catch(function(err) {
@@ -272,13 +270,6 @@ var Usuario = Bookshelf.Model.extend({
 
     validate: function(user, operacao) {
         var message = [];
-
-  console.log(validator.isNull(user.cpf));
-        console.log(!validation.isCPF(user.cpf));
-      
-
-
-
         if (validator.isNull(user.cpf)) {
             message.push({
                 attribute: 'cpf',
@@ -397,11 +388,8 @@ var Usuario = Bookshelf.Model.extend({
                 problem: 'A nova senha deve conter no minimo 4 caracteres!',
             });
         }
-
         return message;
     },
-
-
 
 });
 

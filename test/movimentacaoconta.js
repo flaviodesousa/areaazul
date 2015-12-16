@@ -34,7 +34,6 @@ describe('model.movimentacaoConta', function() {
             done();
           })
           .catch(function(e) {
-            console.dir(e);
             done(e);
           });
       });

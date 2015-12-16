@@ -20,7 +20,6 @@ var AtivacaoCollection = Bookshelf.Collection.extend({
                 .where('ativacao.data_ativacao', '>=', moment().subtract(2, 'minutes').calendar())
                 .select('ativacao.*')
                 .select('veiculo.*');
-            console.log('sql' + qb);
         }).fetch().then(function(collectionVeiculosSomenteAtivados) {
 
             return collectionVeiculosSomenteAtivados;
@@ -42,7 +41,6 @@ var AtivacaoCollection = Bookshelf.Collection.extend({
                 .andWhere('ativacao.data_ativacao','>=',moment().subtract(4, 'minutes').calendar())
                 .select('ativacao.*')
                 .select('veiculo.*');
-            console.log('sql' + qb);
         }).fetch().then(function(collectionVeiculosSomenteAtivados) {
 
             return collectionVeiculosSomenteAtivados;
@@ -64,7 +62,6 @@ var AtivacaoCollection = Bookshelf.Collection.extend({
                 .andWhere('ativacao.data_ativacao','>=',moment().subtract(6, 'minutes').calendar())
                 .select('ativacao.*')
                 .select('veiculo.*');
-            console.log('sql' + qb);
         }).fetch().then(function(collectionVeiculosSomenteAtivados) {
 
             return collectionVeiculosSomenteAtivados;

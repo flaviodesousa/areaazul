@@ -20,7 +20,6 @@ var MovimentacaoContaCollection = Bookshelf.Collection.extend({
                 })
                 .where('usuario.pessoa_id', '=', id)
                 .select('movimentacao_conta.*');
-            console.log('sql' + qb);
             }).fetch()
                 .then(function(collection) {
             return collection;

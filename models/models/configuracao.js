@@ -65,9 +65,6 @@ var Configuracao = Bookshelf.Model.extend({
     },
 
     validar: function(config) {
-
-        console.dir(config);
-
         var message = [];
 
         if (validator.isNull(config.valor_ativacao)) {
