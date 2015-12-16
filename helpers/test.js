@@ -12,7 +12,7 @@ var PessoaJuridica = AreaAzul.models.PessoaJuridica;
 var Contas = AreaAzul.collections.Contas;
 var UsuarioRevendedor = AreaAzul.models.UsuarioRevendedor;
 var Revendedor = AreaAzul.models.Revendedor;
-var Ativacao = AreaAzul.models.ativacao;
+var Ativacao = AreaAzul.models.Ativacao;
 var Ativacoes = AreaAzul.collections.Ativacoes;
 var UsuarioHasVeiculo = AreaAzul.models.UsuarioHasVeiculo;
 var Veiculo = AreaAzul.models.Veiculo;
@@ -441,6 +441,21 @@ exports.apagarMovimentacaoConta = function(movimentacaoContaId) {
             }
             return Promise.resolve(null);
         });
+};
+
+
+
+exports.apagarAtivacao = function(id){
+    return Ativacao
+        .forge({id_ativacao : id})
+        .fetch()
+        .then(function(a){
+            console.dir(a);
+            if(a){
+                return a.destroy();
+            }
+            return Promise.resolve(null);
+    });
 };
 
 exports.apagarUsuarioRevenda = function(UsuarioRevendaId) {

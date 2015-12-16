@@ -3,9 +3,25 @@
 var should = require('chai').should();
 var AreaAzul = require('../areaazul');
 var Configuracao = AreaAzul.models.Configuracao;
+var TestHelpers = require('../helpers/test');
 
 describe('model.configuracao', function() {
     var id_configuracao = null;
+    var idCidade = null;
+
+    before(function(done) {
+        return TestHelpers
+                .pegarCidade()
+                .then(function(cidade) {
+                    idCidade = cidade.id;
+                })
+                .then(function() {
+                  done();
+                })
+                .catch(function(e) {
+                  done(e);
+                });
+    });
 
 
     describe('alterar()', function() {
@@ -16,13 +32,14 @@ describe('model.configuracao', function() {
                 franquia: 10.0,
                 ciclo_ativacao: 70.0,
                 ciclo_fiscalizacao: 60.0,
+                cidade_id: idCidade,
             };
             Configuracao.alterar(config)
-                .then(function(model) {
-                    id_configuracao = model.id;
+                .then(function(model){
                     done();
                 })
                 .catch(function(err) {
+                    console.dir(err);
                     done(err);
                 });
         });
