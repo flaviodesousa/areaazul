@@ -34,21 +34,9 @@ var Configuracao = Bookshelf.Model.extend({
         return tempos;
     },
 
-    alterar: function(config, options) {
-        console.log('teste-teste');
-        console.dir(config);
-        return Bookshelf.transaction(function(t) {
-            var optionsUpdate = _.merge({}, options || {}, {
-                method: 'update'
-            }, {
-                patch: true
-            });
-            var optionsInsert = _.merge({}, options || {}, {
-                method: 'insert'
-            });
 
-            return 
-                 Configuracao
+    alterar: function(config) {
+            return Configuracao
                     .forge()
                     .fetch()
                     .then(function(configuracao) {
@@ -58,16 +46,16 @@ var Configuracao = Bookshelf.Model.extend({
                             franquia: config.franquia,
                             ciclo_ativacao: config.ciclo_ativacao,
                             ciclo_fiscalizacao: config.ciclo_fiscalizacao,
+                            cidade_id: config.cidade_id,
                         };
                         if (configuracao == null) {
                             return Configuracao
                                 .forge(configuracoes)
-                                .save(null, optionsInsert);
+                                .save();
                         }
                         return configuracao
-                            .save(configuracoes, optionsUpdate);
+                            .save(configuracoes, {method: 'update'}, {patch: true });
                     });
-        });
     },
 
     buscarConfiguracao: function() {
