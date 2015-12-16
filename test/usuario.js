@@ -41,7 +41,7 @@ describe('model.usuario', function() {
         nome: 'usuario teste unitario',
         email: 'teste-unitario@areaazul.org',
         telefone: '0',
-        cpf: '0',
+        cpf: '32807868193',
         data_nascimento: new Date(1981, 4, 1),
         sexo: 'feminino',
       };
@@ -79,6 +79,8 @@ describe('model.usuario', function() {
           done('Nao deve aceitar senha errada');
         })
         .catch(function(err) {
+
+
           should.exist(err);
           should.exist(err.authentication_event);
           err.authentication_event.should.be.true;
