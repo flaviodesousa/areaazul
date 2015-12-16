@@ -14,6 +14,11 @@ describe('model.Ativacao', function() {
   var idUsuarioRevendedor = null;
   var idAtivacao = null;
 
+  function apagarDadosDeTeste(){
+    TestHelpers.apagarAtivacao(idAtivacao);
+  }
+
+
   before(function(done) {
     return TestHelpers.pegarVeiculo()
         .then(function(veiculo) {
@@ -44,6 +49,7 @@ describe('model.Ativacao', function() {
           done(e);
         });
   });
+
 
 
   describe('Ativar()', function() {
@@ -118,8 +124,6 @@ describe('model.Ativacao', function() {
 
   describe('ativarPelaRevenda()', function() {
     it('grava ativacao', function(done) {
-
-      console.log('idUsuarioRevendedor'+idUsuarioRevendedor);
       Ativacao
         .ativarPelaRevenda({
           usuario_pessoa_id: idUsuarioRevendedor,
@@ -132,10 +136,12 @@ describe('model.Ativacao', function() {
           tempo: 60,
           valor: 10.0,
         })
-        .then(function() {
+        .then(function(ativacao) {
+          idAtivacao = ativacao.id;
           done();
         })
         .catch(function(e) {
+          console.dir(e);
           done(e);
         });
     });
@@ -153,4 +159,15 @@ describe('model.Ativacao', function() {
                 });
     });
   });
+
+  after(function(done) {
+    apagarDadosDeTeste()
+      .then(function() {
+        done();
+      })
+      .catch(function(e) {
+        done(e);
+      });
+  });
+
 });
