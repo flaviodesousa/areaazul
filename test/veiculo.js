@@ -90,8 +90,6 @@ describe('model.veiculo', function() {
   });
 
     describe('desativar()', function() {
-
-
         it('falha para veiculo inexistente', function(done) {
             Veiculo
                 .desativar({
