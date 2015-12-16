@@ -114,23 +114,24 @@ var Veiculo = Bookshelf.Model.extend({
     });
   },
 
-
-
   procurarVeiculo: function(placa) {
      var placaSemMascara = '';
 
     if (placa) {
       placaSemMascara = util.placaSemMascara(placa);
     }
-    return Veiculo.forge().query(function(qb) {
-      qb.where('veiculo.placa', placaSemMascara);
-      qb.join('cidade', 'veiculo.cidade_id', '=', 'cidade.id_cidade');
-      qb.join('estado', 'cidade.estado_id', '=', 'estado.id_estado');
-      qb.select('veiculo.*');
-      qb.select('cidade.*');
-      qb.select('estado.id_estado');
-      qb.select('estado.uf');
-    }).fetch();
+    return Veiculo
+          .forge()
+          .query(function(qb) {
+              qb.where('veiculo.placa', placaSemMascara);
+              qb.join('cidade', 'veiculo.cidade_id', '=', 'cidade.id_cidade');
+              qb.join('estado', 'cidade.estado_id', '=', 'estado.id_estado');
+              qb.select('veiculo.*');
+              qb.select('cidade.*');
+              qb.select('estado.id_estado');
+              qb.select('estado.uf');
+          })
+          .fetch();
   },
 
   validarVeiculo: function(veiculo) {
