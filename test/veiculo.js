@@ -62,20 +62,6 @@ describe('model.veiculo', function() {
     });
   });
 
-  describe('Procurar()', function() {
-    it('retorna um veiculo', function(done) {
-      
-      var v = { id_veiculo: idVeiculo };
-      Veiculos.procurar(v,
-        function(model) {
-          should.exist(model);
-          done();
-        },
-        function(err) {
-          done(err);
-        });
-    });
-  });
 
   describe('procurarVeiculo()', function() {
     it('retorna um veiculo', function(done) {
