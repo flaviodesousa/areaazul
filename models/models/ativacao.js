@@ -160,7 +160,7 @@ var Ativacao = Bookshelf.Model.extend({
                                 'Nao foi possivel ativar veículo. Dados invalidos',
                                 messages);
                     }
-
+                    console.dir(messages);
                     return messages;
                 }).then(function() {
                     return Veiculo
