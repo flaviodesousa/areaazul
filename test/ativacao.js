@@ -14,15 +14,10 @@ describe('model.Ativacao', function() {
   var idUsuarioRevendedor = null;
   var idAtivacao = null;
 
-  function apagarDadosDeTeste(){
-    return TestHelpers.apagarAtivacao(idAtivacao);
-  }
-
 
   before(function(done) {
-    apagarDadosDeTeste()
-    .then(function() {
-      return TestHelpers.pegarVeiculo()
+      return TestHelpers
+      .pegarVeiculo()
           .then(function(veiculo) {
             idVeiculo = veiculo.id;
           })
@@ -50,7 +45,6 @@ describe('model.Ativacao', function() {
           .catch(function(e) {
             done(e);
           });
-    });
   });
 
 
@@ -160,16 +154,6 @@ describe('model.Ativacao', function() {
                   done(e);
                 });
     });
-  });
-
-  after(function(done) {
-    apagarDadosDeTeste()
-      .then(function() {
-        done();
-      })
-      .catch(function(e) {
-        done(e);
-      });
   });
 
 });
