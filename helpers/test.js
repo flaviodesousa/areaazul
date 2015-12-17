@@ -446,16 +446,29 @@ exports.apagarMovimentacaoConta = function(movimentacaoContaId) {
 
 
 exports.apagarAtivacao = function(id){
-    return Ativacao
-        .forge({id_ativacao : id})
-        .fetch()
-        .then(function(a){
-            console.dir(a);
-            if(a){
-                return a.destroy();
-            }
-            return Promise.resolve(null);
-    });
+    if(id){
+            return Ativacao
+                .forge({id_ativacao : id})
+                .fetch()
+                .then(function(a){
+
+                    if(a){
+                        return a.destroy();
+                    }
+                    return Promise.resolve(null);
+            }); 
+    }else{
+         return Ativacao
+            .forge()
+            .fetch()
+            .then(function(a){
+                if(a){
+                    return a.destroy();
+                }
+                return Promise.resolve(null);
+            }); 
+    }
+
 };
 
 exports.apagarUsuarioRevenda = function(UsuarioRevendaId) {
