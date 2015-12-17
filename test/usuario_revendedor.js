@@ -10,36 +10,23 @@ var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
 
 
 describe('models.UsuarioRevendedor', function() {
-    var cpfPreExistente = '12341184758';
     var cpfNaoExistente = '58316661667';
-    //  var loginRevendaNaoExistente = 'revenda-nao-existente';
-    var senhaRevendaExistente = 'senha-adm-pre-existente';
-    var loginRevendaExistente = 'revenda-teste';
+    var senhaRevendaNaoExistente = 'senha-revenda';
+    var loginRevendaNaoExistente = 'revenda-teste';
     var idUsuarioRevendedor = null;
-    var loginAutorizado = null;
-    var senhaAutorizado = 'senha-teste';
-    var revendedor_id = null;
+    var idRevendedor = null;
     var termo_servico = true;
 
-    function apagarDadosDeTeste() {
-        return TestHelpers.apagarUsuarioRevenda(idUsuarioRevendedor);
-    }
-
     before(function(done) {
-          var usuario;
-          return TestHelpers.pegarUsuarioRevendedor()
-              .then(function(revendedor) {
-
-                  revendedor_id = revendedor.id;
-                  loginAutorizado = revendedor.get('login');
-                 // senhaAutorizado = revendedor.get('senha');
-              })
-              .then(function() {
-                  done();
-              })
-              .catch(function(e) {
-                  done(e);
-              });
+          return TestHelpers
+            .apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente)
+            .then(function() { return TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente); })
+            .then(function() {
+              done();
+            })
+            .catch(function(e) {
+              done(e);
+            });
       });
 
 
@@ -47,21 +34,20 @@ describe('models.UsuarioRevendedor', function() {
 
         it('cadastra usuario revendedor com cpf novo', function(done) {
             UsuarioRevendedor.inserir({
-                login: loginRevendaExistente,
+                login: loginRevendaNaoExistente,
                 nome: 'Revenda Teste',
                 autorizacao: 'funcionario',
-                senha: senhaRevendaExistente,
+                senha: senhaRevendaNaoExistente,
                 email: 'revenda@teste.com',
                 cpf: cpfNaoExistente,
-                revendedor_id: revendedor_id,
+                revendedor_id: idRevendedor,
                 termo_servico: termo_servico,
             })
-            .then(function(pessoa) {
-
-                should.exist(pessoa);
-                revendedor_id = pessoa.get('revendedor_id');
+            .then(function(usuarioRevendedor) {
+                should.exist(usuarioRevendedor);
+                idRevendedor = usuarioRevendedor.get('idRevendedor');
                 // Salvar id para testes de buscarPorId()
-                idUsuarioRevendedor = pessoa.id;
+                idUsuarioRevendedor = usuarioRevendedor.id;
                 done();
             })
             .catch(function(e) {
@@ -74,20 +60,17 @@ describe('models.UsuarioRevendedor', function() {
 
         it('altera usuario revendedor', function(done) {
             UsuarioRevendedor.alterar({
-                login: 'loginRevendaExistente',
+                login: loginRevendaNaoExistente,
                 nome: 'Revenda Teste',
                 autorizacao: 'funcionario',
-                senha: senhaRevendaExistente,
-                email: 'revenda@teste.com',
+                senha: senhaRevendaNaoExistente,
+                email: 'revenda_alterada@teste.com',
                 cpf: cpfNaoExistente,
-                revendedor_id: revendedor_id,
+                revendedor_id: idRevendedor,
                 termo_servico: termo_servico,
             })
             .then(function(pessoa) {
                 should.exist(pessoa);
-                revendedor_id = pessoa.get('revendedor_id');
-                // Salvar id para testes de buscarPorId()
-                idUsuarioRevendedor = pessoa.id;
                 done();
             })
             .catch(function(e) {
@@ -96,13 +79,10 @@ describe('models.UsuarioRevendedor', function() {
         });
     });
 
-
-
-
     describe('listarUsuarioRevenda()', function() {
 
         it('lista usuario da revenda mantidos no banco de dados', function(done) {
-            UsuarioRevendedorCollection.listarUsuarioRevenda(revendedor_id,
+            UsuarioRevendedorCollection.listarUsuarioRevenda(idRevendedor,
                 function() {
                     done();
                 },
@@ -116,10 +96,9 @@ describe('models.UsuarioRevendedor', function() {
 
         it('aceita credencial valida', function(done) {
             UsuarioRevendedor.autorizado(
-                loginAutorizado,
-                senhaAutorizado)
+                loginRevendaNaoExistente,
+                senhaRevendaNaoExistente)
                 .then(function(usuarioRevendedor) {
-
                     should.exist(usuarioRevendedor);
                     done();
                 })
@@ -130,8 +109,8 @@ describe('models.UsuarioRevendedor', function() {
 
         it('recusa credencial invalida', function(done) {
             UsuarioRevendedor.autorizado(
-                loginAutorizado,
-                senhaAutorizado + '0')
+                loginRevendaNaoExistente,
+                senhaRevendaNaoExistente + '0')
                 .then(function() {
                     done('Nao deve aceitar senha errada');
                 })
@@ -148,8 +127,8 @@ describe('models.UsuarioRevendedor', function() {
         it('recusa login invalido', function(done) {
 
             UsuarioRevendedor.autorizado(
-                loginAutorizado + '0',
-                senhaAutorizado)
+                loginRevendaNaoExistente + '0',
+                senhaRevendaNaoExistente)
                 .then(function() {
                     done('Nao deve aceitar login errado');
                 })
@@ -185,7 +164,7 @@ describe('models.UsuarioRevendedor', function() {
         it('desativa usuario revendedor existente', function(done) {
             UsuarioRevendedor
                 .desativar({
-                    pessoa_fisica_pessoa_id: idUsuarioRevendedor 
+                    pessoa_fisica_pessoa_id: idUsuarioRevendedor
                 })
                 .then(function() {
                     done();
@@ -196,13 +175,4 @@ describe('models.UsuarioRevendedor', function() {
         });
     });
 
-    after(function(done) {
-        apagarDadosDeTeste()
-            .then(function() {
-                done();
-            })
-            .catch(function(e) {
-                done(e);
-            });
-    });
 });

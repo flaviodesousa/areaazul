@@ -234,7 +234,7 @@ function _apagarRevendedorJuridica(idUsuario) {
                     }
                     pessoaId = usuario.get('pessoa_fisica_pessoa_id');
                     revendedorId = usuario.get('revendedor_id');
-                    return usuario.destroy;
+                    return usuario.destroy();
                 });
 
         })
@@ -456,7 +456,7 @@ exports.apagarAtivacao = function(id){
                         return a.destroy();
                     }
                     return Promise.resolve(null);
-            }); 
+            });
     }else{
          return Ativacao
             .forge()
@@ -466,10 +466,22 @@ exports.apagarAtivacao = function(id){
                     return a.destroy();
                 }
                 return Promise.resolve(null);
-            }); 
+            });
     }
 
 };
+
+exports.apagarUsuarioRevendaPorLogin = function(login) {
+    return UsuarioRevendedor
+        .forge({login: login})
+        .fetch()
+        .then(function(usuarioRevenda) {
+            if (usuarioRevenda) {
+                return usuarioRevenda.destroy();
+            }
+            return null;
+        })
+}
 
 exports.apagarUsuarioRevenda = function(UsuarioRevendaId) {
     if (!UsuarioRevendaId) {
@@ -540,10 +552,5 @@ exports.pegarUsuario = function() {
 exports.pegarUsuarioRevendedor = function() {
     return UsuarioRevendedor
         .forge()
-        .fetch()
-        .then(function(usuario_revendedor) {
-            if (usuario_revendedor) {
-                return usuario_revendedor;
-            }
-        });
+        .fetch();
 };

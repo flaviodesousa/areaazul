@@ -50,8 +50,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     },
 
     _salvarUsuarioRevenda: function(entidade, options, t) {
-        var Usuario_Revendedor = this;
-        var usuario_revendedor = null;
+        var UsuarioRevendedor = this;
         var senha;
 
         if (!entidade.senha) {
@@ -83,9 +82,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                             return PessoaFisica.alterar(entidade, t, pessoaFisica.id);
                         }else{
                             // Caso nao exista, criar a pessoa fisica
-
-                        return PessoaFisica
-                            ._cadastrar(entidade, t);    
+                            return PessoaFisica.
+                                _cadastrar(entidade, t);
                         }
                     })
             }).then(function(pessoaFisica) {
@@ -99,20 +97,16 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
                     revendedor_id: entidade.revendedor_id,
                     pessoa_fisica_pessoa_id: pessoaFisica.id,
                 }
-                
+
                 if (options.method === 'insert') {
-                    return Usuario_Revendedor
+                    return UsuarioRevendedor
                         .forge(dadosUsuarioRevendedor)
                         .save(null, options);
                 } else {
-                    return Usuario_Revendedor
+                    return UsuarioRevendedor
                         .forge()
                         .save(dadosUsuarioRevendedor, options);
                 }
-            })
-            .then(function(u_r) {
-                usuario_revendedor = u_r;
-                return u_r;
             });
 
     },
@@ -164,7 +158,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     },
 
     alterarSenha: function(user, then, fail) {
-        new this.Usuario_Revendedor({
+        new this.UsuarioRevendedor({
             id_usuario_revendedor: user.id_usuario_revendedor
         }).fetch().then(function(model) {
             if (model !== null) {
@@ -341,7 +335,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         return message;
     },
     alterarSenhaRecuperacao: function(user) {
-        new this.Usuario_Revendedor({
+        new this.UsuarioRevendedor({
             pessoa_fisica_pessoa_id: user.pessoa_fisica_pessoa_id,
         })
             .fetch()
