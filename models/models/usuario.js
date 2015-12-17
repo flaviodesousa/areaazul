@@ -12,7 +12,7 @@ var util = require('../../helpers/util');
 var Conta = require('./conta');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 var Veiculo = require('./veiculo').Veiculo;
-var AreaAzul = require('../../areaazul.js');
+var AreaAzul = require('../../areaazul');
 var log = AreaAzul.log;
 
 var Usuario = Bookshelf.Model.extend({
@@ -63,6 +63,7 @@ var Usuario = Bookshelf.Model.extend({
                         'Usuario: login invalido', {
                             login: login
                         });
+                    err.authentication_event = true;
                     log.warn(err.message, err.details);
                     throw err;
                 }
@@ -71,8 +72,10 @@ var Usuario = Bookshelf.Model.extend({
                 } else {
                     err = new AreaAzul.BusinessException(
                         'Usuario: senha incorreta', {
-                            login: login
+                            login: login,
+                            usuario: usuario
                         });
+                    err.authentication_event = true;
                     log.warn(err.message, err.details);
                     throw err;
                 }
@@ -101,7 +104,7 @@ var Usuario = Bookshelf.Model.extend({
         var login;
         var senha;
         var senhaGerada;
-    
+
         if (!entidade.senha) {
 
             senha = util.criptografa(util.generate());
@@ -166,7 +169,7 @@ var Usuario = Bookshelf.Model.extend({
                                 pessoa_id: entidade.id,
                             })
                             .save(null, options);
-                
+
             }).then(function(u_r) {
                 return util.enviarEmailConfirmacao(entidade, login, senhaGerada);
             }).then(function(u_r) {

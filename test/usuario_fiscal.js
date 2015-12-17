@@ -2,7 +2,7 @@
 
 var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
-var AreaAzul = require('../areaazul');
+var AreaAzul = require('../../areaazul');
 var UsuarioFiscal = AreaAzul.models.UsuarioFiscal;
 var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
 

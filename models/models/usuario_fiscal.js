@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 var util = require('../../helpers/util');
-
+var AreaAzul = require('../../areaazul');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa').Pessoa;
 var PessoaFisica = require('./pessoafisica').PessoaFisica;
@@ -96,14 +96,21 @@ var UsuarioFiscal = Bookshelf.Model.extend({
       .fetch()
       .then(function(usuarioFiscal) {
         if (usuarioFiscal === null) {
-          err = new Error('login invalido: ' + login);
+          err = new AreaAzul.BusinessException(
+              'Usuario: login invalido', {
+                  login: login
+              });
           err.authentication_event = true;
           throw err;
         }
         if (util.senhaValida(senha, usuarioFiscal.get('senha'))) {
           return usuarioFiscal;
         } else {
-          err = new Error('senha incorreta');
+          err = new AreaAzul.BusinessException(
+              'Usuario: senha incorreta', {
+                  login: login,
+                  usuario_fiscal: usuarioFiscal
+              });
           err.authentication_event = true;
           throw err;
         }

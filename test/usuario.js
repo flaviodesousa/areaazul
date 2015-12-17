@@ -79,8 +79,6 @@ describe('model.usuario', function() {
           done('Nao deve aceitar senha errada');
         })
         .catch(function(err) {
-
-
           should.exist(err);
           should.exist(err.authentication_event);
           err.authentication_event.should.be.true;
