@@ -105,8 +105,13 @@ var Usuario = Bookshelf.Model.extend({
         var senha;
         var senhaGerada;
 
-        if (!entidade.senha) {
+       
+        
+        if(entidade.data_nascimento.length){
+            entidade.data_nascimento = util.stringToDate(entidade.data_nascimento,"dd/MM/yyyy","/");
+        }
 
+        if (!entidade.senha) {
             senha = util.criptografa(util.generate());
         } else {
             senha = util.criptografa(entidade.senha);
