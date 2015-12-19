@@ -35,7 +35,7 @@ var Ativacao = Bookshelf.Model.extend({
         if (validator.isNull(altitude)) {
             altitude = null;
         }
- 
+
         return Bookshelf.transaction(function(t) {
             var options = {
                 transacting: t,
@@ -211,8 +211,8 @@ var Ativacao = Bookshelf.Model.extend({
 
         var message = [];
 
-        
-        
+
+
         if (validator.isNull(ativacao.marca)) {
             message.push({
                 attribute: 'marca',
@@ -248,12 +248,12 @@ var Ativacao = Bookshelf.Model.extend({
                 }
                 return message;
 
-            }).then(function() {
+            })
+            .then(function() {
                 return Ativacao
                     .verificaSaldo(ativacao.usuario_pessoa_id)
                     .then(function(conta) {
-
-                        if (conta.get('saldo') <= 0) {
+                        if (!conta || conta.get('saldo') <= 0) {
                             message.push({
                                 attribute: 'saldo',
                                 problem: 'Usuário não possui saldo em conta!',
