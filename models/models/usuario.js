@@ -104,10 +104,12 @@ var Usuario = Bookshelf.Model.extend({
         var login;
         var senha;
         var senhaGerada;
+        var senhaNova;
 
 
 
         if (!entidade.senha) {
+            senhaNova = entidade.senha;
             senha = util.criptografa(util.generate());
         } else {
             senha = util.criptografa(entidade.senha);
@@ -172,7 +174,7 @@ var Usuario = Bookshelf.Model.extend({
                             .save(null, options);
 
             }).then(function(u_r) {
-                return util.enviarEmailConfirmacao(entidade, login, entidade.senha);
+                return util.enviarEmailConfirmacao(entidade, login, senhaNova);
             }).then(function(u_r) {
                 usuario = u_r;
                 return u_r;
