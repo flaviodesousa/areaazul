@@ -107,6 +107,17 @@ exports.stringToDate = function(_date,_format,_delimiter){
   return formatedDate;
 };
 
+exports.formataData = function(_data){
+  var dia = _data.substring(0,2); 
+  var mes = _data.substring(3,5); 
+  var ano = _data.substring(6,10);
+  var barra = "/";
+  var data = ano.concat(barra,mes,barra,dia); 
+  console.log(data);
+  return data;
+
+};
+
 exports.dataValida = function(_data){
   var dia = _data.substring(0,2); 
   var mes = _data.substring(3,5); 
