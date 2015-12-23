@@ -134,6 +134,7 @@ var Usuario = Bookshelf.Model.extend({
                 }
                 return messages;
             }).then(function() {
+                entidade.data_nascimento = util.formataData(entidade.data_nascimento);
                 return PessoaFisica
                     .forge({
                         cpf: entidade.cpf
@@ -300,7 +301,7 @@ var Usuario = Bookshelf.Model.extend({
         }
 
         if (user.data_nascimento.length === 10) {
-            if(util.dataValida(user.data_nascimento)==="invalidavalida"){
+            if(util.dataValida(user.data_nascimento)==="invalida"){
                 message.push({
                 attribute: 'data_nascimento',
                 problem: 'Data de nascimento inválida!',
