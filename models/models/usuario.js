@@ -14,6 +14,8 @@ var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 var Veiculo = require('./veiculo').Veiculo;
 var AreaAzul = require('../../areaazul');
 var log = AreaAzul.log;
+var moment = require('moment');
+var util = require('../../helpers/util');
 
 var Usuario = Bookshelf.Model.extend({
     tableName: 'usuario',
@@ -293,6 +295,15 @@ var Usuario = Bookshelf.Model.extend({
                 attribute: 'data_nascimento',
                 problem: 'Data de nascimento é obrigatório!',
             });
+        }
+
+        if (user.data_nascimento.length === 10) {
+            if(util.dataValida(user.data_nascimento)==="invalidavalida"){
+                message.push({
+                attribute: 'data_nascimento',
+                problem: 'Data de nascimento inválida!',
+            });
+            }
         }
 
         if (validator.isNull(user.nome)) {
