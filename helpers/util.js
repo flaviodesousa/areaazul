@@ -112,16 +112,17 @@ exports.dataValida = function(_data){
   var mes = _data.substring(3,5); 
   var ano = _data.substring(6,10);
   var situacao = "valida";
+  console.log("dia:"+dia+"/mes:"+mes+"/ano:"+ano);
 
-    if ((dia < 01)||(dia < 01 || dia > 30) && (  mes === 04 || mes === 06 || mes === 09 || mes === 11 ) || dia > 31) { 
+    if ((dia < 1)||(dia < 1 || dia > 30) && (  mes === 4 || mes === 6 || mes === 09 || mes === 11 ) || dia > 31) { 
         situacao = "invalida"; 
     }
-      if (mes < 01 || mes > 12 ) { 
+      if (mes < 1 || mes > 12 ) { 
         situacao = "invalida"; 
     } 
 
     // verifica se e ano bissexto 
-    if (mes === 2 && ( dia < 01 || dia > 29 || ( dia > 28 && (parseInt(ano / 4) !== ano / 4)))) { 
+    if (mes === 2 && ( dia < 1 || dia > 29 || ( dia > 28 && (parseInt(ano / 4) !== ano / 4)))) { 
         situacao = "invalida"; 
     }  
 
