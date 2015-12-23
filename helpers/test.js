@@ -492,7 +492,9 @@ exports.apagarUsuarioRevenda = function(UsuarioRevendaId) {
 };
 
 exports.pegarCidade = function() {
-    return Cidade.forge().fetch();
+        return Cidade
+            .forge()
+            .fetch();
 };
 
 exports.pegarVeiculo = function() {

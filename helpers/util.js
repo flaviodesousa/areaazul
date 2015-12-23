@@ -113,9 +113,7 @@ exports.formataData = function(_data){
   var ano = _data.substring(6,10);
   var barra = "/";
   var data = ano.concat(barra,mes,barra,dia); 
-  console.log(data);
   return data;
-
 };
 
 exports.dataValida = function(_data){
@@ -123,8 +121,6 @@ exports.dataValida = function(_data){
   var mes = _data.substring(3,5); 
   var ano = _data.substring(6,10);
   var situacao = "valida";
-  console.log("dia:"+dia+"/mes:"+mes+"/ano:"+ano);
-
     if ((dia < 1)||(dia < 1 || dia > 30) && (  mes === 4 || mes === 6 || mes === 09 || mes === 11 ) || dia > 31) { 
         situacao = "invalida"; 
     }
@@ -136,6 +132,5 @@ exports.dataValida = function(_data){
     if (mes === 2 && ( dia < 1 || dia > 29 || ( dia > 28 && (parseInt(ano / 4) !== ano / 4)))) { 
         situacao = "invalida"; 
     }  
-
     return situacao;
 };
