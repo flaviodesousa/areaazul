@@ -24,6 +24,8 @@ var Veiculo = Bookshelf.Model.extend({
       method: 'insert',
     });
 
+    var placaSemMascara = util.placaSemMascara(vehicle.placa);
+
     return Veiculo
           .validarVeiculo(vehicle)
               .then(function(messages) {
@@ -39,7 +41,7 @@ var Veiculo = Bookshelf.Model.extend({
           return Veiculo
                 .forge({
                   cidade_id: vehicle.cidade_id,
-                  placa: vehicle.placa,
+                  placa: placaSemMascara,
                   marca: vehicle.marca,
                   modelo: vehicle.modelo,
                   cor: vehicle.cor,
@@ -66,6 +68,7 @@ var Veiculo = Bookshelf.Model.extend({
 
   cadastrar: function(vehicle){
     var options;
+
     return Veiculo._cadastrarVeiculo(vehicle);
   },
 
@@ -130,6 +133,8 @@ var Veiculo = Bookshelf.Model.extend({
               qb.select('cidade.*');
               qb.select('estado.id_estado');
               qb.select('estado.uf');
+
+              console.log(qb);
           })
           .fetch();
   },
