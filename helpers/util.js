@@ -106,3 +106,24 @@ exports.stringToDate = function(_date,_format,_delimiter){
 
   return formatedDate;
 };
+
+exports.dataValida = function(_data){
+  var dia = _data.substring(0,2); 
+  var mes = _data.substring(3,5); 
+  var ano = _data.substring(6,10);
+  var situacao = "valida";
+
+    if ((dia < 01)||(dia < 01 || dia > 30) && (  mes === 04 || mes === 06 || mes === 09 || mes === 11 ) || dia > 31) { 
+        situacao = "invalida"; 
+    }
+      if (mes < 01 || mes > 12 ) { 
+        situacao = "invalida"; 
+    } 
+
+    // verifica se e ano bissexto 
+    if (mes === 2 && ( dia < 01 || dia > 29 || ( dia > 28 && (parseInt(ano / 4) !== ano / 4)))) { 
+        situacao = "invalida"; 
+    }  
+
+    return situacao;
+};
