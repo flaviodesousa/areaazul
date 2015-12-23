@@ -7,10 +7,11 @@ var EstadoCollection = Bookshelf.Collection.extend({
     model: Estado,
 }, {
     listar: function(func) {
-        EstadoCollection.forge().query(function(qb) {
+        return EstadoCollection.forge().query(function(qb) {
             qb.select('estado.*')
-        }).fetch().then(function(collection) {
-            func(collection);
+        }).fetch()
+        .then(function(collection) {
+            return collection;
         });
     },
 });

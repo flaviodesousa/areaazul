@@ -6,8 +6,8 @@ var Cidade = require("../models/cidade");
 var CidadeCollection = Bookshelf.Collection.extend({
   model: Cidade,
 }, {
-  listar: function(id_estado, func, err) {
-    this
+  listar: function(id_estado) {
+    return this
     .forge()
     .query(function(qb) {
       qb.where('estado_id', '=', id_estado);
@@ -15,10 +15,10 @@ var CidadeCollection = Bookshelf.Collection.extend({
     })
     .fetch()
     .then(function(collection) {
-      func(collection);
+      return collection;
     })
     .catch(function(e) {
-      err(e);
+      return e;
     });
   },
 });
