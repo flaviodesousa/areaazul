@@ -549,8 +549,36 @@ exports.pegarUsuario = function() {
         });
 };
 
+
+exports.pegarRevendedor = function(){
+    return Revenvedor
+            .forge()
+            .fetch();
+
+}
+
 exports.pegarUsuarioRevendedor = function() {
     return UsuarioRevendedor
         .forge()
-        .fetch();
+        .fetch()
+        .then(function(usuarioRevendedor){
+
+            if(usuarioRevendedor){
+                return usuarioRevendedor;
+            }else{
+                return this.pegarRevendedor
+                .then(function(r){
+                    return UsuarioRevendedor
+                            .inserir({
+                                login: 'loginRevendaNaoExistente',
+                                nome: 'Revenda Teste',
+                                autorizacao: 'funcionario',
+                                senha: 'senhaRevendaNaoExistente',
+                                email: 'revenda@teste.com',
+                                cpf: cpfNaoExistente,
+                                revendedor_id: r.id
+                            })
+                })
+            }
+        });
 };

@@ -12,10 +12,10 @@ exports.enviarEmailConfirmacao = function(entidade, login, senha) {
     from: 'AreaAzul <cadastro@areaazul.org>',
     to:  entidade.email,
     cc: 'cadastro@areaazul.org',
-    subject: 'AreaAzul confirmação de cadastro',
+    subject: 'Confirmação de cadastro - AreaAzul',
     html: '<p>Por favor ' + entidade.nome +
-        ' clique no link abaixo para confirmação do cadastro.</br>' +
-        'http://demo.areaazul.org/login</br>' +
+        ' clique no link abaixo para acessar a aplicação areaazul.</br>' +
+        'http://usuario.demo.areaazul.org/</br>' +
         'Usuario: ' + login + '</br>' +
         'Senha é: ' + senha + '.',
   };

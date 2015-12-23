@@ -20,7 +20,9 @@ describe('models.UsuarioRevendedor', function() {
     before(function(done) {
           return TestHelpers
             .apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente)
-            .then(function() { return TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente); })
+            .then(function() { 
+                return TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente); 
+            })
             .then(function() {
               done();
             })
