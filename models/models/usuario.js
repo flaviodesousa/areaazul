@@ -108,12 +108,11 @@ var Usuario = Bookshelf.Model.extend({
         var senhaGerada;
         var senhaNova;
 
-
-
         if (!entidade.senha) {
             senhaNova = entidade.senha;
             senha = util.criptografa(util.generate());
         } else {
+            senhaNova = entidade.senha;
             senha = util.criptografa(entidade.senha);
             entidade.senha = senha;
         }
