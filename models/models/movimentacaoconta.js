@@ -2,7 +2,6 @@
 
 var _ = require('lodash');
 var AreaAzul = require('../../areaazul');
-var BusinessException = AreaAzul.BusinessException;
 var Bookshelf = require('bookshelf').conexaoMain;
 var Conta = require('./conta');
 var math = require('mathjs');
@@ -28,16 +27,16 @@ var MovimentacaoConta = Bookshelf.Model.extend({
       })
       .fetch()
       .then(function(c) {
-
-        var saldoAtual = Number(c.get('saldo'));
-        var novoSaldo = math.sum(saldoAtual, movimentacaoconta.valor);
-
         if (!c) {
-          throw new BusinessException(
+          throw new AreaAzul.BusinessException(
             'Conta invalida', {
               movimentacaoconta: movimentacaoconta,
             });
         }
+
+        var saldoAtual = Number(c.get('saldo'));
+        var novoSaldo = math.sum(saldoAtual, movimentacaoconta.valor);
+
         return c.save({
             saldo: novoSaldo,
           }, optionsUpdate)
