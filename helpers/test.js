@@ -492,12 +492,29 @@ exports.pegarUsuario = function() {
     });
 };
 
-
-exports.pegarRevendedor = function() {
+function pegarRevendedor() {
   return Revendedor
     .forge()
-    .fetch();
-};
+    .fetch()
+    .then(function(revendedor) {
+      if (revendedor) {
+        return revendedor;
+      }
+      return Revendedor
+        .cadastrar({
+          nome: 'nomeTeste',
+          email: 'emailTeste@areaazul.org',
+          telefone: 'telefoneTeste',
+          cpf: '21962139425',
+          data_nascimento: '01/04/1977',
+          login: 'logindeteste',
+          autorizacao: 'autorizacao teste',
+          senha: 'senhaTeste',
+          termo_servico: true,
+        });
+    });
+}
+exports.pegarRevendedor = pegarRevendedor;
 
 exports.pegarUsuarioRevendedor = function() {
   return UsuarioRevendedor
@@ -507,7 +524,7 @@ exports.pegarUsuarioRevendedor = function() {
       if (usuarioRevendedor) {
         return usuarioRevendedor;
       }
-      return this.pegarRevendedor
+      return pegarRevendedor()
         .then(function(r) {
           return UsuarioRevendedor
             .inserir({
