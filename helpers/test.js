@@ -283,7 +283,6 @@ exports.apagarUsuarioAdministrativoPorLogin = function(login) {
 
 exports.apagarRevendedorPessoPorIdentificador = function(cpf, cnpj) {
   if (cpf !== null || cnpj !== null) {
-    console.log('cpf' + cpf);
     return PessoaFisica
       .forge({
         cpf: cpf
@@ -291,12 +290,7 @@ exports.apagarRevendedorPessoPorIdentificador = function(cpf, cnpj) {
       .fetch()
       .then(function(pf) {
         if (pf === null) {
-          return Promise.resolve(null);
-        }
-        return pf;
-      })
-      .then(function(pf) {
-        if (pf === null) {
+          console.log('cpf nao encontrado: ' + cpf);
           return Promise.resolve(null);
         }
         return _apagarUsuarioRevenda(pf.get('pessoa_id'));
@@ -308,19 +302,10 @@ exports.apagarRevendedorPessoPorIdentificador = function(cpf, cnpj) {
           })
           .fetch()
           .then(function(pj) {
-            console.log('pj');
-            console.dir(pj);
             if (pj === null) {
+              console.log('cnpj nao encontrado: ' + cnpj);
               return Promise.resolve(null);
             }
-            return pj;
-          })
-          .then(function(pj) {
-            if (pj === null) {
-              return Promise.resolve(null);
-            }
-            console.log('pj');
-            console.dir(pj);
             return _apagarRevendedorJuridica(pj.get('pessoa_id'));
           });
       });
