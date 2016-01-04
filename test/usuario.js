@@ -42,7 +42,7 @@ describe('model.usuario', function() {
         email: 'teste-unitario@areaazul.org',
         telefone: '0',
         cpf: '32807868193',
-        data_nascimento: new Date(1981, 4, 1),
+        data_nascimento: '11/04/1980',
         sexo: 'feminino',
       };
 

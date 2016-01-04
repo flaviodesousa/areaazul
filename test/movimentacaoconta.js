@@ -3,43 +3,24 @@
 var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
-var Usuario = AreaAzul.models.Usuario;
 var MovimentacaoConta = AreaAzul.models.MovimentacaoConta;
 
 describe('model.movimentacaoConta', function() {
-  var loginDeTeste = 'login-teste-movimentacao-conta';
-  var senhaDeTeste = 'senha-teste-movimentacao-conta';
   var usuarioId = null;
-  var movimentacaoContaCreditoId = null;
-  var movimentacaoContaDebitoId = null;
-
-  function apagarDadosDeTeste() {
-    return TestHelpers.apagarMovimentacaoConta(movimentacaoContaCreditoId)
-      .then(function() {
-        return TestHelpers.apagarMovimentacaoConta(movimentacaoContaDebitoId);
-      })
-      .then(function() {
-        return TestHelpers.apagarUsuarioPorLogin(loginDeTeste);
-      });
-  }
 
   before(function(done) {
-    apagarDadosDeTeste()
+    TestHelpers.pegarUsuarioRevendedor()
+      .then(function(revendedor) {
+        usuarioId = revendedor.id;
+      })
       .then(function() {
-          return TestHelpers.pegarUsuarioRevendedor()
-                  .then(function(revendedor) {
-                    usuarioId = revendedor.id;
-          })
-          .then(function() {
-            done();
-          })
-          .catch(function(e) {
-            done(e);
-          });
+        done();
+      })
+      .catch(function(e) {
+        console.dir(e);
+        done(e);
       });
   });
-
-
 
   describe('inserirCredito()', function() {
     it('insere credito na conta', function(done) {
@@ -52,8 +33,7 @@ describe('model.movimentacaoConta', function() {
 
       MovimentacaoConta
         .inserirCredito(conta)
-        .then(function(movimentacaoconta) {
-          movimentacaoContaCreditoId = movimentacaoconta.id;
+        .then(function() {
           done();
         })
         .catch(function(err) {
@@ -73,8 +53,7 @@ describe('model.movimentacaoConta', function() {
 
       MovimentacaoConta
         .inserirDebito(conta)
-        .then(function(movimentacaoconta) {
-          movimentacaoContaDebitoId = movimentacaoconta.id;
+        .then(function() {
           done();
         })
         .catch(function(err) {

@@ -21,10 +21,7 @@ listarVeiculos: function(user) {
           this.on('veiculo.id_veiculo', '=', 'usuario_has_veiculo.veiculo_id');
         })
         .where('usuario.pessoa_id', user)
-        .select('veiculo.*')
-        .select('usuario.*')
-        .select('pessoa_fisica.*')
-        .select('pessoa.*');
+        .select('veiculo.*');
         }).fetch().then(function(collection) {
           return collection;
         });

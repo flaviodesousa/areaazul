@@ -1,23 +1,23 @@
 'use strict';
 
 var AreaAzul = require('../../areaazul');
+var logger = AreaAzul.log;
 var bcrypt = require('bcrypt');
 var AreaAzulMailer = require('areaazul-mailer');
 var moment = require('moment');
-var winston = require('winston');
 var uuid = require('node-uuid');
 
 exports.enviarEmailConfirmacao = function(entidade, login, senha) {
   var message = {
     from: 'AreaAzul <cadastro@areaazul.org>',
-    to:  entidade.email,
+    to: entidade.email,
     cc: 'cadastro@areaazul.org',
-    subject: 'AreaAzul confirmação de cadastro',
+    subject: 'Confirmação de cadastro - AreaAzul',
     html: '<p>Por favor ' + entidade.nome +
-        ' clique no link abaixo para confirmação do cadastro.</br>' +
-        'http://demo.areaazul.org/login</br>' +
-        'Usuario: ' + login + '</br>' +
-        'Senha é: ' + senha + '.',
+      ' clique no link abaixo para acessar a aplicação areaazul.</br>' +
+      'http://usuario.demo.areaazul.org/</br>' +
+      'Usuario: ' + login + '</br>' +
+      'Senha é: ' + senha + '.',
   };
   AreaAzulMailer.enviar.emailer(message);
 };
@@ -25,22 +25,26 @@ exports.enviarEmailConfirmacao = function(entidade, login, senha) {
 exports.enviarEmailNovaSenha = function(email, nome, uuid) {
   var message = {
     from: 'AreaAzul <cadastro@areaazul.org>',
-    to:  email,
+    to: email,
     cc: 'cadastro@areaazul.org',
     subject: 'AreaAzul nova senha ',
     html: '<p>Por favor ' + nome +
-        ' clique no link abaixo para alterar sua senha.</br>' +
-        'http://demo.areaazul.org/' + uuid + '.',
+      ' clique no link abaixo para alterar sua senha.</br>' +
+      'http://demo.areaazul.org/' + uuid + '.',
   };
   AreaAzulMailer.enviar.emailer(message);
 };
 
 function getRandomChar() {
-  var ascii = [[48, 57], [64, 90], [97, 122]];
+  var ascii = [
+    [48, 57],
+    [64, 90],
+    [97, 122],
+  ];
   var i = Math.floor(Math.random() * ascii.length);
   return String.fromCharCode(
     Math.floor(Math.random() *
-     (ascii[i][1] - ascii[i][0])) + ascii[i][0]);
+      (ascii[i][1] - ascii[i][0])) + ascii[i][0]);
 }
 
 exports.generate = function() {
@@ -67,7 +71,6 @@ exports.converteData = function(data) {
 };
 
 exports.log = function(log, type) {
-  var logger = AreaAzul.log;
   if (!type) {
     logger.info(log);
   } else {
@@ -90,4 +93,23 @@ exports.placaSemMascara = function(valor) {
   valorComMascara = valorComMascara.replace('*', '');
 
   return valorComMascara;
+};
+
+exports.formataData = function(_data) {
+  var m;
+  if (!_data) {
+    return null;
+  }
+  if (_data instanceof Date) {
+    m = moment(_data);
+  } else if (typeof _data === 'string') {
+    m = moment(_data, 'DD-MM-YYYY');
+  } else {
+    throw new Error('unexpected type: ' + typeof _data);
+  }
+  return m.format('DD/MM/YYYY');
+};
+
+exports.dataValida = function(_data) {
+  return moment(_data, 'DD-MM-YYYY').isValid();
 };
