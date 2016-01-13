@@ -27,42 +27,6 @@ var Revendedor = Bookshelf.Model.extend({
       var idRevendedor = null;
       var senha = util.criptografa(dealer.senha);
 
-      if (!dealer.cnpj) {
-        return Revendedor
-          .validarRevenda(dealer)
-          .then(function(messages) {
-            if (messages.length) {
-              throw new AreaAzul
-                .BusinessException(
-                  'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
-                  messages);
-            }
-            return messages;
-          })
-          .then(function() {
-            return PessoaFisica
-              ._cadastrar(dealer, options);
-          })
-          .then(function(pf) {
-            idPessoa = pf.id;
-            return Revendedor
-              ._cadastrar(pf, options);
-          })
-          .then(function(revenda) {
-            idRevendedor = revenda.get('pessoa_id');
-            return UsuarioRevendedor
-              .forge({
-                login: dealer.login,
-                senha: senha,
-                acesso_confirmado: true,
-                ativo: true,
-                autorizacao: dealer.autorizacao,
-                revendedor_id: idRevendedor,
-                pessoa_fisica_pessoa_id: idPessoa,
-              })
-              .save(null, optionsInsert);
-          });
-      }
       return Revendedor
         .validarRevenda(dealer)
         .then(function(messages) {
@@ -75,34 +39,38 @@ var Revendedor = Bookshelf.Model.extend({
           return messages;
         })
         .then(function() {
-          return PessoaJuridica
-            ._cadastrar(dealer, options)
-            .then(function(pj) {
-              idPessoa = pj.id;
-              return Revendedor._cadastrar(pj, options);
-            });
+          if (dealer.cnpj) {
+            return PessoaJuridica
+              ._cadastrar(dealer, options);
+          }
+          return PessoaFisica
+            ._cadastrar(dealer, options);
+        })
+        .then(function(pessoa) {
+          idPessoa = pessoa.id;
+          return Revendedor._cadastrar(pessoa, options);
         })
         .then(function() {
           return PessoaFisica
-            ._cadastrar(dealer, options)
-            .then(function(pf) {
-              idPessoa = pf.id;
-              return Revendedor._cadastrar(pf, options)
-                .then(function(revenda) {
-                  idRevendedor = revenda.get('pessoa_id');
-                  return UsuarioRevendedor
-                    .forge({
-                      login: dealer.login,
-                      senha: senha,
-                      acesso_confirmado: true,
-                      ativo: true,
-                      autorizacao: dealer.autorizacao,
-                      revendedor_id: idRevendedor,
-                      pessoa_fisica_pessoa_id: idPessoa,
-                    })
-                    .save(null, optionsInsert);
-                });
-            });
+            ._cadastrar(dealer, options);
+        })
+        .then(function(pf) {
+          idPessoa = pf.id;
+          return Revendedor._cadastrar(pf, options);
+        })
+        .then(function(revenda) {
+          idRevendedor = revenda.get('pessoa_id');
+          return UsuarioRevendedor
+            .forge({
+              login: dealer.login,
+              senha: senha,
+              acesso_confirmado: true,
+              ativo: true,
+              autorizacao: dealer.autorizacao,
+              revendedor_id: idRevendedor,
+              pessoa_fisica_pessoa_id: idPessoa,
+            })
+            .save(null, optionsInsert);
         });
     });
   },
@@ -257,18 +225,18 @@ var Revendedor = Bookshelf.Model.extend({
   buscarRevendedor: function(user, then, fail) {
     Revendedor
       .forge()
-      .query(
-        function(qb) {
-          qb.join('pessoa', 'pessoa.id_pessoa', '=',
-            'revendedor.pessoa_id');
-          qb.join('usuario_revendedor',
-            'usuario_revendedor.revendedor_id', '=',
-            'revendedor.pessoa_id');
-          qb.join('conta', 'conta.pessoa_id', '=', 'pessoa.id_pessoa');
-          qb.where('usuario_revendedor.pessoa_fisica_pessoa_id', user.pessoa_id);
-          qb.select('revendedor.*', 'usuario_revendedor.*', 'pessoa.*',
-            'conta.*');
-        })
+      .query(function(qb) {
+        qb.join('pessoa', 'pessoa.id_pessoa', '=',
+          'revendedor.pessoa_id');
+        qb.join('usuario_revendedor',
+          'usuario_revendedor.revendedor_id', '=',
+          'revendedor.pessoa_id');
+        qb.join('conta', 'conta.pessoa_id', '=', 'pessoa.id_pessoa');
+        qb.where('usuario_revendedor.pessoa_fisica_pessoa_id',
+          user.pessoa_id);
+        qb.select('revendedor.*', 'usuario_revendedor.*', 'pessoa.*',
+          'conta.*');
+      })
       .fetch()
       .then(function(model) {
         then(model);

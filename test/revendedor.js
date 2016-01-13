@@ -1,5 +1,6 @@
 'use strict';
 
+var debug = require('debug')('areaazul:test:revendedor');
 var AreaAzul = require('../areaazul');
 var should = require('chai').should();
 var Revendedor = AreaAzul.models.Revendedor;
@@ -7,45 +8,48 @@ var TestHelpers = require('../helpers/test');
 
 describe('model.revendedor', function() {
 
-  var cpfPreExistente = '96818717748';
-  var emailTeste = 'preexistente@example.com';
+  var cpfRevendaPF = '96818717748';
+  var cpfUsuarioRevendaPJ = '54800416493';
+  var emailTeste = 'teste-revendedor@areaazul.org';
   var telefoneTeste = '000 0000-0000';
   var dataNascimentoTeste = new Date(1981, 11, 13);
-  var cnpjPreExistente = '31604743000102';
+  var cnpjRevendaPJ = '31604743000102';
   var razaoSocialTeste = 'razao-social-teste';
   var contatoTeste = 'contato-teste';
-  var loginTeste = 'login-teste-usuario';
+  var loginTestePF = 'teste-revendedor-pf';
+  var loginTestePJ = 'teste-revendedor-pj';
   var nomeFantasiaTeste = 'nome-fantasia-teste';
   var senhaTeste = 'senha-teste';
   var revendedorId = null;
   var termoServico = true;
 
-  function apagarDadosDeTeste() {
-    return TestHelpers
-      .apagarRevendedorPessoPorIdentificador(cpfPreExistente,
-        cnpjPreExistente);
-  }
-
   before(function(done) {
-    apagarDadosDeTeste()
+    debug('before');
+    return TestHelpers
+      .apagarRevendedorPorCPF(cpfRevendaPF)
+      .then(function() {
+        debug('should have deleted cpf ' + cpfRevendaPF);
+        return TestHelpers.apagarRevendedorPorCNPJ(cnpjRevendaPJ);
+      })
       .then(function() {
         done();
       })
       .catch(function(e) {
+        debug(e);
         done(e);
       });
   });
 
-  describe('validateRevenda()', function() {
+  describe('validarRevenda()', function() {
     it('Validar revendedor pessoa fisica funciona', function(done) {
       Revendedor.validarRevenda({
           nome: 'revenda-teste',
           email: 'teste@teste.com',
           celular: telefoneTeste,
-          cpf: cpfPreExistente,
+          cpf: cpfRevendaPF,
           data_nascimento: dataNascimentoTeste,
           autorizacao: 'autorizacao',
-          login: loginTeste,
+          login: loginTestePF,
           senha: senhaTeste,
           termo_servico: termoServico,
         })
@@ -53,24 +57,22 @@ describe('model.revendedor', function() {
           done();
         })
         .catch(function(e) {
+          debug(e);
           done(e);
         });
     });
-  });
 
-
-  describe('validarRevenda()', function() {
     it('Validar revendedor pessoa juridica funciona', function(done) {
       Revendedor.validarRevenda({
-          cnpj: cnpjPreExistente,
+          cnpj: cnpjRevendaPJ,
           nome: nomeFantasiaTeste,
           nome_fantasia: nomeFantasiaTeste,
           razao_social: razaoSocialTeste,
           contato: contatoTeste,
           email: emailTeste,
           telefone: telefoneTeste,
-          cpf: '63277083829',
-          login: 'logindeteste',
+          cpf: cpfUsuarioRevendaPJ,
+          login: loginTestePJ,
           autorizacao: 'autorizacao teste',
           senha: senhaTeste,
           termo_servico: termoServico,
@@ -79,6 +81,7 @@ describe('model.revendedor', function() {
           done();
         })
         .catch(function(e) {
+          debug(e);
           done(e);
         });
     });
@@ -91,34 +94,34 @@ describe('model.revendedor', function() {
           nome: 'nome',
           email: 'email@teste.com',
           telefone: telefoneTeste,
-          cpf: cpfPreExistente,
+          cpf: cpfRevendaPF,
           data_nascimento: dataNascimentoTeste,
           autorizacao: 'autorizacao',
-          login: loginTeste + 'pf',
+          login: loginTestePF,
           senha: senhaTeste,
           termo_servico: termoServico,
         })
         .then(function(revenda) {
           should.exist(revenda);
-          revendedorId = revenda.id;
           done();
         })
         .catch(function(e) {
+          debug(e);
           done(e);
         });
     });
 
     it('cadastrar pessoa juridica funciona', function(done) {
       Revendedor.cadastrar({
-          cnpj: cnpjPreExistente,
+          cnpj: cnpjRevendaPJ,
           nome: nomeFantasiaTeste,
           nome_fantasia: nomeFantasiaTeste,
           razao_social: razaoSocialTeste,
           contato: contatoTeste,
           email: emailTeste,
           telefone: telefoneTeste,
-          cpf: '63277083829',
-          login: loginTeste + 'pj',
+          cpf: cpfUsuarioRevendaPJ,
+          login: loginTestePJ,
           autorizacao: 'autorizacao teste',
           senha: senhaTeste,
           termo_servico: termoServico,
@@ -128,7 +131,7 @@ describe('model.revendedor', function() {
           done();
         })
         .catch(function(e) {
-          console.dir(e);
+          debug(e);
           done(e);
         });
     });
@@ -142,19 +145,11 @@ describe('model.revendedor', function() {
         function() {
           done();
         },
-        function(err) {
-          done(err);
+        function(e) {
+          debug(e);
+          done(e);
         });
     });
   });
 
-  after(function(done) {
-    apagarDadosDeTeste()
-      .then(function() {
-        done();
-      })
-      .catch(function(e) {
-        done(e);
-      });
-  });
 });
