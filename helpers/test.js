@@ -1,5 +1,6 @@
 'use strict';
 
+var debug = require('debug')('areaazul:test:helper');
 var Promise = require('bluebird');
 var AreaAzul = require('../areaazul');
 var Fiscalizacoes = AreaAzul.collections.Fiscalizacoes;
@@ -29,8 +30,7 @@ function _apagarContasDePessoa(id) {
     .where({
       pessoa_id: id
     })
-    .delete()
-    .thenReturn();
+    .delete();
 }
 
 function _apagarPessoaFisica(id) {
