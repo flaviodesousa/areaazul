@@ -152,7 +152,7 @@ describe('models.UsuarioRevendedor', function() {
         it('falha para usuario revendedor inexistente', function(done) {
             UsuarioRevendedor
                 .desativar({
-                     pessoa_fisica_pessoa_id: 0
+                     pessoa_id: 0
                 })
                 .then(function() {
                     done();
@@ -166,7 +166,7 @@ describe('models.UsuarioRevendedor', function() {
         it('desativa usuario revendedor existente', function(done) {
             UsuarioRevendedor
                 .desativar({
-                    pessoa_fisica_pessoa_id: idUsuarioRevendedor
+                    pessoa_id: idUsuarioRevendedor
                 })
                 .then(function() {
                     done();

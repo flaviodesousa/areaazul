@@ -68,7 +68,7 @@ var Revendedor = Bookshelf.Model.extend({
               ativo: true,
               autorizacao: dealer.autorizacao,
               revendedor_id: idRevendedor,
-              pessoa_fisica_pessoa_id: idPessoa,
+              pessoa_id: idPessoa,
             })
             .save(null, optionsInsert);
         });
@@ -232,7 +232,7 @@ var Revendedor = Bookshelf.Model.extend({
           'usuario_revendedor.revendedor_id', '=',
           'revendedor.pessoa_id');
         qb.join('conta', 'conta.pessoa_id', '=', 'pessoa.id_pessoa');
-        qb.where('usuario_revendedor.pessoa_fisica_pessoa_id',
+        qb.where('usuario_revendedor.pessoa_id',
           user.pessoa_id);
         qb.select('revendedor.*', 'usuario_revendedor.*', 'pessoa.*',
           'conta.*');

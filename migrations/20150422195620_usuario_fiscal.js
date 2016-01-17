@@ -1,6 +1,6 @@
 'use strict';
 
-exports.up = function(knex, Promise) {
+exports.up = function(knex) {
   return knex.schema.createTable('usuario_fiscal', function(table) {
     table.integer('pessoa_id')
       .primary()
@@ -12,6 +12,6 @@ exports.up = function(knex, Promise) {
   });
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function(knex) {
   return knex.schema.dropTable('usuario_fiscal');
 };

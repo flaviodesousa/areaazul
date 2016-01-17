@@ -25,7 +25,7 @@ var RecuperacaoSenha = Bookshelf.Model.extend({
   procurar: function (password_recovery, then, fail) {
     this.forge().query(function (qb) {
       qb.join('pessoa', 'pessoa.id_pessoa', '=', 'recuperacao_senha.pessoa_id');
-            qb.join('usuario_revendedor','usuario_revendedor.pessoa_fisica_pessoa_id','=','pessoa.id_pessoa');
+            qb.join('usuario_revendedor','usuario_revendedor.pessoa_id','=','pessoa.id_pessoa');
       qb.where('recuperacao_senha.id_recuperacao_senha', '=', password_recovery.id_recuperacao_senha);
       qb.select('recuperacao_senha.*', 'pessoa.*','usuario_revendedor.*');
     }).fetch().then(function (model) {

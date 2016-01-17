@@ -13,7 +13,7 @@ var validation = require('./validation');
 
 var UsuarioRevendedor = Bookshelf.Model.extend({
   tableName: 'usuario_revendedor',
-  idAttribute: 'pessoa_fisica_pessoa_id',
+  idAttribute: 'pessoa_id',
   pessoaFisica: function() {
     return this.hasOne(PessoaFisica, 'pessoa_id');
   }
@@ -91,7 +91,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
           acesso_confirmado: false,
           ativo: true,
           revendedor_id: entidade.revendedor_id,
-          pessoa_fisica_pessoa_id: pessoaFisica.id,
+          pessoa_id: pessoaFisica.id,
         };
 
         if (options.method === 'insert') {
@@ -194,12 +194,12 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
           .distinct()
           .innerJoin('pessoa_fisica', function() {
             this.on('pessoa_fisica.pessoa_id', '=',
-              'usuario_revendedor.pessoa_fisica_pessoa_id');
+              'usuario_revendedor.pessoa_id');
           })
           .innerJoin('pessoa', function() {
             this.on('pessoa.id_pessoa', '=', 'pessoa_fisica.pessoa_id');
           })
-          .where('usuario_revendedor.pessoa_fisica_pessoa_id', id)
+          .where('usuario_revendedor.pessoa_id', id)
           .select('pessoa_fisica.*')
           .select('pessoa.*')
           .select('usuario_revendedor.*');
@@ -212,14 +212,14 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
   desativar: function(id) {
     return UsuarioRevendedor
       .forge({
-        pessoa_fisica_pessoa_id: id
+        pessoa_id: id
       })
       .fetch()
       .then(function(revenda) {
         if (!revenda) {
           var err = new AreaAzul.BusinessException(
             'Desativacao: Usuario não encontrado', {
-              pessoa_fisica_pessoa_id: id
+              pessoa_id: id
             });
           throw err;
         }
@@ -327,7 +327,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
 
   alterarSenhaRecuperacao: function(user) {
     new this.UsuarioRevendedor({
-        pessoa_fisica_pessoa_id: user.pessoa_fisica_pessoa_id,
+        pessoa_id: user.pessoa_id,
       })
       .fetch()
       .then(function(model) {
@@ -347,7 +347,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
   buscarPorId: function(id) {
     return UsuarioRevendedor
       .forge({
-        pessoa_fisica_pessoa_id: id
+        pessoa_id: id
       })
       .fetch()
       .then(function(u) {

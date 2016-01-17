@@ -11,7 +11,7 @@ var UsuarioRevendedorCollection = Bookshelf.Collection.extend({
       qb
         .distinct()
         .innerJoin('pessoa_fisica', function() {
-          this.on('pessoa_fisica.pessoa_id', '=','usuario_revendedor.pessoa_fisica_pessoa_id');
+          this.on('pessoa_fisica.pessoa_id', '=','usuario_revendedor.pessoa_id');
         })
         .innerJoin('pessoa', function() {
           this.on('pessoa.id_pessoa', '=', 'pessoa_fisica.pessoa_id');
@@ -36,5 +36,5 @@ module.exports = UsuarioRevendedorCollection;
 /* select   *
 
  from     "usuario_revendedor"
- inner join "pessoa_fisica" on "pessoa_fisica"."pessoa_id" = "usuario_revendedor"."pessoa_fisica_pessoa_id"
+ inner join "pessoa_fisica" on "pessoa_fisica"."pessoa_id" = "usuario_revendedor"."pessoa_id"
  inner join "pessoa" on "pessoa"."id_pessoa" = "pessoa_fisica"."pessoa_id" */

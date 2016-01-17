@@ -1,5 +1,6 @@
 'use strict';
 
+var debug = require('debug')('areaazul:test');
 var Promise = require('bluebird');
 var AreaAzul = require('../areaazul');
 var Fiscalizacoes = AreaAzul.collections.Fiscalizacoes;
@@ -140,14 +141,14 @@ function _apagarRevendedorJuridica(idUsuario) {
     .then(function() {
       return UsuarioRevendedor
         .forge({
-          pessoa_fisica_pessoa_id: idUsuario
+          pessoa_id: idUsuario
         })
         .fetch()
         .then(function(usuario) {
           if (!usuario) {
             return Promise.resolve(null);
           }
-          pessoaId = usuario.get('pessoa_fisica_pessoa_id');
+          pessoaId = usuario.get('pessoa_id');
           return usuario.destroy();
         });
 

@@ -191,7 +191,7 @@ var Ativacao = Bookshelf.Model.extend({
             .then(function(a) {
               return UsuarioRevendedor
                 .forge({
-                  pessoa_fisica_pessoa_id: a.get('pessoa_id')
+                  pessoa_id: a.get('pessoa_id')
                 })
                 .fetch();
             })
@@ -283,7 +283,7 @@ var Ativacao = Bookshelf.Model.extend({
             this.on('usuario_revendedor.revendedor_id', '=',
               'revendedor.pessoa_id');
           })
-          .where('usuario_revendedor.pessoa_fisica_pessoa_id', id)
+          .where('usuario_revendedor.pessoa_id', id)
           .select('pessoa.*')
           .select('conta.*')
           .select('revendedor.*')
