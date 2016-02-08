@@ -1,5 +1,6 @@
 'use strict';
 
+var debug = require('debug')('areaazul:test:ativacao');
 var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
@@ -16,7 +17,7 @@ describe('model.Ativacao', function() {
 
 
   before(function(done) {
-      return TestHelpers
+    return TestHelpers
       .pegarVeiculo()
           .then(function(veiculo) {
             idVeiculo = veiculo.id;
@@ -43,6 +44,7 @@ describe('model.Ativacao', function() {
             done();
           })
           .catch(function(e) {
+            debug('test setup failed', e);
             done(e);
           });
   });
@@ -138,6 +140,7 @@ describe('model.Ativacao', function() {
           done();
         })
         .catch(function(e) {
+          debug('falha ao ativar pela revenda', e);
           done(e);
         });
     });

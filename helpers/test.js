@@ -437,6 +437,7 @@ exports.pegarUsuario = function() {
     .fetch()
     .then(function(usuario) {
       if (usuario) {
+        debug('pegarUsuario() usuario existe', usuario);
         return usuario;
       }
       return Usuario.inserir({
@@ -446,7 +447,7 @@ exports.pegarUsuario = function() {
         email: 'teste-unitario@areaazul.org',
         telefone: '0',
         cpf: '69425782660',
-        data_nascimento: new Date(1981, 4, 1),
+        data_nascimento: '01-04-1981',
         sexo: 'feminino',
       });
     });
@@ -466,7 +467,7 @@ function pegarRevendedor() {
           email: 'emailTeste@areaazul.org',
           telefone: 'telefoneTeste',
           cpf: '21962139425',
-          data_nascimento: '01/04/1977',
+          data_nascimento: '31-03-1977',
           login: 'logindeteste',
           autorizacao: 'autorizacao teste',
           senha: 'senhaTeste',
@@ -494,6 +495,7 @@ exports.pegarUsuarioRevendedor = function() {
               senha: 'senhaRevendaNaoExistente',
               email: 'revenda@teste.com',
               cpf: '03472262214',
+              data_nascimento: '28-02-1933',
               revendedor_id: r.id
             });
         });

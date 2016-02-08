@@ -1,5 +1,6 @@
 'use strict';
 
+var debug = require('debug')('areaazul:helpers:util');
 var AreaAzul = require('../../areaazul');
 var logger = AreaAzul.log;
 var bcrypt = require('bcrypt');
@@ -111,5 +112,6 @@ exports.formataData = function(_data) {
 };
 
 exports.dataValida = function(_data) {
+  debug('datavalida()', _data);
   return moment(_data, 'DD-MM-YYYY').isValid();
 };
