@@ -79,12 +79,11 @@ var Ativacao = Bookshelf.Model.extend({
                     ultima_ativacao: new Date(),
                   })
                   .save(null, optionsInsert);
-              } else {
-                return usuariohasveiculo
-                  .save({
-                    ultima_ativacao: new Date(),
-                  }, optionsUpdate);
               }
+              return usuariohasveiculo
+                .save({
+                  ultima_ativacao: new Date(),
+                }, optionsUpdate);
             })
             .then(function() {
               return MovimentacaoConta
@@ -169,15 +168,14 @@ var Ativacao = Bookshelf.Model.extend({
         }).then(function(veiculo) {
           if (veiculo) {
             return veiculo;
-          } else {
-            return Veiculo.cadastrar({
-              placa: placaSemMascara,
-              marca: ativacao.marca,
-              cor: ativacao.cor,
-              modelo: ativacao.modelo,
-              cidade_id: ativacao.cidade,
-            }, options);
           }
+          return Veiculo.cadastrar({
+            placa: placaSemMascara,
+            marca: ativacao.marca,
+            cor: ativacao.cor,
+            modelo: ativacao.modelo,
+            cidade_id: ativacao.cidade,
+          }, options);
         })
         .then(function(v) {
           return Ativacao
