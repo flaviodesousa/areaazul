@@ -13,7 +13,9 @@ passport.use(new basicAuthentication.UsuarioBasicStrategy({}));
 
 app.use(logger('dev'));
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.urlencoded({
+  extended: false,
+}));
 
 app.use(passport.initialize());
 
@@ -29,9 +31,8 @@ app.use(function(req, res, next) {
   });
   if (req.method === 'OPTIONS') {
     return res.send(200);
-  } else {
-    return next();
   }
+  return next();
 });
 
 // Controler - Rotas
