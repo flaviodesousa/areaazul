@@ -113,6 +113,7 @@ function _apagarRevendedor(idRevenda) {
         .forge({
           pessoa_id: idRevenda
         })
+        .fetch()
         .delete();
     })
     .then(function(revenda) {
