@@ -1,6 +1,6 @@
 'use strict';
 
-var debug = require('debug')('areaazul:test');
+var debug = require('debug')('areaazul:test:helper');
 var Promise = require('bluebird');
 var AreaAzul = require('../areaazul');
 var Fiscalizacoes = AreaAzul.collections.Fiscalizacoes;
