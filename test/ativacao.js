@@ -19,34 +19,34 @@ describe('model.Ativacao', function() {
   before(function(done) {
     return TestHelpers
       .pegarVeiculo()
-          .then(function(veiculo) {
-            idVeiculo = veiculo.id;
-          })
-          .then(function() {
-            return TestHelpers.pegarUsuario()
-                  .then(function(usuario) {
-                    idUsuarioComum = usuario.id;
-                  });
-          })
-          .then(function() {
-            return TestHelpers.pegarUsuarioRevendedor()
-                  .then(function(revendedor) {
-                    idUsuarioRevendedor = revendedor.id;
-                  });
-          })
-          .then(function() {
-            return TestHelpers.pegarCidade()
-                  .then(function(cidade) {
-                    idCidade = cidade.id;
-                  });
-          })
-          .then(function() {
-            done();
-          })
-          .catch(function(e) {
-            debug('test setup failed', e);
-            done(e);
+      .then(function(veiculo) {
+        idVeiculo = veiculo.id;
+      })
+      .then(function() {
+        return TestHelpers.pegarUsuario()
+          .then(function(usuario) {
+            idUsuarioComum = usuario.id;
           });
+      })
+      .then(function() {
+        return TestHelpers.pegarUsuarioRevendedor()
+              .then(function(revendedor) {
+                idUsuarioRevendedor = revendedor.id;
+              });
+      })
+      .then(function() {
+        return TestHelpers.pegarCidade()
+              .then(function(cidade) {
+                idCidade = cidade.id;
+              });
+      })
+      .then(function() {
+        done();
+      })
+      .catch(function(e) {
+        debug('test setup failed', e);
+        done(e);
+      });
   });
 
 
@@ -148,15 +148,17 @@ describe('model.Ativacao', function() {
 
   describe('listarAtivacoes()', function() {
 
-    it('lista veiculos que estão ativados e não estao fiscalizados.', function(done) {
-      Ativacoes._listarAtivacoes()
-                .then(function() {
-                  done();
-                })
-                .catch(function(e) {
-                  done(e);
-                });
-    });
+    it('lista veiculos que estão ativados e não estao fiscalizados.',
+      function(done) {
+        Ativacoes
+          ._listarAtivacoes()
+          .then(function() {
+            done();
+          })
+          .catch(function(e) {
+            done(e);
+          });
+      });
   });
 
 });
