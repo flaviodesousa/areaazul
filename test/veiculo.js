@@ -1,12 +1,11 @@
 'use strict';
 
+var debug = require('debug')('areaazul:test:veiculo');
 var AreaAzul = require('../areaazul');
 var should = require('chai').should();
 var Veiculo = AreaAzul.models.Veiculo;
 var Veiculos = AreaAzul.collections.Veiculos;
-var Cidade = AreaAzul.models.Cidade;
 var TestHelpers = require('../helpers/test');
-var Estado = AreaAzul.models.Estado;
 
 describe('model.veiculo', function() {
 
@@ -28,12 +27,15 @@ describe('model.veiculo', function() {
   before(function(done) {
     return TestHelpers.pegarCidade()
       .then(function(cidade) {
+        debug('Usando cidade ' + cidade.id);
         idCidade = cidade.id;
+        debug('Usando estado ' + cidade.estado_id);
         idEstado = cidade.estado_id;
       })
       .then(function() {
         return TestHelpers.pegarUsuario()
           .then(function(usuario) {
+            debug('Usando usuario ' + usuario.id);
             idUsuarioComum = usuario.id;
             done();
           });
