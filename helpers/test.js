@@ -104,16 +104,13 @@ function _apagarVeiculo(idVeiculo) {
 
 function _apagarRevendedor(idRevenda) {
   return UsuarioRevendedor
-    .forge()
     .query()
     .where({ revendedor_id: idRevenda })
     .delete()
     .then(function() {
       return Revendedor
-        .forge({
-          pessoa_id: idRevenda
-        })
-        .fetch()
+        .query()
+        .where({ pessoa_id: idRevenda })
         .delete();
     })
     .then(function(revenda) {
