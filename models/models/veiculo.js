@@ -69,8 +69,11 @@ var Veiculo = Bookshelf.Model.extend({
 
   cadastrar: function(vehicle) {
     debug('cadastrar ' + vehicle);
+
     return Bookshelf.transaction(function(t) {
+
       return Veiculo._cadastrar(vehicle, { transacting: t });
+
     });
   },
 
@@ -107,7 +110,6 @@ var Veiculo = Bookshelf.Model.extend({
     if (placa) {
       placaSemMascara = util.placaSemMascara(placa);
     }
-
     return Veiculo
       .forge()
       .query(function(qb) {
@@ -176,5 +178,4 @@ var Veiculo = Bookshelf.Model.extend({
   },
 
 });
-
 module.exports = Veiculo;
