@@ -25,24 +25,24 @@ describe('model.veiculo', function() {
   var idVeiculo = null;
   var idUsuarioComum = null;
 
-  before(function() {
+  before(function(done) {
     return TestHelpers.pegarCidade()
-          .then(function(cidade){
-              idCidade = cidade.id;
-              idEstado = cidade.estado_id;
-          })
-          .then(function() {
-            return TestHelpers.pegarUsuario()
-                .then(function(usuario) {
-                  idUsuarioComum = usuario.id;
+      .then(function(cidade) {
+        idCidade = cidade.id;
+        idEstado = cidade.estado_id;
+      })
+      .then(function() {
+        return TestHelpers.pegarUsuario()
+          .then(function(usuario) {
+            idUsuarioComum = usuario.id;
+            done();
           });
       });
   });
 
   describe('cadastrar()', function() {
     it('grava veiculo', function(done) {
-      Veiculo
-      .cadastrar({
+      var novoVeiculo = {
         usuario_pessoa_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: placaTeste,
@@ -51,7 +51,9 @@ describe('model.veiculo', function() {
         cor: corTeste,
         ano_fabricado: anoFabricadoTeste,
         ano_modelo: anoModeloTeste,
-      })
+      };
+      Veiculo
+      .cadastrar(novoVeiculo)
       .then(function(veiculo) {
         idVeiculo = veiculo.id;
         return done();
@@ -93,7 +95,7 @@ describe('model.veiculo', function() {
         it('desativa veiculo existente', function(done) {
             Veiculo
                 .desativar({
-                   id_veiculo : idVeiculo 
+                   id_veiculo : idVeiculo
                 })
                 .then(function() {
                     done();

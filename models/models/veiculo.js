@@ -77,7 +77,7 @@ var Veiculo = Bookshelf.Model.extend({
     return Bookshelf.transaction(function(t) {
 
        return Veiculo._cadastrar(vehicle, { transacting: t });
-       
+
     });
   },
 
@@ -142,7 +142,7 @@ var Veiculo = Bookshelf.Model.extend({
   validarVeiculo: function(veiculo) {
 
     var message = [];
-    if (validator.isNull(veiculo.cidade_id)) {
+    if (!veiculo.cidade_id) {
       message.push({
         attribute: 'cidade',
         problem: 'Cidade é obrigatória!',
