@@ -1,5 +1,6 @@
 'use strict';
 
+var debug = require('debug')('areaazul:model:ativacao');
 var AreaAzul = require('../../areaazul');
 var log = AreaAzul.log;
 var util = require('../../helpers/util');
@@ -26,13 +27,13 @@ var Ativacao = Bookshelf.Model.extend({
     var altitude = activation.longitude;
     var longitude = activation.altitude;
 
-    if (validator.isNull(latitude)) {
+    if (!validator.isNumeric('' + latitude)) {
       latitude = null;
     }
-    if (validator.isNull(longitude)) {
+    if (!validator.isNumeric('' + longitude)) {
       longitude = null;
     }
-    if (validator.isNull(altitude)) {
+    if (!validator.isNumeric('' + altitude)) {
       altitude = null;
     }
 
@@ -153,22 +154,28 @@ var Ativacao = Bookshelf.Model.extend({
         .validarAtivacao(ativacao, placaSemMascara)
         .then(function(messages) {
           if (messages.length) {
+            debug('ativarPelaRevenda() ativacao invalida');
             throw new AreaAzul
               .BusinessException(
                 'Nao foi possivel ativar veículo. Dados invalidos',
                 messages);
           }
+          debug('ativarPelaRevenda() ativacao valida');
 
           return messages;
         }).then(function() {
+          debug('ativarPelaRevenda() buscando veiculo com placa ' +
+            placaSemMascara);
           return Veiculo
             .forge({
               placa: placaSemMascara,
             }).fetch();
         }).then(function(veiculo) {
           if (veiculo) {
+            debug('ativarPelaRevenda() veiculo existe #' + veiculo.id)
             return veiculo;
           }
+          debug('ativarPelaRevenda() veiculo nao existe, cadastrando')
           return Veiculo.cadastrar({
             placa: placaSemMascara,
             marca: ativacao.marca,
@@ -178,6 +185,7 @@ var Ativacao = Bookshelf.Model.extend({
           }, options);
         })
         .then(function(v) {
+          debug('ativarPelaRevenda() ativando veiculo #' + v.id)
           return Ativacao
             .forge({
               data_ativacao: new Date(),
@@ -210,27 +218,25 @@ var Ativacao = Bookshelf.Model.extend({
 
     var message = [];
 
-
-
-    if (validator.isNull(ativacao.marca)) {
+    if (validator.isNull('' + ativacao.marca)) {
       message.push({
         attribute: 'marca',
         problem: 'Campo marca é obrigatório!',
       });
     }
-    if (validator.isNull(ativacao.modelo)) {
+    if (validator.isNull('' + ativacao.modelo)) {
       message.push({
         attribute: 'modelo',
         problem: 'Campo modelo é obrigatório!',
       });
     }
-    if (validator.isNull(ativacao.cor)) {
+    if (validator.isNull('' + ativacao.cor)) {
       message.push({
         attribute: 'cor',
         problem: 'Campo cor é obrigatório!',
       });
     }
-    if (validator.isNull(ativacao.tempo)) {
+    if (validator.isNumeric('' + ativacao.tempo)) {
       message.push({
         attribute: 'tempo',
         problem: 'Campo tempo é obrigatório!',
@@ -261,10 +267,7 @@ var Ativacao = Bookshelf.Model.extend({
             return message;
           });
       });
-
-
   },
-
 
   verificaSaldo: function(id) {
     return Conta
