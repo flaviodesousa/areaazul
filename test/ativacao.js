@@ -30,15 +30,15 @@ describe('model.Ativacao', function() {
       })
       .then(function() {
         return TestHelpers.pegarUsuarioRevendedor()
-              .then(function(revendedor) {
-                idUsuarioRevendedor = revendedor.id;
-              });
+          .then(function(revendedor) {
+            idUsuarioRevendedor = revendedor.id;
+          });
       })
       .then(function() {
         return TestHelpers.pegarCidade()
-              .then(function(cidade) {
-                idCidade = cidade.id;
-              });
+          .then(function(cidade) {
+            idCidade = cidade.id;
+          });
       })
       .then(function() {
         done();
@@ -60,16 +60,16 @@ describe('model.Ativacao', function() {
       };
 
       Ativacao
-          .ativar(ativacao)
-                .then(function(at) {
-                  should.exist(at);
-                  should.exist(at.id);
-                  idAtivacao = at.id;
-                  done();
-                })
-                .catch(function(e) {
-                  done(e);
-                });
+        .ativar(ativacao)
+        .then(function(at) {
+          should.exist(at);
+          should.exist(at.id);
+          idAtivacao = at.id;
+          done();
+        })
+        .catch(function(e) {
+          done(e);
+        });
     });
   });
 

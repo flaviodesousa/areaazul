@@ -6,23 +6,21 @@ var Configuracao = AreaAzul.models.Configuracao;
 var TestHelpers = require('../helpers/test');
 
 describe('model.configuracao', function() {
-    var id_configuracao = null;
     var idCidade = null;
 
     before(function(done) {
-        return TestHelpers
-                .pegarCidade()
-                .then(function(cidade) {
-                    idCidade = cidade.id;
-                })
-                .then(function() {
-                  done();
-                })
-                .catch(function(e) {
-                  done(e);
-                });
+      return TestHelpers
+        .pegarCidade()
+        .then(function(cidade) {
+          idCidade = cidade.id;
+        })
+        .then(function() {
+          done();
+        })
+        .catch(function(e) {
+          done(e);
+        });
     });
-
 
     describe('alterar()', function() {
         it('alterar as configurações', function(done) {

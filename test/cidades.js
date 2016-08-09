@@ -12,19 +12,19 @@ describe('collections.Cidades', function() {
     it('lista cidades do estado 1', function(done) {
       CidadesCollection
         .listar(idEstado)
-        .then(function(cidades) {
-                done();
-            });
+        .then(function() {
+          done();
+        });
     });
     it('falha com id estado invalido', function(done) {
       CidadesCollection
         .listar('undefined')
         .then(function() {
-              done();
-            })
-            .catch(function(e) {
-              done(e);
-            });
+          done();
+        })
+        .catch(function(e) {
+          done(e);
+        });
     });
   });
 });
