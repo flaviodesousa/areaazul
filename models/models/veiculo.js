@@ -68,7 +68,6 @@ var Veiculo = Bookshelf.Model.extend({
 
 
   cadastrar: function(vehicle) {
-    debug('cadastrar ' + vehicle);
 
     return Bookshelf.transaction(function(t) {
 
@@ -98,9 +97,6 @@ var Veiculo = Bookshelf.Model.extend({
                 desativacao: id
               });
         throw err;
-      })
-      .then(function(desativacao) {
-        return desativacao;
       });
   },
 
