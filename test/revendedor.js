@@ -44,7 +44,7 @@ describe('model.revendedor', function() {
           autorizacao: 'autorizacao',
           login: loginTestePF,
           senha: senhaTeste,
-          termo_servico: termoServico,
+          termo_servico: termoServico
         })
         .then(function() {
           done();
@@ -68,7 +68,7 @@ describe('model.revendedor', function() {
           login: loginTestePJ,
           autorizacao: 'autorizacao teste',
           senha: senhaTeste,
-          termo_servico: termoServico,
+          termo_servico: termoServico
         })
         .then(function() {
           done();
@@ -92,7 +92,7 @@ describe('model.revendedor', function() {
           autorizacao: 'autorizacao',
           login: loginTestePF,
           senha: senhaTeste,
-          termo_servico: termoServico,
+          termo_servico: termoServico
         })
         .then(function(revenda) {
           should.exist(revenda);
@@ -117,7 +117,7 @@ describe('model.revendedor', function() {
           login: loginTestePJ,
           autorizacao: 'autorizacao teste',
           senha: senhaTeste,
-          termo_servico: termoServico,
+          termo_servico: termoServico
         })
         .then(function(revenda) {
           should.exist(revenda);

@@ -13,7 +13,7 @@ var AreaAzul = require('../../areaazul.js');
 
 var Revendedor = Bookshelf.Model.extend({
   tableName: 'revendedor',
-  idAttribute: 'pessoa_id',
+  idAttribute: 'pessoa_id'
 }, {
   cadastrar: function(dealer) {
     return Bookshelf.transaction(function(t) {
@@ -68,7 +68,7 @@ var Revendedor = Bookshelf.Model.extend({
               ativo: true,
               autorizacao: dealer.autorizacao,
               revendedor_id: idRevendedor,
-              pessoa_id: idPessoa,
+              pessoa_id: idPessoa
             })
             .save(null, optionsInsert);
         });
@@ -82,7 +82,7 @@ var Revendedor = Bookshelf.Model.extend({
     return Revendedor
       .forge({
         ativo: true,
-        pessoa_id: pessoa.id,
+        pessoa_id: pessoa.id
       })
       .save(null, optionsInsert)
       .then(function() {
@@ -91,7 +91,7 @@ var Revendedor = Bookshelf.Model.extend({
             data_abertura: new Date(),
             saldo: 0,
             ativo: true,
-            pessoa_id: pessoa.id,
+            pessoa_id: pessoa.id
           })
           .save(null, options);
       });
@@ -103,7 +103,7 @@ var Revendedor = Bookshelf.Model.extend({
     if (!dealer.nome) {
       message.push({
         attribute: 'nome',
-        problem: 'Nome obrigatório!',
+        problem: 'Nome obrigatório!'
       });
     }
 
@@ -111,28 +111,28 @@ var Revendedor = Bookshelf.Model.extend({
     if (!dealer.email) {
       message.push({
         attribute: 'email',
-        problem: 'Email obrigatório!',
+        problem: 'Email obrigatório!'
       });
     }
 
     if (!dealer.login) {
       message.push({
         attribute: 'login',
-        problem: 'Login obrigatório!',
+        problem: 'Login obrigatório!'
       });
     }
 
     if (!validator.isEmail(dealer.email)) {
       message.push({
         attribute: 'email',
-        problem: 'Email inválido!',
+        problem: 'Email inválido!'
       });
     }
 
     if (!dealer.cpf) {
       message.push({
         attribute: 'cpf',
-        problem: 'CPF é obrigatório!',
+        problem: 'CPF é obrigatório!'
       });
 
     }
@@ -140,7 +140,7 @@ var Revendedor = Bookshelf.Model.extend({
     if (!validation.isCPF(dealer.cpf)) {
       message.push({
         attribute: 'cpf',
-        problem: 'CPF inválido!',
+        problem: 'CPF inválido!'
       });
     }
 
@@ -159,7 +159,7 @@ var Revendedor = Bookshelf.Model.extend({
         if (pessoafisica) {
           message.push({
             attribute: 'cpf',
-            problem: 'CPF já cadastrado!',
+            problem: 'CPF já cadastrado!'
           });
         }
 
@@ -172,7 +172,7 @@ var Revendedor = Bookshelf.Model.extend({
             if (usuariorevendedor) {
               message.push({
                 attribute: 'login',
-                problem: 'Login já cadastrado!',
+                problem: 'Login já cadastrado!'
               });
             }
 
@@ -187,21 +187,21 @@ var Revendedor = Bookshelf.Model.extend({
         if (!dealer.nome_fantasia) {
           message.push({
             attribute: 'nome_fantasia',
-            problem: 'Nome fantasia obrigatório!',
+            problem: 'Nome fantasia obrigatório!'
           });
         }
 
         if (!dealer.razao_social) {
           message.push({
             attribute: 'razao_social',
-            problem: 'Razao social obrigatório!',
+            problem: 'Razao social obrigatório!'
           });
         }
 
         if (validation.isCNPJ(dealer.cnpj) === false) {
           message.push({
             attribute: 'cnpj',
-            problem: 'Cnpj inválido!',
+            problem: 'Cnpj inválido!'
           });
         }
 
@@ -211,7 +211,7 @@ var Revendedor = Bookshelf.Model.extend({
             if (pessoajuridica) {
               message.push({
                 attribute: 'cnpj',
-                problem: 'CNPJ já cadastrado!',
+                problem: 'CNPJ já cadastrado!'
               });
             }
 
