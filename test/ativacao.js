@@ -7,7 +7,7 @@ var AreaAzul = require('../areaazul');
 var Ativacao = AreaAzul.models.Ativacao;
 var Ativacoes = AreaAzul.collections.Ativacoes;
 
-describe('model.Ativacao', function() {
+describe('model.ativacao', function() {
 
   var idUsuarioComum = null;
   var idVeiculo = null;
@@ -16,36 +16,29 @@ describe('model.Ativacao', function() {
   var idAtivacao = null;
 
 
-  before(function(done) {
+  before(function() {
     return TestHelpers
       .pegarVeiculo()
       .then(function(veiculo) {
         idVeiculo = veiculo.id;
       })
       .then(function() {
-        return TestHelpers.pegarUsuario()
-          .then(function(usuario) {
-            idUsuarioComum = usuario.id;
-          });
+        return TestHelpers.pegarUsuario();
+      })
+      .then(function(usuario) {
+        idUsuarioComum = usuario.id;
       })
       .then(function() {
-        return TestHelpers.pegarUsuarioRevendedor()
-          .then(function(revendedor) {
-            idUsuarioRevendedor = revendedor.id;
-          });
+        return TestHelpers.pegarUsuarioRevendedor();
+      })
+      .then(function(revendedor) {
+        idUsuarioRevendedor = revendedor.id;
       })
       .then(function() {
-        return TestHelpers.pegarCidade()
-          .then(function(cidade) {
-            idCidade = cidade.id;
-          });
+        return TestHelpers.pegarCidade();
       })
-      .then(function() {
-        done();
-      })
-      .catch(function(e) {
-        debug('test setup failed', e);
-        done(e);
+      .then(function(cidade) {
+        idCidade = cidade.id;
       });
   });
 

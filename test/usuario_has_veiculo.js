@@ -10,23 +10,18 @@ describe('model.usuario_has_veiculo', function() {
   var idUsuarioComum = null;
   var idVeiculo = null;
 
-  before(function(done) {
-  return TestHelpers.pegarVeiculo()
-        .then(function(veiculo) {
-          idVeiculo = veiculo.id;
-        })
-        .then(function() {
-          return TestHelpers.pegarUsuario()
-                .then(function(usuario) {
-                  idUsuarioComum = usuario.id;
-                });
-        })
-        .then(function() {
-          done();
-        })
-        .catch(function(e) {
-          done(e);
-        });
+  before(function() {
+    return TestHelpers
+      .pegarVeiculo()
+      .then(function(veiculo) {
+        idVeiculo = veiculo.id;
+      })
+      .then(function() {
+        return TestHelpers.pegarUsuario()
+      })
+      .then(function(usuario) {
+        idUsuarioComum = usuario.id;
+      });
   });
 
   describe('inserir()', function() {

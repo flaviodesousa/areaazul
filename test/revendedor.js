@@ -23,20 +23,13 @@ describe('model.revendedor', function() {
   var revendedorId = null;
   var termoServico = true;
 
-  before(function(done) {
+  before(function() {
     debug('before');
     return TestHelpers
       .apagarRevendedorPorCPF(cpfRevendaPF)
       .then(function() {
         debug('should have deleted cpf ' + cpfRevendaPF);
         return TestHelpers.apagarRevendedorPorCNPJ(cnpjRevendaPJ);
-      })
-      .then(function() {
-        done();
-      })
-      .catch(function(e) {
-        debug(e);
-        done(e);
       });
   });
 

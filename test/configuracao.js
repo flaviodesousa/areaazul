@@ -8,17 +8,11 @@ var TestHelpers = require('../helpers/test');
 describe('model.configuracao', function() {
     var idCidade = null;
 
-    before(function(done) {
+    before(function() {
       return TestHelpers
         .pegarCidade()
         .then(function(cidade) {
           idCidade = cidade.id;
-        })
-        .then(function() {
-          done();
-        })
-        .catch(function(e) {
-          done(e);
         });
     });
 

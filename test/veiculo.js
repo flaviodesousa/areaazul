@@ -24,7 +24,7 @@ describe('model.veiculo', function() {
   var idVeiculo = null;
   var idUsuarioComum = null;
 
-  before(function(done) {
+  before(function() {
     return TestHelpers.pegarCidade()
       .then(function(cidade) {
         debug('Usando cidade ' + cidade.id);
@@ -33,12 +33,11 @@ describe('model.veiculo', function() {
         idEstado = cidade.estado_id;
       })
       .then(function() {
-        return TestHelpers.pegarUsuario()
-          .then(function(usuario) {
-            debug('Usando usuario ' + usuario.id);
-            idUsuarioComum = usuario.id;
-            done();
-          });
+        return TestHelpers.pegarUsuario();
+      })
+      .then(function(usuario) {
+        debug('Usando usuario ' + usuario.id);
+        idUsuarioComum = usuario.id;
       });
   });
 

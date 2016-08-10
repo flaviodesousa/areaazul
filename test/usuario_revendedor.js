@@ -17,18 +17,12 @@ describe('models.UsuarioRevendedor', function() {
     var idRevendedor = null;
     var termo_servico = true;
 
-    before(function(done) {
-          return TestHelpers
-            .apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente)
-            .then(function() { 
-                return TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente); 
-            })
-            .then(function() {
-              done();
-            })
-            .catch(function(e) {
-              done(e);
-            });
+    before(function() {
+      return TestHelpers
+        .apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente)
+        .then(function() {
+            return TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente);
+        });
       });
 
 
