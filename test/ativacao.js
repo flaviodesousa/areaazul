@@ -10,17 +10,16 @@ var Ativacoes = AreaAzul.collections.Ativacoes;
 describe('model.ativacao', function() {
 
   var idUsuarioComum = null;
-  var idVeiculo = null;
+  var veiculo = null;
   var idCidade = null;
   var idUsuarioRevendedor = null;
   var idAtivacao = null;
 
-
   before(function() {
     return TestHelpers
       .pegarVeiculo()
-      .then(function(veiculo) {
-        idVeiculo = veiculo.id;
+      .then(function(v) {
+        veiculo = v;
       })
       .then(function() {
         return TestHelpers.pegarUsuario();
@@ -39,17 +38,29 @@ describe('model.ativacao', function() {
       })
       .then(function(cidade) {
         idCidade = cidade.id;
+      })
+      .then(function() {
+        return Ativacao
+          .query(function(qb) {
+            qb
+              .whereNull('data_desativacao')
+              .andWhere({ veiculo_id: veiculo.id });
+          })
+          .destroy();
+      })
+      .catch(function(e) {
+        debug('erro inesperado na before()', e);
+        throw e;
       });
   });
 
-
-
   describe('Ativar()', function() {
+
     it('grava ativacao', function(done) {
       var ativacao = {
         usuario_pessoa_id: idUsuarioComum,
-        veiculo_id: idVeiculo,
-        valor: 10.0,
+        veiculo_id: veiculo.id,
+        valor: 10.0
       };
 
       Ativacao
@@ -61,35 +72,34 @@ describe('model.ativacao', function() {
           done();
         })
         .catch(function(e) {
+          debug('erro inesperado na ativacao', e);
           done(e);
         });
     });
   });
 
-
-
   describe('desativar()', function() {
-
 
     it('falha para ativacao inexistente', function(done) {
       Ativacao
-                .desativar({
-                  id_ativacao: 0,
-                  usuario_pessoa_id: idUsuarioComum,
-                })
-                .then(function() {
-                  done('Nao deveria ter desativado uma ativacao inexistente');
-                })
-                .catch(function(e) {
-                  should.exist(e);
-                  done();
-                });
+        .desativar({
+          id_ativacao: 0,
+          usuario_pessoa_id: idUsuarioComum
+        })
+        .then(function() {
+          done('Nao deveria ter desativado uma ativacao inexistente');
+        })
+        .catch(function(e) {
+          should.exist(e);
+          done();
+        });
     });
+
     it('falha se usuario diferente do ativador', function(done) {
       Ativacao
         .desativar({
           id_ativacao: idAtivacao,
-          usuario_pessoa_id: 0,
+          usuario_pessoa_id: 0
         })
         .then(function() {
           done('Nao deveria ter desativado com usuario diferente');
@@ -99,16 +109,18 @@ describe('model.ativacao', function() {
           done();
         });
     });
+
     it('desativa ativacao existente', function(done) {
       Ativacao
         .desativar({
           id_ativacao: idAtivacao,
-          usuario_pessoa_id: idUsuarioComum,
+          usuario_pessoa_id: idUsuarioComum
         })
         .then(function() {
           done();
         })
         .catch(function(e) {
+          debug('erro inesperado na desativacao', e);
           done(e);
         });
     });
@@ -120,20 +132,20 @@ describe('model.ativacao', function() {
         .ativarPelaRevenda({
           usuario_pessoa_id: idUsuarioRevendedor,
           cidade: idCidade,
-          placa: 'ABC-1234',
-          marca: 'marcaTeste',
-          modelo: 'modeloTeste',
-          cor: 'corTeste',
-          tipo_veiculo: 1,
+          placa: veiculo.get('placa'),
+          marca: veiculo.get('marca'),
+          modelo: veiculo.get('modelo'),
+          cor: veiculo.get('cor'),
+          tipo_veiculo: veiculo.get('tipo'),
           tempo: 60,
-          valor: 10.0,
+          valor: 10.0
         })
         .then(function(ativacao) {
           ativacao.destroy();
           done();
         })
         .catch(function(e) {
-          debug('falha ao ativar pela revenda', e);
+          debug('erro inesperado na ativacao pela revenda', e);
           done(e);
         });
     });
