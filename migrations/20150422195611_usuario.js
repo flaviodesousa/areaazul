@@ -8,6 +8,8 @@ exports.up = function(knex) {
     table.string('login').unique().notNullable();
     table.string('senha');
     table.boolean('primeiro_acesso').notNullable();
+    table.integer('conta_id').notNullable()
+      .references('id_conta').inTable('conta');
     table.boolean('ativo').notNullable().defaultTo(true);
   });
 };

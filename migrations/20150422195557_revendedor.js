@@ -6,6 +6,8 @@ exports.up = function(knex) {
           table.integer('pessoa_id')
             .primary()
             .references('id_pessoa').inTable('pessoa');
+          table.integer('conta_id').notNullable()
+            .references('id_conta').inTable('conta');
           table.boolean('ativo').notNullable().defaultTo(true);
         });
 };

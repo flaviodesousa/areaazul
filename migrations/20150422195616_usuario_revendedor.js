@@ -10,7 +10,7 @@ exports.up = function(knex) {
     table.boolean('acesso_confirmado').notNullable();
     table.string('autorizacao').notNullable();
     table.boolean('ativo').notNullable();
-    table.integer('revendedor_id')
+    table.integer('revendedor_id').notNullable()
       .references('pessoa_id').inTable('revendedor');
   });
 };

@@ -7,8 +7,6 @@ exports.up = function(knex) {
     table.timestamp('data_fechamento');
     table.decimal('saldo', 18, 2).notNullable().defaultTo(0);
     table.boolean('ativo').notNullable().defaultTo(true);
-    table.integer('pessoa_id').notNullable()
-      .references('id_pessoa').inTable('pessoa');
   });
 };
 
