@@ -1,7 +1,7 @@
 'use strict';
 
 var AreaAzul = require('../../areaazul');
-var Bookshelf = AreaAzul.db;
+var Bookshelf = AreaAzul.db.Bookshelf.conexaoMain;
 var Ativacao = require('../models/ativacao');
 var moment = require('moment');
 

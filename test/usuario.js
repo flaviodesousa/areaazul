@@ -1,8 +1,9 @@
 'use strict';
 
+var debug = require('debug')('areaazul:test:usuario');
 var should = require('chai').should();
-var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
+var TestHelpers = require('../helpers/test');
 var Usuario = AreaAzul.models.Usuario;
 
 describe('model.usuario', function() {
@@ -19,6 +20,7 @@ describe('model.usuario', function() {
         done();
       })
       .catch(function(e) {
+        debug('erro inesperado em before()', e);
         done(e);
       });
   });
@@ -29,6 +31,7 @@ describe('model.usuario', function() {
         done();
       })
       .catch(function(e) {
+        debug('erro inesperado em after()', e);
         done(e);
       });
   });
@@ -43,7 +46,7 @@ describe('model.usuario', function() {
         telefone: '0',
         cpf: '32807868193',
         data_nascimento: '11/04/1980',
-        sexo: 'feminino',
+        sexo: 'feminino'
       };
 
       Usuario
@@ -51,8 +54,9 @@ describe('model.usuario', function() {
         .then(function() {
           done();
         })
-        .catch(function(err) {
-          done(err);
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
   });
@@ -66,8 +70,9 @@ describe('model.usuario', function() {
           should.exist(usuarioFiscal);
           done();
         })
-        .catch(function(err) {
-          done(err);
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
@@ -81,7 +86,7 @@ describe('model.usuario', function() {
         .catch(function(err) {
           should.exist(err);
           should.exist(err.authentication_event);
-          err.authentication_event.should.be.true;
+          err.authentication_event.should.equal(true);
           done();
         });
     });
@@ -96,7 +101,7 @@ describe('model.usuario', function() {
         .catch(function(err) {
           should.exist(err);
           should.exist(err.authentication_event);
-          err.authentication_event.should.be.true;
+          err.authentication_event.should.equal(true);
           done();
         });
     });
@@ -110,7 +115,7 @@ describe('model.usuario', function() {
         telefone: '06220000000',
         cpf: '75075849172',
         data_nascimento: '02/02/2002',
-        sexo: '',
+        sexo: ''
       };
 
       var messages = Usuario.validate(usuario);
@@ -124,7 +129,7 @@ describe('model.usuario', function() {
     it.skip('retorna uma lista de usuarios', function(done) {
       Usuario.listar(function(collection) {
           collection.toJSON({shallow: true})
-            .should.be.Array
+            .should.be.an('Array')
             .and.not.empty();
           done();
         },
@@ -140,7 +145,7 @@ describe('model.usuario', function() {
         login: loginDeTeste,
         senha: '123454',
         nova_senha: '123454',
-        conf_senha: '123454',
+        conf_senha: '123454'
       };
 
       Usuario.alterarSenha(usuario,

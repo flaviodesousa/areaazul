@@ -1,17 +1,17 @@
 'use strict';
 
 var _ = require('lodash');
-var Bookshelf = require('bookshelf').conexaoMain;
-var PessoaFisica = require('./pessoafisica').PessoaFisica;
 var bcrypt = require('bcrypt');
 var validator = require('validator');
-var validation = require('./validation');
-var util = require('../../helpers/util');
+
+var AreaAzul = require('../../areaazul');
+var log = AreaAzul.log;
+var Bookshelf = AreaAzul.db.Bookshelf.conexaoMain;
+var PessoaFisica = require('./pessoafisica').PessoaFisica;
 var Conta = require('./conta');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 var Veiculo = require('./veiculo').Veiculo;
-var AreaAzul = require('../../areaazul');
-var log = AreaAzul.log;
+var validation = require('./validation');
 var util = require('../../helpers/util');
 
 var Usuario = Bookshelf.Model.extend({
@@ -23,7 +23,7 @@ var Usuario = Bookshelf.Model.extend({
   veiculos: function() {
     return this.hasMany(Veiculo)
       .through(UsuarioHasVeiculo);
-  },
+  }
 
 }, {
 
@@ -31,9 +31,7 @@ var Usuario = Bookshelf.Model.extend({
     var Usuario = this;
 
     return Usuario
-      .forge({
-        pessoa_id: id,
-      })
+      .forge({ pessoa_id: id })
       .fetch()
       .then(function(u) {
         if (u) {
@@ -41,7 +39,7 @@ var Usuario = Bookshelf.Model.extend({
         }
         var err = new AreaAzul.BusinessException(
           'Usuario: id nao encontrado', {
-            id: id,
+            id: id
           });
         log.warn(err.message, err.details);
         throw err;
@@ -52,16 +50,12 @@ var Usuario = Bookshelf.Model.extend({
     var Usuario = this;
     var err;
     return Usuario
-      .forge({
-        login: login,
-      })
+      .forge({ login: login })
       .fetch()
       .then(function(usuario) {
         if (usuario === null) {
           err = new AreaAzul.BusinessException(
-            'Usuario: login invalido', {
-              login: login,
-            });
+            'Usuario: login invalido', { login: login });
           err.authentication_event = true;
           log.warn(err.message, err.details);
           throw err;
@@ -72,7 +66,7 @@ var Usuario = Bookshelf.Model.extend({
         err = new AreaAzul.BusinessException(
           'Usuario: senha incorreta', {
             login: login,
-            usuario: usuario,
+            usuario: usuario
           });
         err.authentication_event = true;
         log.warn(err.message, err.details);
@@ -83,12 +77,8 @@ var Usuario = Bookshelf.Model.extend({
   inserir: function(entidade) {
 
     return Bookshelf.transaction(function(t) {
-      var trx = {
-        transacting: t,
-      };
-      var trxIns = _.merge({}, trx, {
-        method: 'insert',
-      });
+      var trx = { transacting: t };
+      var trxIns = _.merge({}, trx, { method: 'insert' });
       return Usuario._inserir(entidade, trxIns, trx);
     });
   },
@@ -99,13 +89,11 @@ var Usuario = Bookshelf.Model.extend({
     var Usuario = this;
     var login;
     var senha;
-    var senhaNova;
+    var pessoaFisica = null;
 
     if (!entidade.senha) {
-      senhaNova = entidade.senha;
       senha = util.criptografa(util.generate());
     } else {
-      senhaNova = entidade.senha;
       senha = util.criptografa(entidade.senha);
       entidade.senha = senha;
     }
@@ -125,11 +113,12 @@ var Usuario = Bookshelf.Model.extend({
               messages);
         }
         return messages;
-      }).then(function() {
+      })
+      .then(function() {
         entidade.data_nascimento = util.formataData(entidade.data_nascimento);
         return PessoaFisica
           .forge({
-            cpf: entidade.cpf,
+            cpf: entidade.cpf
           })
           .fetch()
           .then(function(pessoaFisica) {
@@ -139,13 +128,28 @@ var Usuario = Bookshelf.Model.extend({
             return PessoaFisica
               ._cadastrar(entidade, t);
           });
-      }).then(function(pf) {
+      })
+      .then(function(pf) {
+        pessoaFisica = pf;
+      })
+      .then(function() {
+        return Conta
+          .forge({
+            data_abertura: new Date(),
+            saldo: 0,
+            ativo: true
+          })
+          .save(null, options);
+
+      })
+      .then(function(conta) {
         var dadosUsuario = {
-          pessoa_id: pf.id,
+          pessoa_id: pessoaFisica.id,
           login: login,
           senha: senha,
           primeiro_acesso: true,
-          ativo: true,
+          conta_id: conta.id,
+          ativo: true
         };
 
         if (options.method === 'insert') {
@@ -156,18 +160,9 @@ var Usuario = Bookshelf.Model.extend({
         return UsuarioAtual
           .forge()
           .save(dadosUsuario, options);
-      }).then(function(entidade) {
-        return Conta
-          .forge({
-            data_abertura: new Date(),
-            saldo: 0,
-            ativo: true,
-            pessoa_id: entidade.id,
-          })
-          .save(null, options);
-
-      }).then(function() {
-        return util.enviarEmailConfirmacao(entidade, login, senhaNova);
+      })
+      .then(function() {
+        return util.enviarEmailConfirmacao(entidade, login);
       });
 
   },
@@ -176,22 +171,14 @@ var Usuario = Bookshelf.Model.extend({
     return Usuario._salvarUsuario(entidade, options, t);
   },
 
-
-
   _alterar: function(entidade, options, t) {
     return Usuario._salvarUsuario(entidade, options, t);
   },
 
   alterar: function(entidade) {
     return Bookshelf.transaction(function(t) {
-      var trx = {
-        transacting: t,
-      };
-      var trxUpd = _.merge({}, trx, {
-        method: 'update',
-      }, {
-        patch: true,
-      });
+      var trx = { transacting: t };
+      var trxUpd = _.merge({}, trx, { method: 'update' }, { patch: true });
       return Usuario._alterar(entidade, trxUpd, trx);
     });
   },
@@ -210,9 +197,7 @@ var Usuario = Bookshelf.Model.extend({
   },
 
   alterarSenha: function(user, then, fail) {
-    new this({
-        id_usuario: user.id_usuario,
-      })
+    new this({ id_usuario: user.id_usuario })
       .fetch()
       .then(function(model) {
         var pwd;
@@ -226,7 +211,7 @@ var Usuario = Bookshelf.Model.extend({
           model.save({
             primeiro_acesso: 'false',
             senha: novaSenha,
-            ativo: 'true',
+            ativo: 'true'
           }).then(function(model) {
             util.log('Alterado com sucesso!');
             then(model);
@@ -264,62 +249,62 @@ var Usuario = Bookshelf.Model.extend({
   },
 
 
-  validate: function(user) {
+  validate: function(user, method) {
     var message = [];
     if (validator.isNull(user.cpf)) {
       message.push({
         attribute: 'cpf',
-        problem: 'CPF é obrigatório',
+        problem: 'CPF é obrigatório'
       });
     }
 
     if (!validation.isCPF(user.cpf)) {
       message.push({
         attribute: 'cpf',
-        problem: 'CPF inválido!',
+        problem: 'CPF inválido!'
       });
     }
 
     if (!user.data_nascimento) {
       message.push({
         attribute: 'data_nascimento',
-        problem: 'Data de nascimento é obrigatório!',
+        problem: 'Data de nascimento é obrigatório!'
       });
     } else if (!util.dataValida(user.data_nascimento)) {
       message.push({
         attribute: 'data_nascimento',
-        problem: 'Data de nascimento inválida!',
+        problem: 'Data de nascimento inválida!'
       });
     }
 
     if (validator.isNull(user.nome)) {
       message.push({
         attribute: 'nome',
-        problem: 'Nome obrigatório',
+        problem: 'Nome obrigatório'
       });
     }
 
     if (validator.isNull(user.email)) {
       message.push({
         attribute: 'email',
-        problem: 'Email obrigatório!',
+        problem: 'Email obrigatório!'
       });
     }
 
     if (!validator.isEmail(user.email)) {
       message.push({
         attribute: 'email',
-        problem: 'Email inválido!',
+        problem: 'Email inválido!'
       });
     }
 
     return PessoaFisica
       .procurarCPF(user.cpf)
       .then(function(pessoafisica) {
-        if (pessoafisica) {
+        if (!pessoafisica && method === 'update') {
           message.push({
             attribute: 'cpf',
-            problem: 'CPF já cadastrado!',
+            problem: 'CPF não cadastrado!'
           });
         }
 
@@ -332,13 +317,13 @@ var Usuario = Bookshelf.Model.extend({
     if (validator.isNull(user.login) || user.login === '') {
       message.push({
         attribute: 'nova_senha',
-        problem: 'Login é obrigatório!',
+        problem: 'Login é obrigatório!'
       });
     }
     if ((user.login.length < 4) || (user.login.length > 32)) {
       message.push({
         attribute: 'login',
-        problem: 'O nome de login deve conter de 4 a 32 caracteres',
+        problem: 'O nome de login deve conter de 4 a 32 caracteres'
       });
     }
     return message;
@@ -350,47 +335,47 @@ var Usuario = Bookshelf.Model.extend({
     if (validator.isNull(user.nova_senha)) {
       message.push({
         attribute: 'nova_senha',
-        problem: 'Nova senha é obrigatória!',
+        problem: 'Nova senha é obrigatória!'
       });
     }
     if (validator.isNull(user.senha)) {
       message.push({
         attribute: 'senha',
-        problem: 'Senha é obrigatória!',
+        problem: 'Senha é obrigatória!'
       });
     }
     if (validator.isNull(user.conf_senha)) {
       message.push({
         attribute: 'conf_senha',
-        problem: 'Confirmação de senha é obrigatória!',
+        problem: 'Confirmação de senha é obrigatória!'
       });
     }
     if (user.nova_senha !== user.conf_senha) {
       message.push({
         attribute: 'conf_senha',
-        problem: 'As senhas devem ser iguais!',
+        problem: 'As senhas devem ser iguais!'
       });
     }
     if (user.senha.length < 4) {
       message.push({
         attribute: 'senha',
-        problem: 'A senha deve conter no minimo 4 caracteres!',
+        problem: 'A senha deve conter no minimo 4 caracteres!'
       });
     }
     if (user.conf_senha.length < 4 && user.conf_senha.length > 8) {
       message.push({
         attribute: 'conf_senha',
-        problem: 'A confirmação de senha deve conter no minimo 4 caracteres!',
+        problem: 'A confirmação de senha deve conter no minimo 4 caracteres!'
       });
     }
     if (user.nova_senha.length < 4) {
       message.push({
         attribute: 'nova_senha',
-        problem: 'A nova senha deve conter no minimo 4 caracteres!',
+        problem: 'A nova senha deve conter no minimo 4 caracteres!'
       });
     }
     return message;
-  },
+  }
 
 });
 

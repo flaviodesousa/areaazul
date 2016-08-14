@@ -10,6 +10,7 @@ var UsuarioAdministrativo = AreaAzul.models.UsuarioAdministrativo;
 var Pessoa = AreaAzul.models.pessoa.Pessoa;
 var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
 var PessoaJuridica = AreaAzul.models.PessoaJuridica;
+var Conta = AreaAzul.models.Conta;
 var Contas = AreaAzul.collections.Contas;
 var UsuarioRevendedor = AreaAzul.models.UsuarioRevendedor;
 var Revendedor = AreaAzul.models.Revendedor;
@@ -213,22 +214,38 @@ exports.apagarPessoaFisicaPorCPF = function(cpf) {
 };
 
 exports.apagarUsuarioPorLogin = function(login) {
-  var pessoaId = null;
+  var usuario;
+  var usuarioId;
   return Usuario
     .forge({
       login: login
     })
     .fetch()
-    .then(function(usuario) {
+    .then(function(u) {
+      usuario = u;
       if (!usuario) {
-        return Promise.resolve(null);
+        return null;  // Promise.resolve(null);
       }
-      pessoaId = usuario.id;
+      usuarioId = u.id;
       return usuario
-        .destroy();
+        .save({ conta_id: null }, { patch: true });
     })
     .then(function() {
-      return _apagarPessoaFisica(pessoaId);
+      if (!usuario || !usuario.get('conta_id')) { return null; }
+      return new Conta({ id: usuario.get('conta_id') })
+        .destroy({ require: true });
+    })
+    .then(function() {
+      if (usuario) {
+        return usuario
+          .destroy();
+      }
+    })
+    .then(function() {
+      if (usuario) {
+        return _apagarPessoaFisica(usuario.id);
+      }
+      return null;
     });
 };
 
@@ -424,7 +441,7 @@ exports.pegarVeiculo = function() {
           modelo: 'modeloTeste',
           cor: 'corTeste',
           ano_fabricado: 2015,
-          ano_modelo: 2015,
+          ano_modelo: 2015
         });
     });
 };
@@ -446,7 +463,7 @@ exports.pegarUsuario = function() {
         telefone: '0',
         cpf: '69425782660',
         data_nascimento: '01-04-1981',
-        sexo: 'feminino',
+        sexo: 'feminino'
       });
     });
 };
@@ -469,7 +486,7 @@ function pegarRevendedor() {
           login: 'logindeteste',
           autorizacao: 'autorizacao teste',
           senha: 'senhaTeste',
-          termo_servico: true,
+          termo_servico: true
         });
     });
 }
