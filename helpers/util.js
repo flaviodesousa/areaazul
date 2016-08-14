@@ -8,7 +8,7 @@ var AreaAzulMailer = require('areaazul-mailer');
 var moment = require('moment');
 var uuid = require('node-uuid');
 
-exports.enviarEmailConfirmacao = function(entidade, login, senha) {
+exports.enviarEmailConfirmacao = function(entidade, login) {
   var message = {
     from: 'AreaAzul <cadastro@areaazul.org>',
     to: entidade.email,
@@ -16,9 +16,8 @@ exports.enviarEmailConfirmacao = function(entidade, login, senha) {
     subject: 'Confirmação de cadastro - AreaAzul',
     html: '<p>Por favor ' + entidade.nome +
       ' clique no link abaixo para acessar a aplicação areaazul.</br>' +
-      'http://usuario.demo.areaazul.org/</br>' +
-      'Usuario: ' + login + '</br>' +
-      'Senha é: ' + senha + '.',
+      '<a href="http://usuario.demo.areaazul.org">Área Azul</a></br>' +
+      'Usuario: ' + login
   };
   AreaAzulMailer.enviar.emailer(message);
 };
@@ -31,7 +30,7 @@ exports.enviarEmailNovaSenha = function(email, nome, uuid) {
     subject: 'AreaAzul nova senha ',
     html: '<p>Por favor ' + nome +
       ' clique no link abaixo para alterar sua senha.</br>' +
-      'http://demo.areaazul.org/' + uuid + '.',
+      '<a href="http://demo.areaazul.org/' + uuid + '">Trocar Senha</a>.'
   };
   AreaAzulMailer.enviar.emailer(message);
 };
@@ -40,7 +39,7 @@ function getRandomChar() {
   var ascii = [
     [48, 57],
     [64, 90],
-    [97, 122],
+    [97, 122]
   ];
   var i = Math.floor(Math.random() * ascii.length);
   return String.fromCharCode(
