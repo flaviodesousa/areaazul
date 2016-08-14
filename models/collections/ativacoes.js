@@ -1,79 +1,74 @@
 'use strict';
 
-var Bookshelf = require('bookshelf').conexaoMain;
+var AreaAzul = require('../../areaazul');
+var Bookshelf = AreaAzul.db;
 var Ativacao = require('../models/ativacao');
-var _ = require('lodash');
 var moment = require('moment');
 
 var AtivacaoCollection = Bookshelf.Collection.extend({
-    model: Ativacao,
+    model: Ativacao
   }, {
 
-    _listarAtivacoes: function(func) {
+  _listarAtivacoes: function() {
+    return AtivacaoCollection
+      .forge()
+      .query(function(qb) {
+        qb
+          .innerJoin('veiculo', 'veiculo.id_veiculo', 'ativacao.veiculo_id')
+          .leftJoin('fiscalizacao',
+            'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
+          .where('ativacao.data_ativacao', '>=',
+            moment().subtract(2, 'minutes').calendar())
+          .select('ativacao.*')
+          .select('veiculo.*');
+      }).fetch().then(function(collectionVeiculosSomenteAtivados) {
+        return collectionVeiculosSomenteAtivados;
+      });
+  },
 
+  _listarAtivacoesExpirando: function() {
+    return AtivacaoCollection
+      .forge()
+      .query(function(qb) {
+        qb
+          .innerJoin('veiculo', 'veiculo.id_veiculo', 'ativacao.veiculo_id')
+          .leftJoin('fiscalizacao',
+            'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
+          .where('ativacao.data_ativacao', '<=',
+            moment().subtract(2, 'minutes').calendar())
+          .andWhere('ativacao.data_ativacao', '>=',
+            moment().subtract(4, 'minutes').calendar())
+          .select('ativacao.*')
+          .select('veiculo.*');
+      })
+      .fetch()
+      .then(function(collectionVeiculosSomenteAtivados) {
+        return collectionVeiculosSomenteAtivados;
+      });
+  },
 
-        return AtivacaoCollection.forge().query(function(qb) {
-            qb
-                .innerJoin('veiculo', function() {
-                    this.on('veiculo.id_veiculo', '=', 'ativacao.veiculo_id');
-                  })
-                .leftJoin('fiscalizacao', function() {
-                    this.on('fiscalizacao.veiculo_id', '!=', 'ativacao.veiculo_id');
-                  })
-                .where('ativacao.data_ativacao', '>=', moment().subtract(2, 'minutes').calendar())
-                .select('ativacao.*')
-                .select('veiculo.*');
-          }).fetch().then(function(collectionVeiculosSomenteAtivados) {
-
-            return collectionVeiculosSomenteAtivados;
-          });
-      },
-
-    _listarAtivacoesExpirando: function(func) {
-
-
-        return AtivacaoCollection.forge().query(function(qb) {
-            qb
-                .innerJoin('veiculo', function() {
-                    this.on('veiculo.id_veiculo', '=', 'ativacao.veiculo_id');
-                  })
-                .leftJoin('fiscalizacao', function() {
-                    this.on('fiscalizacao.veiculo_id', '!=', 'ativacao.veiculo_id');
-                  })
-                .where('ativacao.data_ativacao', '<=', moment().subtract(2, 'minutes').calendar())
-                .andWhere('ativacao.data_ativacao', '>=', moment().subtract(4, 'minutes').calendar())
-                .select('ativacao.*')
-                .select('veiculo.*');
-          }).fetch().then(function(collectionVeiculosSomenteAtivados) {
-
-            return collectionVeiculosSomenteAtivados;
-          });
-      },
-
-    _listarAtivacoesExpiraram: function(func) {
-
-
-        return AtivacaoCollection.forge().query(function(qb) {
-            qb
-                .innerJoin('veiculo', function() {
-                    this.on('veiculo.id_veiculo', '=', 'ativacao.veiculo_id');
-                  })
-                .leftJoin('fiscalizacao', function() {
-                    this.on('fiscalizacao.veiculo_id', '!=', 'ativacao.veiculo_id');
-                  })
-                .where('ativacao.data_ativacao', '<=', moment().subtract(5, 'minutes').calendar())
-                .andWhere('ativacao.data_ativacao', '>=', moment().subtract(6, 'minutes').calendar())
-                .select('ativacao.*')
-                .select('veiculo.*');
-          }).fetch().then(function(collectionVeiculosSomenteAtivados) {
-
-            return collectionVeiculosSomenteAtivados;
-          });
-      },
-
-
-
-  });
+  _listarAtivacoesExpiraram: function() {
+    return AtivacaoCollection
+      .forge()
+      .query(function(qb) {
+        qb
+          .innerJoin('veiculo',
+            'veiculo.id_veiculo', 'ativacao.veiculo_id')
+          .leftJoin('fiscalizacao',
+            'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
+          .where('ativacao.data_ativacao', '<=',
+            moment().subtract(5, 'minutes').calendar())
+          .andWhere('ativacao.data_ativacao', '>=',
+            moment().subtract(6, 'minutes').calendar())
+          .select('ativacao.*')
+          .select('veiculo.*');
+      })
+      .fetch()
+      .then(function(collectionVeiculosSomenteAtivados) {
+        return collectionVeiculosSomenteAtivados;
+      });
+  }
+});
 
 
 module.exports = AtivacaoCollection;
