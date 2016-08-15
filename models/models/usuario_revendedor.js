@@ -1,6 +1,6 @@
 'use strict';
 
-var PessoaFisica = require('./pessoafisica').PessoaFisica;
+var PessoaFisica = require('./pessoa_fisica').PessoaFisica;
 var Bookshelf = require('bookshelf').conexaoMain;
 var bcrypt = require('bcrypt');
 var util = require('../../helpers/util');

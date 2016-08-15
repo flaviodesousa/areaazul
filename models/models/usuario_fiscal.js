@@ -5,7 +5,7 @@ var util = require('../../helpers/util');
 var AreaAzul = require('../../areaazul');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa').Pessoa;
-var PessoaFisica = require('./pessoafisica').PessoaFisica;
+var PessoaFisica = require('./pessoa_fisica').PessoaFisica;
 var Fiscalizacao = require('./fiscalizacao');
 
 var UsuarioFiscal = Bookshelf.Model.extend({

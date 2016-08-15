@@ -4,7 +4,7 @@ var _ = require('lodash');
 var AreaAzul = require('../../areaazul.js');
 var log = AreaAzul.log;
 var Bookshelf = require('bookshelf').conexaoMain;
-var PessoaFisica = require('./pessoafisica').PessoaFisica;
+var PessoaFisica = require('./pessoa_fisica').PessoaFisica;
 var util = require('../../helpers/util');
 
 var UsuarioAdministrativo = Bookshelf.Model.extend({

@@ -2,9 +2,9 @@
 
 var _ = require('lodash');
 var Bookshelf = require('bookshelf').conexaoMain;
-var PessoaFisica = require('./pessoafisica').PessoaFisica;
+var PessoaFisica = require('./pessoa_fisica').PessoaFisica;
 var UsuarioRevendedor = require('./usuario_revendedor');
-var PessoaJuridica = require('./pessoajuridica');
+var PessoaJuridica = require('./pessoa_juridica');
 var validation = require('./validation');
 var util = require('../../helpers/util');
 var validator = require('validator');

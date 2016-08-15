@@ -1,6 +1,6 @@
 var Bookshelf = require('bookshelf').conexaoMain;
-var PessoaFisica = require("../models/pessoafisica");
+var PessoaJuridica = require("../models/pessoa_juridica");
 
 module.exports = Bookshelf.Collection.extend({
-    model: PessoaFisica.PessoaFisica
+    model: PessoaJuridica.PessoaJuridica
 });

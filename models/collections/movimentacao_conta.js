@@ -1,7 +1,7 @@
 'use strict';
 
 var Bookshelf = require('bookshelf').conexaoMain;
-var MovimentacaoConta = require("../models/movimentacaoconta");
+var MovimentacaoConta = require("../models/movimentacao_conta");
 var moment = require('moment');
 
 
