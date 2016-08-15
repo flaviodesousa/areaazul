@@ -134,13 +134,11 @@ var Usuario = Bookshelf.Model.extend({
       })
       .then(function() {
         return Conta
-          .forge({
+          ._cadastrar({
             data_abertura: new Date(),
             saldo: 0,
             ativo: true
-          })
-          .save(null, options);
-
+          }, options);
       })
       .then(function(conta) {
         var dadosUsuario = {
