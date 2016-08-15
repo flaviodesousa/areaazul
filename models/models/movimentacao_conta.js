@@ -8,79 +8,67 @@ var math = require('mathjs');
 
 var MovimentacaoConta = Bookshelf.Model.extend({
   tableName: 'movimentacao_conta',
-  idAttribute: 'id_movimentacao_conta',
+  idAttribute: 'id_movimentacao_conta'
 }, {
 
-  _inserirMovimentacaoConta: function(movimentacaoconta, options) {
-    var optionsInsert = _.merge({}, options || {}, {
-      method: 'insert',
-    });
-    var optionsUpdate = _.merge({}, options || {}, {
-      method: 'update',
-    }, {
-      patch: true,
-    });
+  _inserirMovimentacaoConta: function(movimentacaoConta, options) {
+    var optionsInsert = _.merge({ method: 'insert' }, options || {});
+    var optionsUpdate = _.merge({ method: 'update', patch: true },
+      options || {});
 
-    return Conta
-      .forge({
-        pessoa_id: movimentacaoconta.pessoa_id,
-      })
-      .fetch()
-      .then(function(c) {
-        if (!c) {
+    return new Conta({ id_conta: movimentacaoConta.conta_id })
+      .fetch(_.merge({ require: true }, options))
+      .catch(function(e) {
+        if (e instanceof Bookshelf.Model.NotFoundError) {
           throw new AreaAzul.BusinessException(
             'Conta invalida', {
-              movimentacaoconta: movimentacaoconta,
+              movimentacaoconta: movimentacaoConta
             });
         }
-
+        throw e;
+      })
+      .then(function(c) {
         var saldoAtual = Number(c.get('saldo'));
-        var novoSaldo = math.sum(saldoAtual, movimentacaoconta.valor);
+        var novoSaldo = math.sum(saldoAtual, movimentacaoConta.valor);
 
-        return c.save({
-            saldo: novoSaldo,
-          }, optionsUpdate)
-          .then(function(c) {
-            return MovimentacaoConta.forge({
-                data_deposito: new Date(),
-                historico: movimentacaoconta.historico,
-                tipo: movimentacaoconta.tipo,
-                valor: movimentacaoconta.valor,
-                ativo: true,
-                conta_id: c.id,
-                pessoa_id: movimentacaoconta.pessoa_id,
-              })
-              .save(null, optionsInsert);
-          });
+        return c.save({ saldo: novoSaldo }, optionsUpdate);
+      })
+      .then(function(c) {
+        return MovimentacaoConta.forge({
+            data_deposito: new Date(),
+            historico: movimentacaoConta.historico,
+            tipo: movimentacaoConta.tipo,
+            valor: movimentacaoConta.valor,
+            ativo: true,
+            conta_id: c.id,
+            pessoa_id: movimentacaoConta.pessoa_id
+          })
+          .save(null, optionsInsert);
       });
   },
-  _inserirCredito: function(conta, options) {
+  _inserirCredito: function(credito, options) {
     return MovimentacaoConta
-      ._inserirMovimentacaoConta(conta, options);
+      ._inserirMovimentacaoConta(credito, options);
   },
-  inserirCredito: function(conta) {
+  inserirCredito: function(credito) {
     return Bookshelf.transaction(function(t) {
       return MovimentacaoConta
-        ._inserirCredito(conta, {
-          transacting: t,
-        });
+        ._inserirCredito(credito, { transacting: t });
     });
   },
-  _inserirDebito: function(conta, options) {
-    if (conta.valor > 0) {
-      conta.valor = -conta.valor;
+  _inserirDebito: function(debito, options) {
+    if (debito.valor > 0) {
+      debito.valor = -debito.valor;
     }
     return MovimentacaoConta
-      ._inserirMovimentacaoConta(conta, options);
+      ._inserirMovimentacaoConta(debito, options);
   },
-  inserirDebito: function(conta) {
+  inserirDebito: function(debito) {
     return Bookshelf.transaction(function(t) {
       return MovimentacaoConta
-        ._inserirCredito(conta, {
-          transacting: t,
-        });
+        ._inserirCredito(debito, { transacting: t });
     });
-  },
+  }
 
 });
 module.exports = MovimentacaoConta;
