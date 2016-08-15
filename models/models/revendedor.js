@@ -1,15 +1,15 @@
 'use strict';
 
 var _ = require('lodash');
-var Bookshelf = require('bookshelf').conexaoMain;
+var validator = require('validator');
+var AreaAzul = require('../../areaazul.js');
+var Bookshelf = AreaAzul.db.Bookshelf.conexaoMain;
 var PessoaFisica = require('./pessoa_fisica').PessoaFisica;
 var UsuarioRevendedor = require('./usuario_revendedor');
 var PessoaJuridica = require('./pessoa_juridica');
 var validation = require('./validation');
 var util = require('../../helpers/util');
-var validator = require('validator');
 var Conta = require('./conta');
-var AreaAzul = require('../../areaazul.js');
 
 var Revendedor = Bookshelf.Model.extend({
   tableName: 'revendedor',
@@ -60,8 +60,7 @@ var Revendedor = Bookshelf.Model.extend({
         })
         .then(function(revenda) {
           idRevendedor = revenda.get('pessoa_id');
-          return UsuarioRevendedor
-            .forge({
+          return new UsuarioRevendedor({
               login: dealer.login,
               senha: senha,
               acesso_confirmado: true,
@@ -75,25 +74,15 @@ var Revendedor = Bookshelf.Model.extend({
     });
   },
   _cadastrar: function(pessoa, options) {
-    var optionsInsert = _.merge({}, options || {}, {
-      method: 'insert'
-    });
+    var optionsInsert = _.merge({ method: 'insert' }, options || {});
 
-    return Revendedor
-      .forge({
-        ativo: true,
-        pessoa_id: pessoa.id
-      })
-      .save(null, optionsInsert)
-      .then(function() {
-        return Conta
-          .forge({
-            data_abertura: new Date(),
-            saldo: 0,
-            ativo: true,
-            pessoa_id: pessoa.id
+    return Conta
+      ._cadastrar(null, options)
+      .then(function(conta) {
+        return new Revendedor({
+            ativo: true, pessoa_id: pessoa.id, conta_id: conta.id
           })
-          .save(null, options);
+          .save(null, optionsInsert);
       });
   },
 
@@ -106,7 +95,6 @@ var Revendedor = Bookshelf.Model.extend({
         problem: 'Nome obrigatório!'
       });
     }
-
 
     if (!dealer.email) {
       message.push({
@@ -134,7 +122,6 @@ var Revendedor = Bookshelf.Model.extend({
         attribute: 'cpf',
         problem: 'CPF é obrigatório!'
       });
-
     }
 
     if (!validation.isCPF(dealer.cpf)) {
@@ -151,7 +138,6 @@ var Revendedor = Bookshelf.Model.extend({
           'Para realizar o cadastro precisa aceitar nossos termos de serviço!'
       });
     }
-
 
     return PessoaFisica
       .procurarCPF(dealer.cpf)
@@ -219,8 +205,6 @@ var Revendedor = Bookshelf.Model.extend({
           });
       });
   },
-
-
 
   buscarRevendedor: function(user, then, fail) {
     Revendedor
