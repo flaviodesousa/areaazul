@@ -85,8 +85,8 @@ var Usuario = Bookshelf.Model.extend({
 
   _salvarUsuario: function(entidade, options, t) {
 
-    var UsuarioAtual = this;
     var Usuario = this;
+    var usuario = null;
     var login;
     var senha;
     var pessoaFisica = null;
@@ -146,17 +146,19 @@ var Usuario = Bookshelf.Model.extend({
         };
 
         if (options.method === 'insert') {
-          return UsuarioAtual
+          return Usuario
             .forge(dadosUsuario)
             .save(null, options);
         }
-        return UsuarioAtual
+        return Usuario
           .forge()
           .save(dadosUsuario, options);
       })
-      .then(function() {
+      .then(function(u) {
+        usuario = u;
         return util.enviarEmailConfirmacao(entidade, login);
-      });
+      })
+      .return(usuario);
 
   },
 

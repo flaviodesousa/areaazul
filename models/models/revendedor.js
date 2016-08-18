@@ -15,65 +15,64 @@ var Revendedor = Bookshelf.Model.extend({
   tableName: 'revendedor',
   idAttribute: 'pessoa_id'
 }, {
-  cadastrar: function(dealer) {
-    return Bookshelf.transaction(function(t) {
-      var options = {
-        transacting: t
-      };
-      var optionsInsert = _.merge({}, options, {
-        method: 'insert'
-      });
-      var idPessoa = null;
-      var idRevendedor = null;
-      var senha = util.criptografa(dealer.senha);
+  _cadastrar: function(revendedorFields, options) {
+    var optionsInsert = _.merge({ method: 'insert' }, options);
+    var idPessoa = null;
+    var idRevendedor = null;
+    var senha = util.criptografa(revendedorFields.senha);
 
-      return Revendedor
-        .validarRevenda(dealer)
-        .then(function(messages) {
-          if (messages.length) {
-            throw new AreaAzul
-              .BusinessException(
-                'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
-                messages);
-          }
-          return messages;
+    return Revendedor
+      .validarRevenda(revendedorFields)
+      .then(function(messages) {
+        if (messages.length) {
+          throw new AreaAzul
+            .BusinessException(
+            'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
+            messages);
+        }
+        return messages;
+      })
+      .then(function() {
+        if (revendedorFields.cnpj) {
+          return PessoaJuridica
+            ._cadastrar(revendedorFields, options);
+        }
+        return PessoaFisica
+          ._cadastrar(revendedorFields, options);
+      })
+      .then(function(pessoa) {
+        idPessoa = pessoa.id;
+        return Revendedor._cadastrar(pessoa, options);
+      })
+      .then(function() {
+        return PessoaFisica
+          ._cadastrar(revendedorFields, options);
+      })
+      .then(function(pf) {
+        idPessoa = pf.id;
+        return Revendedor._salvarRevenda(pf, options);
+      })
+      .then(function(revenda) {
+        idRevendedor = revenda.get('pessoa_id');
+        return new UsuarioRevendedor({
+          login: revendedorFields.login,
+          senha: senha,
+          acesso_confirmado: true,
+          ativo: true,
+          autorizacao: revendedorFields.autorizacao,
+          revendedor_id: idRevendedor,
+          pessoa_id: idPessoa
         })
-        .then(function() {
-          if (dealer.cnpj) {
-            return PessoaJuridica
-              ._cadastrar(dealer, options);
-          }
-          return PessoaFisica
-            ._cadastrar(dealer, options);
-        })
-        .then(function(pessoa) {
-          idPessoa = pessoa.id;
-          return Revendedor._cadastrar(pessoa, options);
-        })
-        .then(function() {
-          return PessoaFisica
-            ._cadastrar(dealer, options);
-        })
-        .then(function(pf) {
-          idPessoa = pf.id;
-          return Revendedor._cadastrar(pf, options);
-        })
-        .then(function(revenda) {
-          idRevendedor = revenda.get('pessoa_id');
-          return new UsuarioRevendedor({
-              login: dealer.login,
-              senha: senha,
-              acesso_confirmado: true,
-              ativo: true,
-              autorizacao: dealer.autorizacao,
-              revendedor_id: idRevendedor,
-              pessoa_id: idPessoa
-            })
-            .save(null, optionsInsert);
-        });
+          .save(null, optionsInsert);
+      });
+  },
+  cadastrar: function(dealer) {
+    var Revendedor = this;
+    return Bookshelf.transaction(function(t) {
+      return Revendedor._cadastrar(dealer, { transacting: t });
     });
   },
-  _cadastrar: function(pessoa, options) {
+  _salvarRevenda: function(pessoa, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options || {});
 
     return Conta

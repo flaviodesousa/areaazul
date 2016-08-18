@@ -128,13 +128,13 @@ var Ativacao = Bookshelf.Model.extend({
     });
   },
   _ativarPelaRevenda: function(ativacao, options) {
-    var optionsInsert = _.merge({}, options, { method: 'insert' });
+    var optionsInsert = _.merge({ method: 'insert' }, options);
     var placaSemMascara = '';
     if (ativacao.placa) {
       placaSemMascara = util.placaSemMascara(ativacao.placa);
     }
     return Ativacao
-      .validarAtivacao(ativacao, placaSemMascara)
+      ._validarAtivacao(ativacao, placaSemMascara, options)
       .then(function(messages) {
         if (messages.length) {
           debug('ativarPelaRevenda() ativacao invalida');
@@ -170,8 +170,7 @@ var Ativacao = Bookshelf.Model.extend({
       })
       .then(function(v) {
         debug('ativarPelaRevenda() ativando veiculo #' + v.id);
-        return Ativacao
-          .forge({
+        return new Ativacao({
             data_ativacao: new Date(),
             pessoa_id: ativacao.usuario_pessoa_id,
             veiculo_id: v.id,
@@ -179,11 +178,8 @@ var Ativacao = Bookshelf.Model.extend({
           })
           .save(null, optionsInsert)
           .then(function(a) {
-            return UsuarioRevendedor
-              .forge({
-                pessoa_id: a.get('pessoa_id')
-              })
-              .fetch();
+            return new UsuarioRevendedor({ pessoa_id: a.get('pessoa_id') })
+              .fetch(options);
           })
           .then(function(usuario) {
             return MovimentacaoConta
@@ -248,16 +244,16 @@ var Ativacao = Bookshelf.Model.extend({
       })
       .then(function() {
         return Ativacao
-          ._verificaSaldo(ativacao.usuario_pessoa_id, options)
-          .then(function(conta) {
-            if (!conta || conta.get('saldo') < ativacao.valor) {
-              message.push({
-                attribute: 'saldo',
-                problem: 'Usuário não possui saldo em conta!'
-              });
-            }
-            return message;
+          ._verificaSaldo(ativacao.usuario_pessoa_id, options);
+      })
+      .then(function(conta) {
+        if (!conta || conta.get('saldo') < ativacao.valor) {
+          message.push({
+            attribute: 'saldo',
+            problem: 'Usuário não possui saldo em conta!'
           });
+        }
+        return message;
       });
   },
 
@@ -267,11 +263,10 @@ var Ativacao = Bookshelf.Model.extend({
 
   _verificaSaldo: function(id, options) {
     return Conta
-      .forge()
       .query(function(qb) {
         qb
-          .innerJoin('pessoa', 'pessoa.id_pessoa', 'revendedor.pessoa_id')
           .innerJoin('revendedor', 'revendedor.conta_id', 'conta.id_conta')
+          .innerJoin('pessoa', 'pessoa.id_pessoa', 'revendedor.pessoa_id')
           .innerJoin('usuario_revendedor',
             'usuario_revendedor.revendedor_id', 'revendedor.pessoa_id')
           .where('usuario_revendedor.pessoa_id', id)
