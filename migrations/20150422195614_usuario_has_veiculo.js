@@ -13,6 +13,7 @@ exports.up = function(knex) {
       .notNullable()
       .references('id_veiculo').inTable('veiculo');
     table.timestamp('ultima_ativacao');
+    table.unique(['usuario_pessoa_id', 'veiculo_id']);
   });
 };
 

@@ -2,8 +2,8 @@
 
 exports.up = function(knex) {
   return knex.schema.createTable('usuario_revendedor', function(table) {
-    table.integer('pessoa_id')
-      .primary()
+    table.increments('id').primary();
+    table.integer('pessoa_id').notNullable()
       .references('pessoa_id').inTable('pessoa_fisica');
     table.string('login').unique().notNullable();
     table.string('senha');
@@ -12,6 +12,7 @@ exports.up = function(knex) {
     table.boolean('ativo').notNullable();
     table.integer('revendedor_id').notNullable()
       .references('pessoa_id').inTable('revendedor');
+    table.unique(['pessoa_id', 'revendedor_id']);
   });
 };
 
