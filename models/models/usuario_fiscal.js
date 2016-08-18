@@ -6,30 +6,30 @@ var AreaAzul = require('../../areaazul');
 var Bookshelf = require('bookshelf').conexaoMain;
 var Pessoa = require('./pessoa').Pessoa;
 var PessoaFisica = require('./pessoa_fisica').PessoaFisica;
-var Fiscalizacao = require('./fiscalizacao');
+var Conta = require('./conta');
 
 var UsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'usuario_fiscal',
   idAttribute: 'pessoa_id',
   pessoaFisica: function() {
-    return this.hasOne(PessoaFisica, 'pessoa_id');
+    return this.hasOne('PessoaFisica', 'pessoa_id');
   },
   fiscalizacoes: function() {
-    return this.hasMany(Fiscalizacao, 'fiscal_id');
+    return this.hasMany('Fiscalizacao', 'fiscal_id');
   },
   desativar: function(tax, then, fail) {
     util.log('Tax: ' + tax);
     var pessoa = new Pessoa.Pessoa({
       id_pessoa: tax.pessoa_id,
-      ativo: false,
+      ativo: false
     });
     var pessoaFisica = new PessoaFisica.PessoaFisica({
       id_pessoa_fisica: tax.id_pessoa_fisica,
-      ativo: false,
+      ativo: false
     });
     var usuarioFiscal = new UsuarioFiscal({
       pessoa_id: tax.pessoa_id,
-      ativo: false,
+      ativo: false
     });
 
     Pessoa.sixUpdateTransaction(pessoa, usuarioFiscal, pessoaFisica,
@@ -38,55 +38,56 @@ var UsuarioFiscal = Bookshelf.Model.extend({
       }, function(err) {
         fail(err);
       });
-  },
-
+  }
 }, {
-  cadastrar: function(tax) {
+  _cadastrar: function(fiscalFields, options) {
     var Fiscal = this;
-    var fiscal = null;
+    var pessoaFisica = null;
 
     var senha;
-    if (!tax.senha) {
+    if (!fiscalFields.senha) {
       senha = util.criptografa(util.generate());
     } else {
-      senha = util.criptografa(tax.senha);
+      senha = util.criptografa(fiscalFields.senha);
     }
 
-    return Bookshelf.transaction(function(t) {
-      var trx = { transacting: t };
-      var trxIns = _.merge({}, trx, { method: 'insert' });
-      // Verifica se a pessoa fisica ja' existe
-      return PessoaFisica
-        .forge({cpf: tax.cpf})
-        .fetch()
-        .then(function(pessoaFisica) {
-          // Se pessoa fisica ja' existir, conectar a ela
-          if (pessoaFisica !== null) {
-            return pessoaFisica;
-          }
-          // Caso nao exista, criar a pessoa fisica
-          return PessoaFisica
-            ._cadastrar(tax, trx);
-        })
-        .then(function(pessoaFisica) {
-          return Fiscal
-            .forge({
-              login: tax.login,
-              senha: senha,
-              primeiro_acesso: true,
-              ativo: true,
-              pessoa_id: pessoaFisica.get('pessoa_id'),
-            })
-            .save(null, trxIns);
-        })
-        .then(function(f) {
-          fiscal = f;
-          return f;
-        });
-    })
-      .then(function() {
-        return fiscal;
+    var optionsInsert = _.merge({ method: 'insert' }, options);
+    // Verifica se a pessoa fisica ja' existe
+    return PessoaFisica
+      .forge({cpf: fiscalFields.cpf})
+      .fetch(options)
+      .then(function pessoaFisicaExiste(pessoaFisica) {
+        // Se pessoa fisica ja' existir, conectar a ela
+        if (pessoaFisica !== null) {
+          return pessoaFisica;
+        }
+        // Caso nao exista, criar a pessoa fisica
+        return PessoaFisica
+          ._cadastrar(fiscalFields, options);
+      })
+      .then(function salvarPessoaFisica(pf) {
+        pessoaFisica = pf;
+      })
+      .then(function cadastrarConta() {
+        return Conta._cadastrar(null, options);
+      })
+      .then(function salvarFiscal(conta) {
+        return new Fiscal({
+            login: fiscalFields.login,
+            senha: senha,
+            primeiro_acesso: true,
+            ativo: true,
+            pessoa_id: pessoaFisica.get('pessoa_id'),
+            conta_id: conta.id
+          })
+          .save(null, optionsInsert);
       });
+  },
+  cadastrar: function(fiscalFields) {
+    var UsuarioFiscal = this;
+    return Bookshelf.transaction(function transacao(t) {
+      return UsuarioFiscal._cadastrar(fiscalFields, { transacting: t });
+    });
   },
   autorizado: function(login, senha) {
     var UsuarioFiscal = this;
@@ -97,23 +98,20 @@ var UsuarioFiscal = Bookshelf.Model.extend({
       .then(function(usuarioFiscal) {
         if (usuarioFiscal === null) {
           err = new AreaAzul.BusinessException(
-              'Usuario: login invalido', {
-                  login: login
-              });
+            'Usuario: login invalido', { login: login });
           err.authentication_event = true;
           throw err;
         }
         if (util.senhaValida(senha, usuarioFiscal.get('senha'))) {
           return usuarioFiscal;
-        } else {
-          err = new AreaAzul.BusinessException(
-              'Usuario: senha incorreta', {
-                  login: login,
-                  usuario_fiscal: usuarioFiscal
-              });
-          err.authentication_event = true;
-          throw err;
         }
+        err = new AreaAzul.BusinessException(
+          'Usuario: senha incorreta', {
+            login: login,
+            usuario_fiscal: usuarioFiscal
+          });
+        err.authentication_event = true;
+        throw err;
       });
   },
   procurar: function(tax, then, fail) {
@@ -129,7 +127,8 @@ var UsuarioFiscal = Bookshelf.Model.extend({
     }).catch(function(err) {
       fail(err);
     });
-  },
+  }
 });
+Bookshelf.model('UsuarioFiscal', UsuarioFiscal);
 
 module.exports = UsuarioFiscal;

@@ -9,7 +9,10 @@ var Conta = Bookshelf.Model.extend({
   idAttribute: 'id_conta'
 }, {
   _cadastrar: function(conta, options) {
-    conta = _.merge(conta || {}, { saldo: 0, ativo: true });
+    conta = _.merge({
+      saldo: 0,
+      data_abertura: new Date(),
+      ativo: true }, conta || {});
     var optionsInsert = _.merge({ method: 'insert' }, options);
     return new Conta(conta)
       .save(null, optionsInsert);
