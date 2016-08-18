@@ -133,12 +133,7 @@ var Usuario = Bookshelf.Model.extend({
         pessoaFisica = pf;
       })
       .then(function() {
-        return Conta
-          ._cadastrar({
-            data_abertura: new Date(),
-            saldo: 0,
-            ativo: true
-          }, options);
+        return Conta._cadastrar(null, options);
       })
       .then(function(conta) {
         var dadosUsuario = {
