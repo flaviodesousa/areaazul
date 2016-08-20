@@ -1,8 +1,8 @@
 'use strict';
 
-exports.up = function(knex, Promise) {
+exports.up = function(knex) {
   return knex.schema.createTable('movimentacao_conta', function(table) {
-    table.increments('id_movimentacao_conta').primary();
+    table.increments('id').primary();
     table.timestamp('data_deposito').notNullable();
     table.timestamp('data_estorno');
     table.string('historico').notNullable();
@@ -10,12 +10,12 @@ exports.up = function(knex, Promise) {
     table.decimal('valor', 18, 2).notNullable();
     table.boolean('ativo').notNullable();
     table.integer('conta_id').notNullable()
-      .references('id_conta').inTable('conta');
+      .references('id').inTable('conta');
     table.integer('pessoa_id').notNullable()
-      .references('id_pessoa').inTable('pessoa');
+      .references('id').inTable('pessoa');
   });
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function(knex) {
   return knex.schema.dropTable('movimentacao_conta');
 };

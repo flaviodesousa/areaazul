@@ -3,11 +3,11 @@
 exports.up = function(knex) {
   return knex.schema
         .createTable('revendedor', function(table) {
-          table.integer('pessoa_id')
+          table.integer('id')
             .primary()
-            .references('id_pessoa').inTable('pessoa');
+            .references('id').inTable('pessoa');
           table.integer('conta_id').notNullable()
-            .references('id_conta').inTable('conta');
+            .references('id').inTable('conta');
           table.boolean('ativo').notNullable().defaultTo(true);
         });
 };

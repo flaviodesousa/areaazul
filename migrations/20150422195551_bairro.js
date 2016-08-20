@@ -1,15 +1,15 @@
 'use strict';
 
-exports.up = function(knex, Promise) {
+exports.up = function(knex) {
   return knex.schema.createTable('bairro', function(table) {
-    table.increments('id_bairro').primary();
+    table.increments('id').primary();
     table.string('nome').notNullable();
     table.boolean('ativo').notNullable();
     table.integer('cidade_id').notNullable()
-      .references('id_cidade').inTable('cidade');
+      .references('id').inTable('cidade');
   });
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function(knex) {
   return knex.schema.dropTable('bairro');
 };

@@ -1,8 +1,8 @@
 'use strict';
 
-exports.up = function(knex, Promise) {
+exports.up = function(knex) {
   return knex.schema.createTable('endereco', function(table) {
-    table.increments('id_endereco').primary();
+    table.increments('id').primary();
     table.string('cep').notNullable();
     table.string('complemento');
     table.string('lote');
@@ -11,12 +11,12 @@ exports.up = function(knex, Promise) {
     table.string('logradouro').notNullable();
     table.boolean('ativo').notNullable();
     table.integer('cidade_id').notNullable()
-      .references('id_cidade').inTable('cidade');
+      .references('id').inTable('cidade');
     table.integer('bairro_id').notNullable()
-      .references('id_bairro').inTable('bairro');
+      .references('id').inTable('bairro');
   });
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function(knex) {
   return knex.schema.dropTable('endereco');
 };

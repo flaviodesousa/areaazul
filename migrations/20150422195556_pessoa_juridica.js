@@ -2,9 +2,9 @@
 
 exports.up = function(knex) {
   return knex.schema.createTable('pessoa_juridica', function(table) {
-    table.integer('pessoa_id')
+    table.integer('id')
       .primary()
-      .references('id_pessoa').inTable('pessoa');
+      .references('id').inTable('pessoa');
     table.string('cnpj').unique().notNullable();
     table.string('nome_fantasia').notNullable();
     table.string('razao_social').notNullable();

@@ -5,13 +5,13 @@ exports.up = function(knex) {
     // Bug Bookshelf, nao atribui id de PK composta impossibilitando update
     // table.primary(['usuario_pessoa_id', 'veiculo_id']);
     // Coluna PK abaixo incluida enquanto bug nao for corrigido
-    table.increments('id_usuario_has_veiculo').primary();
+    table.increments('id').primary();
     table.integer('usuario_pessoa_id')
       .notNullable()
       .references('pessoa_id').inTable('usuario');
     table.integer('veiculo_id')
       .notNullable()
-      .references('id_veiculo').inTable('veiculo');
+      .references('id').inTable('veiculo');
     table.timestamp('ultima_ativacao');
     table.unique(['usuario_pessoa_id', 'veiculo_id']);
   });

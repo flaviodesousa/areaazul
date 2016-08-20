@@ -2,7 +2,7 @@
 
 exports.up = function(knex) {
   return knex.schema.createTable('ativacao', function(table) {
-    table.increments('id_ativacao').primary();
+    table.increments('id').primary();
     table.timestamp('data_ativacao').notNullable();
     table.timestamp('data_desativacao');
     table.decimal('latitude', 14, 10);
@@ -11,9 +11,9 @@ exports.up = function(knex) {
     table.string('tipo');
     table.boolean('ativo').notNullable();
     table.integer('pessoa_id').notNullable()
-      .references('id_pessoa').inTable('pessoa');
+      .references('id').inTable('pessoa');
     table.integer('veiculo_id').notNullable()
-      .references('id_veiculo').inTable('veiculo');
+      .references('id').inTable('veiculo');
   });
 };
 

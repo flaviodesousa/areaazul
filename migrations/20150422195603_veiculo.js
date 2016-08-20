@@ -2,7 +2,7 @@
 
 exports.up = function(knex) {
   return knex.schema.createTable('veiculo', function(table) {
-    table.increments('id_veiculo').primary();
+    table.increments('id').primary();
     table.string('placa').unique().notNullable();
     table.string('marca');
     table.string('modelo');
@@ -11,7 +11,7 @@ exports.up = function(knex) {
     table.bigInteger('ano_modelo');
     table.boolean('ativo').notNullable().defaultTo(true);
     table.integer('cidade_id')
-      .references('id_cidade').inTable('cidade');
+      .references('id').inTable('cidade');
   });
 };
 

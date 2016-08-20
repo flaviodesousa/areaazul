@@ -1,11 +1,11 @@
 'use strict';
 
-exports.up = function(knex, Promise) {
+exports.up = function(knex) {
   return knex.schema.createTable('fiscalizacao', function(table) {
-    table.increments('id_fiscalizacao').primary();
+    table.increments('id').primary();
     table.string('placa').notNullable();
     table.integer('veiculo_id').nullable()
-      .references('id_veiculo').inTable('veiculo');
+      .references('id').inTable('veiculo');
     table.timestamp('timestamp').notNullable();
     table.integer('fiscal_id').notNullable()
       .references('pessoa_id').inTable('usuario_fiscal');
@@ -15,6 +15,6 @@ exports.up = function(knex, Promise) {
   });
 };
 
-exports.down = function(knex, Promise) {
+exports.down = function(knex) {
   return knex.schema.dropTable('fiscalizacao');
 };
