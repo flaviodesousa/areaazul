@@ -1,8 +1,6 @@
 exports.Ativacoes = require('./collections/ativacoes');
-exports.consumo = require('./collections/consumo');
 exports.Contas = require('./collections/conta');
 exports.contrato = require('./collections/contrato');
-exports.credenciado = require('./collections/credenciado');
 exports.Estados = require('./collections/estados');
 exports.Cidades = require('./collections/cidades');
 exports.Fiscalizacoes = require('./collections/fiscalizacoes');

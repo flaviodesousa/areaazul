@@ -1,9 +1,7 @@
 module.exports.Ativacao = require('./models/ativacao');
 module.exports.Configuracao = require('./models/configuracao');
-module.exports.consumo = require('./models/consumo');
 module.exports.Conta = require('./models/conta');
 module.exports.contrato = require('./models/contrato');
-module.exports.credenciado = require('./models/credenciado');
 module.exports.Estado = require('./models/estado');
 module.exports.Fiscalizacao = require('./models/fiscalizacao');
 module.exports.funcionario = require('./models/funcionario');
