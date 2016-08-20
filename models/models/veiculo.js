@@ -7,22 +7,18 @@ var validator = require('validator');
 var util = require('../../helpers/util');
 var AreaAzul = require('../../areaazul.js');
 
-var Usuario = require('./usuario');
 var UsuarioHasVeiculo = require('./usuario_has_veiculo');
 
 var Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',
-  idAttribute: 'id_veiculo',
   usuarios: function() {
-    return this.belongsToMany(Usuario)
-        .through(UsuarioHasVeiculo);
+    return this.belongsToMany('Usuario')
+        .through('UsuarioHasVeiculo');
   },
 }, {
 
   _cadastrar: function(vehicle, options) {
-    var optionsInsert = _.merge({}, options || {}, {
-      method: 'insert',
-    });
+    var optionsInsert = _.merge({ method: 'insert', }, options || {});
 
     var placaSemMascara = util.placaSemMascara(vehicle.placa);
 
@@ -110,12 +106,11 @@ var Veiculo = Bookshelf.Model.extend({
       .forge()
       .query(function(qb) {
         qb.where('veiculo.placa', placaSemMascara);
-        qb.join('cidade', 'veiculo.cidade_id', '=', 'cidade.id_cidade');
-        qb.join('estado', 'cidade.estado_id', '=', 'estado.id_estado');
+        qb.join('cidade', 'veiculo.cidade_id', 'cidade.id');
+        qb.join('estado', 'cidade.estado_id', 'estado.id');
         qb.select('veiculo.*');
         qb.select('cidade.*');
-        qb.select('estado.id_estado');
-        qb.select('estado.uf');
+        qb.select('estado.*');
       })
       .fetch();
   },
@@ -165,13 +160,13 @@ var Veiculo = Bookshelf.Model.extend({
         if (veiculoExistente && veiculoExistente.id !== veiculo.id) {
           message.push({
             attribute: 'placa',
-            problem: 'Veiculo já cadastrado!',
+            problem: 'Veiculo já cadastrado!'
           });
         }
 
         return message;
       });
   },
-
 });
+Bookshelf.model('Veiculo', Veiculo);
 module.exports = Veiculo;

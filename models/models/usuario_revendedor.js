@@ -10,12 +10,10 @@ var AreaAzul = require('../../areaazul.js');
 var log = AreaAzul.log;
 var validation = require('./validation');
 
-
 var UsuarioRevendedor = Bookshelf.Model.extend({
   tableName: 'usuario_revendedor',
-  idAttribute: 'pessoa_id',
   pessoaFisica: function() {
-    return this.hasOne(PessoaFisica, 'pessoa_id');
+    return this.hasOne('PessoaFisica', 'id');
   }
 }, {
   autorizado: function(login, senha) {
@@ -64,8 +62,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         if (messages.length) {
           throw new AreaAzul
             .BusinessException(
-              'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
-              messages);
+            'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
+            messages);
         }
         return messages;
       })
@@ -80,8 +78,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
               return PessoaFisica.alterar(entidade, t, pessoaFisica.id);
             }
             // Caso nao exista, criar a pessoa fisica
-            return PessoaFisica.
-            _cadastrar(entidade, t);
+            return PessoaFisica._cadastrar(entidade, t);
           });
       }).then(function(pessoaFisica) {
         var dadosUsuarioRevendedor = {
@@ -91,7 +88,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
           acesso_confirmado: false,
           ativo: true,
           revendedor_id: entidade.revendedor_id,
-          pessoa_id: pessoaFisica.id,
+          pessoa_id: pessoaFisica.id
         };
 
         if (options.method === 'insert') {
@@ -140,7 +137,6 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     });
   },
 
-
   search: function(entidade, func) {
     entidade.fetch().then(function(model, err) {
       var retorno;
@@ -156,8 +152,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
 
   alterarSenha: function(user, then, fail) {
     new this.UsuarioRevendedor({
-        id_usuario_revendedor: user.id_usuario_revendedor
-      })
+      id_usuario_revendedor: user.id_usuario_revendedor
+    })
       .fetch()
       .then(function(model) {
         var pwd;
@@ -183,8 +179,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
           fail();
         }
       }).catch(function(err) {
-        fail(err);
-      });
+      fail(err);
+    });
   },
 
   procurar: function(id, func) {
@@ -204,10 +200,9 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
           .select('pessoa.*')
           .select('usuario_revendedor.*');
       }).fetch().then(function(model) {
-        func(model);
-      });
+      func(model);
+    });
   },
-
 
   desativar: function(id) {
     return UsuarioRevendedor
@@ -217,19 +212,13 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       .fetch()
       .then(function(revenda) {
         if (!revenda) {
-          var err = new AreaAzul.BusinessException(
+          throw new AreaAzul.BusinessException(
             'Desativacao: Usuario não encontrado', {
               pessoa_id: id
             });
-          throw err;
         }
-        var status;
+        var status = revenda.get('ativo') === false;
 
-        if (revenda.get('ativo') === false) {
-          status = true;
-        } else {
-          status = false;
-        }
         return revenda
           .save({
             ativo: status
@@ -238,7 +227,6 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
           });
       });
   },
-
 
   validarSenha: function(user) {
     var message = [];
@@ -293,33 +281,33 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     if (validator.isNull(user.conf_senha)) {
       message.push({
         attribute: 'nova_senha',
-        problem: 'Nova senha é obrigatória!',
+        problem: 'Nova senha é obrigatória!'
       });
     }
     if (validator.isNull(user.senha)) {
       message.push({
         attribute: 'senha',
-        problem: 'Senha é obrigatória!',
+        problem: 'Senha é obrigatória!'
       });
     }
 
     if (user.senha.length < 4) {
       message.push({
         attribute: 'senha',
-        problem: 'A senha deve conter no minimo 4 caracteres!',
+        problem: 'A senha deve conter no minimo 4 caracteres!'
       });
     }
 
     if (user.conf_senha.length < 4) {
       message.push({
         attribute: 'nova_senha',
-        problem: 'A nova senha deve conter no minimo 4 caracteres!',
+        problem: 'A nova senha deve conter no minimo 4 caracteres!'
       });
     }
     if (user.conf_senha !== user.senha) {
       message.push({
         attribute: 'nova_senha, senha',
-        problem: 'As senhas devem ser iguais!',
+        problem: 'As senhas devem ser iguais!'
       });
     }
     return message;
@@ -327,19 +315,19 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
 
   alterarSenhaRecuperacao: function(user) {
     new this.UsuarioRevendedor({
-        pessoa_id: user.pessoa_id,
-      })
+      pessoa_id: user.pessoa_id
+    })
       .fetch()
       .then(function(model) {
         if (!model) {
           throw new AreaAzul.BusinessException(
-            'Usuário não encontrado!', { user: user});
+            'Usuário não encontrado!', { user: user });
         }
         var novaSenha = util.criptografa(user.senha);
         model.save({
           primeiro_acesso: 'false',
           senha: novaSenha,
-          ativo: 'true',
+          ativo: 'true'
         });
       });
   },
@@ -363,42 +351,41 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       });
   },
 
-
   validarUsuarioRevenda: function(userReseller, operacao) {
     var message = [];
 
     if (!userReseller.nome) {
       message.push({
         attribute: 'nome',
-        problem: 'Nome obrigatório!',
+        problem: 'Nome obrigatório!'
       });
     }
 
     if (!userReseller.email) {
       message.push({
         attribute: 'email',
-        problem: 'Email obrigatório!',
+        problem: 'Email obrigatório!'
       });
     }
 
     if (!userReseller.login) {
       message.push({
         attribute: 'login',
-        problem: 'Login obrigatório!',
+        problem: 'Login obrigatório!'
       });
     }
 
     if (!validator.isEmail(userReseller.email)) {
       message.push({
         attribute: 'email',
-        problem: 'Email inválido!',
+        problem: 'Email inválido!'
       });
     }
 
     if (!userReseller.cpf) {
       message.push({
         attribute: 'cpf',
-        problem: 'CPF é obrigatório!',
+        problem: 'CPF é obrigatório!'
       });
 
     }
@@ -406,18 +393,16 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     if (!validation.isCPF(userReseller.cpf)) {
       message.push({
         attribute: 'cpf',
-        problem: 'CPF inválido!',
+        problem: 'CPF inválido!'
       });
     }
 
     if (!userReseller.termo_servico) {
       message.push({
         attribute: 'termo_servico',
-        problem:
-          'Para realizar o cadastro precisa aceitar nossos termos de serviço!',
+        problem: 'Cadastro exige aceitar nossos termos de serviço'
       });
     }
-
 
     return UsuarioRevendedor
       .procurarLogin(userReseller.login)
@@ -425,27 +410,23 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         if (usuariorevendedor && operacao === 'insert') {
           message.push({
             attribute: 'login',
-            problem: 'Login já cadastrado!',
+            problem: 'Login já cadastrado!'
           });
         }
 
         return message;
       });
-
-
   },
   procurarLogin: function(login) {
     return this.forge({
       login: login
     }).fetch();
-  },
-
-
+  }
 });
+Bookshelf.model('UsuarioRevendedor', UsuarioRevendedor);
 
 module.exports = UsuarioRevendedor;
 
 exports.compareSenha = function(password, pwd) {
-  var hash = bcrypt.compareSync(password, pwd);
-  return hash;
+  return bcrypt.compareSync(password, pwd);
 };

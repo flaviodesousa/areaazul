@@ -14,9 +14,9 @@ var util = require('../../helpers/util');
 var Conta = require('./conta');
 
 var Funcionario = Bookshelf.Model.extend({
-    tableName: 'funcionario',
-    idAttribute: 'id_funcionario'
+    tableName: 'funcionario'
 });
+Bookshelf.model('Funcionario', Funcionario);
 
 exports.Funcionario = Funcionario;
 

@@ -4,9 +4,8 @@ var AreaAzul = require('../../areaazul');
 var log = AreaAzul.log;
 var Bookshelf = require('bookshelf').conexaoMain;
 
-module.exports = Bookshelf.Model.extend({
-  tableName: 'fiscalizacao',
-  idAttribute: 'id_fiscalizacao',
+var Fiscalizacao = Bookshelf.Model.extend({
+  tableName: 'fiscalizacao'
 }, {
   cadastrar: function(params, then, fail) {
     this
@@ -28,3 +27,6 @@ module.exports = Bookshelf.Model.extend({
       });
   },
 });
+Bookshelf.model('Fiscalizacao', Fiscalizacao);
+
+module.exports = Fiscalizacao;

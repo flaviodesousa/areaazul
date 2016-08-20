@@ -9,10 +9,9 @@ var util = require('../../helpers/util');
 
 var UsuarioAdministrativo = Bookshelf.Model.extend({
   tableName: 'usuario_administrativo',
-  idAttribute: 'pessoa_id',
   pessoaFisica: function() {
-    return this.hasOne(PessoaFisica, 'pessoa_id');
-  },
+    return this.hasOne('PessoaFisica', 'id');
+  }
 }, {
   cadastrar: function(user) {
     var UsuarioAdministrativo = this;
@@ -37,7 +36,7 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
       var options = { transacting: t };
       var optionsInsert = _.merge({}, options, { method: 'insert' });
       return PessoaFisica
-        .forge({cpf: user.cpf})
+        .forge({ cpf: user.cpf })
         .fetch()
         .then(function(pf) {
           if (!pf) {
@@ -52,7 +51,7 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
               login: login,
               senha: senha,
               autorizacao: user.autorizacao,
-              ativo: true,
+              ativo: true
             })
             .save(null, optionsInsert);
         });
@@ -62,40 +61,42 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
     var UsuarioAdministrativo = this;
     var err;
     return UsuarioAdministrativo
-      .forge({login: login})
+      .forge({ login: login })
       .fetch()
       .then(function(usuarioAdministrativo) {
         if (usuarioAdministrativo === null) {
           err = new AreaAzul.BusinessException(
             'UsuarioAdministrativo: login invalido',
-            {login: login});
+            { login: login });
           log.warn(err.message, err.details);
           throw err;
         }
         if (util.senhaValida(senha, usuarioAdministrativo.get('senha'))) {
           return usuarioAdministrativo;
-        } else {
-          err = new AreaAzul.BusinessException(
-            'UsuarioAdministrativo: senha incorreta',
-            {login: login});
-          log.warn(err.message, err.details);
-          throw err;
         }
-      });
-  },
-  buscarPorId: function(id) {
-    return UsuarioAdministrativo
-      .forge({pessoa_id: id})
-      .fetch()
-      .then(function(u) {
-        if (u) { return u; }
-        var err = new AreaAzul.BusinessException(
-          'UsuarioAdministrativo: id nao encontrado',
-          {id: id});
+        err = new AreaAzul.BusinessException(
+          'UsuarioAdministrativo: senha incorreta',
+          { login: login });
         log.warn(err.message, err.details);
         throw err;
       });
   },
+  buscarPorId: function(id) {
+    return UsuarioAdministrativo
+      .forge({ pessoa_id: id })
+      .fetch()
+      .then(function(u) {
+        if (u) {
+          return u;
+        }
+        var err = new AreaAzul.BusinessException(
+          'UsuarioAdministrativo: id nao encontrado',
+          { id: id });
+        log.warn(err.message, err.details);
+        throw err;
+      });
+  }
 });
+Bookshelf.model('UsuarioAdministrativo', UsuarioAdministrativo);
 
 module.exports = UsuarioAdministrativo;

@@ -22,5 +22,6 @@ var Cidade = Bookshelf.Model.extend({
 
     },
 });
+Bookshelf.model('Cidade', Cidade);
 
 module.exports = Cidade;

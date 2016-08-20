@@ -5,8 +5,7 @@ var AreaAzul = require('../../areaazul');
 var Bookshelf = AreaAzul.db.Bookshelf.conexaoMain;
 
 var Conta = Bookshelf.Model.extend({
-  tableName: 'conta',
-  idAttribute: 'id_conta'
+  tableName: 'conta'
 }, {
   _cadastrar: function(conta, options) {
     conta = _.merge({
@@ -18,5 +17,6 @@ var Conta = Bookshelf.Model.extend({
       .save(null, optionsInsert);
   }
 });
+Bookshelf.model('Conta', Conta);
 
 module.exports = Conta;

@@ -12,8 +12,7 @@ var util = require('../../helpers/util');
 var Conta = require('./conta');
 
 var Revendedor = Bookshelf.Model.extend({
-  tableName: 'revendedor',
-  idAttribute: 'pessoa_id'
+  tableName: 'revendedor'
 }, {
   _cadastrar: function(revendedorFields, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options);
@@ -228,5 +227,6 @@ var Revendedor = Bookshelf.Model.extend({
       });
   }
 });
+Bookshelf.model('Revendedor', Revendedor);
 
 module.exports = Revendedor;

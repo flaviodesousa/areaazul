@@ -3,12 +3,11 @@
 var _ = require('lodash');
 var AreaAzul = require('../../areaazul');
 var Bookshelf = require('bookshelf').conexaoMain;
-var Conta = require('./conta');
+var Conta = Bookshelf.model('Conta');
 var math = require('mathjs');
 
 var MovimentacaoConta = Bookshelf.Model.extend({
-  tableName: 'movimentacao_conta',
-  idAttribute: 'id_movimentacao_conta'
+  tableName: 'movimentacao_conta'
 }, {
 
   _inserirMovimentacaoConta: function(movimentacaoConta, options) {
@@ -69,6 +68,7 @@ var MovimentacaoConta = Bookshelf.Model.extend({
         ._inserirCredito(debito, { transacting: t });
     });
   }
-
 });
+Bookshelf.model('MovimentacaoConta', MovimentacaoConta);
+
 module.exports = MovimentacaoConta;

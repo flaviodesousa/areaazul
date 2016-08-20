@@ -16,12 +16,11 @@ var UsuarioRevendedor = require('./usuario_revendedor');
 
 
 var Ativacao = Bookshelf.Model.extend({
-  tableName: 'ativacao',
-  idAttribute: 'id_ativacao'
+  tableName: 'ativacao'
 }, {
   _ativar: function(activation, options) {
-    var optionsInsert = _.merge({}, options, {method: 'insert'});
-    var optionsUpdate = _.merge({}, options, {method: 'update', patch: true });
+    var optionsInsert = _.merge({ method: 'insert' }, options);
+    var optionsUpdate = _.merge({ method: 'update', patch: true }, options);
     var ativacao = null;
 
     var latitude = activation.latitude;
@@ -38,13 +37,12 @@ var Ativacao = Bookshelf.Model.extend({
       altitude = null;
     }
 
-    return Ativacao
-      .forge({
+    return new Ativacao({
         data_ativacao: new Date(),
         latitude: latitude,
         longitude: longitude,
         altitude: altitude,
-        pessoa_id: activation.usuario_pessoa_id,
+        pessoa_fisica_id: activation.usuario_id,
         veiculo_id: activation.veiculo_id,
         ativo: true
       })
@@ -53,15 +51,15 @@ var Ativacao = Bookshelf.Model.extend({
         ativacao = a;
         return UsuarioHasVeiculo
           .forge({
-            usuario_pessoa_id: activation.usuario_pessoa_id,
+            usuario_id: activation.usuario_id,
             veiculo_id: activation.veiculo_id
           })
-          .fetch()
+          .fetch(options)
           .then(function(usuariohasveiculo) {
-            if (usuariohasveiculo === null) {
+            if (!usuariohasveiculo) {
               return UsuarioHasVeiculo
                 .forge({
-                  usuario_pessoa_id: activation.usuario_pessoa_id,
+                  usuario_id: activation.usuario_id,
                   veiculo_id: activation.veiculo_id,
                   ultima_ativacao: new Date()
                 })
@@ -121,7 +119,7 @@ var Ativacao = Bookshelf.Model.extend({
       });
   },
   desativar: function(desativacao) {
-    log.info('desativar()', desativacao);
+    log.info('desativar', desativacao);
     return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
       return Ativacao._desativar(desativacao, options);
@@ -294,5 +292,6 @@ var Ativacao = Bookshelf.Model.extend({
   }
 
 });
+Bookshelf.model('Ativacao', Ativacao);
 
 module.exports = Ativacao;

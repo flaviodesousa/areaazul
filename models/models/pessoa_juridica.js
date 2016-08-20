@@ -2,21 +2,19 @@
 
 var _ = require('lodash');
 var Bookshelf = require('bookshelf').conexaoMain;
-var Pessoa = require('./pessoa').Pessoa;
-
+var Pessoa = require('./pessoa');
 
 var PessoaJuridica = Bookshelf.Model.extend({
-  tableName: 'pessoa_juridica',
-  idAttribute: 'pessoa_id',
+  tableName: 'pessoa_juridica'
 }, {
   _cadastrar: function(pj, options) {
-    var optionsInsert = _.merge({}, options || {}, {method: 'insert'});
+    var optionsInsert = _.merge({ method: 'insert' }, options || {});
     return Pessoa
       .forge({
         nome: pj.nome,
         email: pj.email,
         telefone: pj.telefone,
-        ativo: true,
+        ativo: true
       })
       .save(null, options)
       .then(function(pessoa) {
@@ -27,7 +25,7 @@ var PessoaJuridica = Bookshelf.Model.extend({
             razao_social: pj.razao_social,
             contato: pj.telefone,
             ativo: true,
-            pessoa_id: pessoa.id,
+            pessoa_id: pessoa.id
           })
           .save(null, optionsInsert);
       });
@@ -48,10 +46,9 @@ var PessoaJuridica = Bookshelf.Model.extend({
       });
   },
   procurarCNPJ: function(cnpj) {
-      return this.forge({
-          cnpj: cnpj
-      }).fetch();
-  },
+    return this.forge({ cnpj: cnpj }).fetch();
+  }
 });
+Bookshelf.model('PessoaJuridica', PessoaJuridica);
 
 module.exports = PessoaJuridica;

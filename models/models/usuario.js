@@ -9,20 +9,17 @@ var log = AreaAzul.log;
 var Bookshelf = AreaAzul.db.Bookshelf.conexaoMain;
 var PessoaFisica = require('./pessoa_fisica').PessoaFisica;
 var Conta = require('./conta');
-var UsuarioHasVeiculo = require('./usuario_has_veiculo');
-var Veiculo = require('./veiculo').Veiculo;
 var validation = require('./validation');
 var util = require('../../helpers/util');
 
 var Usuario = Bookshelf.Model.extend({
   tableName: 'usuario',
-  idAttribute: 'pessoa_id',
   pessoaFisica: function() {
-    return this.hasOne(PessoaFisica, 'pessoa_id');
+    return this.hasOne('PessoaFisica', 'id');
   },
   veiculos: function() {
-    return this.hasMany(Veiculo)
-      .through(UsuarioHasVeiculo);
+    return this.hasMany('Veiculo')
+      .through('UsuarioHasVeiculo');
   }
 
 }, {
@@ -373,5 +370,6 @@ var Usuario = Bookshelf.Model.extend({
   }
 
 });
+Bookshelf.model('Usuario', Usuario);
 
 module.exports = Usuario;

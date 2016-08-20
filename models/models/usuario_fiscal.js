@@ -10,9 +10,8 @@ var Conta = require('./conta');
 
 var UsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'usuario_fiscal',
-  idAttribute: 'pessoa_id',
   pessoaFisica: function() {
-    return this.hasOne('PessoaFisica', 'pessoa_id');
+    return this.hasOne('PessoaFisica', 'id');
   },
   fiscalizacoes: function() {
     return this.hasMany('Fiscalizacao', 'fiscal_id');

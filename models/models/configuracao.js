@@ -5,8 +5,7 @@ var util = require('../../helpers/util');
 var _ = require('lodash');
 
 var Configuracao = Bookshelf.Model.extend({
-    tableName: 'configuracao',
-    idAttribute: 'id_configuracao'
+    tableName: 'configuracao'
 }, {
 
     _calcular_valor_tempo: function(config) {
@@ -103,5 +102,6 @@ var Configuracao = Bookshelf.Model.extend({
         return message;
     }
 });
+Bookshelf.model('Configuracao', Configuracao);
 
 module.exports = Configuracao;

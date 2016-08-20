@@ -3,11 +3,8 @@
 var Bookshelf = require('bookshelf').conexaoMain;
 var util = require('../../helpers/util');
 
-
 var Estado = Bookshelf.Model.extend({
   tableName: 'estado',
-  idAttribute: 'id_estado',
-
 
   procurar: function(state, func) {
     Estado.forge().query(function(qb) {
@@ -29,10 +26,10 @@ var Estado = Bookshelf.Model.extend({
         .then(function(estado) {
           return estado;
       });
-
-},
+  },
 
 });
+Bookshelf.model('Estado', Estado);
 
 module.exports = Estado;
 

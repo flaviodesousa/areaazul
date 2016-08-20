@@ -7,14 +7,12 @@ var _ = require('lodash');
 
 var UsuarioHasVeiculo =  Bookshelf.Model.extend({
   tableName: 'usuario_has_veiculo',
-  // Coluna id intruduzida por bug no Bookshelf
-  idAttribute: 'id_usuario_has_veiculo',
   veiculo: function() {
-    return this.belongsTo(require('./veiculo'), 'veiculo_id');
+    return this.belongsTo('Veiculo', 'veiculo_id');
   },
   usuario: function() {
-    return this.belongsTo(require('./usuario'), 'usuario_pessoa_id');
-  },
+    return this.belongsTo('Usuario', 'usuario_id');
+  }
 }, {
 
 	cadastrar: function(usuario_has_veiculo){
@@ -54,5 +52,6 @@ var UsuarioHasVeiculo =  Bookshelf.Model.extend({
 		});
     }
 });
+Bookshelf.model('UsuarioHasVeiculo', UsuarioHasVeiculo);
 
 module.exports = UsuarioHasVeiculo;

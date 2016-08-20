@@ -6,10 +6,7 @@ var util = require('../../helpers/util');
 var Bookshelf = require('bookshelf').conexaoMain;
 
 var RecuperacaoSenha = Bookshelf.Model.extend({
-  tableName: 'recuperacao_senha',
-  idAttribute: 'id_recuperacao_senha',
-  
-
+  tableName: 'recuperacao_senha'
 }, {
   cadastrar: function (password_recovery, then, fail) {
     return this.forge({
@@ -39,5 +36,6 @@ var RecuperacaoSenha = Bookshelf.Model.extend({
     });
   }
 });
+Bookshelf.model('RecuperacaoSenha', RecuperacaoSenha);
 
 module.exports = RecuperacaoSenha;
