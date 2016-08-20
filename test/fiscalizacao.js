@@ -3,10 +3,10 @@
 var should = require('chai').should();
 
 var AreaAzul = require('../areaazul');
-var Fiscalizacao = AreaAzul.models.Fiscalizacao;
-var Fiscalizacoes = AreaAzul.collections.Fiscalizacoes;
-var UsuarioFiscal = AreaAzul.models.UsuarioFiscal;
-var UsuariosFiscais = AreaAzul.collections.UsuariosFiscais;
+var Bookshelf = require('bookshelf').conexaoMain;
+var Fiscalizacao = Bookshelf.model('Fiscalizacao');
+var Fiscalizacoes = Bookshelf.collection('Fiscalizacoes');
+var UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
 
 describe('model.fiscalizacao', function() {
   var fiscalLogin = 'fiscal-teste-fiscalizacao';

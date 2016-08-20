@@ -4,6 +4,7 @@
 
 var moment = require('moment');
 var AreaAzul = require('../areaazul');
+var Bookshelf = require('bookshelf').conexaoMain;
 
 var a = require('yargs').argv;
 
@@ -15,7 +16,7 @@ if (!a.valor_ativacao || !a.tempo_tolerancia) {
     process.exit(0);
 }
 
-    AreaAzul.models.Configuracao.alterar({
+    Bookshelf.model('Configuracao').alterar({
         valor_ativacao: a.valor_ativacao,
         tempo_tolerancia: a.tempo_tolerancia,
         franquia: a.franquia || 10.0,

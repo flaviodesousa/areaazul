@@ -4,6 +4,7 @@
 
 var moment = require('moment');
 var AreaAzul = require('../areaazul');
+var Bookshelf = require('bookshelf').conexaoMain;
 
 var a = require('yargs').argv;
 
@@ -17,7 +18,7 @@ if (!a.login || !a.senha) {
   process.exit(0);
 }
 
-AreaAzul.models.Usuario.inserir({
+Bookshelf.model('Usuario').inserir({
   login: a.login,
   senha: a.senha,
   nome: a.nome || 'usuarioareaazul',

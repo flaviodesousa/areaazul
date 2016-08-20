@@ -4,7 +4,8 @@ var debug = require('debug')('areaazul:test:usuario');
 var should = require('chai').should();
 var AreaAzul = require('../areaazul');
 var TestHelpers = require('../helpers/test');
-var Usuario = AreaAzul.models.Usuario;
+var Bookshelf = require('bookshelf').conexaoMain;
+var Usuario = Bookshelf.model('Usuario');
 
 describe('model.usuario', function() {
   var loginDeTeste = 'login-teste-unitario';

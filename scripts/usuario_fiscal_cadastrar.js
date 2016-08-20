@@ -4,6 +4,7 @@
 
 var moment = require('moment');
 var AreaAzul = require('../areaazul');
+var Bookshelf = require('bookshelf').conexaoMain;
 
 var a = require('yargs').argv;
 
@@ -18,7 +19,7 @@ if (!a.login || !a.senha) {
   process.exit(0);
 }
 
-AreaAzul.models.UsuarioFiscal.cadastrar({
+Bookshelf.model('UsuarioFiscal').cadastrar({
   login: a.login,
   senha: a.senha,
   nome: a.nome || a.login,

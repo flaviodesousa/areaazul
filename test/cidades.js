@@ -3,8 +3,9 @@
 var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
-var CidadesCollection = AreaAzul.collections.Cidades;
-var Cidade = AreaAzul.models.Cidade;
+var Bookshelf = require('bookshelf').conexaoMain;
+var CidadesCollection = Bookshelf.collection('Cidades');
+var Cidade = Bookshelf.model('Cidade');
 
 describe('collections.Cidades', function() {
   var idEstado = 1;

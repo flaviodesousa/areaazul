@@ -2,9 +2,9 @@
 
 var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
-var AreaAzul = require('../areaazul');
-var MovimentacaoConta = AreaAzul.models.MovimentacaoConta;
-var UsuarioHasVeiculo = AreaAzul.models.UsuarioHasVeiculo;
+var Bookshelf = require('bookshelf').conexaoMain;
+var MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
+var UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
 
 describe('model.usuario_has_veiculo', function() {
   var idUsuarioComum = null;

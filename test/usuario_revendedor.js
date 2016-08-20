@@ -4,9 +4,10 @@ var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
 var BusinessException = AreaAzul.BusinessException;
-var UsuarioRevendedor = AreaAzul.models.UsuarioRevendedor;
-var UsuarioRevendedorCollection = AreaAzul.collections.UsuarioRevendedor;
-var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
+var Bookshelf = require('bookshelf').conexaoMain;
+var UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
+var UsuarioRevendedorCollection = Bookshelf.collection('UsuarioRevendedor');
+var PessoaFisica = Bookshelf.model('PessoaFisica');
 
 
 describe('models.UsuarioRevendedor', function() {

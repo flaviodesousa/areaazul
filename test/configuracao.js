@@ -2,7 +2,8 @@
 
 var should = require('chai').should();
 var AreaAzul = require('../areaazul');
-var Configuracao = AreaAzul.models.Configuracao;
+var Bookshelf = require('bookshelf').conexaoMain;
+var Configuracao = Bookshelf.model('Configuracao');
 var TestHelpers = require('../helpers/test');
 
 describe('model.configuracao', function() {

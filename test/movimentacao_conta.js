@@ -3,7 +3,8 @@
 var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
-var MovimentacaoConta = AreaAzul.models.MovimentacaoConta;
+var Bookshelf = require('bookshelf').conexaoMain;
+var MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 
 describe('model.movimentacaoConta', function() {
   var usuarioId = null;

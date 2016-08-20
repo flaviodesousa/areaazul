@@ -3,8 +3,9 @@
 var should = require('chai').should();
 
 var AreaAzul = require('../areaazul');
-var Pessoa = AreaAzul.models.pessoa.Pessoa;
-var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
+var Bookshelf = require('bookshelf').conexaoMain;
+var Pessoa = Bookshelf.model('Pessoa');
+var PessoaFisica = Bookshelf.model('PessoaFisica');
 
 describe('models.PessoaFisica', function() {
     var cpfTeste = 'teste-pf';

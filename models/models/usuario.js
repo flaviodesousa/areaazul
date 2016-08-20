@@ -7,8 +7,8 @@ var validator = require('validator');
 var AreaAzul = require('../../areaazul');
 var log = AreaAzul.log;
 var Bookshelf = AreaAzul.db.Bookshelf.conexaoMain;
-var PessoaFisica = require('./pessoa_fisica').PessoaFisica;
-var Conta = require('./conta');
+var PessoaFisica = Bookshelf.model('PessoaFisica');
+var Conta = Bookshelf.model('Conta');
 var validation = require('./validation');
 var util = require('../../helpers/util');
 

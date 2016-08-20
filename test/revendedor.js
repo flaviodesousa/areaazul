@@ -3,7 +3,8 @@
 var debug = require('debug')('areaazul:test:revendedor');
 var AreaAzul = require('../areaazul');
 var should = require('chai').should();
-var Revendedor = AreaAzul.models.Revendedor;
+var Bookshelf = require('bookshelf').conexaoMain;
+var Revendedor = Bookshelf.model('Revendedor');
 var TestHelpers = require('../helpers/test');
 
 describe('model.revendedor', function() {

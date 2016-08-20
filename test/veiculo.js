@@ -3,8 +3,9 @@
 var debug = require('debug')('areaazul:test:veiculo');
 var AreaAzul = require('../areaazul');
 var should = require('chai').should();
-var Veiculo = AreaAzul.models.Veiculo;
-var Veiculos = AreaAzul.collections.Veiculos;
+var Bookshelf = require('bookshelf').conexaoMain;
+var Veiculo = Bookshelf.model('Veiculo');
+var Veiculos = Bookshelf.collection('Veiculos');
 var TestHelpers = require('../helpers/test');
 
 describe('model.veiculo', function() {

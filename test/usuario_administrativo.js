@@ -4,8 +4,9 @@ var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
 var AreaAzul = require('../areaazul');
 var BusinessException = AreaAzul.BusinessException;
-var UsuarioAdministrativo = AreaAzul.models.UsuarioAdministrativo;
-var PessoaFisica = AreaAzul.models.pessoafisica.PessoaFisica;
+var Bookshelf = require('bookshelf').conexaoMain;
+var UsuarioAdministrativo = Bookshelf.model('UsuarioAdministrativo');
+var PessoaFisica = Bookshelf.model('PessoaFisica');
 
 describe('models.UsuarioAdministrativo', function() {
   var cpfPreExistente = 'adm-teste-pre-existente';

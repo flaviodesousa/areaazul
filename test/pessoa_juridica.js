@@ -3,8 +3,9 @@
 var should = require('chai').should();
 
 var AreaAzul = require('../areaazul');
-var Pessoa = AreaAzul.models.pessoa.Pessoa;
-var PessoaJuridica = AreaAzul.models.PessoaJuridica;
+var Bookshelf = require('bookshelf').conexaoMain;
+var Pessoa = Bookshelf.model('Pessoa');
+var PessoaJuridica = Bookshelf.model('PessoaJuridica');
 
 describe('models.PessoaJuridica', function() {
   var cnpjTeste = 'teste-pj';
