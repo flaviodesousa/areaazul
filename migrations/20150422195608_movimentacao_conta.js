@@ -10,8 +10,6 @@ exports.up = function(knex) {
     table.decimal('valor', 18, 2).notNullable();
     table.integer('conta_id').notNullable()
       .references('id').inTable('conta');
-    table.integer('pessoa_id').notNullable()
-      .references('id').inTable('pessoa');
   });
 };
 
