@@ -1,16 +1,13 @@
 'use strict';
 
-exports.up = function(knex) {
-  return knex.schema.createTable('credenciado', function(table) {
-    table.integer('id')
-      .primary()
-      .references('id').inTable('pessoa');
-    table.boolean('contrato_de_servico_valido');
-    table.boolean('inadiplente');
-    table.boolean('ativo').notNullable().defaultTo(true);
-  });
+var Promise = require('bluebird');
+
+exports.up = function() {
+  return Promise.resolve(null);
 };
 
 exports.down = function(knex) {
-  return knex.schema.dropTable('credenciado');
+  return knex.schema.dropTable('credenciado')
+    .catch(function() {
+    });
 };
