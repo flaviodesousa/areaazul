@@ -8,6 +8,7 @@ exports.up = function(knex) {
     table.decimal('ciclo_ativacao').notNullable();
     table.decimal('ciclo_fiscalizacao').notNullable();
     table.decimal('valor_ativacao').notNullable();
+    table.json('parametros');
     table.integer('cidade_id').notNullable()
       .references('id').inTable('cidade');
   });

@@ -6,7 +6,7 @@ exports.up = function(knex) {
     table.timestamp('data_ativacao').notNullable();
     table.timestamp('data_desativacao');
     table.decimal('valor', 18, 2).notNullable();
-    table.boolean('ativo').notNullable();
+    table.boolean('ativo').notNullable().defaultTo(true);
     table.integer('veiculo_id').notNullable()
       .references('id').inTable('veiculo');
     table.integer('pessoa_id').notNullable()

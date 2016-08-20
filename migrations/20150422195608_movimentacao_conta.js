@@ -8,7 +8,6 @@ exports.up = function(knex) {
     table.string('historico').notNullable();
     table.string('tipo').notNullable();
     table.decimal('valor', 18, 2).notNullable();
-    table.boolean('ativo').notNullable();
     table.integer('conta_id').notNullable()
       .references('id').inTable('conta');
     table.integer('pessoa_id').notNullable()

@@ -7,8 +7,8 @@ exports.up = function(knex) {
     table.integer('veiculo_id').nullable()
       .references('id').inTable('veiculo');
     table.timestamp('timestamp').notNullable();
-    table.integer('fiscal_id').notNullable()
-      .references('pessoa_id').inTable('usuario_fiscal');
+    table.integer('usuario_fiscal_id').notNullable()
+      .references('id').inTable('usuario_fiscal');
     table.decimal('latitude', 14, 10);
     table.decimal('longitude', 14, 10);
     table.decimal('altitude', 18, 10);

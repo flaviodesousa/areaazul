@@ -9,7 +9,7 @@ exports.up = function(knex) {
     table.string('numero');
     table.string('quadra');
     table.string('logradouro').notNullable();
-    table.boolean('ativo').notNullable();
+    table.boolean('ativo').notNullable().defaultTo(true);
     table.integer('cidade_id').notNullable()
       .references('id').inTable('cidade');
     table.integer('bairro_id').notNullable()

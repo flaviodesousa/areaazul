@@ -10,7 +10,7 @@ exports.up = function(knex) {
     table.boolean('primeiro_acesso').notNullable();
     table.integer('conta_id').notNullable()
       .references('id').inTable('conta');
-    table.boolean('ativo').notNullable();
+    table.boolean('ativo').notNullable().defaultTo(true);
   });
 };
 

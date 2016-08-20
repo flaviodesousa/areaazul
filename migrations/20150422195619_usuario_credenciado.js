@@ -8,7 +8,7 @@ exports.up = function(knex) {
     table.string('login').unique().notNullable();
     table.string('senha');
     table.boolean('primeiro_acesso').notNullable();
-    table.boolean('ativo').notNullable();
+    table.boolean('ativo').notNullable().defaultTo(true);
   });
 };
 
