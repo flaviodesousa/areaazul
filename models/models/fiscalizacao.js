@@ -7,24 +7,17 @@ var log = AreaAzul.log;
 var Fiscalizacao = Bookshelf.Model.extend({
   tableName: 'fiscalizacao'
 }, {
-  cadastrar: function(params, then, fail) {
-    this
+  cadastrar: function(fiscalizacao) {
+    log.info('Fiscalizacao.cadastrar()', fiscalizacao);
+    return this
       .forge({
-        placa: params.placa,
-        latitude: params.latitude,
-        longitude: params.longitude,
+        placa: fiscalizacao.placa,
+        latitude: fiscalizacao.latitude,
+        longitude: fiscalizacao.longitude,
         timestamp: new Date(),
-        fiscal_id: params.fiscal_id,
+        usuario_fiscal_id: fiscalizacao.usuario_fiscal_id,
       })
-      .save()
-      .then(function(model) {
-        log.info('Fiscalizacao adicionada', {model: model});
-        then(model);
-      })
-      .catch(function(err) {
-        log.error('Fiscalizacao', {params: params, err: err});
-        fail(err);
-      });
+      .save();
   },
 });
 Bookshelf.model('Fiscalizacao', Fiscalizacao);
