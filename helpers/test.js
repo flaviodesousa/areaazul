@@ -3,24 +3,26 @@
 var _ = require('lodash');
 var debug = require('debug')('areaazul:test:helper');
 var Promise = require('bluebird');
-var AreaAzul = require('../areaazul');
-var Bookshelf = require('bookshelf').conexaoMain;
-var Fiscalizacoes = Bookshelf.collection('Fiscalizacoes');
-var UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
-var Usuario = Bookshelf.model('Usuario');
-var UsuarioAdministrativo = Bookshelf.model('UsuarioAdministrativo');
-var Pessoa = Bookshelf.model('Pessoa');
-var PessoaFisica = Bookshelf.model('PessoaFisica');
-var PessoaJuridica = Bookshelf.model('PessoaJuridica');
-var Conta = Bookshelf.model('Conta');
-var UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
-var Revendedor = Bookshelf.model('Revendedor');
-var Ativacao = Bookshelf.model('Ativacao');
-var Ativacoes = Bookshelf.collection('Ativacoes');
-var Veiculo = Bookshelf.model('Veiculo');
-var UsuarioHasVeiculos = Bookshelf.collection('UsuarioHasVeiculos');
-var MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
-var Cidade = Bookshelf.model('Cidade');
+
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+
+const Fiscalizacoes = Bookshelf.collection('Fiscalizacoes');
+const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
+const Usuario = Bookshelf.model('Usuario');
+const UsuarioAdministrativo = Bookshelf.model('UsuarioAdministrativo');
+const Pessoa = Bookshelf.model('Pessoa');
+const PessoaFisica = Bookshelf.model('PessoaFisica');
+const PessoaJuridica = Bookshelf.model('PessoaJuridica');
+const Conta = Bookshelf.model('Conta');
+const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
+const Revendedor = Bookshelf.model('Revendedor');
+const Ativacao = Bookshelf.model('Ativacao');
+const Ativacoes = Bookshelf.collection('Ativacoes');
+const Veiculo = Bookshelf.model('Veiculo');
+const UsuarioHasVeiculos = Bookshelf.collection('UsuarioHasVeiculos');
+const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
+const Cidade = Bookshelf.model('Cidade');
 
 function _apagarConta(idConta) {
   return new MovimentacaoConta()
