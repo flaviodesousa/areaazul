@@ -8,5 +8,5 @@ debug('knex loaded');
 var Bookshelf = require('bookshelf')(knex);
 Bookshelf.plugin('registry');
 
-exports = Bookshelf;
-debug('bookshelf loaded');
+module.exports = Bookshelf;
+debug('bookshelf loaded', Bookshelf);
