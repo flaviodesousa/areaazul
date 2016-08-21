@@ -95,7 +95,7 @@ var Ativacao = Bookshelf.Model.extend({
     var optionsPath = _.merge({}, options, { patch: true });
     return Ativacao
       .forge({
-        id: desativacao.id_ativacao,
+        id: desativacao.id,
         pessoa_fisica_id: desativacao.pessoa_fisica_id
       })
       .fetch(options)

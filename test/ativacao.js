@@ -102,7 +102,7 @@ describe('model.ativacao', function() {
     it('falha se usuario diferente do ativador', function(done) {
       Ativacao
         .desativar({
-          id_ativacao: idAtivacao,
+          id: idAtivacao,
           pessoa_fisica_id: 0
         })
         .then(function() {
