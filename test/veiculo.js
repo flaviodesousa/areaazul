@@ -1,11 +1,14 @@
 'use strict';
 
 var debug = require('debug')('areaazul:test:veiculo');
-var AreaAzul = require('../areaazul');
 var should = require('chai').should();
-var Bookshelf = require('bookshelf').conexaoMain;
+
+const AreaAzul = require('../areaazul');
+const Bookshelf = AreaAzul.db;
+
 var Veiculo = Bookshelf.model('Veiculo');
 var Veiculos = Bookshelf.collection('Veiculos');
+
 var TestHelpers = require('../helpers/test');
 
 describe('model.veiculo', function() {

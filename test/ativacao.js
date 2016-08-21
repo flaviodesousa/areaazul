@@ -2,9 +2,12 @@
 
 var debug = require('debug')('areaazul:test:ativacao');
 var should = require('chai').should();
+
+const AreaAzul = require('../areaazul');
+const Bookshelf = AreaAzul.db;
+
 var TestHelpers = require('../helpers/test');
-var AreaAzul = require('../areaazul');
-var Bookshelf = require('bookshelf').conexaoMain;
+
 var Ativacao = Bookshelf.model('Ativacao');
 var Ativacoes = Bookshelf.collection('Ativacoes');
 
@@ -59,7 +62,7 @@ describe('model.ativacao', function() {
 
     it('grava ativacao', function(done) {
       var ativacao = {
-        usuario_id: idUsuarioComum,
+        pessoa_fisica_id: idUsuarioComum,
         veiculo_id: veiculo.id,
         valor: 10.0
       };
@@ -85,7 +88,7 @@ describe('model.ativacao', function() {
       Ativacao
         .desativar({
           id_ativacao: 0,
-          usuario_id: idUsuarioComum
+          pessoa_fisica_id: idUsuarioComum
         })
         .then(function() {
           done('Nao deveria ter desativado uma ativacao inexistente');
@@ -100,7 +103,7 @@ describe('model.ativacao', function() {
       Ativacao
         .desativar({
           id_ativacao: idAtivacao,
-          usuario_id: 0
+          pessoa_fisica_id: 0
         })
         .then(function() {
           done('Nao deveria ter desativado com usuario diferente');
@@ -115,7 +118,7 @@ describe('model.ativacao', function() {
       Ativacao
         .desativar({
           id_ativacao: idAtivacao,
-          usuario_id: idUsuarioComum
+          pessoa_fisica_id: idUsuarioComum
         })
         .then(function() {
           done();
@@ -131,7 +134,7 @@ describe('model.ativacao', function() {
     it('grava ativacao', function(done) {
       Ativacao
         .ativarPelaRevenda({
-          usuario_id: idUsuarioRevendedor,
+          pessoa_fisica_id: idUsuarioRevendedor,
           cidade: idCidade,
           placa: veiculo.get('placa'),
           marca: veiculo.get('marca'),

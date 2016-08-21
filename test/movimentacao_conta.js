@@ -2,8 +2,8 @@
 
 var should = require('chai').should();
 var TestHelpers = require('../helpers/test');
-var AreaAzul = require('../areaazul');
-var Bookshelf = require('bookshelf').conexaoMain;
+const AreaAzul = require('../areaazul');
+const Bookshelf = AreaAzul.db;
 var MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 
 describe('model.movimentacaoConta', function() {

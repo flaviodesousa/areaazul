@@ -1,13 +1,15 @@
 'use strict';
 
 var should = require('chai').should();
-var TestHelpers = require('../helpers/test');
-var AreaAzul = require('../areaazul');
+const AreaAzul = require('../areaazul');
+const Bookshelf = AreaAzul.db;
 var BusinessException = AreaAzul.BusinessException;
-var Bookshelf = require('bookshelf').conexaoMain;
+
 var UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 var UsuarioRevendedorCollection = Bookshelf.collection('UsuarioRevendedor');
 var PessoaFisica = Bookshelf.model('PessoaFisica');
+
+var TestHelpers = require('../helpers/test');
 
 
 describe('models.UsuarioRevendedor', function() {

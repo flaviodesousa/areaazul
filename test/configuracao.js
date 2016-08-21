@@ -1,8 +1,8 @@
 'use strict';
 
 var should = require('chai').should();
-var AreaAzul = require('../areaazul');
-var Bookshelf = require('bookshelf').conexaoMain;
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
 var Configuracao = Bookshelf.model('Configuracao');
 var TestHelpers = require('../helpers/test');
 

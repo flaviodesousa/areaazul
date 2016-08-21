@@ -2,8 +2,8 @@
 
 var should = require('chai').should();
 
-var AreaAzul = require('../areaazul');
-var Bookshelf = require('bookshelf').conexaoMain;
+const AreaAzul = require('../areaazul');
+const Bookshelf = AreaAzul.db;
 var Fiscalizacao = Bookshelf.model('Fiscalizacao');
 var Fiscalizacoes = Bookshelf.collection('Fiscalizacoes');
 var UsuarioFiscal = Bookshelf.model('UsuarioFiscal');

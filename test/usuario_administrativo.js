@@ -1,12 +1,14 @@
 'use strict';
 
 var should = require('chai').should();
-var TestHelpers = require('../helpers/test');
-var AreaAzul = require('../areaazul');
+const AreaAzul = require('../areaazul');
+const Bookshelf = AreaAzul.db;
 var BusinessException = AreaAzul.BusinessException;
-var Bookshelf = require('bookshelf').conexaoMain;
+
 var UsuarioAdministrativo = Bookshelf.model('UsuarioAdministrativo');
 var PessoaFisica = Bookshelf.model('PessoaFisica');
+
+var TestHelpers = require('../helpers/test');
 
 describe('models.UsuarioAdministrativo', function() {
   var cpfPreExistente = 'adm-teste-pre-existente';

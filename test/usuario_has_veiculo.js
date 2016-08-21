@@ -1,10 +1,14 @@
 'use strict';
 
 var should = require('chai').should();
-var TestHelpers = require('../helpers/test');
-var Bookshelf = require('bookshelf').conexaoMain;
+
+const AreaAzul = require('../areaazul');
+const Bookshelf = AreaAzul.db;
+
 var MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 var UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
+
+var TestHelpers = require('../helpers/test');
 
 describe('model.usuario_has_veiculo', function() {
   var idUsuarioComum = null;

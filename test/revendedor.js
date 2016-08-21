@@ -1,10 +1,13 @@
 'use strict';
 
 var debug = require('debug')('areaazul:test:revendedor');
-var AreaAzul = require('../areaazul');
 var should = require('chai').should();
-var Bookshelf = require('bookshelf').conexaoMain;
+
+const AreaAzul = require('../areaazul');
+const Bookshelf = AreaAzul.db;
+
 var Revendedor = Bookshelf.model('Revendedor');
+
 var TestHelpers = require('../helpers/test');
 
 describe('model.revendedor', function() {
