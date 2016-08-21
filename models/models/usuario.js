@@ -29,7 +29,7 @@ var Usuario = Bookshelf.Model.extend({
     var Usuario = this;
 
     return Usuario
-      .forge({ pessoa_id: id })
+      .forge({ id: id })
       .fetch()
       .then(function(u) {
         if (u) {
@@ -135,7 +135,7 @@ var Usuario = Bookshelf.Model.extend({
       })
       .then(function(conta) {
         var dadosUsuario = {
-          pessoa_id: pessoaFisica.id,
+          id: pessoaFisica.id,
           login: login,
           senha: senha,
           primeiro_acesso: true,
@@ -226,14 +226,11 @@ var Usuario = Bookshelf.Model.extend({
 
   procurar: function(userId, func) {
     Usuario.forge().query(function(qb) {
-      qb.join('pessoa',
-        'pessoa.id_pessoa', '=', 'usuario.pessoa_id');
-      qb.join('pessoa_fisica',
-        'pessoa_fisica.pessoa_id', '=', 'pessoa.id_pessoa');
-      qb.join('conta',
-        'pessoa.id_pessoa', '=', 'conta.pessoa_id');
-      qb.where('usuario.pessoa_id', userId);
-      qb.select('usuario.*', 'pessoa.*', 'pessoa_fisica.*', 'conta.*');
+      qb.join('pessoa', 'pessoa.id', 'usuario.id')
+        .join('pessoa_fisica', 'pessoa_fisica.id', 'pessoa.id')
+        .join('conta', 'usuario.conta_id', 'conta.id')
+        .where('usuario.id', userId)
+        .select('usuario.*', 'pessoa.*', 'pessoa_fisica.*', 'conta.*');
     }).fetch().then(function(model) {
       func(model);
     }).catch(function(err) {

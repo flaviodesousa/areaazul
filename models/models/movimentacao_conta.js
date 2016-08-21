@@ -39,8 +39,7 @@ var MovimentacaoConta = Bookshelf.Model.extend({
             tipo: movimentacaoConta.tipo,
             valor: movimentacaoConta.valor,
             ativo: true,
-            conta_id: c.id,
-            pessoa_id: movimentacaoConta.pessoa_id
+            conta_id: c.id
           })
           .save(null, optionsInsert);
       });

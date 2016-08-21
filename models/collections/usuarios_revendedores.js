@@ -13,8 +13,8 @@ var UsuariosRevendedores = Bookshelf.Collection.extend({
       qb
         .distinct()
         .innerJoin('pessoa_fisica',
-          'pessoa_fisica.pessoa_id', 'usuario_revendedor.pessoa_id')
-        .innerJoin('pessoa', 'pessoa.id_pessoa', 'pessoa_fisica.pessoa_id')
+          'pessoa_fisica.id', 'usuario_revendedor.pessoa_fisica_id')
+        .innerJoin('pessoa', 'pessoa.id', 'pessoa_fisica.id')
         .where('usuario_revendedor.revendedor_id', idRevendedor)
         .select('pessoa_fisica.*')
         .select('pessoa.*')

@@ -136,14 +136,12 @@ describe('model.revendedor', function() {
 
   describe('buscarRevendedor()', function() {
     it('retorna um revendedor', function(done) {
-      Revendedor.buscarRevendedor({
-          pessoa_id: revendedorId
-        },
+      Revendedor.buscarRevendedor({ id: revendedorId },
         function() {
           done();
         },
         function(e) {
-          debug(e);
+          debug('Não encontrou Revendedor com id=' + revendedorId, e);
           done(e);
         });
     });

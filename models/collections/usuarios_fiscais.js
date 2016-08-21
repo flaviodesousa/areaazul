@@ -7,13 +7,13 @@ var UsuariosFiscais = Bookshelf.Collection.extend({
   listar: function(then, fail) {
     this.query(function(qb) {
       qb
-        .join('pessoa', 'pessoa.id_pessoa','=','usuario_fiscal.pessoa_id')
-        .join('pessoa_fisica','pessoa_fisica.pessoa_id','=','pessoa.id_pessoa')
-        .where('usuario_fiscal.ativo','=','true')
+        .join('pessoa', 'pessoa.id','usuario_fiscal.id')
+        .join('pessoa_fisica','pessoa_fisica.id','pessoa.id')
+        .where('usuario_fiscal.ativo',true)
         .select('pessoa.*','pessoa_fisica.*');
     }).fetch().then(function(collection) {
       then(collection);
-    }).catch(function(err){
+    }).catch(function(err) {
       fail(err);
     });
   }

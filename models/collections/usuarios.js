@@ -12,9 +12,9 @@ var Usuarios = Bookshelf.Collection.extend({
     Usuarios
       .forge()
       .query(function(qb) {
-        qb.join('pessoa', 'pessoa.id_pessoa', 'usuario.pessoa_id')
-          .join('pessoa_fisica', 'pessoa_fisica.pessoa_id', 'pessoa.id_pessoa')
-          .where('usuario.ativo', '=', 'true')
+        qb.join('pessoa', 'pessoa.id', 'usuario.id')
+          .join('pessoa_fisica', 'pessoa_fisica.id', 'pessoa.id')
+          .where('usuario.ativo', true)
           .select('usuario.*')
           .select('pessoa.*')
           .select('pessoa_fisica.*');

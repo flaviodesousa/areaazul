@@ -52,10 +52,10 @@ var Veiculo = Bookshelf.Model.extend({
           });
       })
       .then(function(veiculo) {
-        if (vehicle.usuario_pessoa_id) {
+        if (vehicle.pessoa_fisica_id) {
           return UsuarioHasVeiculo
             ._salvar({
-              usuario_pessoa_id: vehicle.usuario_pessoa_id,
+              pessoa_fisica_id: vehicle.pessoa_fisica_id,
               veiculo_id: veiculo.id,
             }, options);
         }

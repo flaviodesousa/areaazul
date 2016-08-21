@@ -30,14 +30,12 @@ describe('model.usuario_has_veiculo', function() {
 
   describe('inserir()', function() {
     it('insere usuario has veiculo', function(done) {
-      var usuario_has_veiculo = {
-        usuario_pessoa_id: idUsuarioComum,
-        veiculo_id: idVeiculo,
-        ultima_ativacao: new Date(),
-      };
-
       UsuarioHasVeiculo
-        .cadastrar(usuario_has_veiculo)
+        .cadastrar({
+          pessoa_fisica_id: idUsuarioComum,
+          veiculo_id: idVeiculo,
+          ultima_ativacao: new Date(),
+        })
         .then(function(uv) {
           done();
         })

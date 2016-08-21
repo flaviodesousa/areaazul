@@ -18,8 +18,8 @@ describe('models.PessoaFisica', function() {
             })
             .fetch()
             .then(function(pf) {
-                if (pf !== null) {
-                    pessoaId = pf.get('pessoa_id');
+                if (pf) {
+                    pessoaId = pf.id;
                     return pf.destroy();
                 }
             })

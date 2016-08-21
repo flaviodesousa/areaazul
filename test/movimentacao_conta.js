@@ -27,7 +27,6 @@ describe('model.movimentacaoConta', function() {
     it('insere credito na conta', function(done) {
       var conta = {
         valor: 100.00,
-        pessoa_id: usuarioId,
         tipo: 'Cartão de credito',
         historico: 'credito-de-teste',
       };

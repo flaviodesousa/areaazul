@@ -54,7 +54,7 @@ var Revendedor = Bookshelf.Model.extend({
         return Revendedor._salvarRevenda(pf, options);
       })
       .then(function(revenda) {
-        idRevendedor = revenda.get('pessoa_id');
+        idRevendedor = revenda.id;
         return new UsuarioRevendedor({
           login: revendedorFields.login,
           senha: senha,
@@ -62,7 +62,7 @@ var Revendedor = Bookshelf.Model.extend({
           ativo: true,
           autorizacao: revendedorFields.autorizacao,
           revendedor_id: idRevendedor,
-          pessoa_id: idPessoa
+          pessoa_fisica_id: idPessoa
         })
           .save(null, optionsInsert);
       });
@@ -80,7 +80,7 @@ var Revendedor = Bookshelf.Model.extend({
       ._cadastrar(null, options)
       .then(function(conta) {
         return new Revendedor({
-            ativo: true, pessoa_id: pessoa.id, conta_id: conta.id
+            ativo: true, id: pessoa.id, conta_id: conta.id
           })
           .save(null, optionsInsert);
       });
@@ -210,16 +210,13 @@ var Revendedor = Bookshelf.Model.extend({
     Revendedor
       .forge()
       .query(function(qb) {
-        qb.join('pessoa', 'pessoa.id_pessoa', '=',
-          'revendedor.pessoa_id');
-        qb.join('usuario_revendedor',
-          'usuario_revendedor.revendedor_id', '=',
-          'revendedor.pessoa_id');
-        qb.join('conta', 'conta.pessoa_id', '=', 'pessoa.id_pessoa');
-        qb.where('usuario_revendedor.pessoa_id',
-          user.pessoa_id);
-        qb.select('revendedor.*', 'usuario_revendedor.*', 'pessoa.*',
-          'conta.*');
+        qb.join('pessoa', 'pessoa.id', 'revendedor.id')
+          .join('usuario_revendedor', 'usuario_revendedor.revendedor_id',
+            'revendedor.id')
+          .join('conta', 'conta.id', 'revendedor.conta_id')
+          .where('usuario_revendedor.pessoa_fisica_id', user.pessoa_fisica_id)
+          .select('revendedor.*', 'usuario_revendedor.*', 'pessoa.*',
+            'conta.*');
       })
       .fetch()
       .then(function(model) {

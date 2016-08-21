@@ -26,7 +26,7 @@ var PessoaJuridica = Bookshelf.Model.extend({
             razao_social: pj.razao_social,
             contato: pj.telefone,
             ativo: true,
-            pessoa_id: pessoa.id
+            id: pessoa.id
           })
           .save(null, optionsInsert);
       });

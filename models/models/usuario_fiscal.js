@@ -20,16 +20,16 @@ var UsuarioFiscal = Bookshelf.Model.extend({
   },
   desativar: function(tax, then, fail) {
     util.log('Tax: ' + tax);
-    var pessoa = new Pessoa.Pessoa({
-      id_pessoa: tax.pessoa_id,
+    var pessoa = new Pessoa({
+      id: tax.id,
       ativo: false
     });
-    var pessoaFisica = new PessoaFisica.PessoaFisica({
-      id_pessoa_fisica: tax.id_pessoa_fisica,
+    var pessoaFisica = new PessoaFisica({
+      id: tax.id,
       ativo: false
     });
     var usuarioFiscal = new UsuarioFiscal({
-      pessoa_id: tax.pessoa_id,
+      id: tax.id,
       ativo: false
     });
 
@@ -78,7 +78,7 @@ var UsuarioFiscal = Bookshelf.Model.extend({
             senha: senha,
             primeiro_acesso: true,
             ativo: true,
-            pessoa_id: pessoaFisica.get('pessoa_id'),
+            id: pessoaFisica.id,
             conta_id: conta.id
           })
           .save(null, optionsInsert);
@@ -115,14 +115,14 @@ var UsuarioFiscal = Bookshelf.Model.extend({
         throw err;
       });
   },
-  procurar: function(tax, then, fail) {
+  procurar: function(usuarioFiscal, then, fail) {
     UsuarioFiscal.forge().query(function(qb) {
-      qb.join('pessoa', 'pessoa.id_pessoa', '=', 'usuario_fiscal.pessoa_id');
-      qb.join('pessoa_fisica',
-          'pessoa_fisica.pessoa_id', '=', 'pessoa.id_pessoa');
-      qb.where('usuario_fiscal.pessoa_id', tax.pessoa_id);
-      qb.where('usuario_fiscal.ativo', '=', 'true');
-      qb.select('usuario_fiscal.*', 'pessoa.*', 'pessoa_fisica.*');
+      qb.join('pessoa', 'pessoa.id', 'usuario_fiscal.id')
+        .join('pessoa_fisica',
+          'pessoa_fisica.id', 'pessoa.id')
+        .where('usuario_fiscal.id', usuarioFiscal.id)
+        .where('usuario_fiscal.ativo', '=', 'true')
+        .select('usuario_fiscal.*', 'pessoa.*', 'pessoa_fisica.*');
     }).fetch().then(function(model) {
       then(model);
     }).catch(function(err) {

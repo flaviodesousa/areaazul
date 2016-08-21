@@ -48,7 +48,7 @@ describe('model.veiculo', function() {
   describe('cadastrar()', function() {
     it('grava veiculo', function(done) {
       var novoVeiculo = {
-        usuario_pessoa_id: idUsuarioComum,
+        pessoa_fisica_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: placaTeste,
         marca: marcaTeste,

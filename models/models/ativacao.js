@@ -43,7 +43,7 @@ var Ativacao = Bookshelf.Model.extend({
         latitude: latitude,
         longitude: longitude,
         altitude: altitude,
-        pessoa_fisica_id: activation.usuario_id,
+        pessoa_fisica_id: activation.pessoa_fisica_id,
         veiculo_id: activation.veiculo_id,
         ativo: true
       })
@@ -74,7 +74,6 @@ var Ativacao = Bookshelf.Model.extend({
               ._inserirDebito({
                 historico: 'ativacao',
                 tipo: 'ativacao',
-                pessoa_id: activation.usuario_pessoa_id,
                 valor: activation.valor
               }, options);
           });
@@ -97,7 +96,7 @@ var Ativacao = Bookshelf.Model.extend({
     return Ativacao
       .forge({
         id_ativacao: desativacao.id_ativacao,
-        pessoa_id: desativacao.usuario_pessoa_id
+        pessoa_fisica_id: desativacao.pessoa_fisica_id
       })
       .fetch(options)
       .then(function(d) {
@@ -171,21 +170,23 @@ var Ativacao = Bookshelf.Model.extend({
         debug('ativarPelaRevenda() ativando veiculo #' + v.id);
         return new Ativacao({
             data_ativacao: new Date(),
-            pessoa_id: ativacao.usuario_pessoa_id,
+            pessoa_fisica_id: ativacao.pessoa_fisica_id,
             veiculo_id: v.id,
             ativo: true
           })
           .save(null, optionsInsert)
-          .then(function(a) {
-            return new UsuarioRevendedor({ pessoa_id: a.get('pessoa_id') })
+          .then(function() {
+            return new UsuarioRevendedor({
+                id: ativacao.pessoa_fisica_id
+              })
               .fetch(options);
           })
           .then(function(usuario) {
             return MovimentacaoConta
               ._inserirDebito({
-                historico: 'ativacao',
+                historico: 'ativacao-revenda usuario='
+                  + usuario.id + '/revenda=' + usuario.revendedor_id,
                 tipo: 'ativacao',
-                pessoa_id: usuario.get('revendedor_id'),
                 valor: 10.00
               }, options);
           });
@@ -264,11 +265,11 @@ var Ativacao = Bookshelf.Model.extend({
     return Conta
       .query(function(qb) {
         qb
-          .innerJoin('revendedor', 'revendedor.conta_id', 'conta.id_conta')
-          .innerJoin('pessoa', 'pessoa.id_pessoa', 'revendedor.pessoa_id')
+          .innerJoin('revendedor', 'revendedor.conta_id', 'conta.id')
+          .innerJoin('pessoa', 'pessoa.id', 'revendedor.id')
           .innerJoin('usuario_revendedor',
-            'usuario_revendedor.revendedor_id', 'revendedor.pessoa_id')
-          .where('usuario_revendedor.pessoa_id', id)
+            'usuario_revendedor.revendedor_id', 'revendedor.id')
+          .where('usuario_revendedor.id', id)
           .select('pessoa.*')
           .select('conta.*')
           .select('revendedor.*')

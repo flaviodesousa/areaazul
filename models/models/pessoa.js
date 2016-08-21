@@ -7,16 +7,19 @@ const RecuperacaoSenha = Bookshelf.model('RecuperacaoSenha');
 var Pessoa = Bookshelf.Model.extend({
   tableName: 'pessoa'
 }, {
-  verificaEmail: function(person, then, fail) {
+  verificaEmail: function(pessoaAVerificar, then, fail) {
     var _uuid = util.geradorUUIDAleatorio();
-    Pessoa.forge({email: person.email})
+    Pessoa.forge({email: pessoaAVerificar.email})
       .fetch()
-      .then(function(model) {
-        if (model !== null) {
-          RecuperacaoSenha.cadastrar({uuid: _uuid, pessoa_id: model.attributes.id_pessoa},
+      .then(function(pessoa) {
+        if (pessoa !== null) {
+          RecuperacaoSenha.cadastrar({
+              uuid: _uuid,
+              pessoa_id: pessoa.id},
             function() {
-              util.enviarEmailNovaSenha(person.email, model.attributes.nome, _uuid);
-              then(model);
+              util.enviarEmailNovaSenha(
+                pessoaAVerificar.email, pessoa.get('nome'), _uuid);
+              then(pessoa);
             },
             function(result) {
               throw new Error('Erro !!!');

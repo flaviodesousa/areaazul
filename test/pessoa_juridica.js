@@ -13,11 +13,11 @@ describe('models.PessoaJuridica', function() {
   function deleteTestData(done) {
     var pessoaId = null;
     PessoaJuridica
-      .forge({cnpj: cnpjTeste})
+      .forge({ cnpj: cnpjTeste })
       .fetch()
       .then(function(pj) {
-        if (pj !== null) {
-          pessoaId = pj.get('pessoa_id');
+        if (pj) {
+          pessoaId = pj.id;
           return pj.destroy();
         }
       })

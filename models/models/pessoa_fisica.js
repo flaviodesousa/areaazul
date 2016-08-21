@@ -16,8 +16,7 @@ var PessoaFisica = Bookshelf.Model.extend({
       .forge({
         nome: pf.nome,
         email: pf.email,
-        telefone: pf.telefone,
-        ativo: true
+        telefone: pf.telefone
       })
       .save(null, options)
       .then(function(pessoa) {
@@ -25,8 +24,7 @@ var PessoaFisica = Bookshelf.Model.extend({
           .forge({
             cpf: pf.cpf,
             data_nascimento: pf.data_nascimento,
-            ativo: true,
-            pessoa_id: pessoa.id
+            id: pessoa.id
           })
           .save(null, optionsInsert);
       });
@@ -69,9 +67,7 @@ var PessoaFisica = Bookshelf.Model.extend({
       })
       .then(function(pessoa) {
         return PessoaFisica
-          .forge({
-            pessoa_id: pessoa.id
-          })
+          .forge({ id: pessoa.id })
           .fetch()
           .then(function(pessoaFisica) {
 
@@ -80,7 +76,7 @@ var PessoaFisica = Bookshelf.Model.extend({
                 cpf: pf.cpf,
                 data_nascimento: pf.data_nascimento,
                 ativo: true,
-                pessoa_id: pessoa.id
+                id: pessoa.id
               }, optionsUpdate);
           });
       });

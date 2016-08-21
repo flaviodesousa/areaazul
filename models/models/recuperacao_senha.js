@@ -20,21 +20,27 @@ var RecuperacaoSenha = Bookshelf.Model.extend({
         fail(err);
    });
   },
-  procurar: function (password_recovery, then, fail) {
-    this.forge().query(function (qb) {
-      qb.join('pessoa', 'pessoa.id_pessoa', '=', 'recuperacao_senha.pessoa_id');
-            qb.join('usuario_revendedor','usuario_revendedor.pessoa_id','=','pessoa.id_pessoa');
-      qb.where('recuperacao_senha.id_recuperacao_senha', '=', password_recovery.id_recuperacao_senha);
-      qb.select('recuperacao_senha.*', 'pessoa.*','usuario_revendedor.*');
-    }).fetch().then(function (model) {
-      if(model!==null){
+  procurar: function(passwordRecovery, then, fail) {
+    new this()
+      .query(function(qb) {
+        qb
+          .join('pessoa', 'pessoa.id', 'recuperacao_senha.pessoa_fisica_id')
+          .join('usuario_revendedor','usuario_revendedor.pessoa_fisica_id',
+            'pessoa.id')
+          .where('recuperacao_senha.id', passwordRecovery.id)
+          .select('recuperacao_senha.*', 'pessoa.*','usuario_revendedor.*');
+      })
+      .fetch()
+      .then(function(model) {
+        if (model) {
           then(model);
-      }else{
-          throw new Error("Não encontrado!!!");
-      }
-    }).catch(function (err) {
-      fail(err);
-    });
+        } else {
+          throw new Error('Não encontrado!');
+        }
+      })
+      .catch(function(err) {
+        fail(err);
+      });
   }
 });
 Bookshelf.model('RecuperacaoSenha', RecuperacaoSenha);

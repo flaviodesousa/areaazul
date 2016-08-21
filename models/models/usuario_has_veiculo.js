@@ -30,25 +30,21 @@ var UsuarioHasVeiculo =  Bookshelf.Model.extend({
 
 		return UsuarioHasVeiculo
 		.forge({
-		    usuario_pessoa_id: usuario_has_veiculo.usuario_pessoa_id,
-		    veiculo_id: usuario_has_veiculo.veiculo_id,
+      usuario_id: usuario_has_veiculo.usuario_id,
+      veiculo_id: usuario_has_veiculo.veiculo_id,
 		})
 		.fetch()
 		.then(function(usuariohasveiculo) {
-		   if (usuariohasveiculo === null) {
-		        return UsuarioHasVeiculo
-		            .forge({
-		                usuario_pessoa_id: usuario_has_veiculo.usuario_pessoa_id,
-		                veiculo_id: usuario_has_veiculo.veiculo_id,
-		                ultima_ativacao: new Date(),
-		            })
-		            .save(null, optionsInsert);
-		    } else {
-		        return usuariohasveiculo
-		            .save({
-		                ultima_ativacao: new Date(),
-		            }, optionsUpdate);
-		    }
+		  if (!usuariohasveiculo) {
+        return new UsuarioHasVeiculo({
+            usuario_id: usuario_has_veiculo.usuario_id,
+            veiculo_id: usuario_has_veiculo.veiculo_id,
+            ultima_ativacao: new Date(),
+          })
+          .save(null, optionsInsert);
+       }
+       return usuariohasveiculo
+         .save({ ultima_ativacao: new Date() }, optionsUpdate);
 		});
     }
 });

@@ -48,7 +48,7 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
         .then(function(pf) {
           return UsuarioAdministrativo
             .forge({
-              pessoa_id: pf.id,
+              id: pf.id,
               login: login,
               senha: senha,
               autorizacao: user.autorizacao,
@@ -83,8 +83,7 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
       });
   },
   buscarPorId: function(id) {
-    return UsuarioAdministrativo
-      .forge({ pessoa_id: id })
+    return new UsuarioAdministrativo({ id: id })
       .fetch()
       .then(function(u) {
         if (u) {

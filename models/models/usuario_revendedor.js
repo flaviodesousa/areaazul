@@ -90,7 +90,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
           acesso_confirmado: false,
           ativo: true,
           revendedor_id: entidade.revendedor_id,
-          pessoa_id: pessoaFisica.id
+          pessoa_fisica_id: pessoaFisica.id
         };
 
         if (options.method === 'insert') {
@@ -190,14 +190,10 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       .query(function(qb) {
         qb
           .distinct()
-          .innerJoin('pessoa_fisica', function() {
-            this.on('pessoa_fisica.pessoa_id', '=',
-              'usuario_revendedor.pessoa_id');
-          })
-          .innerJoin('pessoa', function() {
-            this.on('pessoa.id_pessoa', '=', 'pessoa_fisica.pessoa_id');
-          })
-          .where('usuario_revendedor.pessoa_id', id)
+          .innerJoin('pessoa_fisica', 'pessoa_fisica.id',
+              'usuario_revendedor.pessoa_fisica_id')
+          .innerJoin('pessoa', 'pessoa.id', 'pessoa_fisica.id')
+          .where('usuario_revendedor.id', id)
           .select('pessoa_fisica.*')
           .select('pessoa.*')
           .select('usuario_revendedor.*');
@@ -209,24 +205,16 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
   desativar: function(id) {
     return UsuarioRevendedor
       .forge({
-        pessoa_id: id
+        id: id
       })
       .fetch()
       .then(function(revenda) {
         if (!revenda) {
           throw new AreaAzul.BusinessException(
-            'Desativacao: Usuario não encontrado', {
-              pessoa_id: id
-            });
+            'Desativacao: Usuario não encontrado', { id: id });
         }
-        var status = revenda.get('ativo') === false;
-
         return revenda
-          .save({
-            ativo: status
-          }, {
-            patch: true
-          });
+          .save({ ativo: false }, { patch: true });
       });
   },
 
@@ -316,9 +304,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
   },
 
   alterarSenhaRecuperacao: function(user) {
-    new this.UsuarioRevendedor({
-      pessoa_id: user.pessoa_id
-    })
+    new this.UsuarioRevendedor({ id: user.id })
       .fetch()
       .then(function(model) {
         if (!model) {
@@ -328,17 +314,13 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         var novaSenha = util.criptografa(user.senha);
         model.save({
           primeiro_acesso: 'false',
-          senha: novaSenha,
-          ativo: 'true'
+          senha: novaSenha
         });
       });
   },
 
   buscarPorId: function(id) {
-    return UsuarioRevendedor
-      .forge({
-        pessoa_id: id
-      })
+    return new UsuarioRevendedor({ id: id })
       .fetch()
       .then(function(u) {
         if (u) {
