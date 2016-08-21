@@ -1,7 +1,8 @@
-var Bookshelf = require('bookshelf').conexaoMain;
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
 var validator = require('validator');
 var util = require('../../helpers/util');
-var RecuperacaoSenha = require('./recuperacao_senha');
+const RecuperacaoSenha = Bookshelf.model('RecuperacaoSenha');
 
 var Pessoa = Bookshelf.Model.extend({
   tableName: 'pessoa'

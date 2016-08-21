@@ -2,12 +2,13 @@
 
 var debug = require('debug')('areaazul:model:veiculo');
 var _ = require('lodash');
-var Bookshelf = require('bookshelf').conexaoMain;
 var validator = require('validator');
-var util = require('../../helpers/util');
-var AreaAzul = require('../../areaazul.js');
 
-var UsuarioHasVeiculo = require('./usuario_has_veiculo');
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+var util = require('../../helpers/util');
+
+const UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
 
 var Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',

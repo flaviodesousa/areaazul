@@ -2,9 +2,9 @@
 
 var _ = require('lodash');
 
-var AreaAzul = require('../../areaazul');
-var log = AreaAzul.log;
-var Bookshelf = require('bookshelf').conexaoMain;
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+const log = AreaAzul.log;
 var Pessoa = Bookshelf.model('Pessoa');
 
 var PessoaFisica = Bookshelf.Model.extend({

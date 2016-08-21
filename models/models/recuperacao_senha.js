@@ -3,7 +3,8 @@
 var _ = require('lodash');
 var util = require('../../helpers/util');
 
-var Bookshelf = require('bookshelf').conexaoMain;
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
 
 var RecuperacaoSenha = Bookshelf.Model.extend({
   tableName: 'recuperacao_senha'

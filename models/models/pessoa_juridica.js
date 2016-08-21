@@ -1,8 +1,9 @@
 'use strict';
 
 var _ = require('lodash');
-var Bookshelf = require('bookshelf').conexaoMain;
-var Pessoa = require('./pessoa');
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+const Pessoa = Bookshelf.model('Pessoa');
 
 var PessoaJuridica = Bookshelf.Model.extend({
   tableName: 'pessoa_juridica'

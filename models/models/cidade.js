@@ -1,6 +1,7 @@
 'use strict';
 
-var Bookshelf = require('bookshelf').conexaoMain;
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
 
 var Cidade = Bookshelf.Model.extend({
     tableName: 'cidade',

@@ -4,13 +4,14 @@ var _ = require('lodash');
 var bcrypt = require('bcrypt');
 var validator = require('validator');
 
-var AreaAzul = require('../../areaazul');
-var log = AreaAzul.log;
-var Bookshelf = AreaAzul.db.Bookshelf.conexaoMain;
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+const log = AreaAzul.log;
+var util = require('../../helpers/util');
+var validation = require('./validation');
+
 var PessoaFisica = Bookshelf.model('PessoaFisica');
 var Conta = Bookshelf.model('Conta');
-var validation = require('./validation');
-var util = require('../../helpers/util');
 
 var Usuario = Bookshelf.Model.extend({
   tableName: 'usuario',

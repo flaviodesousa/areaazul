@@ -1,12 +1,14 @@
 'use strict';
 
 var _ = require('lodash');
+
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
 var util = require('../../helpers/util');
-var AreaAzul = require('../../areaazul');
-var Bookshelf = require('bookshelf').conexaoMain;
-var Pessoa = require('./pessoa').Pessoa;
-var PessoaFisica = require('./pessoa_fisica').PessoaFisica;
-var Conta = require('./conta');
+
+const Pessoa = Bookshelf.model('Pessoa');
+const PessoaFisica = Bookshelf.model('PessoaFisica');
+const Conta = Bookshelf.model('Conta');
 
 var UsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'usuario_fiscal',

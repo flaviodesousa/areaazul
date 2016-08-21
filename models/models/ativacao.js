@@ -4,15 +4,16 @@ var debug = require('debug')('areaazul:model:ativacao');
 var validator = require('validator');
 var moment = require('moment');
 var _ = require('lodash');
-var AreaAzul = require('../../areaazul');
-var log = AreaAzul.log;
+
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+const log = AreaAzul.log;
 var util = require('../../helpers/util');
-var Bookshelf = require('bookshelf').conexaoMain;
-var UsuarioHasVeiculo = require('./usuario_has_veiculo');
-var MovimentacaoConta = require('./movimentacao_conta');
-var Conta = require('./conta');
-var Veiculo = require('./veiculo');
-var UsuarioRevendedor = require('./usuario_revendedor');
+const UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
+const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
+const Conta = Bookshelf.model('Conta');
+const Veiculo = Bookshelf.model('Veiculo');
+const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 
 
 var Ativacao = Bookshelf.Model.extend({

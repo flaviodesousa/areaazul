@@ -2,14 +2,16 @@
 
 var _ = require('lodash');
 var validator = require('validator');
-var AreaAzul = require('../../areaazul.js');
-var Bookshelf = AreaAzul.db.Bookshelf.conexaoMain;
-var PessoaFisica = require('./pessoa_fisica').PessoaFisica;
-var UsuarioRevendedor = require('./usuario_revendedor');
-var PessoaJuridica = require('./pessoa_juridica');
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+
 var validation = require('./validation');
 var util = require('../../helpers/util');
-var Conta = require('./conta');
+
+const PessoaFisica = Bookshelf.model('PessoaFisica');
+const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
+const PessoaJuridica = Bookshelf.model('PessoaJuridica');
+const Conta = Bookshelf.model('Conta');
 
 var Revendedor = Bookshelf.Model.extend({
   tableName: 'revendedor'
