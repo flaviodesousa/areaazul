@@ -1,5 +1,5 @@
-var AreaAzul = require('../../areaazul');
-var Bookshelf = require('bookshelf').conexaoMain;
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
 var Conta = Bookshelf.model('Conta');
 
 var Contas = Bookshelf.Collection.extend({

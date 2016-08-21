@@ -1,8 +1,10 @@
-var Bookshelf = require('bookshelf').conexaoMain;
-var UsuarioRevendedor = require('../models/usuario_revendedor');
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+
+const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 
 var UsuariosRevendedores = Bookshelf.Collection.extend({
-  model: UsuarioRevendedor,
+  model: UsuarioRevendedor
 }, {
   listarUsuarioRevenda: function(idRevendedor) {
     return this
