@@ -1,12 +1,13 @@
-var Bookshelf = require('bookshelf').conexaoMain;
-var UsuarioHasVeiculo = require('../models/usuario_has_veiculo');
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+const UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
 
-var UsuarioHasVeiculoCollection = Bookshelf.Collection.extend({
+var UsuariosHaveVeiculos = Bookshelf.Collection.extend({
   model: UsuarioHasVeiculo,
 }, {
 listarVeiculos: function(user) {
 
-   return UsuarioHasVeiculoCollection.forge().query(function(qb) {
+   return UsuariosHaveVeiculos.forge().query(function(qb) {
       qb
         .innerJoin('usuario', function() {
           this.on('usuario.pessoa_id', '=','usuario_has_veiculo.usuario_pessoa_id');
@@ -29,8 +30,9 @@ listarVeiculos: function(user) {
       },
 
 });
+Bookshelf.model('UsuariosHaveVeiculos', UsuariosHaveVeiculos);
 
-module.exports = UsuarioHasVeiculoCollection;
+module.exports = UsuariosHaveVeiculos;
 
 
 /*select      * 

@@ -1,15 +1,15 @@
 'use strict';
 
-var AreaAzul = require('../../areaazul.js');
-var Bookshelf = AreaAzul.db.Bookshelf.conexaoMain;
-var Usuario = require('../models/usuario');
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+const Usuario = Bookshelf.model('Usuario');
 
-var UsuarioCollection = Bookshelf.Collection.extend({
+var Usuarios = Bookshelf.Collection.extend({
   model: Usuario
 }, {
 
   listar: function(then, fail) {
-    UsuarioCollection
+    Usuarios
       .forge()
       .query(function(qb) {
         qb.join('pessoa', 'pessoa.id_pessoa', 'usuario.pessoa_id')
@@ -29,3 +29,6 @@ var UsuarioCollection = Bookshelf.Collection.extend({
   }
 
 });
+Bookshelf.model('Usuarios', Usuarios);
+
+module.export = Usuarios;

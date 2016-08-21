@@ -1,7 +1,8 @@
-var Bookshelf = require('bookshelf').conexaoMain;
-var UsuarioFiscal = require("../models/usuario_fiscal");
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
 
-module.exports = Bookshelf.Collection.extend({
+var UsuariosFiscais = Bookshelf.Collection.extend({
   model: UsuarioFiscal,
   listar: function(then, fail) {
     this.query(function(qb) {
@@ -11,9 +12,12 @@ module.exports = Bookshelf.Collection.extend({
         .where('usuario_fiscal.ativo','=','true')
         .select('pessoa.*','pessoa_fisica.*');
     }).fetch().then(function(collection) {
-        then(collection);
+      then(collection);
     }).catch(function(err){
-        fail(err);
+      fail(err);
     });
   }
 });
+Bookshelf.model('UsuariosFiscais', UsuariosFiscais);
+
+module.exports = UsuariosFiscais;

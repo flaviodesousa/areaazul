@@ -1,16 +1,17 @@
 'use strict';
 
-var Bookshelf = require('bookshelf').conexaoMain;
-var Cidade = require("../models/cidade");
+const AreaAzul = require('../../areaazul');
+var Bookshelf = AreaAzul.db;
+var Cidade = Bookshelf.model('Cidade');
 
-var CidadeCollection = Bookshelf.Collection.extend({
+var Cidades = Bookshelf.Collection.extend({
   model: Cidade,
 }, {
-  listar: function(id_estado) {
+  listar: function(idEstado) {
     return this
     .forge()
     .query(function(qb) {
-      qb.where('estado_id', '=', id_estado);
+      qb.where('estado_id', '=', idEstado);
       qb.select('cidade.*');
     })
     .fetch()
@@ -22,5 +23,6 @@ var CidadeCollection = Bookshelf.Collection.extend({
     });
   },
 });
+Bookshelf.collection('Cidades', Cidades);
 
-module.exports = CidadeCollection;
+module.exports = Cidades;

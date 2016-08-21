@@ -1,19 +1,19 @@
-'use script'
+'use strict';
 
-var Bookshelf = require('bookshelf').conexaoMain;
-var Estado = require("../models/estado");
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+var Estado = Bookshelf.model('Estado');
 
-var EstadoCollection = Bookshelf.Collection.extend({
-    model: Estado,
+var Estados = Bookshelf.Collection.extend({
+  model: Estado,
 }, {
-    listar: function(func) {
-        return EstadoCollection.forge().query(function(qb) {
-            qb.select('estado.*')
-        }).fetch()
-        .then(function(collection) {
-            return collection;
-        });
-    },
+  listar: function(func) {
+    return new Estados()
+      .query()
+      .order('nome')
+      .fetch();
+  },
 });
+Bookshelf.collection('Estados', Estados);
 
-module.exports = EstadoCollection;
+module.exports = Estados;

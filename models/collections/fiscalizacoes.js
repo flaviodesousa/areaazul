@@ -1,10 +1,11 @@
 'use strict';
 
-var Bookshelf = require('bookshelf').conexaoMain;
-var Fiscalizacao = require('../models/fiscalizacao');
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+var Fiscalizacao = Bookshelf.model('Fiscalizacao');
 var moment = require('moment');
 
-var FiscalizacaoCollection = Bookshelf.Collection.extend({
+var Fiscalizacoes = Bookshelf.Collection.extend({
     model: Fiscalizacao,
 }, {
 
@@ -34,7 +35,7 @@ var FiscalizacaoCollection = Bookshelf.Collection.extend({
     _listarFiscalizacoes: function(func) {
 
 
-        return FiscalizacaoCollection.forge().query(function(qb) {
+        return Fiscalizacoes.forge().query(function(qb) {
             var data = new Date();
             qb
                 .innerJoin('veiculo', function() {
@@ -55,7 +56,7 @@ var FiscalizacaoCollection = Bookshelf.Collection.extend({
     _listarFiscalizacoesToleradas: function(func) {
 
 
-        return FiscalizacaoCollection.forge().query(function(qb) {
+        return Fiscalizacoes.forge().query(function(qb) {
             var data = new Date();
             qb
                 .innerJoin('veiculo', function() {
@@ -78,5 +79,6 @@ var FiscalizacaoCollection = Bookshelf.Collection.extend({
 
 
 });
+Bookshelf.collection('Fiscalizacoes', Fiscalizacoes);
 
-module.exports = FiscalizacaoCollection;
+module.exports = Fiscalizacoes;

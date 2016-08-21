@@ -1,16 +1,17 @@
 'use strict';
 
-var AreaAzul = require('../../areaazul');
-var Bookshelf = AreaAzul.db.Bookshelf.conexaoMain;
-var Ativacao = Bookshelf.model('Ativacao');
-var moment = require('moment');
+const moment = require('moment');
 
-var AtivacaoCollection = Bookshelf.Collection.extend({
+var AreaAzul = require('../../areaazul');
+var Bookshelf = AreaAzul.db;
+var Ativacao = Bookshelf.model('Ativacao');
+
+var Ativacoes = Bookshelf.Collection.extend({
     model: Ativacao
   }, {
 
   _listarAtivacoes: function() {
-    return AtivacaoCollection
+    return Ativacoes
       .forge()
       .query(function(qb) {
         qb
@@ -27,7 +28,7 @@ var AtivacaoCollection = Bookshelf.Collection.extend({
   },
 
   _listarAtivacoesExpirando: function() {
-    return AtivacaoCollection
+    return Ativacoes
       .forge()
       .query(function(qb) {
         qb
@@ -48,7 +49,7 @@ var AtivacaoCollection = Bookshelf.Collection.extend({
   },
 
   _listarAtivacoesExpiraram: function() {
-    return AtivacaoCollection
+    return Ativacoes
       .forge()
       .query(function(qb) {
         qb
@@ -69,6 +70,6 @@ var AtivacaoCollection = Bookshelf.Collection.extend({
       });
   }
 });
-Bookshelf.collection('Ativacoes', AtivacaoCollection);
+Bookshelf.collection('Ativacoes', Ativacoes);
 
-module.exports = AtivacaoCollection;
+module.exports = Ativacoes;

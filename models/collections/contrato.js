@@ -1,6 +1,10 @@
-var Bookshelf = require('bookshelf').conexaoMain;
-var Contrato = require("../models/contrato");
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+var Contrato = Bookshelf.model('Contrato');
 
-module.exports = Bookshelf.Collection.extend({
-    model: Contrato.Contrato
+var Contratos = Bookshelf.Collection.extend({
+  model: Contrato.Contrato
 });
+Bookshelf.collection('Contratos', Contratos);
+
+module.exports = Contratos;

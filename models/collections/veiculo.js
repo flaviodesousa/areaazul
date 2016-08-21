@@ -1,20 +1,20 @@
 'use strict';
 
-var Bookshelf = require('bookshelf').conexaoMain;
-var Veiculo = require('../models/veiculo');
-var Ativacoes = require('../collections/ativacoes');
-var Fiscalizacoes = require('../collections/fiscalizacoes');
-var Veiculos = require('../collections/veiculo');
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+const Veiculo = Bookshelf.model('Veiculo');
+const Ativacoes = Bookshelf.collection('Ativacoes');
+const Fiscalizacoes = Bookshelf.collection('Fiscalizacoes');
 var _ = require('lodash');
 
-var VeiculoCollection = Bookshelf.Collection.extend({
+var Veiculos = Bookshelf.Collection.extend({
     model: Veiculo,
 }, {
 
     procurar: function(vehicle, then, fail) {
         Veiculo.forge().query(function(qb) {
             qb.where('veiculo.id_veiculo', vehicle.id_veiculo);
-            qb.join('cidade', 'cidade.id_cidade', '=', 'veiculo.cidade_id');
+            qb.join('cidade', 'cidade.id_cidade', 'veiculo.cidade_id');
             qb.select('veiculo.*');
             qb.select('cidade.*');
         }).fetch().then(function(collection) {
@@ -57,7 +57,7 @@ var VeiculoCollection = Bookshelf.Collection.extend({
 
     _listarVeiculosIrregulares: function(func) {
 
-        return VeiculoCollection.forge().query(function(qb) {
+        return Veiculos.forge().query(function(qb) {
             var data = new Date();
             qb
                 .innerJoin('fiscalizacao', function() {
@@ -78,6 +78,6 @@ var VeiculoCollection = Bookshelf.Collection.extend({
 
 
 });
+Bookshelf.model('Veiculos', Veiculos);
 
-
-module.exports = VeiculoCollection;
+module.exports = Veiculos;

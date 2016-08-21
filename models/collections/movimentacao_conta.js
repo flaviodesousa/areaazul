@@ -1,11 +1,12 @@
 'use strict';
 
-var Bookshelf = require('bookshelf').conexaoMain;
-var MovimentacaoConta = require("../models/movimentacao_conta");
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 var moment = require('moment');
 
 
-var MovimentacaoContaCollection = Bookshelf.Collection.extend({
+var MovimentacoesConta = Bookshelf.Collection.extend({
     model: MovimentacaoConta,
 }, {
 
@@ -27,5 +28,6 @@ var MovimentacaoContaCollection = Bookshelf.Collection.extend({
     },
 
 });
+Bookshelf.collection('MovimentacoesConta', MovimentacoesConta);
 
-module.exports = MovimentacaoContaCollection;
+module.exports = MovimentacoesConta;

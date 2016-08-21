@@ -1,6 +1,10 @@
-var Bookshelf = require('bookshelf').conexaoMain;
-var Pessoa = require("../models/pessoa");
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
+const Pessoa = Bookshelf.model('Pessoa');
 
-module.exports = Bookshelf.Collection.extend({
-    model: Pessoa.Pessoa
+var Pessoas = Bookshelf.Collection.extend({
+  model: Pessoa
 });
+Bookshelf.collection('Pessoas', Pessoas);
+
+module.exports = Pessoas;
