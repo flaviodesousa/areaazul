@@ -24,7 +24,7 @@ describe('models.PessoaJuridica', function() {
       .then(function() {
         if (pessoaId !== null) {
           return Pessoa
-            .forge({id_pessoa: pessoaId})
+            .forge({ id: pessoaId })
             .destroy();
         }
       })

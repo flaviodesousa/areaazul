@@ -86,7 +86,7 @@ describe('model.veiculo', function() {
         it('falha para veiculo inexistente', function(done) {
             Veiculo
                 .desativar({
-                     id_veiculo: 0
+                     id: 0
                 })
                 .then(function() {
                     done();

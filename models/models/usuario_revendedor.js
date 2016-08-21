@@ -154,7 +154,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
 
   alterarSenha: function(user, then, fail) {
     new this.UsuarioRevendedor({
-      id_usuario_revendedor: user.id_usuario_revendedor
+      id: user.id
     })
       .fetch()
       .then(function(model) {

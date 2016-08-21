@@ -97,9 +97,8 @@ describe('model.fiscalizacao', function() {
         latitude: '-89.9999999999',
         longitude: '-179.9999999999',
         fiscal_id: fiscalId,
-      }, function(model) {
-        Fiscalizacao
-          .forge({id_fiscalizacao: model.id})
+      }, function(novaAtivacao) {
+        new Fiscalizacao({ id: novaAtivacao.id })
           .fetch()
           .then(function(f) {
             f.get('latitude')

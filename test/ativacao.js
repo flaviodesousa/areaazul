@@ -87,7 +87,7 @@ describe('model.ativacao', function() {
     it('falha para ativacao inexistente', function(done) {
       Ativacao
         .desativar({
-          id_ativacao: 0,
+          id: 0,
           pessoa_fisica_id: idUsuarioComum
         })
         .then(function() {
@@ -117,7 +117,7 @@ describe('model.ativacao', function() {
     it('desativa ativacao existente', function(done) {
       Ativacao
         .desativar({
-          id_ativacao: idAtivacao,
+          id: idAtivacao,
           pessoa_fisica_id: idUsuarioComum
         })
         .then(function() {

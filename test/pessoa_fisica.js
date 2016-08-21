@@ -27,7 +27,7 @@ describe('models.PessoaFisica', function() {
                 if (pessoaId !== null) {
                     return Pessoa
                         .forge({
-                            id_pessoa: pessoaId
+                            id: pessoaId
                         })
                         .destroy();
                 }

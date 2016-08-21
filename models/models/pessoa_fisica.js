@@ -51,18 +51,14 @@ var PessoaFisica = Bookshelf.Model.extend({
       patch: true
     });
 
-    return Pessoa
-      .forge({
-        id_pessoa: id
-      })
-      .fetch()
+    return new Pessoa({ id: id })
+      .fetch(options)
       .then(function(pessoa) {
         return pessoa
           .save({
             nome: pf.nome,
             email: pf.email,
-            telefone: pf.telefone,
-            ativo: true
+            telefone: pf.telefone
           }, optionsUpdate);
       })
       .then(function(pessoa) {

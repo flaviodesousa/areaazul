@@ -95,7 +95,7 @@ var Ativacao = Bookshelf.Model.extend({
     var optionsPath = _.merge({}, options, { patch: true });
     return Ativacao
       .forge({
-        id_ativacao: desativacao.id_ativacao,
+        id: desativacao.id_ativacao,
         pessoa_fisica_id: desativacao.pessoa_fisica_id
       })
       .fetch(options)
@@ -282,7 +282,7 @@ var Ativacao = Bookshelf.Model.extend({
       .forge()
       .query(function(qb) {
         qb
-          .innerJoin('veiculo', 'veiculo.id_veiculo', 'ativacao.veiculo_id')
+          .innerJoin('veiculo', 'veiculo.id', 'ativacao.veiculo_id')
           .whereNull('ativacao.data_desativacao')
           .andWhere('ativacao.data_ativacao', '>=',
             moment().subtract(60, 'minutes').calendar())

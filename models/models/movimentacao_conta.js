@@ -15,7 +15,7 @@ var MovimentacaoConta = Bookshelf.Model.extend({
     var optionsUpdate = _.merge({ method: 'update', patch: true },
       options || {});
 
-    return new Conta({ id_conta: movimentacaoConta.conta_id })
+    return new Conta({ id: movimentacaoConta.conta_id })
       .fetch(_.merge({ require: true }, options))
       .catch(function(e) {
         if (e instanceof Bookshelf.Model.NotFoundError) {

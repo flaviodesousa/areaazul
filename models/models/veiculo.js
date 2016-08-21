@@ -75,25 +75,17 @@ var Veiculo = Bookshelf.Model.extend({
 
   desativar: function(id) {
     return Veiculo
-      .forge({id_veiculo: id})
+      .forge({ id: id })
       .fetch()
       .then(function(veiculo) {
         if (veiculo) {
-          var status;
-
-          if (veiculo.get('ativo') === false) {
-            status = true;
-          } else {
-            status = false;
-          }
           return veiculo
-            .save({ ativo: status }, { patch: true });
+            .save({ ativo: false }, { patch: true });
         }
-        var err = new AreaAzul.BusinessException(
+        throw new AreaAzul.BusinessException(
             'Desativacao: Veiculo não encontrado', {
                 desativacao: id
               });
-        throw err;
       });
   },
 

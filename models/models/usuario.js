@@ -190,7 +190,7 @@ var Usuario = Bookshelf.Model.extend({
   },
 
   alterarSenha: function(user, then, fail) {
-    new this({ id_usuario: user.id_usuario })
+    new this({ id: user.id })
       .fetch()
       .then(function(model) {
         var pwd;

@@ -9,10 +9,10 @@ const Bookshelf = AreaAzul.db;
 var RecuperacaoSenha = Bookshelf.Model.extend({
   tableName: 'recuperacao_senha'
 }, {
-  cadastrar: function (password_recovery, then, fail) {
+  cadastrar: function (passwordRecovery, then, fail) {
     return this.forge({
-        id_recuperacao_senha: password_recovery.uuid,
-        pessoa_id: password_recovery.pessoa_id,
+        id: passwordRecovery.uuid,
+        pessoa_id: passwordRecovery.pessoa_id,
         data_expiracao: new Date()
       }).save(null, { method: 'insert' }).then(function(model){
           then(model);
