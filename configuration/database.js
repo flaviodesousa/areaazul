@@ -2,13 +2,11 @@ var debug = require('debug')('areaazul:configuration:database');
 
 var knexfile = require('../knexfile');
 
-var env = process.env.NODE_ENV || 'development';
-
-var knex = require('knex')(knexfile[env]);
+var knex = require('knex')(knexfile[process.env.NODE_ENV || 'development']);
 debug('knex loaded');
 
-exports.Bookshelf = require('bookshelf');
+var Bookshelf = require('bookshelf')(knex);
+Bookshelf.plugin('registry');
 
-exports.Bookshelf.conexaoMain = require('bookshelf')(knex);
+exports = Bookshelf;
 debug('bookshelf loaded');
-exports.Bookshelf.conexaoMain.plugin('registry');
