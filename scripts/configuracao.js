@@ -3,8 +3,8 @@
 'use strict';
 
 var moment = require('moment');
-var AreaAzul = require('../areaazul');
-var Bookshelf = require('bookshelf').conexaoMain;
+const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul.db;
 
 var a = require('yargs').argv;
 
