@@ -410,7 +410,3 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
 Bookshelf.model('UsuarioRevendedor', UsuarioRevendedor);
 
 module.exports = UsuarioRevendedor;
-
-exports.compareSenha = function(password, pwd) {
-  return bcrypt.compareSync(password, pwd);
-};
