@@ -330,8 +330,13 @@ function pegarRevendedor() {
   return new PessoaFisica({ cpf: revendedorPessoaFisicaTeste.cpf })
     .fetch()
     .then(function(pf) {
-      return new Revendedor({ id: pf.id})
-        .fetch();
+      if (pf) {
+        return new Revendedor({ id: pf.id})
+          .fetch();
+      }
+      debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
+      return Revendedor
+        .cadastrar(revendedorPessoaFisicaTeste);
     })
     .then(function(revendedor) {
       if (revendedor) {

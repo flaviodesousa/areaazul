@@ -34,10 +34,24 @@ var Revendedor = Bookshelf.Model.extend({
         return messages;
       })
       .then(function() {
+        // Verifica se revendedor é pessoa jurídica...
         if (revendedorFields.cnpj) {
+          // ...Se for, cadastra, não pode existir antes
           return PessoaJuridica
             ._cadastrar(revendedorFields, options);
         }
+        // Mas se for pessoa física, pode ser que já exista
+        // (pode ser usuária, por exemplo)
+        return PessoaFisica
+          .buscarPessoaFisica(revendedorFields.cpf);
+      })
+      .then(function(pessoaFisica) {
+        // Se já existe a pessoa física...
+        if (pessoaFisica) {
+          // ...Use!
+          return pessoaFisica;
+        }
+        // Se não: Crie!
         return PessoaFisica
           ._cadastrar(revendedorFields, options);
       })
@@ -67,10 +81,10 @@ var Revendedor = Bookshelf.Model.extend({
           .save(null, optionsInsert);
       });
   },
-  cadastrar: function(dealer) {
+  cadastrar: function(revendedor) {
     var Revendedor = this;
     return Bookshelf.transaction(function(t) {
-      return Revendedor._cadastrar(dealer, { transacting: t });
+      return Revendedor._cadastrar(revendedor, { transacting: t });
     });
   },
   _salvarRevenda: function(pessoa, options) {
@@ -86,52 +100,61 @@ var Revendedor = Bookshelf.Model.extend({
       });
   },
 
-  validarRevenda: function(dealer) {
+  validarRevenda: function(revenda) {
     var message = [];
 
-    if (!dealer.nome) {
+    if (!revenda.nome) {
       message.push({
         attribute: 'nome',
         problem: 'Nome obrigatório!'
       });
     }
 
-    if (!dealer.email) {
+    if (!revenda.email) {
       message.push({
         attribute: 'email',
         problem: 'Email obrigatório!'
       });
     }
 
-    if (!dealer.login) {
+    if (!revenda.login) {
       message.push({
         attribute: 'login',
         problem: 'Login obrigatório!'
       });
     }
 
-    if (!validator.isEmail(dealer.email)) {
+    if (!validator.isEmail(revenda.email)) {
       message.push({
         attribute: 'email',
         problem: 'Email inválido!'
       });
     }
 
-    if (!dealer.cpf) {
+    if (!revenda.cpf) {
       message.push({
         attribute: 'cpf',
         problem: 'CPF é obrigatório!'
       });
     }
 
-    if (!validation.isCPF(dealer.cpf)) {
+    if (!validation.isCPF(revenda.cpf)) {
       message.push({
         attribute: 'cpf',
         problem: 'CPF inválido!'
       });
     }
 
-    if (!dealer.termo_servico) {
+    if (revenda.data_nascimento) {
+      if (!util.dataValida(revenda.data_nascimento)) {
+        message.push({
+          attribute: 'data_nascimento',
+          problem: 'Data inválida!'
+        })
+      }
+    }
+
+    if (!revenda.termo_servico) {
       message.push({
         attribute: 'termo_servico',
         problem:
@@ -139,52 +162,38 @@ var Revendedor = Bookshelf.Model.extend({
       });
     }
 
-    return PessoaFisica
-      .procurarCPF(dealer.cpf)
-      .then(function(pessoafisica) {
-        if (pessoafisica) {
+    return UsuarioRevendedor
+      .procurarLogin(revenda.login)
+      .then(function(usuariorevendedor) {
+        if (usuariorevendedor) {
           message.push({
-            attribute: 'cpf',
-            problem: 'CPF já cadastrado!'
+            attribute: 'login',
+            problem: 'Login já cadastrado!'
           });
         }
 
         return message;
       })
-      .then(function() {
-        return UsuarioRevendedor
-          .procurarLogin(dealer.login)
-          .then(function(usuariorevendedor) {
-            if (usuariorevendedor) {
-              message.push({
-                attribute: 'login',
-                problem: 'Login já cadastrado!'
-              });
-            }
-
-            return message;
-          });
-      })
       .then(function(message) {
-        if (!dealer.cnpj) {
+        if (!revenda.cnpj) {
           return message;
         }
 
-        if (!dealer.nome_fantasia) {
+        if (!revenda.nome_fantasia) {
           message.push({
             attribute: 'nome_fantasia',
             problem: 'Nome fantasia obrigatório!'
           });
         }
 
-        if (!dealer.razao_social) {
+        if (!revenda.razao_social) {
           message.push({
             attribute: 'razao_social',
             problem: 'Razao social obrigatório!'
           });
         }
 
-        if (validation.isCNPJ(dealer.cnpj) === false) {
+        if (validation.isCNPJ(revenda.cnpj) === false) {
           message.push({
             attribute: 'cnpj',
             problem: 'Cnpj inválido!'
@@ -192,7 +201,7 @@ var Revendedor = Bookshelf.Model.extend({
         }
 
         return PessoaJuridica
-          .procurarCNPJ(dealer.cnpj)
+          .procurarCNPJ(revenda.cnpj)
           .then(function(pessoajuridica) {
             if (pessoajuridica) {
               message.push({

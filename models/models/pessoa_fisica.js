@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+var moment = require('moment');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
@@ -18,31 +19,28 @@ var PessoaFisica = Bookshelf.Model.extend({
         email: pf.email,
         telefone: pf.telefone
       })
-      .save(null, options)
+      .save(null, optionsInsert)
       .then(function(pessoa) {
+        var dataNascimento = null;
+        if (pf.data_nascimento) {
+          dataNascimento = moment(pf.data_nascimento, 'DD-MM-YYYY', true);
+        }
         return PessoaFisica
           .forge({
             cpf: pf.cpf,
-            data_nascimento: pf.data_nascimento,
+            data_nascimento: dataNascimento,
             id: pessoa.id
           })
           .save(null, optionsInsert);
       });
   },
-  cadastrar: function(tax) {
-    var pessoaFisica = null;
+  cadastrar: function(pessoaFisica) {
     var PessoaFisica = this;
 
     return Bookshelf.transaction(function(t) {
       return PessoaFisica
-        ._cadastrar(tax, { transacting: t })
-        .then(function(pf) {
-          pessoaFisica = pf;
-        });
-    })
-      .then(function() {
-        return pessoaFisica;
-      });
+        ._cadastrar(pessoaFisica, { transacting: t });
+    });
   },
   alterar: function(pf, options, id) {
     var optionsUpdate = _.merge({}, options, {
