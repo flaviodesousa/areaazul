@@ -111,6 +111,7 @@ exports.formataData = function(_data) {
 };
 
 exports.dataValida = function(_data) {
-  debug('datavalida()', _data);
-  return moment(_data, 'DD-MM-YYYY').isValid();
+  var dataValida = moment(_data, 'DD-MM-YYYY', true).isValid();
+  debug('datavalida()', _data, dataValida);
+  return dataValida;
 };
