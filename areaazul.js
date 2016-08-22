@@ -19,10 +19,10 @@ module.exports.log = require('./configuration/logging');
 module.exports.db = require('./configuration/database');
 
 [
-  'estado', 'cidade', 'conta', 'pessoa', 'pessoa_fisica',
-  'pessoa_juridica', 'revendedor', 'contrato', 'funcionario', 'veiculo',
+  'estado', 'cidade', 'conta', 'contrato', 'pessoa', 'pessoa_fisica',
+  'pessoa_juridica', 'usuario_revendedor', 'revendedor', 'funcionario', 'veiculo',
   'configuracao', 'movimentacao_conta',
-  'usuario', 'usuario_revendedor', 'usuario_administrativo', 'usuario_fiscal',
+  'usuario', 'usuario_administrativo', 'usuario_fiscal',
   'usuario_has_veiculo', 'ativacao', 'fiscalizacao'
 ].forEach(model => {
   debug('Registrando modelo ' + model);

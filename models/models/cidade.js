@@ -6,7 +6,7 @@ const Bookshelf = AreaAzul.db;
 var Cidade = Bookshelf.Model.extend({
     tableName: 'cidade',
     estado: function() {
-        return this.belongsTo(require('./estado'), 'estado_id');
+        return this.belongsTo('Estado', 'estado_id');
     },
 }, {
     cadastrar: function(city) {
