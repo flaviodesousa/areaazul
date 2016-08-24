@@ -156,7 +156,7 @@ var Ativacao = Bookshelf.Model.extend({
           placaSemMascara);
         return Veiculo
           .forge({placa: placaSemMascara})
-          .fetch();
+          .fetch(options);
       })
       .then(function(veiculo) {
         if (veiculo) {
@@ -164,7 +164,7 @@ var Ativacao = Bookshelf.Model.extend({
           return veiculo;
         }
         debug('ativarPelaRevenda() veiculo nao existe, cadastrando');
-        return Veiculo.cadastrar({
+        return Veiculo._cadastrar({
           placa: placaSemMascara,
           marca: ativacao.marca,
           cor: ativacao.cor,
