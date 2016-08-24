@@ -12,10 +12,7 @@ describe('models.PessoaFisica', function() {
 
     function deleteTestData(done) {
         var pessoaId = null;
-        PessoaFisica
-            .forge({
-                cpf: cpfTeste
-            })
+        new PessoaFisica({ cpf: cpfTeste })
             .fetch()
             .then(function(pf) {
                 if (pf) {
@@ -66,19 +63,15 @@ describe('models.PessoaFisica', function() {
         });
 
     });
-    describe('buscarPessoaFisica()', function() {
+    describe('buscarPorCPF()', function() {
         it.skip('funciona!', function(done) {
-            PessoaFisica.buscarPessoaFisica(cpfTeste)
+            PessoaFisica.buscarPorCPF(cpfTeste)
                 .then(function() {
                     done();
                 })
                 .catch(function(err) {
                     should.exist(err);
-                    err.should.be.an.instanceof(BusinessException);
-                    err.should.have.property(
-                        'message',
-                        'UsuarioRevendedor: cpf nao encontrado');
-                    done();
+                    done(err);
                 });
         });
 

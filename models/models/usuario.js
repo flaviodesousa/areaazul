@@ -289,7 +289,7 @@ var Usuario = Bookshelf.Model.extend({
     }
 
     return PessoaFisica
-      .procurarCPF(user.cpf)
+      .buscarPorCPF(user.cpf)
       .then(function(pessoafisica) {
         if (!pessoafisica && method === 'update') {
           message.push({
