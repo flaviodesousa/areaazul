@@ -110,8 +110,14 @@ exports.formataData = function(_data) {
   return m.format('DD/MM/YYYY');
 };
 
-exports.dataValida = function(_data) {
-  var dataValida = moment(_data, 'DD-MM-YYYY', true).isValid();
-  debug('datavalida()', _data, dataValida);
+exports.dataValida = function(dataString, formato) {
+  if (!formato) {
+    formato = 'DD-MM-YYYY';
+  }
+  var dataValida = moment(dataString, formato, true);
+  debug('datavalida()', dataString, dataValida.isValid());
+  if (!dataValida.isValid()) {
+    dataValida = null;
+  }
   return dataValida;
 };
