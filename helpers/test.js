@@ -362,6 +362,7 @@ exports.pegarUsuarioRevendedor = function() {
   return pegarRevendedor()
     .then(function(revendedor) {
       return new UsuarioRevendedor({ login: usuarioRevendedorTeste.login })
+        .fetch()
         .then(function(ur) {
           if (ur) {
             return ur;
