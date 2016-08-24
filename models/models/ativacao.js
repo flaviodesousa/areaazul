@@ -9,6 +9,7 @@ const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 const log = AreaAzul.log;
 var util = require('../../helpers/util');
+const Usuario = Bookshelf.model('Usuario');
 const UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
 const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 const Conta = Bookshelf.model('Conta');
@@ -52,31 +53,36 @@ var Ativacao = Bookshelf.Model.extend({
         ativacao = a;
         return UsuarioHasVeiculo
           .forge({
-            usuario_id: activation.usuario_id,
+            usuario_id: activation.pessoa_fisica_id,
             veiculo_id: activation.veiculo_id
           })
-          .fetch(options)
-          .then(function(usuariohasveiculo) {
-            if (!usuariohasveiculo) {
-              return UsuarioHasVeiculo
-                .forge({
-                  usuario_id: activation.usuario_id,
-                  veiculo_id: activation.veiculo_id,
-                  ultima_ativacao: new Date()
-                })
-                .save(null, optionsInsert);
-            }
-            return usuariohasveiculo
-              .save({ ultima_ativacao: new Date() }, optionsUpdate);
-          })
-          .then(function() {
-            return MovimentacaoConta
-              ._inserirDebito({
-                historico: 'ativacao',
-                tipo: 'ativacao',
-                valor: activation.valor
-              }, options);
-          });
+          .fetch(options);
+      })
+      .then(function(usuariohasveiculo) {
+        if (!usuariohasveiculo) {
+          return UsuarioHasVeiculo
+            .forge({
+              usuario_id: activation.pessoa_fisica_id,
+              veiculo_id: activation.veiculo_id,
+              ultima_ativacao: new Date()
+            })
+            .save(null, optionsInsert);
+        }
+        return usuariohasveiculo
+          .save({ ultima_ativacao: new Date() }, optionsUpdate);
+      })
+      .then(function() {
+        return new Usuario({ id: activation.pessoa_fisica_id })
+          .fetch();
+      })
+      .then(function(usuario) {
+        return MovimentacaoConta
+          ._inserirDebito({
+            historico: 'ativacao',
+            tipo: 'ativacao',
+            valor: activation.valor,
+            conta_id: usuario.get('conta_id')
+          }, options);
       })
       .then(function() {
         return ativacao;
