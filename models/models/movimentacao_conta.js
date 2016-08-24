@@ -38,7 +38,6 @@ var MovimentacaoConta = Bookshelf.Model.extend({
             historico: movimentacaoConta.historico,
             tipo: movimentacaoConta.tipo,
             valor: movimentacaoConta.valor,
-            ativo: true,
             conta_id: c.id
           })
           .save(null, optionsInsert);
