@@ -17,11 +17,12 @@ util.inherits(AuthenticationError, Error);
 
 module.exports.log = require('./configuration/logging');
 module.exports.db = require('./configuration/database');
+module.exports.util = require('./helpers/util');
 
 [
   'estado', 'cidade', 'conta', 'contrato', 'pessoa', 'pessoa_fisica',
-  'pessoa_juridica', 'usuario_revendedor', 'revendedor', 'funcionario', 'veiculo',
-  'configuracao', 'movimentacao_conta',
+  'pessoa_juridica', 'usuario_revendedor', 'revendedor', 'funcionario',
+  'veiculo', 'configuracao', 'movimentacao_conta',
   'usuario', 'usuario_administrativo', 'usuario_fiscal',
   'usuario_has_veiculo', 'ativacao', 'fiscalizacao'
 ].forEach(model => {
