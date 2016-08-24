@@ -64,7 +64,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         if (messages.length) {
           throw new AreaAzul
             .BusinessException(
-            'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
+            'Não foi possível cadastrar novo usuário para a revenda.'
+            + ' Dados inválidos',
             messages);
         }
         return messages;
@@ -244,22 +245,16 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         problem: 'As senhas devem ser iguais!'
       });
     }
-    if (user.senha.length < 4 && user.senha.length > 8) {
+    if (user.senha.length < 8) {
       message.push({
         attribute: 'senha',
-        problem: 'A senha deve conter no minimo 4 a 8 caracteres!'
+        problem: 'A senha deve conter no minimo 8 caracteres!'
       });
     }
-    if (user.conf_senha.length < 4 && user.conf_senha.length > 8) {
+    if (user.conf_senha.length < 8) {
       message.push({
         attribute: 'conf_senha',
-        problem: 'A confirmação de senha deve conter no minimo 4 a 8caracteres!'
-      });
-    }
-    if (user.nova_senha.length < 4 && user.nova_senha.length > 8) {
-      message.push({
-        attribute: 'nova_senha',
-        problem: 'A nova senha deve conter no minimo 4 a 8 caracteres!'
+        problem: 'A confirmação de senha deve conter no minimo 8 caracteres!'
       });
     }
 
@@ -335,20 +330,13 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       });
   },
 
-  validarUsuarioRevenda: function(userReseller, operacao) {
+  _validarUsuarioRevenda: function(userReseller, operacao, options) {
     var message = [];
 
     if (!userReseller.nome) {
       message.push({
         attribute: 'nome',
         problem: 'Nome obrigatório!'
-      });
-    }
-
-    if (!userReseller.email) {
-      message.push({
-        attribute: 'email',
-        problem: 'Email obrigatório!'
       });
     }
 
@@ -359,7 +347,12 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       });
     }
 
-    if (!validator.isEmail(userReseller.email)) {
+    if (!userReseller.email) {
+      message.push({
+        attribute: 'email',
+        problem: 'Email obrigatório!'
+      });
+    } else if (!validator.isEmail(userReseller.email)) {
       message.push({
         attribute: 'email',
         problem: 'Email inválido!'
@@ -371,10 +364,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         attribute: 'cpf',
         problem: 'CPF é obrigatório!'
       });
-
-    }
-
-    if (!validation.isCPF(userReseller.cpf)) {
+    } else if (!validation.isCPF(userReseller.cpf)) {
       message.push({
         attribute: 'cpf',
         problem: 'CPF inválido!'
@@ -389,7 +379,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     }
 
     return UsuarioRevendedor
-      .procurarLogin(userReseller.login)
+      ._procurarLogin(userReseller.login, options)
       .then(function(usuariorevendedor) {
         if (usuariorevendedor && operacao === 'insert') {
           message.push({
@@ -401,10 +391,15 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         return message;
       });
   },
+  validarUsuarioRevenda: function(usuarioRevendedorFields, operation) {
+    return this._validarUsuarioRevenda(usuarioRevendedorFields, operation, {});
+  },
+  _procurarLogin: function(login, options) {
+    return new this({ login: login })
+      .fetch(options);
+  },
   procurarLogin: function(login) {
-    return this.forge({
-      login: login
-    }).fetch();
+    return this._procurarLogin(login, null);
   }
 });
 Bookshelf.model('UsuarioRevendedor', UsuarioRevendedor);

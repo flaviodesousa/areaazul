@@ -43,21 +43,21 @@ var Revendedor = Bookshelf.Model.extend({
         // Mas se for pessoa física, pode ser que já exista
         // (pode ser usuária, por exemplo)
         return PessoaFisica
-          .buscarPessoaFisica(revendedorFields.cpf);
-      })
-      .then(function(pessoaFisica) {
-        // Se já existe a pessoa física...
-        if (pessoaFisica) {
-          // ...Use!
-          return pessoaFisica;
-        }
-        // Se não: Crie!
-        return PessoaFisica
-          ._cadastrar(revendedorFields, options);
+          .buscarPorCPF(revendedorFields.cpf)
+          .then(function(pessoaFisica) {
+            // Se já existe a pessoa física...
+            if (pessoaFisica) {
+              // ...Use!
+              return pessoaFisica;
+            }
+            // Se não: Crie!
+            return PessoaFisica
+              ._cadastrar(revendedorFields, options);
+          })
       })
       .then(function(pessoa) {
         idPessoa = pessoa.id;
-        return Revendedor._cadastrar(pessoa, options);
+        return Revendedor._salvarRevenda(pessoa, options);
       })
       .then(function() {
         return PessoaFisica
@@ -75,6 +75,7 @@ var Revendedor = Bookshelf.Model.extend({
           acesso_confirmado: true,
           ativo: true,
           autorizacao: revendedorFields.autorizacao,
+          termo_servico: true,
           revendedor_id: idRevendedor,
           pessoa_fisica_id: idPessoa
         })
@@ -88,16 +89,23 @@ var Revendedor = Bookshelf.Model.extend({
     });
   },
   _salvarRevenda: function(pessoa, options) {
-    var optionsInsert = _.merge({ method: 'insert' }, options || {});
+    return new Revendedor({ id: pessoa.id })
+      .fetch(options)
+      .then(function(r) {
+        if (r) {
+          return r;
+        }
+        return Conta
+          ._cadastrar(null, options)
+          .then(function(conta) {
+            var optionsInsert = _.merge({ method: 'insert' }, options || {});
 
-    return Conta
-      ._cadastrar(null, options)
-      .then(function(conta) {
-        return new Revendedor({
-            ativo: true, id: pessoa.id, conta_id: conta.id
-          })
-          .save(null, optionsInsert);
-      });
+            return new Revendedor({
+              ativo: true, id: pessoa.id, conta_id: conta.id
+            })
+              .save(null, optionsInsert);
+          });
+      })
   },
 
   validarRevenda: function(revenda) {
@@ -115,16 +123,7 @@ var Revendedor = Bookshelf.Model.extend({
         attribute: 'email',
         problem: 'Email obrigatório!'
       });
-    }
-
-    if (!revenda.login) {
-      message.push({
-        attribute: 'login',
-        problem: 'Login obrigatório!'
-      });
-    }
-
-    if (!validator.isEmail(revenda.email)) {
+    } else if (!validator.isEmail(revenda.email)) {
       message.push({
         attribute: 'email',
         problem: 'Email inválido!'
@@ -136,9 +135,7 @@ var Revendedor = Bookshelf.Model.extend({
         attribute: 'cpf',
         problem: 'CPF é obrigatório!'
       });
-    }
-
-    if (!validation.isCPF(revenda.cpf)) {
+    } else if (!validation.isCPF(revenda.cpf)) {
       message.push({
         attribute: 'cpf',
         problem: 'CPF inválido!'
@@ -152,6 +149,13 @@ var Revendedor = Bookshelf.Model.extend({
           problem: 'Data inválida!'
         })
       }
+    }
+
+    if (!revenda.login) {
+      message.push({
+        attribute: 'login',
+        problem: 'Login obrigatório!'
+      });
     }
 
     if (!revenda.termo_servico) {
