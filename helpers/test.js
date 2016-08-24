@@ -355,7 +355,8 @@ var usuarioRevendedorTeste = {
   senha: 'senhaTeste',
   email: 'usuario-revenda-teste-unitario@areaazul.org',
   cpf: '03472262214',
-  data_nascimento: '28-02-1933'
+  data_nascimento: '28-02-1933',
+  termo_servico: '1'
 };
 
 exports.pegarUsuarioRevendedor = function() {
