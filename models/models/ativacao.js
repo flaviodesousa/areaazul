@@ -302,4 +302,19 @@ var Ativacao = Bookshelf.Model.extend({
 });
 Bookshelf.model('Ativacao', Ativacao);
 
+const AtivacaoUsuario = Bookshelf.Model.extend({
+  tableName: 'ativacao_usuario'
+});
+Bookshelf.model('AtivacaoUsuario', AtivacaoUsuario);
+
+const AtivacaoUsuarioRevendedor = Bookshelf.Model.extend({
+  tableName: 'ativacao_usuario_revendedor'
+});
+Bookshelf.model('AtivacaoUsuarioRevendedor', AtivacaoUsuarioRevendedor);
+
+const AtivacaoUsuarioFiscal = Bookshelf.Model.extend({
+  tableName: 'ativacao_usuario_fiscal'
+});
+Bookshelf.model('AtivacaoUsuarioFiscal', AtivacaoUsuarioFiscal);
+
 module.exports = Ativacao;
