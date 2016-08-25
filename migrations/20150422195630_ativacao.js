@@ -18,6 +18,7 @@ exports.up = function(knex) {
         .references('id').inTable('ativacao');
       table.integer('usuario_id').notNullable()
         .references('id').inTable('usuario');
+      table.primary(['ativacao_id', 'usuario_id']);
     });
   })
   .then(function() {
