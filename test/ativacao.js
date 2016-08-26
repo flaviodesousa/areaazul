@@ -9,6 +9,7 @@ const Bookshelf = AreaAzul.db;
 var TestHelpers = require('../helpers/test');
 
 var Ativacao = Bookshelf.model('Ativacao');
+const AtivacaoUsuario = Bookshelf.model('AtivacaoUsuario');
 var Ativacoes = Bookshelf.collection('Ativacoes');
 
 describe('model.ativacao', function() {
@@ -44,6 +45,18 @@ describe('model.ativacao', function() {
         idCidade = cidade.id;
       })
       .then(function() {
+        return AtivacaoUsuario
+          .query(function(qb) {
+            qb
+              .whereExists(function() {
+                this.select('*').from('ativacao')
+                .whereRaw('ativacao.id=ativacao_usuario.ativacao_id'
+                  + ' and ativacao.data_desativacao is null');
+              });
+          })
+          .destroy();
+      })
+      .then(function() {
         return Ativacao
           .query(function(qb) {
             qb
@@ -62,7 +75,7 @@ describe('model.ativacao', function() {
 
     it('grava ativacao', function(done) {
       var ativacao = {
-        pessoa_fisica_id: idUsuarioComum,
+        usuario_id: idUsuarioComum,
         veiculo_id: veiculo.id,
         valor: 10.0
       };
@@ -88,7 +101,7 @@ describe('model.ativacao', function() {
       Ativacao
         .desativar({
           id: 0,
-          pessoa_fisica_id: idUsuarioComum
+          usuario_id: idUsuarioComum
         })
         .then(function() {
           done('Nao deveria ter desativado uma ativacao inexistente');
@@ -103,7 +116,7 @@ describe('model.ativacao', function() {
       Ativacao
         .desativar({
           id: idAtivacao,
-          pessoa_fisica_id: 0
+          usuario_id: 0
         })
         .then(function() {
           done('Nao deveria ter desativado com usuario diferente');
@@ -118,7 +131,7 @@ describe('model.ativacao', function() {
       Ativacao
         .desativar({
           id: idAtivacao,
-          pessoa_fisica_id: idUsuarioComum
+          usuario_id: idUsuarioComum
         })
         .then(function() {
           done();
@@ -134,7 +147,7 @@ describe('model.ativacao', function() {
     it('grava ativacao', function(done) {
       Ativacao
         .ativarPelaRevenda({
-          pessoa_fisica_id: idUsuarioRevendedor,
+          usuario_revendedor_id: idUsuarioRevendedor,
           cidade: idCidade,
           placa: veiculo.get('placa'),
           marca: veiculo.get('marca'),

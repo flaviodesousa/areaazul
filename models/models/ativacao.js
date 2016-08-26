@@ -44,16 +44,21 @@ var Ativacao = Bookshelf.Model.extend({
         latitude: latitude,
         longitude: longitude,
         altitude: altitude,
-        pessoa_fisica_id: activation.pessoa_fisica_id,
-        veiculo_id: activation.veiculo_id,
-        ativo: true
+        veiculo_id: activation.veiculo_id
       })
       .save(null, optionsInsert)
       .then(function(a) {
         ativacao = a;
+        return new AtivacaoUsuario({
+            ativacao_id: ativacao.id,
+            usuario_id: activation.usuario_id
+          })
+          .save(null, optionsInsert);
+      })
+      .then(function() {
         return UsuarioHasVeiculo
           .forge({
-            usuario_id: activation.pessoa_fisica_id,
+            usuario_id: activation.usuario_id,
             veiculo_id: activation.veiculo_id
           })
           .fetch(options);
@@ -62,7 +67,7 @@ var Ativacao = Bookshelf.Model.extend({
         if (!usuariohasveiculo) {
           return UsuarioHasVeiculo
             .forge({
-              usuario_id: activation.pessoa_fisica_id,
+              usuario_id: activation.usuario_id,
               veiculo_id: activation.veiculo_id,
               ultima_ativacao: new Date()
             })
@@ -72,7 +77,7 @@ var Ativacao = Bookshelf.Model.extend({
           .save({ ultima_ativacao: new Date() }, optionsUpdate);
       })
       .then(function() {
-        return new Usuario({ id: activation.pessoa_fisica_id })
+        return new Usuario({ id: activation.usuario_id })
           .fetch();
       })
       .then(function(usuario) {
@@ -177,8 +182,7 @@ var Ativacao = Bookshelf.Model.extend({
         return new Ativacao({
             data_ativacao: new Date(),
             pessoa_fisica_id: ativacao.pessoa_fisica_id,
-            veiculo_id: v.id,
-            ativo: true
+            veiculo_id: v.id
           })
           .save(null, optionsInsert)
           .then(function() {
@@ -301,5 +305,21 @@ var Ativacao = Bookshelf.Model.extend({
 
 });
 Bookshelf.model('Ativacao', Ativacao);
+
+const AtivacaoUsuario = Bookshelf.Model.extend({
+  tableName: 'ativacao_usuario',
+  idAttribute: ['ativacao_id', 'usuario_id']
+});
+Bookshelf.model('AtivacaoUsuario', AtivacaoUsuario);
+
+const AtivacaoUsuarioRevendedor = Bookshelf.Model.extend({
+  tableName: 'ativacao_usuario_revendedor'
+});
+Bookshelf.model('AtivacaoUsuarioRevendedor', AtivacaoUsuarioRevendedor);
+
+const AtivacaoUsuarioFiscal = Bookshelf.Model.extend({
+  tableName: 'ativacao_usuario_fiscal'
+});
+Bookshelf.model('AtivacaoUsuarioFiscal', AtivacaoUsuarioFiscal);
 
 module.exports = Ativacao;
