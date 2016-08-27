@@ -45,6 +45,8 @@ describe('model.ativacao', function() {
         idCidade = cidade.id;
       })
       .then(function() {
+        // Apagar ativaćões pendentes, para não afetar testes com novas
+        // ativaćões.
         return AtivacaoUsuario
           .query(function(qb) {
             qb
@@ -158,8 +160,11 @@ describe('model.ativacao', function() {
           valor: 10.0
         })
         .then(function(ativacao) {
-          ativacao.destroy();
-          done();
+          return ativacao
+            .destroy()
+            .then(function() {
+              done();
+            });
         })
         .catch(function(e) {
           debug('erro inesperado na ativacao pela revenda', e);
