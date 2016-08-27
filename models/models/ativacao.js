@@ -143,7 +143,7 @@ var Ativacao = Bookshelf.Model.extend({
       placaSemMascara = util.placaSemMascara(ativacao.placa);
     }
     return Ativacao
-      ._validarAtivacao(ativacao, placaSemMascara, options)
+      ._validarAtivacaoRevenda(ativacao, placaSemMascara, options)
       .then(function(messages) {
         if (messages.length) {
           debug('ativarPelaRevenda() ativacao invalida');
@@ -208,9 +208,7 @@ var Ativacao = Bookshelf.Model.extend({
       return Ativacao._ativarPelaRevenda(ativacao, { transacting: t });
     });
   },
-  _validarAtivacao: function(ativacao, placa, options) {
-    var message = [];
-
+  __validarAtivacao: function(message, ativacao, placa, options) {
     if (validator.isNull('' + ativacao.marca)) {
       message.push({
         attribute: 'marca',
@@ -251,7 +249,12 @@ var Ativacao = Bookshelf.Model.extend({
           });
         }
         return message;
-      })
+      });
+  },
+  _validarAtivacao: function(ativacao, placa, options) {
+    var message = [];
+    return this
+      ._validarAtivacao(message, ativacao, placa, options)
       .then(function() {
         return Ativacao
           ._verificaSaldo(ativacao.usuario_pessoa_id, options);
@@ -266,23 +269,45 @@ var Ativacao = Bookshelf.Model.extend({
         return message;
       });
   },
-
-  validarAtivacao: function(ativacao, placa) {
-    return Ativacao._validarAtivacao(ativacao, placa, {});
+  _validarAtivacaoRevenda: function(ativacao, placa, options) {
+    var message = [];
+    return this
+      .__validarAtivacao(message, ativacao, placa, options)
+      .then(function() {
+        return Ativacao
+          ._verificaSaldoRevendedor(ativacao.usuario_revendedor_id, options);
+      })
+      .then(function(conta) {
+        if (!conta || conta.get('saldo') < ativacao.valor) {
+          message.push({
+            attribute: 'valor',
+            problem: 'Revenda não possui saldo suficiente em conta!'
+          });
+        }
+        return message;
+      });
   },
-
-  _verificaSaldo: function(id, options) {
+  _verificaSaldoRevendedor: function(idUsuarioRevendedor, options) {
     return Conta
       .query(function(qb) {
         qb
           .innerJoin('revendedor', 'revendedor.conta_id', 'conta.id')
-          .innerJoin('pessoa', 'pessoa.id', 'revendedor.id')
           .innerJoin('usuario_revendedor',
             'usuario_revendedor.revendedor_id', 'revendedor.id')
-          .where('usuario_revendedor.id', id)
-          .select('pessoa.*')
+          .where('usuario_revendedor.id', idUsuarioRevendedor)
           .select('conta.*')
           .select('revendedor.*')
+          .select('usuario_revendedor.*');
+      })
+      .fetch(options);
+  },
+  _verificaSaldo: function(idUsuario, options) {
+    return Conta
+      .query(function(qb) {
+        qb
+          .innerJoin('usuario', 'usuario.conta_id', 'conta.id')
+          .where('usuario.id', idUsuario)
+          .select('conta.*')
           .select('usuario_revendedor.*');
       })
       .fetch(options);
@@ -313,12 +338,14 @@ const AtivacaoUsuario = Bookshelf.Model.extend({
 Bookshelf.model('AtivacaoUsuario', AtivacaoUsuario);
 
 const AtivacaoUsuarioRevendedor = Bookshelf.Model.extend({
-  tableName: 'ativacao_usuario_revendedor'
+  tableName: 'ativacao_usuario_revendedor',
+  idAttribute: ['ativacao_id', 'usuario_revendedor_id']
 });
 Bookshelf.model('AtivacaoUsuarioRevendedor', AtivacaoUsuarioRevendedor);
 
 const AtivacaoUsuarioFiscal = Bookshelf.Model.extend({
-  tableName: 'ativacao_usuario_fiscal'
+  tableName: 'ativacao_usuario_fiscal',
+  idAttribute: ['ativacao_id', 'usuario_fiscal_id']
 });
 Bookshelf.model('AtivacaoUsuarioFiscal', AtivacaoUsuarioFiscal);
 
