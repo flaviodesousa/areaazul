@@ -154,10 +154,9 @@ var Usuario = Bookshelf.Model.extend({
       })
       .then(function(u) {
         usuario = u;
-        return util.enviarEmailConfirmacao(entidade, login);
-      })
-      .return(usuario);
-
+        util.enviarEmailConfirmacao(entidade, login);
+        return u;
+      });
   },
 
   _inserir: function(entidade, options, t) {
