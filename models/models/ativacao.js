@@ -14,6 +14,7 @@ const UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
 const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 const Conta = Bookshelf.model('Conta');
 const Veiculo = Bookshelf.model('Veiculo');
+const Revendedor = Bookshelf.model('Revendedor');
 const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 
 
@@ -103,11 +104,10 @@ var Ativacao = Bookshelf.Model.extend({
   },
 
   _desativar: function(desativacao, options) {
-    var optionsPath = _.merge({}, options, { patch: true });
-    return Ativacao
-      .forge({
-        id: desativacao.id,
-        pessoa_fisica_id: desativacao.pessoa_fisica_id
+    var optionsPatch = _.merge({ patch: true }, options);
+    return new AtivacaoUsuario({
+        ativacao_id: desativacao.ativacao_id,
+        usuario_id: desativacao.usuario_id
       })
       .fetch(options)
       .then(function(d) {
@@ -118,11 +118,12 @@ var Ativacao = Bookshelf.Model.extend({
           log.error(err.message, err.details);
           throw err;
         }
-        return d;
+        return new Ativacao({ id: desativacao.ativacao_id })
+          .fetch(options)
       })
       .then(function(d) {
         return d
-          .save({ data_desativacao: new Date() }, optionsPath);
+          .save({ data_desativacao: new Date() }, optionsPatch);
       })
       .then(function(ativacaoExistente) {
         log.info('Desativacao: sucesso', { desativacao: ativacaoExistente });
@@ -138,6 +139,7 @@ var Ativacao = Bookshelf.Model.extend({
   },
   _ativarPelaRevenda: function(ativacao, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options);
+    var usuario = null;
     var placaSemMascara = '';
     if (ativacao.placa) {
       placaSemMascara = util.placaSemMascara(ativacao.placa);
@@ -183,22 +185,28 @@ var Ativacao = Bookshelf.Model.extend({
             data_ativacao: new Date(),
             veiculo_id: v.id
           })
-          .save(null, optionsInsert)
-          .then(function() {
-            return new UsuarioRevendedor({
-                id: ativacao.pessoa_fisica_id
-              })
-              .fetch(options);
+          .save(null, optionsInsert);
+      })
+      .then(function() {
+        return new UsuarioRevendedor({
+            id: ativacao.usuario_revendedor_id
           })
-          .then(function(usuario) {
-            return MovimentacaoConta
-              ._inserirDebito({
-                historico: 'ativacao-revenda usuario='
-                  + usuario.id + '/revenda=' + usuario.revendedor_id,
-                tipo: 'ativacao',
-                valor: 10.00
-              }, options);
-          });
+          .fetch(options);
+      })
+      .then(function(u) {
+        usuario = u;
+        return new Revendedor({ id: usuario.get('revendedor_id') })
+          .fetch(options);
+      })
+      .then(function(revendedor) {
+        return MovimentacaoConta
+          ._inserirDebito({
+            conta_id: revendedor.get('conta_id'),
+            historico: 'ativacao-revenda usuario='
+              + usuario.id + '/revenda=' + revendedor.id,
+            tipo: 'ativacao',
+            valor: 10.00
+          }, options);
       });
   },
   ativarPelaRevenda: function(ativacao) {
