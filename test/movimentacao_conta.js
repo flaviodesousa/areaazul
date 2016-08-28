@@ -7,12 +7,12 @@ const Bookshelf = AreaAzul.db;
 var MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 
 describe('model.movimentacaoConta', function() {
-  var usuarioId = null;
+  var revendedor = null;
 
   before(function(done) {
-    TestHelpers.pegarUsuarioRevendedor()
-      .then(function(revendedor) {
-        usuarioId = revendedor.id;
+    TestHelpers.pegarRevendedor()
+      .then(function(r) {
+        revendedor = r;
       })
       .then(function() {
         done();
@@ -26,6 +26,7 @@ describe('model.movimentacaoConta', function() {
   describe('inserirCredito()', function() {
     it('insere credito na conta', function(done) {
       var conta = {
+        conta_id: revendedor.get('conta_id'),
         valor: 100.00,
         tipo: 'Cartão de credito',
         historico: 'credito-de-teste',
@@ -45,8 +46,8 @@ describe('model.movimentacaoConta', function() {
   describe('inserirDebito()', function() {
     it('debita na conta', function(done) {
       var conta = {
+        conta_id: revendedor.get('conta_id'),
         valor: 10.00,
-        pessoa_id: usuarioId,
         tipo: 'o-que-eh-esse-tipo?',
         historico: 'debito-de-teste',
       };

@@ -73,19 +73,24 @@ function _apagarVeiculo(idVeiculo) {
 
 function _apagarRevendedor(idRevenda) {
   var revenda = null;
-  return new UsuarioRevendedor()
-    .query()
-    .where({ revendedor_id: idRevenda })
-    .delete()
-    .then(function() {
-      return new Revendedor({ id: idRevenda })
-        .fetch(function(r) {
-          revenda = r;
+  return new Revendedor({ id: idRevenda })
+    .fetch()
+    .then(function(r) {
+      revenda = r;
+      if (!r) {
+        return null;
+      }
+      return new UsuarioRevendedor()
+        .query()
+        .where({ revendedor_id: idRevenda })
+        .delete()
+        .then(function() {
+          return new Revendedor({ id: idRevenda })
+            .destroy();
         })
-        .destroy();
-    })
-    .then(function() {
-      return _apagarConta(revenda.conta_id);
+        .then(function() {
+          return _apagarConta(revenda.get('conta_id'));
+        })
     })
     .return(revenda);
 }
@@ -93,6 +98,9 @@ function _apagarRevendedor(idRevenda) {
 function _apagarRevendedorJuridica(idRevendedor) {
   return _apagarRevendedor(idRevendedor)
     .then(function(r) {
+      if (!r) {
+        return r;
+      }
       return _apagarPessoaJuridica(r.id);
     });
 }
@@ -100,6 +108,9 @@ function _apagarRevendedorJuridica(idRevendedor) {
 function _apagarRevendedorFisica(idRevendedor) {
   return _apagarRevendedor(idRevendedor)
     .then(function(r) {
+      if (!r) {
+        return r;
+      }
       return _apagarPessoaFisica(r.id);
     });
 }
