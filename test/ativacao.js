@@ -10,7 +10,10 @@ var TestHelpers = require('../helpers/test');
 
 var Ativacao = Bookshelf.model('Ativacao');
 const AtivacaoUsuario = Bookshelf.model('AtivacaoUsuario');
+const Conta = Bookshelf.model('Conta');
 var Ativacoes = Bookshelf.collection('Ativacoes');
+
+const valorTeste = 10;
 
 describe('model.ativacao', function() {
 
@@ -31,12 +34,27 @@ describe('model.ativacao', function() {
       })
       .then(function(usuario) {
         idUsuarioComum = usuario.id;
+        return new Conta({ id: usuario.get('conta_id') })
+          .fetch();
+      })
+      .then(function(contaUsuario) {
+        return TestHelpers.setSaldo(contaUsuario, valorTeste);
       })
       .then(function() {
         return TestHelpers.pegarUsuarioRevendedor();
       })
+      .then(function(usuarioRevendedor) {
+        idUsuarioRevendedor = usuarioRevendedor.id;
+      })
+      .then(function() {
+        return TestHelpers.pegarRevendedor();
+      })
       .then(function(revendedor) {
-        idUsuarioRevendedor = revendedor.id;
+        return new Conta({ id: revendedor.get('conta_id') })
+          .fetch();
+      })
+      .then(function(contaRevendedor) {
+        return TestHelpers.setSaldo(contaRevendedor, valorTeste);
       })
       .then(function() {
         return TestHelpers.pegarCidade();
@@ -79,7 +97,7 @@ describe('model.ativacao', function() {
       var ativacao = {
         usuario_id: idUsuarioComum,
         veiculo_id: veiculo.id,
-        valor: 10.0
+        valor: valorTeste
       };
 
       Ativacao
@@ -157,7 +175,7 @@ describe('model.ativacao', function() {
           cor: veiculo.get('cor'),
           tipo_veiculo: veiculo.get('tipo'),
           tempo: 60,
-          valor: 10.0
+          valor: valorTeste
         })
         .then(function(ativacao) {
           return ativacao

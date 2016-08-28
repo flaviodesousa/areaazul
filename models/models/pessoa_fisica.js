@@ -36,11 +36,9 @@ var PessoaFisica = Bookshelf.Model.extend({
   },
   __atualizarExistente: function(
     pessoaFisicaFields, pessoaFisicaRecord, options) {
-    var x = new Pessoa({ id: pessoaFisicaRecord.id }).fetch(options);
-    debug('x', x);
-    return x
+    return new Pessoa({ id: pessoaFisicaRecord.id })
+      .fetch(options)
       .then(function(p) {
-        debug('__atualizarExistente() Pessoa found', p);
         if (!p) {
           throw new AreaAzul.BusinessException(
             'PessoaFisica sem Pessoa equivalente', {

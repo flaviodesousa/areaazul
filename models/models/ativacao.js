@@ -181,7 +181,6 @@ var Ativacao = Bookshelf.Model.extend({
         debug('ativarPelaRevenda() ativando veiculo #' + v.id);
         return new Ativacao({
             data_ativacao: new Date(),
-            pessoa_fisica_id: ativacao.pessoa_fisica_id,
             veiculo_id: v.id
           })
           .save(null, optionsInsert)

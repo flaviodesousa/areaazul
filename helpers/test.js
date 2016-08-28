@@ -3,6 +3,7 @@
 var _ = require('lodash');
 var debug = require('debug')('areaazul:test:helper');
 var Promise = require('bluebird');
+const math = require('mathjs');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
@@ -377,3 +378,14 @@ exports.pegarUsuarioRevendedor = function() {
         });
     });
 };
+
+exports.setSaldo = function(conta, novoSaldo) {
+  return MovimentacaoConta
+    .inserirCredito({
+      conta_id: conta.id,
+      historico: 'credito para teste de ' + conta.get('saldo')
+        + ' para ' + novoSaldo,
+      tipo: 'teste',
+      valor: math.chain(novoSaldo).subtract(conta.get('saldo')).done()
+    });
+}
