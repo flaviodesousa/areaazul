@@ -41,12 +41,6 @@ describe('model.ativacao', function() {
         return TestHelpers.setSaldo(contaUsuario, valorTeste);
       })
       .then(function() {
-        return TestHelpers.pegarUsuarioRevendedor();
-      })
-      .then(function(usuarioRevendedor) {
-        idUsuarioRevendedor = usuarioRevendedor.id;
-      })
-      .then(function() {
         return TestHelpers.pegarRevendedor();
       })
       .then(function(revendedor) {
@@ -55,6 +49,12 @@ describe('model.ativacao', function() {
       })
       .then(function(contaRevendedor) {
         return TestHelpers.setSaldo(contaRevendedor, valorTeste);
+      })
+      .then(function() {
+        return TestHelpers.pegarUsuarioRevendedor();
+      })
+      .then(function(usuarioRevendedor) {
+        idUsuarioRevendedor = usuarioRevendedor.id;
       })
       .then(function() {
         return TestHelpers.pegarCidade();

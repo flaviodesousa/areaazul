@@ -47,7 +47,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       });
   },
 
-  _salvarUsuarioRevenda: function(entidade, options, t) {
+  _salvarUsuarioRevenda: function(entidade, options) {
     var UsuarioRevendedor = this;
     var senha;
 
@@ -59,7 +59,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     }
 
     return UsuarioRevendedor
-      .validarUsuarioRevenda(entidade, options.method)
+      ._validarUsuarioRevenda(entidade, options.method, options)
       .then(function(messages) {
         if (messages.length) {
           throw new AreaAzul
@@ -78,10 +78,10 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
           .fetch()
           .then(function(pessoaFisica) {
             if (pessoaFisica !== null) {
-              return PessoaFisica.alterar(entidade, t, pessoaFisica.id);
+              return PessoaFisica.alterar(entidade, pessoaFisica.id, options);
             }
             // Caso nao exista, criar a pessoa fisica
-            return PessoaFisica._cadastrar(entidade, t);
+            return PessoaFisica._cadastrar(entidade, options);
           });
       }).then(function(pessoaFisica) {
         var dadosUsuarioRevendedor = {
@@ -378,8 +378,29 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       });
     }
 
-    return UsuarioRevendedor
-      ._procurarLogin(userReseller.login, options)
+    if (!userReseller.revendedor_id) {
+      message.push({
+        attribute: 'revendedor_id',
+        problem: 'Revendedor não definido'
+      });
+    }
+
+    const Revendedor = Bookshelf.model('Revendedor');
+    return new Revendedor({ id: userReseller.revendedor_id })
+      .fetch(options)
+      .then(function(r) {
+        if (!r) {
+          message.push({
+            attribute: 'revendedor_id',
+            problem: 'Revendedor não existe'
+          });
+        }
+        return r;
+      })
+      .then(function() {
+        return UsuarioRevendedor
+          ._procurarLogin(userReseller.login, options);
+      })
       .then(function(usuariorevendedor) {
         if (usuariorevendedor && operacao === 'insert') {
           message.push({
@@ -387,9 +408,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
             problem: 'Login já cadastrado!'
           });
         }
-
-        return message;
-      });
+      })
+      .return(message);
   },
   validarUsuarioRevenda: function(usuarioRevendedorFields, operation) {
     return this._validarUsuarioRevenda(usuarioRevendedorFields, operation, {});

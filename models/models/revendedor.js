@@ -9,7 +9,6 @@ var validation = require('./validation');
 var util = require('../../helpers/util');
 
 const PessoaFisica = Bookshelf.model('PessoaFisica');
-const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 const PessoaJuridica = Bookshelf.model('PessoaJuridica');
 const Conta = Bookshelf.model('Conta');
 
@@ -17,9 +16,8 @@ var Revendedor = Bookshelf.Model.extend({
   tableName: 'revendedor'
 }, {
   _cadastrar: function(revendedorFields, options) {
-    var optionsInsert = _.merge({ method: 'insert' }, options);
     var idPessoa = null;
-    var idRevendedor = null;
+    var revendedor = null;
     var senha = util.criptografa(revendedorFields.senha);
 
     return Revendedor
@@ -67,20 +65,26 @@ var Revendedor = Bookshelf.Model.extend({
         idPessoa = pf.id;
         return Revendedor._salvarRevenda(pf, options);
       })
-      .then(function(revenda) {
-        idRevendedor = revenda.id;
+      .then(function(r) {
+        revendedor = r;
+        const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
         return UsuarioRevendedor
           ._inserir({
+            nome: revendedorFields.nome,
+            cpf: revendedorFields.cpf,
+            data_nascimento: revendedorFields.data_nascimento,
             login: revendedorFields.login,
+            email: revendedorFields.email,
             senha: senha,
             acesso_confirmado: true,
             ativo: true,
             autorizacao: revendedorFields.autorizacao,
             termo_servico: true,
-            revendedor_id: idRevendedor,
+            revendedor_id: r.id,
             pessoa_fisica_id: idPessoa
           }, options);
-      });
+      })
+      .return(revendedor);
   },
   cadastrar: function(revendedor) {
     var Revendedor = this;
@@ -166,6 +170,7 @@ var Revendedor = Bookshelf.Model.extend({
       });
     }
 
+    const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
     return UsuarioRevendedor
       .procurarLogin(revenda.login)
       .then(function(usuariorevendedor) {
