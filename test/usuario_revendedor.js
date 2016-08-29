@@ -6,7 +6,7 @@ const Bookshelf = AreaAzul.db;
 var BusinessException = AreaAzul.BusinessException;
 
 var UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
-var UsuarioRevendedorCollection = Bookshelf.collection('UsuarioRevendedor');
+var UsuariosRevendedores = Bookshelf.collection('UsuariosRevendedores');
 var PessoaFisica = Bookshelf.model('PessoaFisica');
 
 var TestHelpers = require('../helpers/test');
@@ -81,7 +81,7 @@ describe('models.UsuarioRevendedor', function() {
     describe('listarUsuarioRevenda()', function() {
 
         it('lista usuario da revenda mantidos no banco de dados', function(done) {
-            UsuarioRevendedorCollection.listarUsuarioRevenda(idRevendedor,
+            UsuariosRevendedores.listarUsuarioRevenda(idRevendedor,
                 function() {
                     done();
                 },
