@@ -79,6 +79,6 @@ var Veiculos = Bookshelf.Collection.extend({
 
 
 });
-Bookshelf.model('Veiculos', Veiculos);
+Bookshelf.collection('Veiculos', Veiculos);
 
 module.exports = Veiculos;

@@ -5,6 +5,6 @@ const Revendedor = Bookshelf.model('Revendedor');
 var Revendedores = Bookshelf.Collection.extend({
   model: Revendedor
 });
-Bookshelf.model('Revendedores', Revendedores);
+Bookshelf.collection('Revendedores', Revendedores);
 
 module.exports = Revendedores;

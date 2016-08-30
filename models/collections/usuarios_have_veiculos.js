@@ -22,6 +22,6 @@ var UsuariosHaveVeiculos = Bookshelf.Collection.extend({
 }
 
 });
-Bookshelf.model('UsuariosHaveVeiculos', UsuariosHaveVeiculos);
+Bookshelf.collection('UsuariosHaveVeiculos', UsuariosHaveVeiculos);
 
 module.exports = UsuariosHaveVeiculos;

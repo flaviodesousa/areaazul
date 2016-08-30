@@ -5,6 +5,6 @@ const PessoaJuridica = Bookshelf.model('PessoaJuridica');
 var PessoasJuridicas = Bookshelf.Collection.extend({
   model: PessoaJuridica
 });
-Bookshelf.model('PessoasJuridicas', PessoasJuridicas);
+Bookshelf.collection('PessoasJuridicas', PessoasJuridicas);
 
 module.exports = PessoasJuridicas;

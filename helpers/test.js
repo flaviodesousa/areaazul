@@ -21,7 +21,7 @@ const Revendedor = Bookshelf.model('Revendedor');
 const Ativacao = Bookshelf.model('Ativacao');
 const Ativacoes = Bookshelf.collection('Ativacoes');
 const Veiculo = Bookshelf.model('Veiculo');
-const UsuarioHasVeiculos = Bookshelf.collection('UsuarioHasVeiculos');
+const UsuariosHaveVeiculos = Bookshelf.collection('UsuariosHaveVeiculos');
 const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 const Cidade = Bookshelf.model('Cidade');
 
@@ -55,7 +55,7 @@ function _apagarPessoaJuridica(id) {
 }
 
 function _apagarVeiculo(idVeiculo) {
-  return new UsuarioHasVeiculos()
+  return new UsuariosHaveVeiculos()
     .query()
     .where({ veiculo_id: idVeiculo })
     .delete()

@@ -18,6 +18,6 @@ var UsuariosFiscais = Bookshelf.Collection.extend({
     });
   }
 });
-Bookshelf.model('UsuariosFiscais', UsuariosFiscais);
+Bookshelf.collection('UsuariosFiscais', UsuariosFiscais);
 
 module.exports = UsuariosFiscais;

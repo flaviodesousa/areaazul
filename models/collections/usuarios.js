@@ -29,6 +29,6 @@ var Usuarios = Bookshelf.Collection.extend({
   }
 
 });
-Bookshelf.model('Usuarios', Usuarios);
+Bookshelf.collection('Usuarios', Usuarios);
 
 module.export = Usuarios;

@@ -23,6 +23,6 @@ var UsuariosRevendedores = Bookshelf.Collection.extend({
     .fetch();
   },
 });
-Bookshelf.model('UsuariosRevendedores', UsuariosRevendedores);
+Bookshelf.collection('UsuariosRevendedores', UsuariosRevendedores);
 
 module.exports = UsuariosRevendedores;
