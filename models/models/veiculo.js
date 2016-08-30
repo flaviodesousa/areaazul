@@ -8,23 +8,25 @@ const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 var util = require('../../helpers/util');
 
-const UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
-
 var Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',
+  cidade: function () {
+    return this.belongsTo('Cidade', 'cidade_id');
+  },
   usuarios: function() {
     return this.belongsToMany('Usuario')
         .through('UsuarioHasVeiculo');
   },
 }, {
 
-  _cadastrar: function(vehicle, options) {
-    var optionsInsert = _.merge({ method: 'insert', }, options || {});
+  _cadastrar: function(veiculoFields, options) {
+    var veiculo = null;
+    var optionsInsert = _.merge({ method: 'insert' }, options || {});
 
-    var placaSemMascara = util.placaSemMascara(vehicle.placa);
+    var placaSemMascara = util.placaSemMascara(veiculoFields.placa);
 
     return Veiculo
-      .validarVeiculo(vehicle)
+      .validarVeiculo(veiculoFields)
       .then(function(messages) {
         if (messages && messages.length) {
           throw new AreaAzul
@@ -37,27 +39,27 @@ var Veiculo = Bookshelf.Model.extend({
       .then(function() {
         return Veiculo
           .forge({
-            cidade_id: vehicle.cidade_id,
+            cidade_id: veiculoFields.cidade_id,
             placa: placaSemMascara,
-            marca: vehicle.marca,
-            modelo: vehicle.modelo,
-            cor: vehicle.cor,
-            ano_fabricado: vehicle.ano_fabricado,
-            ano_modelo: vehicle.ano_modelo,
-            ativo: true,
+            marca: veiculoFields.marca,
+            modelo: veiculoFields.modelo,
+            cor: veiculoFields.cor,
+            ano_fabricado: veiculoFields.ano_fabricado,
+            ano_modelo: veiculoFields.ano_modelo,
+            ativo: true
           })
-          .save(null, optionsInsert)
-          .then(function(veiculo) {
-            return veiculo;
-          });
+          .save(null, optionsInsert);
       })
-      .then(function(veiculo) {
-        if (vehicle.pessoa_fisica_id) {
+      .then(function(v) {
+        veiculo = v;
+        if (veiculoFields.usuario_id) {
+          const UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
           return UsuarioHasVeiculo
             ._salvar({
-              pessoa_fisica_id: vehicle.pessoa_fisica_id,
-              veiculo_id: veiculo.id,
-            }, options);
+              usuario_id: veiculoFields.usuario_id,
+              veiculo_id: veiculo.id
+            }, optionsInsert)
+            .return(veiculo);
         }
         return veiculo;
       });
@@ -95,17 +97,8 @@ var Veiculo = Bookshelf.Model.extend({
     if (placa) {
       placaSemMascara = util.placaSemMascara(placa);
     }
-    return Veiculo
-      .forge()
-      .query(function(qb) {
-        qb.where('veiculo.placa', placaSemMascara);
-        qb.join('cidade', 'veiculo.cidade_id', 'cidade.id');
-        qb.join('estado', 'cidade.estado_id', 'estado.id');
-        qb.select('veiculo.*');
-        qb.select('cidade.*');
-        qb.select('estado.*');
-      })
-      .fetch();
+    return new Veiculo({ placa: placaSemMascara })
+      .fetch({ withRelated: [ 'cidade', 'cidade.estado' ]});
   },
 
   validarVeiculo: function(veiculo) {
@@ -162,4 +155,5 @@ var Veiculo = Bookshelf.Model.extend({
   },
 });
 Bookshelf.model('Veiculo', Veiculo);
+
 module.exports = Veiculo;

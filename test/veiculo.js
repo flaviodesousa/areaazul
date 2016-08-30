@@ -42,13 +42,16 @@ describe('model.veiculo', function() {
       .then(function(usuario) {
         debug('Usando usuario ' + usuario.id);
         idUsuarioComum = usuario.id;
+      })
+      .then(function() {
+        return apagarDadosDeTeste(placaTeste);
       });
   });
 
   describe('cadastrar()', function() {
     it('grava veiculo', function(done) {
       var novoVeiculo = {
-        pessoa_fisica_id: idUsuarioComum,
+        usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: placaTeste,
         marca: marcaTeste,
@@ -64,6 +67,7 @@ describe('model.veiculo', function() {
         return done();
       })
       .catch(function(e) {
+        debug('erro inesperado', e);
         done(e);
       });
     });
@@ -74,9 +78,12 @@ describe('model.veiculo', function() {
     it('retorna um veiculo', function(done) {
       Veiculo.procurarVeiculo(placaTeste)
       .then(function(veiculo) {
+        should.exist(veiculo);
+        veiculo.get('placa').should.equal(placaTeste);
         done();
       })
       .catch(function(e) {
+        debug('erro inesperado', e);
         done(e);
       });
     });
@@ -85,11 +92,9 @@ describe('model.veiculo', function() {
     describe('desativar()', function() {
         it('falha para veiculo inexistente', function(done) {
             Veiculo
-                .desativar({
-                     id: 0
-                })
+                .desativar(0)
                 .then(function() {
-                    done();
+                    done(new Error('Não deveria desativar veículo inexistente'));
                 })
                 .catch(function(e) {
                     should.exist(e);
@@ -99,14 +104,13 @@ describe('model.veiculo', function() {
 
         it('desativa veiculo existente', function(done) {
             Veiculo
-                .desativar({
-                   id_veiculo : idVeiculo
-                })
+                .desativar(idVeiculo)
                 .then(function() {
                     done();
                 })
                 .catch(function(e) {
-                    done(e);
+                  debug('erro inesperado', e);
+                  done(e);
                 });
         });
     });
@@ -120,6 +124,7 @@ describe('listar()', function() {
           done();
         },
         function(err) {
+          debug('erro inesperado', err);
           done(err);
         });
     });
@@ -131,6 +136,7 @@ describe('listar()', function() {
         done();
       })
       .catch(function(e) {
+        debug('erro inesperado', e);
         done(e);
       });
   });
