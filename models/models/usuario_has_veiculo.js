@@ -25,21 +25,21 @@ var UsuarioHasVeiculo =  Bookshelf.Model.extend({
 
 	_salvar: function(usuario_has_veiculo, options){
 
-		var optionsInsert = _.merge({}, options || {}, {method: 'insert'}),
-        	optionsUpdate = _.merge({}, options || {}, {method: 'update'}, {patch: true });
+		var
+      optionsInsert = _.merge({ method: 'insert' }, options || {}),
+      optionsUpdate = _.merge({ method: 'update', patch: true }, options || {});
 
-		return UsuarioHasVeiculo
-		.forge({
+		return new UsuarioHasVeiculo({
       usuario_id: usuario_has_veiculo.usuario_id,
-      veiculo_id: usuario_has_veiculo.veiculo_id,
+      veiculo_id: usuario_has_veiculo.veiculo_id
 		})
-		.fetch()
+		.fetch(options)
 		.then(function(usuariohasveiculo) {
 		  if (!usuariohasveiculo) {
         return new UsuarioHasVeiculo({
             usuario_id: usuario_has_veiculo.usuario_id,
             veiculo_id: usuario_has_veiculo.veiculo_id,
-            ultima_ativacao: new Date(),
+            ultima_ativacao: new Date()
           })
           .save(null, optionsInsert);
        }

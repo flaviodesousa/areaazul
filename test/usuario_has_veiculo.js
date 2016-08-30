@@ -32,11 +32,15 @@ describe('model.usuario_has_veiculo', function() {
     it('insere usuario has veiculo', function(done) {
       UsuarioHasVeiculo
         .cadastrar({
-          pessoa_fisica_id: idUsuarioComum,
+          usuario_id: idUsuarioComum,
           veiculo_id: idVeiculo,
-          ultima_ativacao: new Date(),
+          ultima_ativacao: new Date()
         })
         .then(function(uv) {
+          should.exist(uv);
+          should.exist(uv.id);
+          uv.get('usuario_id').should.equal(idUsuarioComum);
+          uv.get('veiculo_id').should.equal(idVeiculo);
           done();
         })
         .catch(function(err) {
