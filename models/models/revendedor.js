@@ -17,7 +17,6 @@ var Revendedor = Bookshelf.Model.extend({
 }, {
   _cadastrar: function(revendedorFields, options) {
     var idPessoa = null;
-    var revendedor = null;
     var senha = util.criptografa(revendedorFields.senha);
 
     return Revendedor
@@ -65,8 +64,7 @@ var Revendedor = Bookshelf.Model.extend({
         idPessoa = pf.id;
         return Revendedor._salvarRevenda(pf, options);
       })
-      .then(function(r) {
-        revendedor = r;
+      .then(function(revendedor) {
         const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
         return UsuarioRevendedor
           ._inserir({
@@ -80,11 +78,11 @@ var Revendedor = Bookshelf.Model.extend({
             ativo: true,
             autorizacao: revendedorFields.autorizacao,
             termo_servico: true,
-            revendedor_id: r.id,
+            revendedor_id: revendedor.id,
             pessoa_fisica_id: idPessoa
-          }, options);
-      })
-      .return(revendedor);
+          }, options)
+          .return(revendedor);
+      });
   },
   cadastrar: function(revendedor) {
     var Revendedor = this;
