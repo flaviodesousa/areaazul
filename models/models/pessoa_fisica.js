@@ -40,7 +40,7 @@ var PessoaFisica = Bookshelf.Model.extend({
       .then(function(p) {
         if (!p) {
           throw new AreaAzul.BusinessException(
-            'PessoaFisica sem Pessoa equivalente', {
+            'PessoaFisica sem Pessoa equivalente (sem FK?)', {
               fields: pessoaFisicaFields,
               pessoaFisica: pessoaFisicaRecord,
               options: options

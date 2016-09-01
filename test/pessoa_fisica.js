@@ -4,8 +4,8 @@ var should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
-var Pessoa = Bookshelf.model('Pessoa');
-var PessoaFisica = Bookshelf.model('PessoaFisica');
+const Pessoa = Bookshelf.model('Pessoa');
+const PessoaFisica = Bookshelf.model('PessoaFisica');
 
 describe('models.PessoaFisica', function () {
   var cpfTeste = 'teste-pf';
@@ -52,9 +52,8 @@ describe('models.PessoaFisica', function () {
       })
         .then(function (pf) {
           should.exist(pf);
-          should.exist(pf.attributes);
-          should.exist(pf.attributes.cpf);
-          pf.attributes.cpf.should.be.equal(cpfTeste);
+          should.exist(pf.id);
+          pf.get('cpf').should.equal(cpfTeste);
           done();
         })
         .catch(function (e) {
@@ -64,9 +63,26 @@ describe('models.PessoaFisica', function () {
 
   });
   describe('buscarPorCPF()', function () {
-    it.skip('funciona!', function (done) {
+    it('retorna null se cpf não existir', function (done) {
+      var cpfInvalido = cpfTeste + '0';
+      PessoaFisica.buscarPorCPF(cpfInvalido)
+        .then(function(pf) {
+          if (pf) {
+            done(new Error(
+              'Não deveria ter encontrado cpf inválido: ' + cpfInvalido));
+          }
+          done();
+        })
+        .catch(function (err) {
+          done(err);
+        });
+    });
+    it('funciona!', function (done) {
       PessoaFisica.buscarPorCPF(cpfTeste)
-        .then(function () {
+        .then(function (pf) {
+          should.exist(pf);
+          should.exist(pf.id);
+          pf.get('cpf').should.equal(cpfTeste);
           done();
         })
         .catch(function (err) {
