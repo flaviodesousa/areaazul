@@ -54,7 +54,7 @@ describe('model.revendedor', function() {
           done();
         })
         .catch(function(e) {
-          debug(e);
+          debug('erro inesperado', e);
           done(e);
         });
     });
@@ -78,7 +78,7 @@ describe('model.revendedor', function() {
           done();
         })
         .catch(function(e) {
-          debug(e);
+          debug('erro inesperado', e);
           done(e);
         });
     });
@@ -103,7 +103,7 @@ describe('model.revendedor', function() {
           done();
         })
         .catch(function(e) {
-          debug(e);
+          debug('erro inesperado', e);
           done(e);
         });
     });
@@ -128,7 +128,7 @@ describe('model.revendedor', function() {
           done();
         })
         .catch(function(e) {
-          debug(e);
+          debug('erro inesperado', e);
           done(e);
         });
     });
@@ -136,7 +136,7 @@ describe('model.revendedor', function() {
 
   describe('buscarRevendedor()', function() {
     it('retorna um revendedor', function(done) {
-      Revendedor.buscarRevendedor({ id: revendedorId },
+      Revendedor.buscarRevendedor({ pessoa_fisica_id: revendedorId },
         function() {
           done();
         },
