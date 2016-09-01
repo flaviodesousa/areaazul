@@ -1,5 +1,6 @@
 const Promise = require('bluebird');
-var validator = require('validator');
+const validator = require('validator');
+const _ = require('lodash');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
@@ -36,7 +37,7 @@ var Pessoa = Bookshelf.Model.extend({
     if (camposPessoa.telefone) {
       const telefoneNumeros = validator.whitelist(
         camposPessoa.telefone, '0123456789');
-      if (length(telefoneNumeros) < 10) {
+      if (telefoneNumeros.length < 10) {
         message.push({
           attribute: 'telefone',
           problem: 'Telefone inválido! Inclua o código de área.'
@@ -47,10 +48,10 @@ var Pessoa = Bookshelf.Model.extend({
     return Promise.resolve(message);
   },
   _cadastrar: function(camposPessoa, options) {
-    const optionsInsert = _.merge({ method: 'insert '}, options);
+    const optionsInsert = _.merge({ method: 'insert'}, options);
     const Pessoa = this;
     return Pessoa
-      .camposValidos(camposPessoa, options)
+      ._camposValidos(camposPessoa, options)
       .then(function(messages) {
         if (messages.length) {
           throw new AreaAzul

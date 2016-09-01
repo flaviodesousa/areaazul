@@ -2,6 +2,8 @@
 
 const debug = require('debug')('areaazul:models:pessoa_fisica');
 const _ = require('lodash');
+const validator = require('validator');
+var validation = require('./validation');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
@@ -12,22 +14,78 @@ var Pessoa = Bookshelf.model('Pessoa');
 var PessoaFisica = Bookshelf.Model.extend({
   tableName: 'pessoa_fisica'
 }, {
-  _validar: function(pessoaFisicaFields, options) {
+  _camposValidos: function(pessoaFisicaFields, options) {
+    var messages = [];
 
-  },
-  __cadastrarNova: function(pessoaFisica, options) {
-    var optionsInsert = _.merge({ method: 'insert' }, options || {});
+    if (!pessoaFisicaFields.cpf) {
+      messages.push({
+        attribute: 'cpf',
+        problem: 'CPF é obrigatório!'
+      });
+    } else if (!validation.isCPF(pessoaFisicaFields.cpf)) {
+      messages.push({
+        attribute: 'cpf',
+        problem: 'CPF inválido!'
+      });
+    }
+
+    if (pessoaFisicaFields.data_nascimento) {
+      if (!util.dataValida(pessoaFisicaFields.data_nascimento)) {
+        messages.push({
+          attribute: 'data_nascimento',
+          problem: 'Data inválida!'
+        })
+      }
+    }
+
     return Pessoa
-      .forge({
-        nome: pessoaFisica.nome,
-        email: pessoaFisica.email,
-        telefone: pessoaFisica.telefone
+      ._camposValidos(pessoaFisicaFields, options)
+      .then(function(messagesPessoa) {
+        messages = _.concat(messages, messagesPessoa);
+        return messages;
       })
-      .save(null, optionsInsert)
+  },
+  _camposValidosInclusao: function (pessoaFisicaFields, options) {
+    var messages = [];
+    return this
+      ._camposValidos(pessoaFisicaFields, options)
+      .then(function(messagesPessoa) {
+        messages = _.concat(messages, messagesPessoa);
+        return PessoaFisica
+          .buscarPorCPF(pessoaFisicaFields.cpf)
+          .then(function(pf) {
+            if (pf) {
+              messages.push({
+                attribute: 'cpf',
+                problem: 'CPF já cadastrado!'
+              })
+            }
+            return messages;
+          });
+      })
+  },
+  __cadastrarNova: function(camposPessoaFisica, options) {
+    var optionsInsert = _.merge({ method: 'insert' }, options || {});
+    return PessoaFisica
+      ._camposValidosInclusao(camposPessoaFisica, options)
+      .then(function(messages) {
+        if (messages.length) {
+          throw new AreaAzul
+            .BusinessException(
+            'Não foi possível cadastrar nova Pessoa. Dados inválidos',
+            messages);
+        }
+        return messages;
+      })
+      .then(function() {
+        return Pessoa
+          ._cadastrar(camposPessoaFisica, options);
+      })
       .then(function(pessoa) {
         return new PessoaFisica({
-            cpf: pessoaFisica.cpf,
-            data_nascimento: util.dataValida(pessoaFisica.data_nascimento),
+            cpf: camposPessoaFisica.cpf,
+            data_nascimento: util.dataValida(
+              camposPessoaFisica.data_nascimento),
             id: pessoa.id
           })
           .save(null, optionsInsert);
@@ -112,9 +170,14 @@ var PessoaFisica = Bookshelf.Model.extend({
           });
       });
   },
-  buscarPorCPF: function(cpf) {
+  _buscarPorCPF: function(cpf, options) {
     return new this({ cpf: cpf })
-      .fetch();
+      .fetch(options);
+  },
+  buscarPorCPF: function(cpf) {
+    return Bookshelf.transaction(function(t) {
+      return PessoaFisica._buscarPorCPF(cpf, { transacting: t });
+    });
   }
 });
 Bookshelf.model('PessoaFisica', PessoaFisica);
