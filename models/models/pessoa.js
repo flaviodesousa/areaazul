@@ -1,12 +1,75 @@
+const Promise = require('bluebird');
+var validator = require('validator');
+
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
-var validator = require('validator');
+
 var util = require('../../helpers/util');
+
 const RecuperacaoSenha = Bookshelf.model('RecuperacaoSenha');
 
 var Pessoa = Bookshelf.Model.extend({
   tableName: 'pessoa'
 }, {
+  _camposValidos: function (camposPessoa, options) {
+    var message = [];
+
+    if (!camposPessoa.nome) {
+      message.push({
+        attribute: 'nome',
+        problem: 'Nome obrigatório!'
+      });
+    }
+
+    if (!camposPessoa.email) {
+      message.push({
+        attribute: 'email',
+        problem: 'Email obrigatório!'
+      });
+    } else if (!validator.isEmail(camposPessoa.email)) {
+      message.push({
+        attribute: 'email',
+        problem: 'Email inválido!'
+      });
+    }
+
+    if (camposPessoa.telefone) {
+      const telefoneNumeros = validator.whitelist(
+        camposPessoa.telefone, '0123456789');
+      if (length(telefoneNumeros) < 10) {
+        message.push({
+          attribute: 'telefone',
+          problem: 'Telefone inválido! Inclua o código de área.'
+        });
+      }
+    }
+
+    return Promise.resolve(message);
+  },
+  _cadastrar: function(camposPessoa, options) {
+    const optionsInsert = _.merge({ method: 'insert '}, options);
+    const Pessoa = this;
+    return Pessoa
+      .camposValidos(camposPessoa, options)
+      .then(function(messages) {
+        if (messages.length) {
+          throw new AreaAzul
+            .BusinessException(
+            'Não foi possível cadastrar nova Pessoa. Dados inválidos',
+            messages);
+        }
+        return messages;
+      })
+      .then(function() {
+        return new Pessoa({
+          nome: camposPessoa.nome,
+          email: camposPessoa.email,
+          telefone: camposPessoa.telefone,
+          observacao: camposPessoa.observacao
+        })
+          .save(null, optionsInsert);
+      })
+  },
   verificaEmail: function(pessoaAVerificar, then, fail) {
     var _uuid = util.geradorUUIDAleatorio();
     Pessoa.forge({email: pessoaAVerificar.email})
@@ -21,7 +84,7 @@ var Pessoa = Bookshelf.Model.extend({
                 pessoaAVerificar.email, pessoa.get('nome'), _uuid);
               then(pessoa);
             },
-            function(result) {
+            function() {
               throw new Error('Erro !!!');
             });
 

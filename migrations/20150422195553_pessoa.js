@@ -7,7 +7,6 @@ exports.up = function(knex) {
     table.string('email').notNullable();
     table.string('telefone');
     table.string('observacao');
-    table.boolean('ativo').notNullable().defaultTo(true);
   });
 };
 

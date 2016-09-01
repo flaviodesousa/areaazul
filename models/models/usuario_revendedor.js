@@ -340,13 +340,6 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       });
     }
 
-    if (!userReseller.login) {
-      message.push({
-        attribute: 'login',
-        problem: 'Login obrigatório!'
-      });
-    }
-
     if (!userReseller.email) {
       message.push({
         attribute: 'email',
@@ -356,6 +349,13 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       message.push({
         attribute: 'email',
         problem: 'Email inválido!'
+      });
+    }
+
+    if (!userReseller.login) {
+      message.push({
+        attribute: 'login',
+        problem: 'Login obrigatório!'
       });
     }
 
