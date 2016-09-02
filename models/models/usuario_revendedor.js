@@ -276,17 +276,17 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       });
     }
 
-    if (user.senha.length < 4) {
+    if (user.senha.length < 8) {
       message.push({
         attribute: 'senha',
-        problem: 'A senha deve conter no minimo 4 caracteres!'
+        problem: 'A senha deve conter no minimo 8 caracteres!'
       });
     }
 
-    if (user.conf_senha.length < 4) {
+    if (user.conf_senha.length < 8) {
       message.push({
         attribute: 'nova_senha',
-        problem: 'A nova senha deve conter no minimo 4 caracteres!'
+        problem: 'A nova senha deve conter no minimo 8 caracteres!'
       });
     }
     if (user.conf_senha !== user.senha) {
