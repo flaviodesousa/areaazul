@@ -139,11 +139,7 @@ var PessoaFisica = Bookshelf.Model.extend({
     });
   },
   alterar: function(pf, id, options) {
-    var optionsUpdate = _.merge({}, options, {
-      method: 'update'
-    }, {
-      patch: true
-    });
+    var optionsUpdate = _.merge({ method: 'update', patch: true }, options);
 
     return new Pessoa({ id: id })
       .fetch(options)
@@ -158,13 +154,12 @@ var PessoaFisica = Bookshelf.Model.extend({
       .then(function(pessoa) {
         return PessoaFisica
           .forge({ id: pessoa.id })
-          .fetch()
+          .fetch(options)
           .then(function(pessoaFisica) {
             return pessoaFisica
               .save({
                 cpf: pf.cpf,
                 data_nascimento: pf.data_nascimento,
-                ativo: true,
                 id: pessoa.id
               }, optionsUpdate);
           });
