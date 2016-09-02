@@ -56,14 +56,6 @@ var Revendedor = Bookshelf.Model.extend({
         idPessoa = pessoa.id;
         return Revendedor._salvarRevenda(pessoa, options);
       })
-      .then(function() {
-        return PessoaFisica
-          ._cadastrar(revendedorFields, options);
-      })
-      .then(function(pf) {
-        idPessoa = pf.id;
-        return Revendedor._salvarRevenda(pf, options);
-      })
       .then(function(revendedor) {
         const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
         return UsuarioRevendedor
@@ -103,55 +95,15 @@ var Revendedor = Bookshelf.Model.extend({
             var optionsInsert = _.merge({ method: 'insert' }, options || {});
 
             return new Revendedor({
-              ativo: true, id: pessoa.id, conta_id: conta.id
+              id: pessoa.id, conta_id: conta.id
             })
               .save(null, optionsInsert);
           });
       })
   },
 
-  validarRevenda: function(revenda) {
+  validarRevenda: function(revenda, options) {
     var message = [];
-
-    if (!revenda.nome) {
-      message.push({
-        attribute: 'nome',
-        problem: 'Nome obrigatório!'
-      });
-    }
-
-    if (!revenda.email) {
-      message.push({
-        attribute: 'email',
-        problem: 'Email obrigatório!'
-      });
-    } else if (!validator.isEmail(revenda.email)) {
-      message.push({
-        attribute: 'email',
-        problem: 'Email inválido!'
-      });
-    }
-
-    if (!revenda.cpf) {
-      message.push({
-        attribute: 'cpf',
-        problem: 'CPF é obrigatório!'
-      });
-    } else if (!validation.isCPF(revenda.cpf)) {
-      message.push({
-        attribute: 'cpf',
-        problem: 'CPF inválido!'
-      });
-    }
-
-    if (revenda.data_nascimento) {
-      if (!util.dataValida(revenda.data_nascimento)) {
-        message.push({
-          attribute: 'data_nascimento',
-          problem: 'Data inválida!'
-        })
-      }
-    }
 
     if (!revenda.login) {
       message.push({
@@ -168,9 +120,14 @@ var Revendedor = Bookshelf.Model.extend({
       });
     }
 
-    const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
-    return UsuarioRevendedor
-      .procurarLogin(revenda.login)
+    return PessoaFisica
+      ._camposValidos(revenda, options)
+      .then(function(messagesPessoaFisica) {
+        message.concat(messagesPessoaFisica);
+        const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
+        return UsuarioRevendedor
+          ._procurarLogin(revenda.login, options);
+      })
       .then(function(usuariorevendedor) {
         if (usuariorevendedor) {
           message.push({
@@ -181,34 +138,18 @@ var Revendedor = Bookshelf.Model.extend({
 
         return message;
       })
-      .then(function(message) {
+      .then(function() {
         if (!revenda.cnpj) {
           return message;
         }
 
-        if (!revenda.nome_fantasia) {
-          message.push({
-            attribute: 'nome_fantasia',
-            problem: 'Nome fantasia obrigatório!'
-          });
-        }
-
-        if (!revenda.razao_social) {
-          message.push({
-            attribute: 'razao_social',
-            problem: 'Razao social obrigatório!'
-          });
-        }
-
-        if (validation.isCNPJ(revenda.cnpj) === false) {
-          message.push({
-            attribute: 'cnpj',
-            problem: 'Cnpj inválido!'
-          });
-        }
-
         return PessoaJuridica
-          .procurarCNPJ(revenda.cnpj)
+          ._camposValidos(revenda, options)
+          .then(function(messagesPessoaJuridica) {
+            message.concat(messagesPessoaJuridica);
+            return PessoaJuridica
+              ._buscarPorCNPJ(revenda.cnpj, options);
+          })
           .then(function(pessoajuridica) {
             if (pessoajuridica) {
               message.push({
@@ -222,8 +163,8 @@ var Revendedor = Bookshelf.Model.extend({
       });
   },
 
-  buscarRevendedor: function(user, then, fail) {
-    Revendedor
+  buscarRevendedor: function(user) {
+    return Revendedor
       .forge()
       .query(function(qb) {
         qb.join('pessoa', 'pessoa.id', 'revendedor.id')
@@ -234,12 +175,7 @@ var Revendedor = Bookshelf.Model.extend({
           .select('revendedor.*', 'usuario_revendedor.*', 'pessoa.*',
             'conta.*');
       })
-      .fetch()
-      .then(function(model) {
-        then(model);
-      }).catch(function(err) {
-        fail(err);
-      });
+      .fetch();
   }
 });
 Bookshelf.model('Revendedor', Revendedor);

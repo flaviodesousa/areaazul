@@ -72,14 +72,14 @@ function _apagarVeiculo(idVeiculo) {
 }
 
 function _apagarRevendedor(idRevenda) {
-  var revenda = null;
+  var idConta = null;
   return new Revendedor({ id: idRevenda })
     .fetch()
     .then(function(r) {
-      revenda = r;
       if (!r) {
         return null;
       }
+      idConta = r.get('conta_id');
       return new UsuarioRevendedor()
         .query()
         .where({ revendedor_id: idRevenda })
@@ -89,29 +89,22 @@ function _apagarRevendedor(idRevenda) {
             .destroy();
         })
         .then(function() {
-          return _apagarConta(revenda.get('conta_id'));
+          return _apagarConta(idConta);
         })
-    })
-    .return(revenda);
+    });
 }
 
 function _apagarRevendedorJuridica(idRevendedor) {
   return _apagarRevendedor(idRevendedor)
-    .then(function(r) {
-      if (!r) {
-        return r;
-      }
-      return _apagarPessoaJuridica(r.id);
+    .then(function() {
+      return _apagarPessoaJuridica(idRevendedor);
     });
 }
 
 function _apagarRevendedorFisica(idRevendedor) {
   return _apagarRevendedor(idRevendedor)
-    .then(function(r) {
-      if (!r) {
-        return r;
-      }
-      return _apagarPessoaFisica(r.id);
+    .then(function() {
+      return _apagarPessoaFisica(idRevendedor);
     });
 }
 

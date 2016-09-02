@@ -1,14 +1,14 @@
 'use strict';
 
-var debug = require('debug')('areaazul:test:revendedor');
-var should = require('chai').should();
+const debug = require('debug')('areaazul:test:revendedor');
+const should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
 
-var Revendedor = Bookshelf.model('Revendedor');
+const Revendedor = Bookshelf.model('Revendedor');
 
-var TestHelpers = require('../helpers/test');
+const TestHelpers = require('../helpers/test');
 
 describe('model.revendedor', function() {
 
@@ -16,7 +16,7 @@ describe('model.revendedor', function() {
   var cpfUsuarioRevendaPJ = '54800416493';
   var emailTeste = 'teste-revendedor@areaazul.org';
   var telefoneTeste = '000 0000-0000';
-  var dataNascimentoTeste = new Date(1981, 11, 13);
+  var dataNascimentoTeste = '13-11-1981';
   var cnpjRevendaPJ = '31604743000102';
   var razaoSocialTeste = 'razao-social-teste';
   var contatoTeste = 'contato-teste';
@@ -24,17 +24,24 @@ describe('model.revendedor', function() {
   var loginTestePJ = 'teste-revendedor-pj';
   var nomeFantasiaTeste = 'nome-fantasia-teste';
   var senhaTeste = 'senha-teste';
-  var revendedorId = null;
   var termoServico = true;
 
-  before(function() {
-    debug('before');
+  function apagarRevendedoresDeTeste() {
     return TestHelpers
       .apagarRevendedorPorCPF(cpfRevendaPF)
       .then(function() {
         debug('should have deleted cpf ' + cpfRevendaPF);
         return TestHelpers.apagarRevendedorPorCNPJ(cnpjRevendaPJ);
+      })
+      .catch(function(e) {
+        debug('erro inesperado', e);
+        throw e;
       });
+  }
+
+  before(function() {
+    debug('before');
+    return apagarRevendedoresDeTeste();
   });
 
   describe('validarRevenda()', function() {
@@ -135,16 +142,34 @@ describe('model.revendedor', function() {
   });
 
   describe('buscarRevendedor()', function() {
+    var idUsuarioRevenda = null;
+
+    before(function() {
+      const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
+      return UsuarioRevendedor
+        .procurarLogin(loginTestePJ)
+        .then(function(usuarioRevenda) {
+          idUsuarioRevenda = usuarioRevenda.get('pessoa_fisica_id');
+        })
+    });
+
     it('retorna um revendedor', function(done) {
-      Revendedor.buscarRevendedor({ pessoa_fisica_id: revendedorId },
-        function() {
+      Revendedor
+        .buscarRevendedor({ pessoa_fisica_id: idUsuarioRevenda })
+        .then(function(revenda) {
+          should.exist(revenda);
           done();
-        },
-        function(e) {
-          debug('Não encontrou Revendedor com id=' + revendedorId, e);
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
           done(e);
         });
     });
+  });
+
+  after(function() {
+    debug('after');
+    return apagarRevendedoresDeTeste();
   });
 
 });
