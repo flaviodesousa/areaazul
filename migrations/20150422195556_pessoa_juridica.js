@@ -9,7 +9,6 @@ exports.up = function(knex) {
     table.string('nome_fantasia').notNullable();
     table.string('razao_social').notNullable();
     table.string('contato').notNullable();
-    table.boolean('ativo').notNullable().defaultTo(true);
   });
 };
 

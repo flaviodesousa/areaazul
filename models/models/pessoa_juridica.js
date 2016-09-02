@@ -47,16 +47,12 @@ var PessoaJuridica = Bookshelf.Model.extend({
             nome_fantasia: camposPessoaJuridica.nome_fantasia,
             razao_social: camposPessoaJuridica.razao_social,
             contato: camposPessoaJuridica.telefone,
-            ativo: true,
             id: pessoa.id
           })
           .save(null, optionsInsert);
       });
   },
   cadastrar: function(camposPessoaJuridica) {
-
-    var PessoaJuridica = this;
-
     return Bookshelf.transaction(function(t) {
       return PessoaJuridica
         ._cadastrar(camposPessoaJuridica, { transacting: t });
