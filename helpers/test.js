@@ -145,9 +145,9 @@ exports.apagarPessoaFisicaPorCPF = function(cpf) {
 };
 
 function _apagarUsuario(usuario) {
-  return new UsuarioHasVeiculos()
+  return new UsuariosHaveVeiculos()
     .query()
-    .where({ usario_id: usuario.id })
+    .where({ usuario_id: usuario.id })
     .delete()
     .then(function() {
       return new Usuario({ id: usuario.id })
