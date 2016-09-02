@@ -25,7 +25,7 @@ describe('model.fiscalizacao', function() {
             login: fiscalLogin,
             nome: 'Fiscal Fiscalizacao Teste',
             email: fiscalLogin + '@areaazul.org',
-            cpf: fiscalLogin,
+            cpf: '58392095707',
           })
           .then(function(f) {
             fiscalId = f.id;
