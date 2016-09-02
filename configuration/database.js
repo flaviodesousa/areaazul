@@ -9,4 +9,4 @@ var Bookshelf = require('bookshelf')(knex);
 Bookshelf.plugin('registry');
 
 module.exports = Bookshelf;
-debug('bookshelf loaded', Bookshelf);
+debug('bookshelf loaded', Bookshelf.VERSION);
