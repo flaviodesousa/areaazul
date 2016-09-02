@@ -8,7 +8,6 @@ exports.up = function(knex) {
             .references('id').inTable('pessoa');
           table.integer('conta_id').notNullable()
             .references('id').inTable('conta');
-          table.boolean('ativo').notNullable().defaultTo(true);
         });
 };
 
