@@ -1,6 +1,8 @@
 'use strict';
 
-var _ = require('lodash');
+const _ = require('lodash');
+const Promise = require('bluebird');
+const validation = require('./validation');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 const Pessoa = Bookshelf.model('Pessoa');
@@ -8,46 +10,60 @@ const Pessoa = Bookshelf.model('Pessoa');
 var PessoaJuridica = Bookshelf.Model.extend({
   tableName: 'pessoa_juridica'
 }, {
-  _cadastrar: function(pj, options) {
+  _camposValidos: function(camposPessoaJuridica, options) {
+    var message = [];
+
+    if (!camposPessoaJuridica.nome_fantasia) {
+      message.push({
+        attribute: 'nome_fantasia',
+        problem: 'Nome fantasia obrigatório!'
+      });
+    }
+
+    if (!camposPessoaJuridica.razao_social) {
+      message.push({
+        attribute: 'razao_social',
+        problem: 'Razao social obrigatório!'
+      });
+    }
+
+    if (validation.isCNPJ(camposPessoaJuridica.cnpj) === false) {
+      message.push({
+        attribute: 'cnpj',
+        problem: 'Cnpj inválido!'
+      });
+    }
+
+    return Promise.resolve(message);
+  },
+  _cadastrar: function(camposPessoaJuridica, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options || {});
     return Pessoa
-      .forge({
-        nome: pj.nome,
-        email: pj.email,
-        telefone: pj.telefone,
-        ativo: true
-      })
-      .save(null, options)
+      ._cadastrar(camposPessoaJuridica, options)
       .then(function(pessoa) {
         return PessoaJuridica
           .forge({
-            cnpj: pj.cnpj,
-            nome_fantasia: pj.nome_fantasia,
-            razao_social: pj.razao_social,
-            contato: pj.telefone,
+            cnpj: camposPessoaJuridica.cnpj,
+            nome_fantasia: camposPessoaJuridica.nome_fantasia,
+            razao_social: camposPessoaJuridica.razao_social,
+            contato: camposPessoaJuridica.telefone,
             ativo: true,
             id: pessoa.id
           })
           .save(null, optionsInsert);
       });
   },
-  cadastrar: function(tax) {
+  cadastrar: function(camposPessoaJuridica) {
 
     var PessoaJuridica = this;
 
     return Bookshelf.transaction(function(t) {
       return PessoaJuridica
-        ._cadastrar(tax, {transacting: t})
-        .then(function(pj) {
-          return pj;
-        });
-    })
-      .then(function(pessoaJuridica) {
-        return pessoaJuridica;
-      });
+        ._cadastrar(camposPessoaJuridica, { transacting: t });
+    });
   },
-  procurarCNPJ: function(cnpj) {
-    return this.forge({ cnpj: cnpj }).fetch();
+  _buscarPorCNPJ: function(cnpj, options) {
+    return PessoaJuridica.forge({ cnpj: cnpj }).fetch(options);
   }
 });
 Bookshelf.model('PessoaJuridica', PessoaJuridica);
