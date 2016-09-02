@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('areaazul:test:pessoa_juridica');
 var should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
@@ -32,6 +33,7 @@ describe('models.PessoaJuridica', function() {
         return done();
       })
       .catch(function(e) {
+        debug('erro inesperado', e);
         done(e);
       });
   }
@@ -43,7 +45,7 @@ describe('models.PessoaJuridica', function() {
     it('funciona!', function(done) {
       PessoaJuridica.cadastrar({
         nome: 'nome-preexistente',
-        telefone: 'telefone-teste',
+        telefone: '00 0000 0000',
         email: 'email@teste.teste',
         cnpj: cnpjTeste,
         nome_fantasia: 'PJ preexistente',
@@ -59,6 +61,7 @@ describe('models.PessoaJuridica', function() {
         done();
       })
       .catch(function(e) {
+        debug('erro inesperado', e);
         done(e);
       });
     });
