@@ -301,9 +301,9 @@ var usuarioTeste = {
   senha: 'senhaTeste',
   nome: 'Nome Usuario',
   email: 'usuario-teste-unitario@areaazul.org',
-  telefone: '0',
+  telefone: '00 0000 0000',
   cpf: '69425782660',
-  data_nascimento: '01-04-1981',
+  data_nascimento: '01/04/1981',
   sexo: 'feminino'
 };
 
@@ -322,9 +322,9 @@ exports.pegarUsuario = function pegarUsuario() {
 var revendedorPessoaFisicaTeste = {
   nome: 'Nome Revendedor Pessoa Fisica',
   email: 'revendedor-teste-unitario@areaazul.org',
-  telefone: 'telefoneTeste',
+  telefone: '00 0000 0000',
   cpf: '21962139425',
-  data_nascimento: '31-03-1977',
+  data_nascimento: '31/03/1977',
   login: 'revendedorPessoaFisicaTeste',
   autorizacao: 'autorizacao teste',
   senha: 'senhaTeste',
@@ -360,7 +360,7 @@ var usuarioRevendedorTeste = {
   senha: 'senhaTeste',
   email: 'usuario-revenda-teste-unitario@areaazul.org',
   cpf: '03472262214',
-  data_nascimento: '28-02-1933',
+  data_nascimento: '28/02/1933',
   termo_servico: '1'
 };
 

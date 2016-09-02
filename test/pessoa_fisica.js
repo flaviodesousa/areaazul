@@ -49,7 +49,7 @@ describe('models.PessoaFisica', function () {
         email: 'preexistente@example.com',
         telefone: '0000000000',
         cpf: cpfTeste,
-        data_nascimento: new Date(1981, 11, 13),
+        data_nascimento: '13/11/1981',
         sexo: 'feminino'
       })
         .then(function (pf) {
