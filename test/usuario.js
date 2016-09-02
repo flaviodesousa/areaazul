@@ -47,7 +47,7 @@ describe('model.usuario', function() {
         senha: senhaDeTeste,
         nome: 'usuario teste unitario',
         email: 'teste-unitario@areaazul.org',
-        telefone: '0',
+        telefone: '00 0000 0000',
         cpf: '32807868193',
         data_nascimento: '11/04/1980',
         sexo: 'feminino'
