@@ -1,6 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
+const bcrypt = require('bcrypt-then');
 var validator = require('validator');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
