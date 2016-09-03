@@ -46,13 +46,12 @@ var Usuario = Bookshelf.Model.extend({
 
   autorizado: function(login, senha) {
     var usuario;
-    var hashSenha;
     return new Usuario({ login: login })
       .fetch()
       .then(function(u) {
         usuario = u;
         if (!usuario) {
-          err = new AreaAzul.BusinessException(
+          var err = new AreaAzul.BusinessException(
             'Usuario: login invalido', { login: login });
           err.authentication_event = true;
           log.warn(err.message, err.details);
@@ -62,7 +61,7 @@ var Usuario = Bookshelf.Model.extend({
       })
       .then(function(valid) {
         if (!valid) {
-          new AreaAzul.AuthenticationError(
+          throw new AreaAzul.AuthenticationError(
             'Usuario: senha incorreta', {
               login: login,
               usuario: usuario
@@ -117,7 +116,7 @@ var Usuario = Bookshelf.Model.extend({
         pessoaFisica = pf;
       })
       .then(function() {
-        return bcrypt.hash(camposUsuario.senha);
+        return bcrypt.hash(camposUsuario.nova_senha);
       })
       .then(function(hash) {
         hashSenha = hash;

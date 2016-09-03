@@ -102,12 +102,11 @@ describe('model.usuario', function() {
         camposUsuarioDeTeste.login,
         camposUsuarioDeTeste.nova_senha + '0')
         .then(function() {
-          done('Nao deve aceitar senha errada');
+          done(new Error('Nao deve aceitar senha errada'));
         })
         .catch(function(err) {
           should.exist(err);
-          should.exist(err.authentication_event);
-          err.authentication_event.should.equal(true);
+          err.should.be.an.instanceOf(AreaAzul.AuthenticationError);
           done();
         });
     });
@@ -117,12 +116,11 @@ describe('model.usuario', function() {
         camposUsuarioDeTeste.login + '0',
         camposUsuarioDeTeste.nova_senha)
         .then(function() {
-          done('Nao deve aceitar login errado');
+          done(new Error('Nao deve aceitar login errado'));
         })
         .catch(function(err) {
           should.exist(err);
-          should.exist(err.authentication_event);
-          err.authentication_event.should.equal(true);
+          err.should.be.an.instanceOf(AreaAzul.BusinessException);
           done();
         });
     });
