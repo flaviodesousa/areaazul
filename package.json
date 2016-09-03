@@ -8,7 +8,8 @@
   },
   "dependencies": {
     "areaazul-mailer": "git+ssh://git@bitbucket.org:solutions-inf-br/areaazul-mailer.git",
-    "bcrypt": "^0.8.3",
+    "bcrypt": "^0.8.7",
+    "bcrypt-then": "^1.1.0",
     "bluebird": "^3.3.4",
     "bookshelf": "^0.10.0",
     "debug": "^2.2.0",
