@@ -19,6 +19,7 @@ const Conta = Bookshelf.model('Conta');
 const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 const Revendedor = Bookshelf.model('Revendedor');
 const Ativacao = Bookshelf.model('Ativacao');
+const AtivacaoUsuario = Bookshelf.model('AtivacaoUsuario');
 const Ativacoes = Bookshelf.collection('Ativacoes');
 const Veiculo = Bookshelf.model('Veiculo');
 const UsuariosHaveVeiculos = Bookshelf.collection('UsuariosHaveVeiculos');
@@ -150,11 +151,17 @@ function _apagarUsuario(usuario) {
     .where({ usuario_id: usuario.id })
     .delete()
     .then(function() {
+      return AtivacaoUsuario
+        .query()
+        .where({ usuario_id: usuario.id })
+        .delete();
+    })
+    .then(function() {
       return new Usuario({ id: usuario.id })
         .destroy();
     })
     .then(function() {
-      return _apagarConta(usuario.conta_id);
+      return _apagarConta(usuario.get('conta_id'));
     })
     .then(function() {
       return _apagarPessoaFisica(usuario.id);
