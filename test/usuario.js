@@ -11,11 +11,21 @@ var Usuario = Bookshelf.model('Usuario');
 var TestHelpers = require('../helpers/test');
 
 describe('model.usuario', function() {
-  var loginDeTeste = 'login-teste-unitario';
-  var senhaDeTeste = 'senha-teste-unitario';
+  const camposUsuarioDeTeste = {
+    login: 'login-teste-unitario-usuario',
+    nova_senha: 'senha-teste-unitario-usuario',
+    conf_senha: 'senha-teste-unitario-usuario',
+    nome: 'Teste Unitário Usuário',
+    email: 'teste-unitario-usuario@areaazul.org',
+    telefone: '00 0000 0000',
+    cpf: '32807868193',
+    data_nascimento: '11/04/1980',
+    sexo: 'feminino'
+  };
+  var usuarioDeTeste = null;
 
   function apagarDadosDeTeste() {
-    return TestHelpers.apagarUsuarioPorLogin(loginDeTeste);
+    return TestHelpers.apagarUsuarioPorLogin(camposUsuarioDeTeste.login);
   }
 
   before(function(done) {
@@ -40,22 +50,28 @@ describe('model.usuario', function() {
       });
   });
 
+  describe('validade()', function() {
+    it('valida usuario', function(done) {
+      Usuario
+        ._camposValidos(camposUsuarioDeTeste, null, {})
+        .then(function(messages) {
+          should.exist(messages);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+
+  });
+
   describe('cadastrar()', function() {
     it('grava usuario', function(done) {
-      var usuario = {
-        login: loginDeTeste,
-        senha: senhaDeTeste,
-        nome: 'usuario teste unitario',
-        email: 'teste-unitario@areaazul.org',
-        telefone: '00 0000 0000',
-        cpf: '32807868193',
-        data_nascimento: '11/04/1980',
-        sexo: 'feminino'
-      };
-
       Usuario
-        .inserir(usuario)
-        .then(function() {
+        .inserir(camposUsuarioDeTeste)
+        .then(function(usuario) {
+          usuarioDeTeste = usuario;
           done();
         })
         .catch(function(e) {
@@ -68,10 +84,11 @@ describe('model.usuario', function() {
   describe('autorizado()', function() {
     it('aceita credenciais validas', function(done) {
       Usuario.autorizado(
-        loginDeTeste,
-        senhaDeTeste)
-        .then(function(usuarioFiscal) {
-          should.exist(usuarioFiscal);
+        camposUsuarioDeTeste.login,
+        camposUsuarioDeTeste.nova_senha)
+        .then(function(usuario) {
+          should.exist(usuario);
+          usuario.get('login').should.equal(camposUsuarioDeTeste.login);
           done();
         })
         .catch(function(e) {
@@ -82,8 +99,8 @@ describe('model.usuario', function() {
 
     it('recusa credencial invalida', function(done) {
       Usuario.autorizado(
-        loginDeTeste,
-        senhaDeTeste + '0')
+        camposUsuarioDeTeste.login,
+        camposUsuarioDeTeste.nova_senha + '0')
         .then(function() {
           done('Nao deve aceitar senha errada');
         })
@@ -97,8 +114,8 @@ describe('model.usuario', function() {
 
     it('recusa login invalido', function(done) {
       Usuario.autorizado(
-        loginDeTeste + '0',
-        senhaDeTeste)
+        camposUsuarioDeTeste.login + '0',
+        camposUsuarioDeTeste.nova_senha)
         .then(function() {
           done('Nao deve aceitar login errado');
         })
@@ -111,56 +128,25 @@ describe('model.usuario', function() {
     });
   });
 
-  describe('validade()', function() {
-    it.skip('valida usuario', function(done) {
-      var usuario = {
-        nome: 'teste',
-        email: 'sirline',
-        telefone: '06220000000',
-        cpf: '75075849172',
-        data_nascimento: '02/02/2002',
-        sexo: ''
+  describe('alterarSenha()', function(done) {
+    it('altera senha dos usuarios', function(done) {
+      if (!usuarioDeTeste) {
+        done(new Error('Sem usuário corrente'));
+      }
+      const usuarioTrocaSenha = {
+        id: usuarioDeTeste.id,
+        login: camposUsuarioDeTeste.login,
+        senha: camposUsuarioDeTeste.nova_senha,
+        nova_senha: camposUsuarioDeTeste.nova_senha + '0',
+        conf_senha: camposUsuarioDeTeste.nova_senha + '0'
       };
-
-      var messages = Usuario.validate(usuario);
-      should.exist(messages);
-      done();
-    });
-
-  });
-
-  describe('listar()', function() {
-    it.skip('retorna uma lista de usuarios', function(done) {
-      Usuario.listar(function(collection) {
-          collection.toJSON({shallow: true})
-            .should.be.an('Array')
-            .and.not.empty();
-          done();
-        },
-        function(err) {
-          done(err);
+      Usuario.alterarSenha(usuarioTrocaSenha)
+        .then(function() {
+          done()
+        })
+        .catch(function(e) {
+          done(e);
         });
-    });
-  });
-
-  describe('alterarSenha()', function() {
-    it.skip('altera senha dos usuarios', function(done) {
-      var usuario = {
-        login: loginDeTeste,
-        senha: '123454',
-        nova_senha: '123454',
-        conf_senha: '123454'
-      };
-
-      Usuario.alterarSenha(usuario,
-      function() {
-        done();
-      },
-      function(err) {
-        done(err);
-      });
-
-
     });
   });
 

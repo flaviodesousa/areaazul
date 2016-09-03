@@ -1,7 +1,7 @@
 'use strict';
 
 var _ = require('lodash');
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt-then');
 var validator = require('validator');
 
 const AreaAzul = require('../../areaazul');
@@ -72,37 +72,20 @@ var Usuario = Bookshelf.Model.extend({
       });
   },
 
-  inserir: function(entidade) {
-
-    return Bookshelf.transaction(function(t) {
-      var trx = { transacting: t };
-      var trxIns = _.merge({}, trx, { method: 'insert' });
-      return Usuario._inserir(entidade, trxIns, trx);
-    });
-  },
-
-  _salvarUsuario: function(entidade, options, t) {
-
+  _salvar: function(camposUsuario, usuario, options) {
+    const optionsInsert = _.merge({ method: 'insert' }, options);
+    const optionsUpdate = _.merge({ method: 'update' }, options);
     var Usuario = this;
-    var usuario = null;
     var login;
-    var senha;
     var pessoaFisica = null;
 
-    if (!entidade.senha) {
-      senha = util.criptografa(util.generate());
+    if (!camposUsuario.login) {
+      login = camposUsuario.cpf;
     } else {
-      senha = util.criptografa(entidade.senha);
-      entidade.senha = senha;
-    }
-
-    if (!entidade.login) {
-      login = entidade.cpf;
-    } else {
-      login = entidade.login;
+      login = camposUsuario.login;
     }
     return Usuario
-      .validate(entidade, options.method)
+      ._camposValidos(camposUsuario, usuario, options)
       .then(function(messages) {
         if (messages.length) {
           throw new AreaAzul
@@ -113,203 +96,157 @@ var Usuario = Bookshelf.Model.extend({
         return messages;
       })
       .then(function() {
-        entidade.data_nascimento = util.formataData(entidade.data_nascimento);
+        camposUsuario.data_nascimento = util.formataData(
+          camposUsuario.data_nascimento);
         return PessoaFisica
           .forge({
-            cpf: entidade.cpf
+            cpf: camposUsuario.cpf
           })
           .fetch()
           .then(function(pessoaFisica) {
             if (pessoaFisica !== null) {
-              return PessoaFisica.alterar(entidade, t, pessoaFisica.id);
+              return PessoaFisica.alterar(
+                camposUsuario, pessoaFisica.id, options);
             }
             return PessoaFisica
-              ._cadastrar(entidade, t);
+              ._cadastrar(camposUsuario, options);
           });
       })
       .then(function(pf) {
         pessoaFisica = pf;
       })
       .then(function() {
-        return Conta._cadastrar(null, options);
+        if (!usuario) {
+          return Conta._cadastrar(null, options);
+        }
+        return new Conta({ id: usuario.get('conta_id')})
+          .fetch(options);
       })
       .then(function(conta) {
         var dadosUsuario = {
           id: pessoaFisica.id,
           login: login,
-          senha: senha,
+          senha: util.criptografa(camposUsuario.nova_senha),
           primeiro_acesso: true,
           conta_id: conta.id,
           ativo: true
         };
 
-        if (options.method === 'insert') {
-          return Usuario
-            .forge(dadosUsuario)
-            .save(null, options);
+        if (!usuario) {
+          return new Usuario(dadosUsuario)
+            .save(null, optionsInsert);
         }
-        return Usuario
-          .forge()
-          .save(dadosUsuario, options);
+        return usuario
+          .save(dadosUsuario, optionsUpdate);
       })
       .then(function(u) {
-        usuario = u;
-        util.enviarEmailConfirmacao(entidade, login);
+        util.enviarEmailConfirmacao(camposUsuario, login);
         return u;
       });
   },
 
-  _inserir: function(entidade, options, t) {
-    return Usuario._salvarUsuario(entidade, options, t);
-  },
-
-  _alterar: function(entidade, options, t) {
-    return Usuario._salvarUsuario(entidade, options, t);
-  },
-
-  alterar: function(entidade) {
+  inserir: function(camposUsuario) {
     return Bookshelf.transaction(function(t) {
-      var trx = { transacting: t };
-      var trxUpd = _.merge({}, trx, { method: 'update' }, { patch: true });
-      return Usuario._alterar(entidade, trxUpd, trx);
+      return Usuario._salvar(camposUsuario, null, { transacting: t });
     });
   },
 
-  search: function(entidade, func) {
-    entidade.fetch().then(function(model, err) {
-      var retorno;
-      if (model !== null) {
-        retorno = model.attributes;
-      }
-      if (err) {
-        return func(null);
-      }
-      func(retorno);
+  alterar: function(camposUsuario, usuario) {
+    return Bookshelf.transaction(function(t) {
+      return Usuario._salvar(camposUsuario, usuario, { transacting: t });
     });
   },
 
-  alterarSenha: function(user, then, fail) {
-    new this({ id: user.id })
-      .fetch()
-      .then(function(model) {
-        var pwd;
-        if (model !== null) {
-          pwd = model.attributes.senha;
+  _alterarSenha: function(camposAlterarSenha, options) {
+    var usuario = null;
+    return new Usuario({ id: camposAlterarSenha.id })
+      .fetch(options)
+      .then(function(u) {
+        usuario = u;
+        if (!usuario) {
+          throw new AreaAzul
+            .BusinessException(
+            'Usuario "' + camposAlterarSenha.id + '" não reconhecido',
+            camposAlterarSenha);
         }
-        var hash = bcrypt.compareSync(user.senha, pwd);
-        if (hash !== false) {
-          var novaSenha = util.criptografa(user.nova_senha);
-
-          model.save({
-            primeiro_acesso: 'false',
-            senha: novaSenha,
-            ativo: 'true'
-          }).then(function(model) {
-            util.log('Alterado com sucesso!');
-            then(model);
-          }).catch(function(err) {
-            util.log('Houve erro ao alterar');
-            util.log('Model: ' + model.attributes);
-            fail(model.attributes);
-            fail(err);
-          });
-        } else {
-          fail();
-        }
+        return Usuario
+          ._senhaValida(camposAlterarSenha, usuario);
       })
-      .catch(function(err) {
-        fail(err);
+      .then(function(messages) {
+        if (messages.length) {
+          throw new AreaAzul
+            .BusinessException(
+            'Nao foi possivel cadastrar novo Usuario. Dados invalidos',
+            messages);
+        }
+        var pwd = usuario.get('senha');
+        return bcrypt.compare(camposAlterarSenha.senha, pwd);
+      })
+      .then(function(valid) {
+        if (!valid) {
+          throw new AreaAzul.AuthenticationError(
+            'Senha atual incorreta. Senha não alterada',
+            {});
+        }
+        return bcrypt.hash(camposAlterarSenha.nova_senha)
+      })
+      .then(function(hashNovaSenha) {
+        return usuario.save(
+          { senha: hashNovaSenha },
+          _.merge({ method: 'update', patch: true}, options));
       });
   },
 
-
-  procurar: function(userId, func) {
-    Usuario.forge().query(function(qb) {
-      qb.join('pessoa', 'pessoa.id', 'usuario.id')
-        .join('pessoa_fisica', 'pessoa_fisica.id', 'pessoa.id')
-        .join('conta', 'usuario.conta_id', 'conta.id')
-        .where('usuario.id', userId)
-        .select('usuario.*', 'pessoa.*', 'pessoa_fisica.*', 'conta.*');
-    }).fetch().then(function(model) {
-      func(model);
-    }).catch(function(err) {
-      return err;
+  alterarSenha: function(camposAlterarSenha) {
+    return Bookshelf.transaction(function(t) {
+      return Usuario
+        ._alterarSenha(camposAlterarSenha, { transacting: t });
     });
   },
 
-
-  validate: function(user, method) {
-    var message = [];
-    if (validator.isNull(user.cpf)) {
-      message.push({
-        attribute: 'cpf',
-        problem: 'CPF é obrigatório'
-      });
-    }
-
-    if (!validation.isCPF(user.cpf)) {
-      message.push({
-        attribute: 'cpf',
-        problem: 'CPF inválido!'
-      });
-    }
-
-    if (!user.data_nascimento) {
-      message.push({
-        attribute: 'data_nascimento',
-        problem: 'Data de nascimento é obrigatório!'
-      });
-    } else if (!util.dataValida(user.data_nascimento)) {
-      message.push({
-        attribute: 'data_nascimento',
-        problem: 'Data de nascimento inválida!'
-      });
-    }
-
-    if (validator.isNull(user.nome)) {
-      message.push({
-        attribute: 'nome',
-        problem: 'Nome obrigatório'
-      });
-    }
-
-    if (validator.isNull(user.email)) {
-      message.push({
-        attribute: 'email',
-        problem: 'Email obrigatório!'
-      });
-    }
-
-    if (!validator.isEmail(user.email)) {
-      message.push({
-        attribute: 'email',
-        problem: 'Email inválido!'
-      });
-    }
+  _camposValidos: function(camposUsuario, usuario, options) {
+    var messages = Usuario._loginValido(camposUsuario);
+    messages.concat(Usuario._senhaValida(camposUsuario, usuario));
 
     return PessoaFisica
-      .buscarPorCPF(user.cpf)
-      .then(function(pessoafisica) {
-        if (!pessoafisica && method === 'update') {
-          message.push({
-            attribute: 'cpf',
-            problem: 'CPF não cadastrado!'
-          });
+      ._camposValidos(camposUsuario, options)
+      .then(function(messagesPessoaFisica) {
+        messages.concat(messagesPessoaFisica);
+      })
+      .then(function() {
+        return PessoaFisica
+          ._buscarPorCPF(camposUsuario.cpf, options);
+      })
+      .then(function(pessoaFisica) {
+        if (pessoaFisica) {
+          if (!usuario) {
+            messages.push({
+              attribute: 'cpf',
+              problem: 'CPF já cadastrado!'
+            });
+          } else if (usuario.id !== pessoaFisica.id) {
+            messages.push({
+              attribute: 'cpf',
+              problem: 'CPF já em uso por outro usuário!'
+            });
+          }
+          // Casos válidos:
+          // - usuario.id === pessoaFisica.id: mesmo cpf
         }
-
-        return message;
+        // Casos válidos:
+        // - !pessoaFisica: cpf ainda não usado
+        return messages;
       });
   },
 
-  validateNomeUsuario: function(user) {
+  _loginValido: function(user) {
     var message = [];
-    if (validator.isNull(user.login) || user.login === '') {
+    if (!user.login || validator.isNull(user.login)) {
       message.push({
-        attribute: 'nova_senha',
+        attribute: 'login',
         problem: 'Login é obrigatório!'
       });
-    }
-    if ((user.login.length < 4) || (user.login.length > 32)) {
+    } else if ((user.login.length < 4) || (user.login.length > 32)) {
       message.push({
         attribute: 'login',
         problem: 'O nome de login deve conter de 4 a 32 caracteres'
@@ -319,48 +256,26 @@ var Usuario = Bookshelf.Model.extend({
   },
 
 
-  validarSenha: function(user) {
+  _senhaValida: function(camposUsuario, usuario) {
     var message = [];
-    if (validator.isNull(user.nova_senha)) {
+
+    if (!camposUsuario.nova_senha
+      || validator.isNull(camposUsuario.nova_senha)) {
       message.push({
         attribute: 'nova_senha',
-        problem: 'Nova senha é obrigatória!'
-      });
-    }
-    if (validator.isNull(user.senha)) {
-      message.push({
-        attribute: 'senha',
         problem: 'Senha é obrigatória!'
       });
-    }
-    if (validator.isNull(user.conf_senha)) {
-      message.push({
-        attribute: 'conf_senha',
-        problem: 'Confirmação de senha é obrigatória!'
-      });
-    }
-    if (user.nova_senha !== user.conf_senha) {
+    } else if (camposUsuario.nova_senha !== camposUsuario.conf_senha) {
       message.push({
         attribute: 'conf_senha',
         problem: 'As senhas devem ser iguais!'
       });
     }
-    if (user.senha.length < 4) {
-      message.push({
-        attribute: 'senha',
-        problem: 'A senha deve conter no minimo 4 caracteres!'
-      });
-    }
-    if (user.conf_senha.length < 4 && user.conf_senha.length > 8) {
-      message.push({
-        attribute: 'conf_senha',
-        problem: 'A confirmação de senha deve conter no minimo 4 caracteres!'
-      });
-    }
-    if (user.nova_senha.length < 4) {
+
+    if (camposUsuario.nova_senha.length < 8) {
       message.push({
         attribute: 'nova_senha',
-        problem: 'A nova senha deve conter no minimo 4 caracteres!'
+        problem: 'A nova senha deve conter no minimo 8 caracteres!'
       });
     }
     return message;
