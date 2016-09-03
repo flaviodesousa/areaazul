@@ -2,8 +2,6 @@
 
 var debug = require('debug')('areaazul:helpers:util');
 var AreaAzul = require('../../areaazul');
-var logger = AreaAzul.log;
-var bcrypt = require('bcrypt');
 var AreaAzulMailer = require('areaazul-mailer');
 var moment = require('moment');
 var uuid = require('node-uuid');
@@ -57,26 +55,8 @@ exports.generate = function() {
   return this.pass;
 };
 
-exports.criptografa = function(password) {
-  var salt = bcrypt.genSaltSync(10);
-  return bcrypt.hashSync(password, salt);
-};
-
-exports.senhaValida = function(senha, hash) {
-  return bcrypt.compareSync(senha, hash);
-};
-
 exports.converteData = function(data) {
   return moment(Date.parse(data)).format('YYYY-MM-DD');
-};
-
-exports.log = function(log, type) {
-  if (!type) {
-    logger.info(log);
-  } else {
-    logger(type, log);
-  }
-
 };
 
 exports.geradorUUIDAleatorio = function() {

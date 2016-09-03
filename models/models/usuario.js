@@ -45,30 +45,30 @@ var Usuario = Bookshelf.Model.extend({
   },
 
   autorizado: function(login, senha) {
-    var Usuario = this;
-    var err;
-    return Usuario
-      .forge({ login: login })
+    var usuario;
+    var hashSenha;
+    return new Usuario({ login: login })
       .fetch()
-      .then(function(usuario) {
-        if (usuario === null) {
+      .then(function(u) {
+        usuario = u;
+        if (!usuario) {
           err = new AreaAzul.BusinessException(
             'Usuario: login invalido', { login: login });
           err.authentication_event = true;
           log.warn(err.message, err.details);
           throw err;
         }
-        if (util.senhaValida(senha, usuario.get('senha'))) {
-          return usuario;
+        return bcrypt.compare(senha, usuario.get('senha'));
+      })
+      .then(function(valid) {
+        if (!valid) {
+          new AreaAzul.AuthenticationError(
+            'Usuario: senha incorreta', {
+              login: login,
+              usuario: usuario
+            });
         }
-        err = new AreaAzul.BusinessException(
-          'Usuario: senha incorreta', {
-            login: login,
-            usuario: usuario
-          });
-        err.authentication_event = true;
-        log.warn(err.message, err.details);
-        throw err;
+        return usuario;
       });
   },
 
@@ -77,6 +77,7 @@ var Usuario = Bookshelf.Model.extend({
     const optionsUpdate = _.merge({ method: 'update' }, options);
     var Usuario = this;
     var login;
+    var hashSenha;
     var pessoaFisica = null;
 
     if (!camposUsuario.login) {
@@ -116,6 +117,10 @@ var Usuario = Bookshelf.Model.extend({
         pessoaFisica = pf;
       })
       .then(function() {
+        return bcrypt.hash(camposUsuario.senha);
+      })
+      .then(function(hash) {
+        hashSenha = hash;
         if (!usuario) {
           return Conta._cadastrar(null, options);
         }
@@ -126,7 +131,7 @@ var Usuario = Bookshelf.Model.extend({
         var dadosUsuario = {
           id: pessoaFisica.id,
           login: login,
-          senha: util.criptografa(camposUsuario.nova_senha),
+          senha: hashSenha,
           primeiro_acesso: true,
           conta_id: conta.id,
           ativo: true
@@ -270,9 +275,7 @@ var Usuario = Bookshelf.Model.extend({
         attribute: 'conf_senha',
         problem: 'As senhas devem ser iguais!'
       });
-    }
-
-    if (camposUsuario.nova_senha.length < 8) {
+    } else if (camposUsuario.nova_senha.length < 8) {
       message.push({
         attribute: 'nova_senha',
         problem: 'A nova senha deve conter no minimo 8 caracteres!'

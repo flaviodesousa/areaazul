@@ -1,8 +1,10 @@
 'use strict';
 
-var _ = require('lodash');
+const _ = require('lodash');
+const bcrypt = require('bcrypt-then');
 
 const AreaAzul = require('../../areaazul');
+const log = AreaAzul.log;
 const Bookshelf = AreaAzul.db;
 var util = require('../../helpers/util');
 
@@ -18,44 +20,25 @@ var UsuarioFiscal = Bookshelf.Model.extend({
   fiscalizacoes: function() {
     return this.hasMany('Fiscalizacao', 'fiscal_id');
   },
-  desativar: function(tax, then, fail) {
-    util.log('Tax: ' + tax);
-    var pessoa = new Pessoa({
-      id: tax.id,
-      ativo: false
+  _desativar: function(usuarioFiscal, options) {
+    return usuarioFiscal
+      .save({ ativo: false }, _.merge({ patch: true }, options));
+  },
+  desativar: function(usuarioFiscal) {
+    return Bookshelf.transaction(function(t) {
+      return UsuarioFiscal
+        ._desativar(usuarioFiscal, { transacting: true });
     });
-    var pessoaFisica = new PessoaFisica({
-      id: tax.id,
-      ativo: false
-    });
-    var usuarioFiscal = new UsuarioFiscal({
-      id: tax.id,
-      ativo: false
-    });
-
-    Pessoa.sixUpdateTransaction(pessoa, usuarioFiscal, pessoaFisica,
-      function(model) {
-        then(model);
-      }, function(err) {
-        fail(err);
-      });
   }
 }, {
   _cadastrar: function(fiscalFields, options) {
     var Fiscal = this;
     var pessoaFisica = null;
-
     var senha;
-    if (!fiscalFields.senha) {
-      senha = util.criptografa(util.generate());
-    } else {
-      senha = util.criptografa(fiscalFields.senha);
-    }
 
     var optionsInsert = _.merge({ method: 'insert' }, options);
     // Verifica se a pessoa fisica ja' existe
-    return PessoaFisica
-      .forge({cpf: fiscalFields.cpf})
+    return new PessoaFisica({cpf: fiscalFields.cpf})
       .fetch(options)
       .then(function pessoaFisicaExiste(pessoaFisica) {
         // Se pessoa fisica ja' existir, conectar a ela
@@ -68,8 +51,10 @@ var UsuarioFiscal = Bookshelf.Model.extend({
       })
       .then(function salvarPessoaFisica(pf) {
         pessoaFisica = pf;
+        return bcrypt.hash(fiscalFields.senha);
       })
-      .then(function cadastrarConta() {
+      .then(function cadastrarConta(hash) {
+        senha = hash;
         return Conta._cadastrar(null, options);
       })
       .then(function salvarFiscal(conta) {
@@ -91,27 +76,29 @@ var UsuarioFiscal = Bookshelf.Model.extend({
     });
   },
   autorizado: function(login, senha) {
-    var UsuarioFiscal = this;
+    var usuarioFiscal;
     var err;
     return UsuarioFiscal
       .forge({login: login})
       .fetch()
-      .then(function(usuarioFiscal) {
-        if (usuarioFiscal === null) {
-          err = new AreaAzul.BusinessException(
+      .then(function(uf) {
+        if (!uf) {
+          err = new AreaAzul.AuthenticationError(
             'Usuario: login invalido', { login: login });
-          err.authentication_event = true;
           throw err;
         }
-        if (util.senhaValida(senha, usuarioFiscal.get('senha'))) {
+        usuarioFiscal = uf;
+        return bcrypt.compare(senha, usuarioFiscal.get('senha'));
+      })
+      .then(function(valid) {
+        if (valid) {
           return usuarioFiscal;
         }
-        err = new AreaAzul.BusinessException(
+        err = new AreaAzul.AuthenticationError(
           'Usuario: senha incorreta', {
             login: login,
             usuario_fiscal: usuarioFiscal
           });
-        err.authentication_event = true;
         throw err;
       });
   },

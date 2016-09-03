@@ -1,6 +1,6 @@
 'use strict';
 
-var bcrypt = require('bcrypt');
+var bcrypt = require('bcrypt-then');
 var validator = require('validator');
 var _ = require('lodash');
 
@@ -51,13 +51,6 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     var UsuarioRevendedor = this;
     var senha;
 
-    if (!entidade.senha) {
-      senha = util.criptografa(util.generate());
-    } else {
-      senha = util.criptografa(entidade.senha);
-      entidade.senha = senha;
-    }
-
     return UsuarioRevendedor
       ._validarUsuarioRevenda(entidade, options.method, options)
       .then(function(messages) {
@@ -71,6 +64,10 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         return messages;
       })
       .then(function() {
+        return bcrypt.hash(entidade.senha);
+      })
+      .then(function(hash) {
+        senha = hash;
         return PessoaFisica
           .forge({
             cpf: entidade.cpf
@@ -153,37 +150,30 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     });
   },
 
-  alterarSenha: function(user, then, fail) {
-    new this.UsuarioRevendedor({
-      id: user.id
-    })
+  _alterarSenha: function(camposTrocaSenha, options) {
+    var usuarioRevendedor;
+    var hashNovaSenha;
+    new UsuarioRevendedor({ id: camposTrocaSenha.id })
       .fetch()
       .then(function(model) {
-        var pwd;
-        var newSenha;
-        if (model !== null) {
-          pwd = model.attributes.senha;
+        usuarioRevendedor = model;
+        return bcrypt.compare(
+          camposTrocaSenha.senha, usuarioRevendedor.get('senha'));
+      })
+      .then(function(valid) {
+        if (!valid) {
+          throw new AreaAzul.AuthenticationError(
+            'Senha atual incorreta. Senha não alterada',
+            {});
         }
-        var hash = bcrypt.compareSync(user.senha, pwd);
-
-        if (hash !== false) {
-          newSenha = util.criptografa(user.nova_senha);
-
-          model.save({
-            primeiro_acesso: 'false',
-            senha: newSenha,
-            ativo: 'true'
-          }).then(function(model) {
-            then(model);
-          }).catch(function(err) {
-            fail(err);
-          });
-        } else {
-          fail();
-        }
-      }).catch(function(err) {
-      fail(err);
-    });
+        return bcrypt.hash(camposTrocaSenha.senha);
+      })
+      .then(function(hashNovaSenha) {
+        return usuarioRevendedor
+          .save(
+            { senha: hashNovaSenha },
+            _merge({ method: 'update', patch: true }, options));
+      });
   },
 
   procurar: function(id, func) {
@@ -299,15 +289,21 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
   },
 
   alterarSenhaRecuperacao: function(user) {
-    new this.UsuarioRevendedor({ id: user.id })
+    var usuarioRevendedor;
+    var senha;
+    return new UsuarioRevendedor({ id: user.id })
       .fetch()
-      .then(function(model) {
-        if (!model) {
+      .then(function(ur) {
+        if (!ur) {
           throw new AreaAzul.BusinessException(
             'Usuário não encontrado!', { user: user });
         }
-        var novaSenha = util.criptografa(user.senha);
-        model.save({
+        usuarioRevendedor = ur;
+        return bcrypt.hash(user.senha);
+      })
+      .then(function(hash) {
+        senha = hash;
+        return usuarioRevendedor.save({
           primeiro_acesso: 'false',
           senha: novaSenha
         });

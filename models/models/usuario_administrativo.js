@@ -1,6 +1,7 @@
 'use strict';
 
-var _ = require('lodash');
+const _ = require('lodash');
+const bcrypt = require('bcrypt-then');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 var log = AreaAzul.log;
@@ -18,14 +19,7 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
     var UsuarioAdministrativo = this;
     var login;
     var senha;
-    var senhaGerada;
-
-    if (!user.senha) {
-      senhaGerada = util.generate();
-      senha = util.criptografa(senhaGerada);
-    } else {
-      senha = util.criptografa(user.senha);
-    }
+    var pessoaFisica;
 
     if (!user.login) {
       login = user.cpf;
@@ -36,9 +30,8 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
     return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
       var optionsInsert = _.merge({}, options, { method: 'insert' });
-      return PessoaFisica
-        .forge({ cpf: user.cpf })
-        .fetch()
+      return new PessoaFisica({ cpf: user.cpf })
+        .fetch(options)
         .then(function(pf) {
           if (!pf) {
             return PessoaFisica._cadastrar(user, options);
@@ -46,8 +39,12 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
           return pf;
         })
         .then(function(pf) {
-          return UsuarioAdministrativo
-            .forge({
+          pessoaFisica = pf;
+          return bcrypt.hash(user.senha);
+        })
+        .then(function(hash) {
+          senha = hash;
+          return new UsuarioAdministrativo({
               id: pf.id,
               login: login,
               senha: senha,
@@ -59,23 +56,25 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
     });
   },
   autorizado: function(login, senha) {
-    var UsuarioAdministrativo = this;
-    var err;
-    return UsuarioAdministrativo
-      .forge({ login: login })
+    var usuarioAdministrativo;
+    return new UsuarioAdministrativo({ login: login })
       .fetch()
-      .then(function(usuarioAdministrativo) {
-        if (usuarioAdministrativo === null) {
-          err = new AreaAzul.BusinessException(
+      .then(function(ur) {
+        usuarioAdministrativo = ur;
+        if (!usuarioAdministrativo) {
+          var err = new AreaAzul.AuthenticationError(
             'UsuarioAdministrativo: login invalido',
             { login: login });
           log.warn(err.message, err.details);
           throw err;
         }
-        if (util.senhaValida(senha, usuarioAdministrativo.get('senha'))) {
+        return bcrypt.compare(senha, usuarioAdministrativo.get('senha'));
+      })
+      .then(function(valid) {
+        if (valid) {
           return usuarioAdministrativo;
         }
-        err = new AreaAzul.BusinessException(
+        var err = new AreaAzul.BusinessException(
           'UsuarioAdministrativo: senha incorreta',
           { login: login });
         log.warn(err.message, err.details);

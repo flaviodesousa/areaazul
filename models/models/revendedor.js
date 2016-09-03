@@ -17,10 +17,14 @@ var Revendedor = Bookshelf.Model.extend({
 }, {
   _cadastrar: function(revendedorFields, options) {
     var idPessoa = null;
-    var senha = util.criptografa(revendedorFields.senha);
+    var senha = null;
 
-    return Revendedor
-      .validarRevenda(revendedorFields)
+    return bcrypt.hash(revendedorFields.senha)
+      .then(function(hash) {
+        senha = hash;
+        return Revendedor
+          .validarRevenda(revendedorFields)
+      })
       .then(function(messages) {
         if (messages.length) {
           throw new AreaAzul
