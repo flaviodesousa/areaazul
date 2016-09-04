@@ -105,5 +105,4 @@ module.exports._camposValidos = function(campos, usuario, ModelClass, options) {
       return messages;
     });
 
-}
-
+};

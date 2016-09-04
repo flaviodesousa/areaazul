@@ -6,7 +6,9 @@ const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 var log = AreaAzul.log;
 var util = require('../../helpers/util');
+const UsuarioHelper = require('../../helpers/usuario_helper');
 
+const Usuario = Bookshelf.model('Usuario');
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 
 var UsuarioAdministrativo = Bookshelf.Model.extend({
@@ -15,40 +17,63 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
     return this.hasOne('PessoaFisica', 'id');
   }
 }, {
-  cadastrar: function(user) {
-    var UsuarioAdministrativo = this;
-    var login;
-    var senha;
-    var pessoaFisica;
+  _camposValidos: function(
+    camposUsuarioAdministrativo, usuarioAdministrativo, options) {
+    var messages = [];
 
-    if (!user.login) {
-      login = user.cpf;
-    } else {
-      login = user.login;
-    }
+    return UsuarioHelper
+      ._camposValidos(
+        camposUsuarioAdministrativo, usuarioAdministrativo,
+        UsuarioAdministrativo, options)
+      .then(function(messagesUsuarioHelper) {
+        return messages.concat(messagesUsuarioHelper);
+      });
+  },
+  cadastrar: function(camposUsuarioAdministrativo) {
+    var pessoaFisica;
+    var usuarioAdministrativo;
 
     return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
-      var optionsInsert = _.merge({}, options, { method: 'insert' });
-      return new PessoaFisica({ cpf: user.cpf })
-        .fetch(options)
+      var optionsInsert = _.merge({ method: 'insert' }, options);
+      return UsuarioAdministrativo
+        ._camposValidos(camposUsuarioAdministrativo, null, options)
+        .then(function(messages) {
+          if (messages.length) {
+            throw new AreaAzul
+              .BusinessException(
+              'Não foi possível cadastrar novo Usuário Administrativo.'
+              + ' Dados inválidos',
+              messages);
+          }
+        })
+        .then(function() {
+          return new UsuarioAdministrativo(
+            { login: camposUsuarioAdministrativo.login })
+            .fetch(options);
+        })
+        .then(function(u) {
+          usuarioAdministrativo = u;
+          return new PessoaFisica({ cpf: camposUsuarioAdministrativo.cpf })
+            .fetch(options)
+        })
         .then(function(pf) {
           if (!pf) {
-            return PessoaFisica._cadastrar(user, options);
+            return PessoaFisica._cadastrar(
+              camposUsuarioAdministrativo, options);
           }
           return pf;
         })
         .then(function(pf) {
           pessoaFisica = pf;
-          return bcrypt.hash(user.senha);
+          return bcrypt.hash(camposUsuarioAdministrativo.nova_senha);
         })
         .then(function(hash) {
-          senha = hash;
           return new UsuarioAdministrativo({
-              id: pf.id,
-              login: login,
-              senha: senha,
-              autorizacao: user.autorizacao,
+              id: pessoaFisica.id,
+              login: camposUsuarioAdministrativo.login,
+              senha: hash,
+              autorizacao: camposUsuarioAdministrativo.autorizacao,
               ativo: true
             })
             .save(null, optionsInsert);
