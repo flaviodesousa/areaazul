@@ -96,8 +96,6 @@ var Usuario = Bookshelf.Model.extend({
         return messages;
       })
       .then(function() {
-        camposUsuario.data_nascimento = util.formataData(
-          camposUsuario.data_nascimento);
         return PessoaFisica
           .forge({
             cpf: camposUsuario.cpf

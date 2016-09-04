@@ -19,7 +19,7 @@ describe('models.UsuarioFiscal', function() {
     email: 'teste-unitario-ufpe@areaazul.org',
     telefone: '00 0000 0000',
     cpf: '21985030268',
-    data_nascimento: '11/04/1980',
+    data_nascimento: '13/04/1980',
     sexo: 'feminino'
   };
   const camposUsuarioFiscalNaoExistente = {
@@ -30,7 +30,7 @@ describe('models.UsuarioFiscal', function() {
     email: 'teste-unitario-ufne@areaazul.org',
     telefone: '00 0000 0000',
     cpf: '99017383429',
-    data_nascimento: '11/04/1980',
+    data_nascimento: '14/04/1980',
     sexo: 'feminino'
   };
   var usuarioFiscalNaoExistente;

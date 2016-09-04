@@ -30,7 +30,7 @@ describe('models.UsuarioAdministrativo', function() {
     email: 'teste-unitario-uane@areaazul.org',
     telefone: '00 0000 0000',
     cpf: '59588607396',
-    data_nascimento: '11/04/1980',
+    data_nascimento: '12/04/1980',
     sexo: 'feminino'
   };
   var usuarioAdministrativoNaoExistente;

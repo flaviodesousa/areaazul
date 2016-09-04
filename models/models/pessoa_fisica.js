@@ -113,8 +113,9 @@ var PessoaFisica = Bookshelf.Model.extend({
       .then(function() {
         return pessoaFisicaRecord
           .save({
-            data_nascimento: util.dataValida(pessoaFisicaFields.data_nascimento)
-          }, options)
+            data_nascimento: util.dataValida(
+              pessoaFisicaFields.data_nascimento)
+          }, _merge({ method: 'update', patch: true }, options));
       });
   },
   _cadastrar: function(pessoaFisicaFields, options) {
@@ -159,7 +160,7 @@ var PessoaFisica = Bookshelf.Model.extend({
             return pessoaFisica
               .save({
                 cpf: pf.cpf,
-                data_nascimento: pf.data_nascimento,
+                data_nascimento: util.dataValida(pf.data_nascimento),
                 id: pessoa.id
               }, optionsUpdate);
           });

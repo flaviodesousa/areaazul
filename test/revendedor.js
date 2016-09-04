@@ -17,7 +17,7 @@ describe('model.revendedor', function() {
     email: 'pf-teste-revendedor@areaazul.org',
     telefone: '000 0000-0000',
     cpf: '96818717748',
-    data_nascimento: '13/11/1981',
+    data_nascimento: '31/10/1967',
     autorizacao: 'autorizacao',
     login: 'teste-revendedor-pf',
     nova_senha: 'senha-teste',
