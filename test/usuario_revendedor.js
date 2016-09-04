@@ -1,10 +1,12 @@
 'use strict';
 
+const debug = require('debug')('areaazul:test:usuario_revenda');
 var should = require('chai').should();
 const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
 var BusinessException = AreaAzul.BusinessException;
 
+const Revendedor = Bookshelf.model('Revendedor');
 var UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 var UsuariosRevendedores = Bookshelf.collection('UsuariosRevendedores');
 var PessoaFisica = Bookshelf.model('PessoaFisica');
@@ -19,11 +21,21 @@ describe('models.UsuarioRevendedor', function() {
   var idRevendedor = null;
   var termoDeServico = true;
 
-  before(function() {
+  function apagarDadosDeTeste() {
     return TestHelpers
       .apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente)
       .then(function() {
         return TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente);
+      });
+  }
+
+  before(function() {
+    return apagarDadosDeTeste()
+      .then(function() {
+        return TestHelpers.pegarRevendedor();
+      })
+      .then(function(revendedor) {
+        idRevendedor = revendedor.id;
       });
   });
 
@@ -34,7 +46,8 @@ describe('models.UsuarioRevendedor', function() {
         login: loginRevendaNaoExistente,
         nome: 'Revenda Teste',
         autorizacao: 'funcionario',
-        senha: senhaRevendaNaoExistente,
+        nova_senha: senhaRevendaNaoExistente,
+        conf_senha: senhaRevendaNaoExistente,
         email: 'revenda@teste.com',
         cpf: cpfNaoExistente,
         revendedor_id: idRevendedor,
@@ -42,12 +55,12 @@ describe('models.UsuarioRevendedor', function() {
       })
         .then(function(usuarioRevendedor) {
           should.exist(usuarioRevendedor);
-          idRevendedor = usuarioRevendedor.get('idRevendedor');
           // Salvar id para testes de buscarPorId()
           idUsuarioRevendedor = usuarioRevendedor.id;
           done();
         })
         .catch(function(e) {
+          debug('erro inesperado', e);
           done(e);
         });
     });
@@ -60,7 +73,8 @@ describe('models.UsuarioRevendedor', function() {
         login: loginRevendaNaoExistente,
         nome: 'Revenda Teste',
         autorizacao: 'funcionario',
-        senha: senhaRevendaNaoExistente,
+        nova_senha: senhaRevendaNaoExistente,
+        conf_senha: senhaRevendaNaoExistente,
         email: 'revenda_alterada@teste.com',
         cpf: cpfNaoExistente,
         revendedor_id: idRevendedor,
@@ -79,12 +93,14 @@ describe('models.UsuarioRevendedor', function() {
   describe('listarUsuarioRevenda()', function() {
 
     it('lista usuario da revenda mantidos no banco de dados', function(done) {
-      UsuariosRevendedores.listarUsuarioRevenda(idRevendedor,
-        function() {
+      UsuariosRevendedores
+        .listarUsuarioRevenda(idRevendedor)
+        .then(function() {
           done();
-        },
-        function(e) {
-          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
   });
@@ -99,8 +115,9 @@ describe('models.UsuarioRevendedor', function() {
           should.exist(usuarioRevendedor);
           done();
         })
-        .catch(function(err) {
-          done(err);
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
@@ -109,7 +126,7 @@ describe('models.UsuarioRevendedor', function() {
         loginRevendaNaoExistente,
         senhaRevendaNaoExistente + '0')
         .then(function() {
-          done('Nao deve aceitar senha errada');
+          done(new Error('Nao deve aceitar senha errada'));
         })
         .catch(function(err) {
           should.exist(err);
@@ -127,7 +144,7 @@ describe('models.UsuarioRevendedor', function() {
         loginRevendaNaoExistente + '0',
         senhaRevendaNaoExistente)
         .then(function() {
-          done('Nao deve aceitar login errado');
+          done(new Error('Nao deve aceitar login errado'));
         })
         .catch(function(err) {
           should.exist(err);
@@ -145,11 +162,9 @@ describe('models.UsuarioRevendedor', function() {
 
     it('falha para usuario revendedor inexistente', function(done) {
       UsuarioRevendedor
-        .desativar({
-          id: 0
-        })
+        .desativar(0)
         .then(function() {
-          done();
+          done(new Error('Não deve aceitar id inválido'));
         })
         .catch(function(e) {
           should.exist(e);
@@ -159,16 +174,21 @@ describe('models.UsuarioRevendedor', function() {
 
     it('desativa usuario revendedor existente', function(done) {
       UsuarioRevendedor
-        .desativar({
-          id: idUsuarioRevendedor
-        })
-        .then(function() {
+        .desativar(idUsuarioRevendedor)
+        .then(function(usuarioRevendedor) {
+          should.exist(usuarioRevendedor);
+          usuarioRevendedor.id.should.equal(idUsuarioRevendedor);
+          usuarioRevendedor.get('ativo').should.equal(false);
           done();
         })
         .catch(function(e) {
           done(e);
         });
     });
+  });
+
+  after(function() {
+    return apagarDadosDeTeste();
   });
 
 });

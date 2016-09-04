@@ -19,26 +19,29 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
   }
 }, {
   autorizado: function(login, senha) {
-    var UsuarioRevendedor = this;
-    var err;
+    var usuarioRevendedor;
     return UsuarioRevendedor
       .forge({
         login: login
       })
       .fetch()
-      .then(function(usuarioRevenda) {
-        if (usuarioRevenda === null) {
-          err = new AreaAzul.BusinessException(
+      .then(function(ur) {
+        if (!ur) {
+          var err = new AreaAzul.BusinessException(
             'UsuarioRevendedor: login invalido', {
               login: login
             });
           log.warn(err.message, err.details);
           throw err;
         }
-        if (util.senhaValida(senha, usuarioRevenda.get('senha'))) {
-          return usuarioRevenda;
+        usuarioRevendedor = ur;
+        return bcrypt.compare(senha, ur.get('senha'));
+      })
+      .then(function(valid) {
+        if (valid) {
+          return usuarioRevendedor;
         }
-        err = new AreaAzul.BusinessException(
+        var err = new AreaAzul.BusinessException(
           'UsuarioRevendedor: senha incorreta', {
             login: login
           });
@@ -68,19 +71,17 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       })
       .then(function(hash) {
         senha = hash;
-        return PessoaFisica
-          .forge({
-            cpf: entidade.cpf
-          })
-          .fetch()
-          .then(function(pessoaFisica) {
-            if (pessoaFisica !== null) {
-              return PessoaFisica.alterar(entidade, pessoaFisica.id, options);
-            }
-            // Caso nao exista, criar a pessoa fisica
-            return PessoaFisica._cadastrar(entidade, options);
-          });
-      }).then(function(pessoaFisica) {
+        return new PessoaFisica({ cpf: entidade.cpf })
+          .fetch(options);
+      })
+      .then(function(pessoaFisica) {
+        if (pessoaFisica !== null) {
+          return PessoaFisica.alterar(entidade, pessoaFisica.id, options);
+        }
+        // Caso nao exista, criar a pessoa fisica
+        return PessoaFisica._cadastrar(entidade, options);
+      })
+      .then(function(pessoaFisica) {
         var dadosUsuarioRevendedor = {
           login: entidade.login,
           senha: senha,
@@ -96,11 +97,17 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
             .forge(dadosUsuarioRevendedor)
             .save(null, options);
         }
-        return UsuarioRevendedor
-          .forge()
-          .save(dadosUsuarioRevendedor, options);
+        return new UsuarioRevendedor({
+          revendedor_id: dadosUsuarioRevendedor.revendedor_id,
+          login: dadosUsuarioRevendedor.login
+        })
+          .fetch(options)
+          .then(function(usuarioRevendedor) {
+            return usuarioRevendedor.save(
+              dadosUsuarioRevendedor,
+              options);
+          });
       });
-
   },
 
   _inserir: function(entidade, options, t) {
