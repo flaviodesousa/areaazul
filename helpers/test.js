@@ -305,7 +305,8 @@ exports.pegarVeiculo = function() {
 
 var usuarioTeste = {
   login: 'usuarioTeste',
-  senha: 'senhaTeste',
+  nova_senha: 'senhaTeste',
+  conf_senha: 'senhaTeste',
   nome: 'Nome Usuario',
   email: 'usuario-teste-unitario@areaazul.org',
   telefone: '00 0000 0000',
@@ -334,7 +335,8 @@ var revendedorPessoaFisicaTeste = {
   data_nascimento: '31/03/1977',
   login: 'revendedorPessoaFisicaTeste',
   autorizacao: 'autorizacao teste',
-  senha: 'senhaTeste',
+  nova_senha: 'senhaTeste',
+  conf_senha: 'senhaTeste',
   termo_servico: true
 };
 
@@ -364,7 +366,8 @@ var usuarioRevendedorTeste = {
   login: 'usuarioRevendedorTeste',
   nome: 'usuário Revenda Teste',
   autorizacao: 'funcionario',
-  senha: 'senhaTeste',
+  nova_senha: 'senhaTeste',
+  conf_senha: 'senhaTeste',
   email: 'usuario-revenda-teste-unitario@areaazul.org',
   cpf: '03472262214',
   data_nascimento: '28/02/1933',

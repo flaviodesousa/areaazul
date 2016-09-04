@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('areaazul:test:fiscalizacao');
 var should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
@@ -24,6 +25,8 @@ describe('model.fiscalizacao', function() {
           UsuarioFiscal.cadastrar({
             login: fiscalLogin,
             nome: 'Fiscal Fiscalizacao Teste',
+            nova_senha: 'senha-fiscal-teste',
+            conf_senha: 'senha-fiscal-teste',
             email: fiscalLogin + '@areaazul.org',
             cpf: '58392095707',
           })
@@ -32,6 +35,7 @@ describe('model.fiscalizacao', function() {
             done();
           })
           .catch(function(e) {
+            debug('erro inesperado', e);
             done(e);
           });
         }

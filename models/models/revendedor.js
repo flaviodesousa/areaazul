@@ -20,7 +20,7 @@ var Revendedor = Bookshelf.Model.extend({
     var idPessoa = null;
     var senha = null;
 
-    return bcrypt.hash(revendedorFields.senha)
+    return bcrypt.hash(revendedorFields.nova_senha)
       .then(function(hash) {
         senha = hash;
         return Revendedor
@@ -70,7 +70,8 @@ var Revendedor = Bookshelf.Model.extend({
             data_nascimento: revendedorFields.data_nascimento,
             login: revendedorFields.login,
             email: revendedorFields.email,
-            senha: senha,
+            nova_senha: revendedorFields.nova_senha,
+            conf_senha: revendedorFields.conf_senha,
             acesso_confirmado: true,
             ativo: true,
             autorizacao: revendedorFields.autorizacao,

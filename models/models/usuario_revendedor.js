@@ -64,7 +64,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         return messages;
       })
       .then(function() {
-        return bcrypt.hash(entidade.senha);
+        return bcrypt.hash(entidade.nova_senha);
       })
       .then(function(hash) {
         senha = hash;
@@ -152,13 +152,12 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
 
   _alterarSenha: function(camposTrocaSenha, options) {
     var usuarioRevendedor;
-    var hashNovaSenha;
     new UsuarioRevendedor({ id: camposTrocaSenha.id })
       .fetch()
       .then(function(model) {
         usuarioRevendedor = model;
         return bcrypt.compare(
-          camposTrocaSenha.senha, usuarioRevendedor.get('senha'));
+          camposTrocaSenha.nova_senha, usuarioRevendedor.get('senha'));
       })
       .then(function(valid) {
         if (!valid) {
@@ -166,7 +165,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
             'Senha atual incorreta. Senha não alterada',
             {});
         }
-        return bcrypt.hash(camposTrocaSenha.senha);
+        return bcrypt.hash(camposTrocaSenha.nova_senha);
       })
       .then(function(hashNovaSenha) {
         return usuarioRevendedor
@@ -214,7 +213,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     if (user.nova_senha === null || user.nova_senha === '') {
       message.push({
         attribute: 'nova_senha',
-        problem: 'Nova senha é obrigatório!'
+        problem: 'Nova senha é obrigatória!'
       });
     }
     if (user.senha === null || user.senha === '') {

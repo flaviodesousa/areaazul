@@ -20,7 +20,8 @@ describe('model.revendedor', function() {
     data_nascimento: '13/11/1981',
     autorizacao: 'autorizacao',
     login: 'teste-revendedor-pf',
-    senha: 'senha-teste',
+    nova_senha: 'senha-teste',
+    conf_senha: 'senha-teste',
     termo_servico: 'Sim'
   };
   const revendedorPJ = {
@@ -34,7 +35,8 @@ describe('model.revendedor', function() {
     cpf: '54800416493',
     login: 'teste-revendedor-pj',
     autorizacao: 'autorizacao teste',
-    senha: 'senha-teste',
+    nova_senha: 'senha-teste',
+    conf_senha: 'senha-teste',
     termo_servico: 'Sim'
   };
 
