@@ -50,12 +50,12 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       });
   },
 
-  _salvarUsuarioRevenda: function(entidade, options) {
+  _salvarUsuarioRevenda: function(campos, usuarioRevendedor, options) {
     var UsuarioRevendedor = this;
     var senha;
 
     return UsuarioRevendedor
-      ._validarUsuarioRevenda(entidade, options.method, options)
+      ._validarUsuarioRevenda(campos, options.method, options)
       .then(function(messages) {
         if (messages.length) {
           throw new AreaAzul
@@ -67,80 +67,71 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         return messages;
       })
       .then(function() {
-        return bcrypt.hash(entidade.nova_senha);
+        return bcrypt.hash(campos.nova_senha);
       })
       .then(function(hash) {
         senha = hash;
-        return new PessoaFisica({ cpf: entidade.cpf })
+        return new PessoaFisica({ cpf: campos.cpf })
           .fetch(options);
       })
       .then(function(pessoaFisica) {
         if (pessoaFisica !== null) {
-          return PessoaFisica.alterar(entidade, pessoaFisica.id, options);
+          return PessoaFisica.alterar(campos, pessoaFisica.id, options);
         }
         // Caso nao exista, criar a pessoa fisica
-        return PessoaFisica._cadastrar(entidade, options);
+        return PessoaFisica._cadastrar(campos, options);
       })
       .then(function(pessoaFisica) {
         var dadosUsuarioRevendedor = {
-          login: entidade.login,
+          login: campos.login,
           senha: senha,
-          autorizacao: entidade.autorizacao,
+          autorizacao: campos.autorizacao,
           acesso_confirmado: false,
           ativo: true,
-          revendedor_id: entidade.revendedor_id,
+          revendedor_id: campos.revendedor_id,
           pessoa_fisica_id: pessoaFisica.id
         };
 
-        if (options.method === 'insert') {
-          return UsuarioRevendedor
-            .forge(dadosUsuarioRevendedor)
-            .save(null, options);
-        }
-        return new UsuarioRevendedor({
-          revendedor_id: dadosUsuarioRevendedor.revendedor_id,
-          login: dadosUsuarioRevendedor.login
-        })
-          .fetch(options)
-          .then(function(usuarioRevendedor) {
-            return usuarioRevendedor.save(
+        if (usuarioRevendedor) {
+          return usuarioRevendedor
+            .save(
               dadosUsuarioRevendedor,
-              options);
-          });
+              _.merge({ method: 'update', patch: true }, options));
+        }
+        return new UsuarioRevendedor(dadosUsuarioRevendedor)
+          .save(null, _.merge({ method: 'insert' }, options));
       });
   },
 
-  _inserir: function(entidade, options, t) {
-    return UsuarioRevendedor._salvarUsuarioRevenda(entidade, options, t);
+  _inserir: function(camposUsuarioRevendedor, options) {
+    return UsuarioRevendedor._salvarUsuarioRevenda(
+      camposUsuarioRevendedor, null, options);
   },
 
   inserir: function(entidade) {
     return Bookshelf.transaction(function(t) {
-      var trx = {
-        transacting: t
-      };
-      var trxIns = _.merge({}, trx, {
-        method: 'insert'
-      });
-      return UsuarioRevendedor._inserir(entidade, trxIns, trx);
+      return UsuarioRevendedor._salvarUsuarioRevenda(
+        entidade, null, { transacting: t });
     });
   },
 
-  _alterar: function(entidade, options, t) {
-    return UsuarioRevendedor._salvarUsuarioRevenda(entidade, options, t);
+  _alterar: function(camposUsuarioRevendedor, usuarioRevendedor, options) {
+    return UsuarioRevendedor
+      ._salvarUsuarioRevenda(
+        camposUsuarioRevendedor, usuarioRevendedor, options);
   },
 
   alterar: function(entidade) {
     return Bookshelf.transaction(function(t) {
-      var trx = {
-        transacting: t
-      };
-      var trxUpd = _.merge({}, trx, {
-        method: 'update'
-      }, {
-        patch: true
-      });
-      return UsuarioRevendedor._alterar(entidade, trxUpd, trx);
+      const options = { transacting: t };
+      return new UsuarioRevendedor({
+        revendedor_id: entidade.revendedor_id, login: entidade.login
+      })
+        .fetch(options)
+        .then(function(usuarioRevendedor) {
+          return UsuarioRevendedor
+            ._salvarUsuarioRevenda(entidade, usuarioRevendedor, options);
+        });
     });
   },
 
