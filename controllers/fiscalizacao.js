@@ -1,24 +1,26 @@
 'use strict';
 
-module.exports = function() {
+module.exports = function () {
   var AreaAzul = require('areaazul');
-  var Fiscalizacao = AreaAzul.models.Fiscalizacao;
-  var Fiscalizacoes = AreaAzul.collections.Fiscalizacoes;
+  const Bookshelf = AreaAzul.db;
 
   return {
-    registrar: function(req, res) {
-      Fiscalizacao.cadastrar({
-        fiscal_id: req.user.id,
-        placa: req.body.placa,
-        latitude: req.body.latitude,
-        longitude: req.body.longitude,
-      }, function() {
-        res.status(200).end();
-      }, function(result) {
-        res.status(400).send('' + result);
-      });
+    registrar: function (req, res) {
+      Bookshelf.model('Fiscalizacao')
+        .cadastrar({
+          usuario_fiscal_id: req.user.id,
+          placa: req.body.placa,
+          latitude: req.body.latitude,
+          longitude: req.body.longitude
+        })
+        .then(function () {
+          res.status(200).end();
+        })
+        .catch(function (result) {
+          res.status(400).send('' + result);
+        });
     },
-    listar: function(req, res) {
+    listar: function (req, res) {
       var params = {};
       if (req.query.minutos) {
         params.minutos = Number(req.query.minutos);
@@ -26,14 +28,14 @@ module.exports = function() {
       if (req.query.limite) {
         params.limite = Number(req.query.limite);
       }
-      Fiscalizacoes.listar(
-        params,
-        function(collection) {
-          res.send(collection.toJSON());
-        },
-        function(result) {
+      Bookshelf.collection('Fiscalizacoes')
+        .listar(params)
+        .then(function (fiscalizacoes) {
+          res.send(fiscalizacoes.toJSON());
+        })
+        .catch(function (result) {
           res.status(400).send('' + result);
         });
-    },
+    }
   };
 };
