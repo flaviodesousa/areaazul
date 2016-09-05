@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('areaazul-api-web:controller:fiscalizacao');
 var should = require('chai').should();
 var app = require('../app');
 var superagent = require('superagent');
@@ -9,29 +10,32 @@ const Bookshelf = AreaAzul.db;
 const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
 
 describe('/fiscalizacao', function() {
-  var fiscalLogin = 'fiscalAPIlogin';
-  var fiscalSenha = 'senha';
   var server;
+  var fiscalTesteAPI = {
+    login: 'fiscalAPIlogin',
+    nova_senha: 'senhaapi',
+    conf_senha: 'senhaapi',
+    cpf: '45772838407',
+    nome: 'fiscalAPIlogin',
+    email: 'fiscalAPIlogin' + '@areaazul.org',
+  };
 
   before(function(done) {
-    UsuarioFiscal
-      .forge({login: fiscalLogin})
+    new UsuarioFiscal({login: fiscalTesteAPI.login})
       .fetch()
       .then(function(fiscal) {
         if (fiscal) { return fiscal };
         return UsuarioFiscal
-          .cadastrar({
-            login: fiscalLogin,
-            senha: fiscalSenha,
-            cpf: fiscalLogin,
-            nome: fiscalLogin,
-            email: fiscalLogin + '@areaazul.org',
-          });
+          .cadastrar(fiscalTesteAPI);
       })
       .then(function() {
         server = app.listen(8080, function() {
           done();
         });
+      })
+      .catch(function(e) {
+        debug('erro inesperado', e);
+        done(e);
       })
   });
 
@@ -43,11 +47,11 @@ describe('/fiscalizacao', function() {
   it('registra uma fiscalizacao', function(done) {
     superagent
       .post('http://localhost:8080/fiscalizacao')
-      .auth(fiscalLogin, fiscalSenha)
+      .auth(fiscalTesteAPI.login, fiscalTesteAPI.nova_senha)
       .send({
         placa: 'AON6189',
         latitude: -19.82864667,
-        longitude: -43.96678,
+        longitude: -43.96678
       })
       .end(function(err, res) {
         should.not.exist(err);

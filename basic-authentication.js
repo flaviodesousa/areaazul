@@ -4,9 +4,10 @@ var passport = require('passport');
 var util = require('util');
 var BasicStrategy = require('passport-http').BasicStrategy;
 
-var AreaAzul = require('areaazul');
-var UsuarioFiscal = AreaAzul.models.UsuarioFiscal;
-var Usuario = AreaAzul.models.Usuario;
+const AreaAzul = require('areaazul');
+const Bookshelf = AreaAzul.db;
+const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
+const Usuario = Bookshelf.model('Usuario');
 
 function fiscalVerify(username, password, done) {
   process.nextTick(function() {
@@ -14,8 +15,8 @@ function fiscalVerify(username, password, done) {
       .then(function(usuarioFiscal) {
         return done(null, {
           username: username,
-          id: usuarioFiscal.get('pessoa_id'),
-          usuarioFiscal: usuarioFiscal,
+          id: usuarioFiscal.id,
+          usuarioFiscal: usuarioFiscal
         });
       })
       .catch(function(err) {
