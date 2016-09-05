@@ -3,8 +3,10 @@
 var should = require('chai').should();
 var app = require('../app');
 var superagent = require('superagent');
+
 var AreaAzul = require('areaazul');
-var UsuarioFiscal = AreaAzul.models.UsuarioFiscal;
+const Bookshelf = AreaAzul.db;
+const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
 
 describe('/fiscalizacao', function() {
   var fiscalLogin = 'fiscalAPIlogin';
