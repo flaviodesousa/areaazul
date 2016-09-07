@@ -1,13 +1,15 @@
 {
   "name": "areaazul-api-web",
   "version": "0.3.0",
-  "private": true,
   "scripts": {
     "start": "node ./bin/www",
     "test": "mocha"
   },
+  "publishConfig": {
+    "registry": "http://npm.flaviodesousa.com"
+  },
   "dependencies": {
-    "areaazul": "git+ssh://git@bitbucket.org:solutions-inf-br/areaazul.git",
+    "areaazul": "^0.5.0",
     "body-parser": "1.15.2",
     "debug": "2.2.0",
     "express": "4.14.0",
