@@ -1,3 +1,7 @@
-# Area Azul
+# AreaAzul
 
-API de negócio
+Módulo principal: API de negócio.
+
+- Configuração
+- Interface com banco de dados
+- Regras de negócio

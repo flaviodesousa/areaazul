@@ -1,12 +1,22 @@
 {
   "name": "areaazul",
   "version": "0.5.0",
+  "license": "UNLICENSED",
+  "author": {
+    "name": "Flávio de Sousa",
+    "email": "fl@viodesousa.com",
+    "url": "https://flaviodesousa.com"
+  },
   "main": "areaazul.js",
   "scripts": {
     "test": "mocha"
   },
   "publishConfig": {
     "registry": "http://npm.flaviodesousa.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@bitbucket.org:solutions-inf-br/areaazul.git"
   },
   "dependencies": {
     "areaazul-mailer": "0.0.4",
