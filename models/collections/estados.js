@@ -7,10 +7,9 @@ var Estado = Bookshelf.model('Estado');
 var Estados = Bookshelf.Collection.extend({
   model: Estado,
 }, {
-  listar: function(func) {
+  listar: function() {
     return new Estados()
-      .query()
-      .order('nome')
+      .orderBy('nome')
       .fetch();
   },
 });
