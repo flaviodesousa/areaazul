@@ -95,7 +95,8 @@ describe('models.UsuarioRevendedor', function() {
     it('lista usuario da revenda mantidos no banco de dados', function(done) {
       UsuariosRevendedores
         .listarUsuarioRevenda(idRevendedor)
-        .then(function() {
+        .then(function(lista) {
+          should.exist(lista);
           done();
         })
         .catch(function(e) {
