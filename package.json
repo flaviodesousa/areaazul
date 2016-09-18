@@ -12,7 +12,7 @@
     "test": "mocha"
   },
   "publishConfig": {
-    "registry": "http://npm.flaviodesousa.com"
+    "registry": "https://npm.flaviodesousa.com"
   },
   "repository": {
     "type": "git",
