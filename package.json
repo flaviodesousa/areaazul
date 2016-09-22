@@ -13,14 +13,14 @@
     "test": "mocha"
   },
   "publishConfig": {
-    "registry": "http://npm.flaviodesousa.com"
+    "registry": "https://npm.flaviodesousa.com"
   },
   "repository": {
     "type": "git",
     "url": "git@bitbucket.org:solutions-inf-br/areaazul-api-web.git"
   },
   "dependencies": {
-    "areaazul": "^0.5.0",
+    "areaazul": "^0.5.2",
     "body-parser": "1.15.2",
     "debug": "2.2.0",
     "express": "4.14.0",
