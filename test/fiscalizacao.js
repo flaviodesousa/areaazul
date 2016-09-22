@@ -16,14 +16,14 @@ describe('/fiscalizacao', function() {
     conf_senha: 'senhaapi',
     cpf: '45772838407',
     nome: 'fiscalAPIlogin',
-    email: 'fiscalAPIlogin' + '@areaazul.org',
+    email: 'fiscalAPIlogin' + '@areaazul.org'
   };
 
   before(function(done) {
     new UsuarioFiscal({login: fiscalTesteAPI.login})
       .fetch()
       .then(function(fiscal) {
-        if (fiscal) { return fiscal };
+        if (fiscal) { return fiscal }
         return UsuarioFiscal
           .cadastrar(fiscalTesteAPI);
       })
@@ -38,25 +38,42 @@ describe('/fiscalizacao', function() {
       })
   });
 
+  describe('POST', function () {
+    it('registra uma fiscalizacao', function(done) {
+      superagent
+        .post('http://localhost:8080/fiscalizacao')
+        .auth(fiscalTesteAPI.login, fiscalTesteAPI.nova_senha)
+        .send({
+          placa: 'AON6189',
+          latitude: -19.82864667,
+          longitude: -43.96678
+        })
+        .end(function(err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          res.ok.should.be.equal(true);
+          done();
+        });
+    });
+  });
+
+  describe('GET', function () {
+    it('obtém lista de fiscalizações', function(done) {
+      superagent
+        .get('http://localhost:8080/fiscalizacao')
+        .auth(fiscalTesteAPI.login, fiscalTesteAPI.nova_senha)
+        .end(function(err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          res.ok.should.be.equal(true);
+          done();
+        });
+    });
+  });
+
   after(function(done) {
     server.close();
     done();
   });
 
-  it('registra uma fiscalizacao', function(done) {
-    superagent
-      .post('http://localhost:8080/fiscalizacao')
-      .auth(fiscalTesteAPI.login, fiscalTesteAPI.nova_senha)
-      .send({
-        placa: 'AON6189',
-        latitude: -19.82864667,
-        longitude: -43.96678
-      })
-      .end(function(err, res) {
-        should.not.exist(err);
-        should.exist(res);
-        res.ok.should.be.equal(true);
-        done();
-      });
-  });
 });
