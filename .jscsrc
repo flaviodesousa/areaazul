@@ -1,5 +1,7 @@
 {
   "preset": "node-style-guide",
+  "disallowTrailingComma": true,
   "requireCamelCaseOrUpperCaseIdentifiers": "ignoreProperties",
-  "requireTrailingComma": false
+  "requireSpacesInsideObjectBrackets": "all",
+  "requireTrailingComma": null
 }
