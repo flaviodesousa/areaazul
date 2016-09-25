@@ -164,6 +164,92 @@ describe('model.ativacao', function() {
   });
 
   describe('ativarPelaRevenda()', function() {
+    it('falha com ativacao revenda sem usuario revendedor', function(done) {
+      Ativacao
+        .ativarPelaRevenda({
+          cidade: idCidade,
+          placa: veiculo.get('placa'),
+          marca: veiculo.get('marca'),
+          modelo: veiculo.get('modelo'),
+          cor: veiculo.get('cor'),
+          tipo_veiculo: veiculo.get('tipo'),
+          tempo: 60,
+          valor: valorTeste
+        })
+        .then(function() {
+          done(new Error('Não deve ativar sem usuário de revenda'));
+        })
+        .catch(AreaAzul.BusinessException, function(e) {
+          should.exist(e);
+          should.exist(e.details);
+          e.details.should.be.an('array');
+          e.details.length.should.be.greaterThan(0);
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado na ativacao pela revenda', e);
+          done(e);
+        });
+    });
+
+    it('falha com ativacao revenda com usuario inválido', function(done) {
+      Ativacao
+        .ativarPelaRevenda({
+          usuario_revendedor_id: 'a',
+          cidade: idCidade,
+          placa: veiculo.get('placa'),
+          marca: veiculo.get('marca'),
+          modelo: veiculo.get('modelo'),
+          cor: veiculo.get('cor'),
+          tipo_veiculo: veiculo.get('tipo'),
+          tempo: 60,
+          valor: valorTeste
+        })
+        .then(function() {
+          done(new Error('Não deve ativar sem usuário de revenda'));
+        })
+        .catch(AreaAzul.BusinessException, function(e) {
+          should.exist(e);
+          should.exist(e.details);
+          e.details.should.be.an('array');
+          e.details.length.should.be.greaterThan(0);
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado na ativação pela revenda', e);
+          done(e);
+        });
+    });
+
+    it('falha com ativacao revenda com usuário inexistente', function(done) {
+      Ativacao
+        .ativarPelaRevenda({
+          usuario_revendedor_id: 0,
+          cidade: idCidade,
+          placa: veiculo.get('placa'),
+          marca: veiculo.get('marca'),
+          modelo: veiculo.get('modelo'),
+          cor: veiculo.get('cor'),
+          tipo_veiculo: veiculo.get('tipo'),
+          tempo: 60,
+          valor: valorTeste
+        })
+        .then(function() {
+          done(new Error('Não deve ativar sem usuário de revenda'));
+        })
+        .catch(AreaAzul.BusinessException, function(e) {
+          should.exist(e);
+          should.exist(e.details);
+          e.details.should.be.an('array');
+          e.details.length.should.be.greaterThan(0);
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado na ativacao pela revenda', e);
+          done(e);
+        });
+    });
+
     it('grava ativacao', function(done) {
       Ativacao
         .ativarPelaRevenda({
