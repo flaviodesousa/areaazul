@@ -41,19 +41,19 @@ var Ativacao = Bookshelf.Model.extend({
     }
 
     return new Ativacao({
-        data_ativacao: new Date(),
-        latitude: latitude,
-        longitude: longitude,
-        altitude: altitude,
-        veiculo_id: activation.veiculo_id
-      })
+      data_ativacao: new Date(),
+      latitude: latitude,
+      longitude: longitude,
+      altitude: altitude,
+      veiculo_id: activation.veiculo_id
+    })
       .save(null, optionsInsert)
       .then(function(a) {
         ativacao = a;
         return new AtivacaoUsuario({
-            ativacao_id: ativacao.id,
-            usuario_id: activation.usuario_id
-          })
+          ativacao_id: ativacao.id,
+          usuario_id: activation.usuario_id
+        })
           .save(null, optionsInsert);
       })
       .then(function() {
@@ -106,9 +106,9 @@ var Ativacao = Bookshelf.Model.extend({
   _desativar: function(desativacao, options) {
     var optionsPatch = _.merge({ patch: true }, options);
     return new AtivacaoUsuario({
-        ativacao_id: desativacao.ativacao_id,
-        usuario_id: desativacao.usuario_id
-      })
+      ativacao_id: desativacao.ativacao_id,
+      usuario_id: desativacao.usuario_id
+    })
       .fetch(options)
       .then(function(d) {
         if (!d) {
@@ -162,7 +162,7 @@ var Ativacao = Bookshelf.Model.extend({
         debug('ativarPelaRevenda() buscando veiculo com placa ' +
           placaSemMascara);
         return Veiculo
-          .forge({placa: placaSemMascara})
+          .forge({ placa: placaSemMascara })
           .fetch(options);
       })
       .then(function(veiculo) {
@@ -182,15 +182,15 @@ var Ativacao = Bookshelf.Model.extend({
       .then(function(v) {
         debug('ativarPelaRevenda() ativando veiculo #' + v.id);
         return new Ativacao({
-            data_ativacao: new Date(),
-            veiculo_id: v.id
-          })
+          data_ativacao: new Date(),
+          veiculo_id: v.id
+        })
           .save(null, optionsInsert);
       })
       .then(function() {
         return new UsuarioRevendedor({
-            id: ativacao.usuario_revendedor_id
-          })
+          id: ativacao.usuario_revendedor_id
+        })
           .fetch(options);
       })
       .then(function(u) {
@@ -203,7 +203,7 @@ var Ativacao = Bookshelf.Model.extend({
           ._inserirDebito({
             conta_id: revendedor.get('conta_id'),
             historico: 'ativacao-revenda usuario='
-              + usuario.id + '/revenda=' + revendedor.id,
+            + usuario.id + '/revenda=' + revendedor.id,
             tipo: 'ativacao',
             valor: 10.00
           }, options);
@@ -340,19 +340,19 @@ Bookshelf.model('Ativacao', Ativacao);
 
 const AtivacaoUsuario = Bookshelf.Model.extend({
   tableName: 'ativacao_usuario',
-  idAttribute: ['ativacao_id', 'usuario_id']
+  idAttribute: [ 'ativacao_id', 'usuario_id' ]
 });
 Bookshelf.model('AtivacaoUsuario', AtivacaoUsuario);
 
 const AtivacaoUsuarioRevendedor = Bookshelf.Model.extend({
   tableName: 'ativacao_usuario_revendedor',
-  idAttribute: ['ativacao_id', 'usuario_revendedor_id']
+  idAttribute: [ 'ativacao_id', 'usuario_revendedor_id' ]
 });
 Bookshelf.model('AtivacaoUsuarioRevendedor', AtivacaoUsuarioRevendedor);
 
 const AtivacaoUsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'ativacao_usuario_fiscal',
-  idAttribute: ['ativacao_id', 'usuario_fiscal_id']
+  idAttribute: [ 'ativacao_id', 'usuario_fiscal_id' ]
 });
 Bookshelf.model('AtivacaoUsuarioFiscal', AtivacaoUsuarioFiscal);
 
