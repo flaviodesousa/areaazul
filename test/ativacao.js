@@ -30,13 +30,8 @@ describe('model.ativacao', function() {
       .pegarVeiculo()
       .then(function(v) {
         veiculoExistente = v;
-        return Veiculo
-          .procurarVeiculo(placaVeiculoNovo);
-      })
-      .then(function(v) {
-        if (v) {
-          return v.destroy();
-        }
+        return TestHelpers
+          .apagarVeiculoPorPlaca(placaVeiculoNovo);
       })
       .then(function() {
         return TestHelpers.pegarUsuario();
