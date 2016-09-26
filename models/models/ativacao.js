@@ -250,10 +250,6 @@ var Ativacao = Bookshelf.Model.extend({
       return Ativacao._ativarPelaRevenda(ativacao, { transacting: t });
     });
   },
-  __validarAtivacao: function(message, ativacao) {
-
-
-  },
   _validarAtivacao: function(ativacao, placa, options) {
     var message = [];
     return Ativacao
@@ -281,7 +277,7 @@ var Ativacao = Bookshelf.Model.extend({
         attribute: 'usuario_revendedor_id',
         problem: 'Falta identificador do revendedor'
       })
-    } else if (ativacao.usuario_revendedor_id) {
+    } else if (!validator.isNumeric('' + ativacao.usuario_revendedor_id)) {
       messages.push({
         attribute: 'usuario_revendedor_id',
         problem: 'Deve ser numérico'
@@ -303,7 +299,7 @@ var Ativacao = Bookshelf.Model.extend({
     }
 
     return new Veiculo({ placa: ativacao.placa })
-      .fetch(_.merge({ required: true }, options))
+      .fetch(_.merge({ require: true }, options))
       .then(function(veiculo) {
         return Ativacao
           ._verificaAtivacao(veiculo.get('placa'), options);
@@ -322,7 +318,7 @@ var Ativacao = Bookshelf.Model.extend({
         return Veiculo
           ._validarVeiculo(ativacao, options)
           .then(function(messagesVeiculo) {
-            messages.concat(messagesVeiculo)
+            messages = messages.concat(messagesVeiculo)
           });
       })
       .then(() => {
