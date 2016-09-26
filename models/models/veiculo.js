@@ -10,13 +10,13 @@ var util = require('../../helpers/util');
 
 var Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',
-  cidade: function () {
+  cidade: function() {
     return this.belongsTo('Cidade', 'cidade_id');
   },
   usuarios: function() {
     return this.belongsToMany('Usuario')
-        .through('UsuarioHasVeiculo');
-  },
+      .through('UsuarioHasVeiculo');
+  }
 }, {
 
   _cadastrar: function(veiculoFields, options) {
@@ -31,8 +31,8 @@ var Veiculo = Bookshelf.Model.extend({
         if (messages && messages.length) {
           throw new AreaAzul
             .BusinessException(
-              'Nao foi possivel cadastrar novo Veiculo. Dados invalidos',
-              messages);
+            'Nao foi possivel cadastrar novo Veiculo. Dados invalidos',
+            messages);
         }
         return messages;
       })
@@ -85,9 +85,9 @@ var Veiculo = Bookshelf.Model.extend({
             .save({ ativo: false }, { patch: true });
         }
         throw new AreaAzul.BusinessException(
-            'Desativacao: Veiculo não encontrado', {
-                desativacao: id
-              });
+          'Desativacao: Veiculo não encontrado', {
+            desativacao: id
+          });
       });
   },
 
@@ -98,7 +98,7 @@ var Veiculo = Bookshelf.Model.extend({
       placaSemMascara = util.placaSemMascara(placa);
     }
     return new Veiculo({ placa: placaSemMascara })
-      .fetch({ withRelated: [ 'cidade', 'cidade.estado' ]});
+      .fetch({ withRelated: [ 'cidade', 'cidade.estado' ] });
   },
 
   validarVeiculo: function(veiculo) {
@@ -107,31 +107,31 @@ var Veiculo = Bookshelf.Model.extend({
     if (!veiculo.cidade_id) {
       message.push({
         attribute: 'cidade',
-        problem: 'Cidade é obrigatória!',
+        problem: 'Cidade é obrigatória!'
       });
     }
     if (validator.isNull(veiculo.placa)) {
       message.push({
         attribute: 'placa',
-        problem: 'Campo placa é obrigatória!',
+        problem: 'Campo placa é obrigatória!'
       });
     }
     if (validator.isNull(veiculo.modelo)) {
       message.push({
         attribute: 'modelo',
-        problem: 'Campo modelo é obrigatório!',
+        problem: 'Campo modelo é obrigatório!'
       });
     }
     if (validator.isNull(veiculo.marca)) {
       message.push({
         attribute: 'marca',
-        problem: 'Campo marca é obrigatório!',
+        problem: 'Campo marca é obrigatório!'
       });
     }
     if (validator.isNull(veiculo.cor)) {
       message.push({
         attribute: 'cor',
-        problem: 'Campo cor é obrigatório!',
+        problem: 'Campo cor é obrigatório!'
       });
     }
 
@@ -152,7 +152,7 @@ var Veiculo = Bookshelf.Model.extend({
 
         return message;
       });
-  },
+  }
 });
 Bookshelf.model('Veiculo', Veiculo);
 
