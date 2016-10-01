@@ -21,14 +21,35 @@ const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 var Ativacao = Bookshelf.Model.extend({
   tableName: 'ativacao'
 }, {
-  _ativar: function(activation, options) {
+  _validarAtivacaoUsuario: (ativacao, options) => {
+    var messages = [];
+    return new Usuario({ id: ativacao.usuario_id })
+      .fetch(_.merge({ required: true }, options))
+      .catch(Bookshelf.NotFoundError, () => {
+        messages.push({
+          attribute: 'usuario_id',
+          problem: `Não há usuário com id ${ativacao.usuario_id}`
+        });
+      })
+      .then(function() {
+        return new Veiculo({ id: ativacao.veiculo_id })
+          .fetch(_.merge({ required: true }, options));
+      })
+      .catch(Bookshelf.NotFoundError, () => {
+        messages.push({
+          attribute: 'veiculo_id',
+          problem: `Não há veículo com id ${ativacao.usuario_id}`
+        });
+      })
+  },
+  _ativar: function(camposAtivacao, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options);
     var optionsUpdate = _.merge({ method: 'update', patch: true }, options);
     var ativacao = null;
 
-    var latitude = activation.latitude;
-    var altitude = activation.longitude;
-    var longitude = activation.altitude;
+    var latitude = camposAtivacao.latitude;
+    var altitude = camposAtivacao.longitude;
+    var longitude = camposAtivacao.altitude;
 
     if (!validator.isNumeric('' + latitude)) {
       latitude = null;
@@ -40,27 +61,41 @@ var Ativacao = Bookshelf.Model.extend({
       altitude = null;
     }
 
-    return new Ativacao({
-        data_ativacao: new Date(),
-        latitude: latitude,
-        longitude: longitude,
-        altitude: altitude,
-        veiculo_id: activation.veiculo_id
+    return Ativacao
+      ._validarAtivacaoUsuario(camposAtivacao, options)
+      .then(function(messages) {
+        if (messages.length) {
+          debug('_ativar() ativacao invalida');
+          throw new AreaAzul
+            .BusinessException(
+            'Não foi possível ativar veículo. Dados inválidos',
+            messages);
+        }
+        debug('ativarPelaRevenda() ativacao valida');
       })
-      .save(null, optionsInsert)
+      .then(function() {
+        return new Ativacao({
+          data_ativacao: new Date(),
+          latitude: latitude,
+          longitude: longitude,
+          altitude: altitude,
+          veiculo_id: camposAtivacao.veiculo_id
+        })
+          .save(null, optionsInsert);
+      })
       .then(function(a) {
         ativacao = a;
         return new AtivacaoUsuario({
-            ativacao_id: ativacao.id,
-            usuario_id: activation.usuario_id
-          })
+          ativacao_id: ativacao.id,
+          usuario_id: camposAtivacao.usuario_id
+        })
           .save(null, optionsInsert);
       })
       .then(function() {
         return UsuarioHasVeiculo
           .forge({
-            usuario_id: activation.usuario_id,
-            veiculo_id: activation.veiculo_id
+            usuario_id: camposAtivacao.usuario_id,
+            veiculo_id: camposAtivacao.veiculo_id
           })
           .fetch(options);
       })
@@ -68,8 +103,8 @@ var Ativacao = Bookshelf.Model.extend({
         if (!usuariohasveiculo) {
           return UsuarioHasVeiculo
             .forge({
-              usuario_id: activation.usuario_id,
-              veiculo_id: activation.veiculo_id,
+              usuario_id: camposAtivacao.usuario_id,
+              veiculo_id: camposAtivacao.veiculo_id,
               ultima_ativacao: new Date()
             })
             .save(null, optionsInsert);
@@ -78,7 +113,7 @@ var Ativacao = Bookshelf.Model.extend({
           .save({ ultima_ativacao: new Date() }, optionsUpdate);
       })
       .then(function() {
-        return new Usuario({ id: activation.usuario_id })
+        return new Usuario({ id: camposAtivacao.usuario_id })
           .fetch();
       })
       .then(function(usuario) {
@@ -86,7 +121,7 @@ var Ativacao = Bookshelf.Model.extend({
           ._inserirDebito({
             historico: 'ativacao',
             tipo: 'ativacao',
-            valor: activation.valor,
+            valor: camposAtivacao.valor,
             conta_id: usuario.get('conta_id')
           }, options);
       })
@@ -94,21 +129,21 @@ var Ativacao = Bookshelf.Model.extend({
         return ativacao;
       });
   },
-  ativar: function(activation) {
-    log.info('ativar', { ativacao: activation });
+  ativar: function(ativacao) {
+    log.info('ativar', { ativacao: ativacao });
 
     return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
-      return Ativacao._ativar(activation, options);
+      return Ativacao._ativar(ativacao, options);
     });
   },
 
   _desativar: function(desativacao, options) {
     var optionsPatch = _.merge({ patch: true }, options);
     return new AtivacaoUsuario({
-        ativacao_id: desativacao.ativacao_id,
-        usuario_id: desativacao.usuario_id
-      })
+      ativacao_id: desativacao.ativacao_id,
+      usuario_id: desativacao.usuario_id
+    })
       .fetch(options)
       .then(function(d) {
         if (!d) {
@@ -162,7 +197,7 @@ var Ativacao = Bookshelf.Model.extend({
         debug('ativarPelaRevenda() buscando veiculo com placa ' +
           placaSemMascara);
         return Veiculo
-          .forge({placa: placaSemMascara})
+          .forge({ placa: placaSemMascara })
           .fetch(options);
       })
       .then(function(veiculo) {
@@ -182,15 +217,15 @@ var Ativacao = Bookshelf.Model.extend({
       .then(function(v) {
         debug('ativarPelaRevenda() ativando veiculo #' + v.id);
         return new Ativacao({
-            data_ativacao: new Date(),
-            veiculo_id: v.id
-          })
+          data_ativacao: new Date(),
+          veiculo_id: v.id
+        })
           .save(null, optionsInsert);
       })
       .then(function() {
         return new UsuarioRevendedor({
-            id: ativacao.usuario_revendedor_id
-          })
+          id: ativacao.usuario_revendedor_id
+        })
           .fetch(options);
       })
       .then(function(u) {
@@ -203,7 +238,7 @@ var Ativacao = Bookshelf.Model.extend({
           ._inserirDebito({
             conta_id: revendedor.get('conta_id'),
             historico: 'ativacao-revenda usuario='
-              + usuario.id + '/revenda=' + revendedor.id,
+            + usuario.id + '/revenda=' + revendedor.id,
             tipo: 'ativacao',
             valor: 10.00
           }, options);
@@ -215,52 +250,9 @@ var Ativacao = Bookshelf.Model.extend({
       return Ativacao._ativarPelaRevenda(ativacao, { transacting: t });
     });
   },
-  __validarAtivacao: function(message, ativacao, placa, options) {
-    if (validator.isNull('' + ativacao.marca)) {
-      message.push({
-        attribute: 'marca',
-        problem: 'Marca é obrigatória!'
-      });
-    }
-    if (validator.isNull('' + ativacao.modelo)) {
-      message.push({
-        attribute: 'modelo',
-        problem: 'Modelo é obrigatório!'
-      });
-    }
-    if (validator.isNull('' + ativacao.cor)) {
-      message.push({
-        attribute: 'cor',
-        problem: 'Cor é obrigatória!'
-      });
-    }
-    if (validator.isNull('' + ativacao.tempo)) {
-      message.push({
-        attribute: 'tempo',
-        problem: 'Tempo é obrigatório!'
-      });
-    }
-    if (!validator.isNumeric('' + ativacao.tempo)) {
-      message.push({
-        attribute: 'tempo',
-        problem: 'Tempo deve ser um número'
-      });
-    }
-    return Ativacao
-      ._verificaAtivacao(placa, options)
-      .then(function(ativado) {
-        if (ativado) {
-          message.push({
-            attribute: 'ativado',
-            problem: 'AreaAzul já ativada para este veículo!'
-          });
-        }
-        return message;
-      });
-  },
   _validarAtivacao: function(ativacao, placa, options) {
     var message = [];
-    return this
+    return Ativacao
       ._validarAtivacao(message, ativacao, placa, options)
       .then(function() {
         return Ativacao
@@ -277,22 +269,84 @@ var Ativacao = Bookshelf.Model.extend({
       });
   },
   _validarAtivacaoRevenda: function(ativacao, placa, options) {
-    var message = [];
-    return this
-      .__validarAtivacao(message, ativacao, placa, options)
-      .then(function() {
-        return Ativacao
-          ._verificaSaldoRevendedor(ativacao.usuario_revendedor_id, options);
+    var messages = [];
+    var idUsuarioRevendedor;
+
+    if (!ativacao.usuario_revendedor_id) {
+      messages.push({
+        attribute: 'usuario_revendedor_id',
+        problem: 'Falta identificador do revendedor'
       })
-      .then(function(conta) {
-        if (!conta || conta.get('saldo') < ativacao.valor) {
-          message.push({
-            attribute: 'valor',
-            problem: 'Revenda não possui saldo suficiente em conta!'
+    } else if (!validator.isNumeric('' + ativacao.usuario_revendedor_id)) {
+      messages.push({
+        attribute: 'usuario_revendedor_id',
+        problem: 'Deve ser numérico'
+      })
+    } else {
+      idUsuarioRevendedor = 0 + ativacao.usuario_revendedor_id;
+    }
+
+    if (!ativacao.tempo) {
+      message.push({
+        attribute: 'tempo',
+        problem: 'Tempo é obrigatório!'
+      });
+    } else if (!validator.isNumeric('' + ativacao.tempo)) {
+      message.push({
+        attribute: 'tempo',
+        problem: 'Tempo deve ser um número'
+      });
+    }
+
+    return new Veiculo({ placa: ativacao.placa })
+      .fetch(_.merge({ require: true }, options))
+      .then(function(veiculo) {
+        return Ativacao
+          ._verificaAtivacao(veiculo.get('placa'), options);
+      })
+      .then(function(ativado) {
+        if (ativado) {
+          messages.push({
+            attribute: 'placa',
+            problem: 'AreaAzul já ativada para este veículo!'
           });
         }
-        return message;
-      });
+      })
+      .catch(Bookshelf.NotFoundError, () => {
+        // Placa não cadastrada, verificar se há dados suficientes para
+        // cadastrar novo veículo
+        return Veiculo
+          ._validarVeiculo(ativacao, options)
+          .then(function(messagesVeiculo) {
+            messages = messages.concat(messagesVeiculo)
+          });
+      })
+      .then(() => {
+        if (idUsuarioRevendedor === undefined) { return messages; }
+        const optionsFetch = _.merge({ require: true }, options);
+        return new UsuarioRevendedor({ id: idUsuarioRevendedor })
+          .fetch(optionsFetch)
+          .then(function() {
+            return Ativacao
+              ._verificaSaldoRevendedor(idUsuarioRevendedor, options);
+          })
+          .then(function(conta) {
+            if (!conta || conta.get('saldo') < ativacao.valor) {
+              messages.push({
+                attribute: 'valor',
+                problem: 'Revenda não possui saldo suficiente em conta!'
+              });
+            }
+            return messages;
+          })
+          .catch(Bookshelf.Model.NotFoundError, () => {
+            idUsuarioRevendedor = undefined;
+            messages.push({
+              attribute: 'usuario_revendedor_id',
+              problem: 'Identificador de revendedor inválido'
+            });
+          });
+      })
   },
   _verificaSaldoRevendedor: function(idUsuarioRevendedor, options) {
     return Conta
@@ -340,19 +394,19 @@ Bookshelf.model('Ativacao', Ativacao);
 
 const AtivacaoUsuario = Bookshelf.Model.extend({
   tableName: 'ativacao_usuario',
-  idAttribute: ['ativacao_id', 'usuario_id']
+  idAttribute: [ 'ativacao_id', 'usuario_id' ]
 });
 Bookshelf.model('AtivacaoUsuario', AtivacaoUsuario);
 
 const AtivacaoUsuarioRevendedor = Bookshelf.Model.extend({
   tableName: 'ativacao_usuario_revendedor',
-  idAttribute: ['ativacao_id', 'usuario_revendedor_id']
+  idAttribute: [ 'ativacao_id', 'usuario_revendedor_id' ]
 });
 Bookshelf.model('AtivacaoUsuarioRevendedor', AtivacaoUsuarioRevendedor);
 
 const AtivacaoUsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'ativacao_usuario_fiscal',
-  idAttribute: ['ativacao_id', 'usuario_fiscal_id']
+  idAttribute: [ 'ativacao_id', 'usuario_fiscal_id' ]
 });
 Bookshelf.model('AtivacaoUsuarioFiscal', AtivacaoUsuarioFiscal);
 

@@ -71,7 +71,10 @@ describe('model.revendedor', function() {
 
     it('Validar revendedor pessoa juridica funciona', function(done) {
       Revendedor.validarRevenda(revendedorPJ)
-        .then(function() {
+        .then(function(mensagensRevendedorPJ) {
+          should.exist(mensagensRevendedorPJ);
+          mensagensRevendedorPJ.should.be.instanceOf(Array);
+          mensagensRevendedorPJ.length.should.be.equal(0);
           done();
         })
         .catch(function(e) {

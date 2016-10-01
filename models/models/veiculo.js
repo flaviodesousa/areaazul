@@ -10,13 +10,13 @@ var util = require('../../helpers/util');
 
 var Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',
-  cidade: function () {
+  cidade: function() {
     return this.belongsTo('Cidade', 'cidade_id');
   },
   usuarios: function() {
     return this.belongsToMany('Usuario')
-        .through('UsuarioHasVeiculo');
-  },
+      .through('UsuarioHasVeiculo');
+  }
 }, {
 
   _cadastrar: function(veiculoFields, options) {
@@ -26,13 +26,13 @@ var Veiculo = Bookshelf.Model.extend({
     var placaSemMascara = util.placaSemMascara(veiculoFields.placa);
 
     return Veiculo
-      .validarVeiculo(veiculoFields)
+      ._validarVeiculo(veiculoFields, options)
       .then(function(messages) {
         if (messages && messages.length) {
           throw new AreaAzul
             .BusinessException(
-              'Nao foi possivel cadastrar novo Veiculo. Dados invalidos',
-              messages);
+            'Nao foi possivel cadastrar novo Veiculo. Dados invalidos',
+            messages);
         }
         return messages;
       })
@@ -85,65 +85,70 @@ var Veiculo = Bookshelf.Model.extend({
             .save({ ativo: false }, { patch: true });
         }
         throw new AreaAzul.BusinessException(
-            'Desativacao: Veiculo não encontrado', {
-                desativacao: id
-              });
+          'Desativacao: Veiculo não encontrado', {
+            desativacao: id
+          });
       });
   },
 
-  procurarVeiculo: function(placa) {
+  _procurarVeiculo: (placa, options) => {
     var placaSemMascara = '';
 
     if (placa) {
       placaSemMascara = util.placaSemMascara(placa);
     }
     return new Veiculo({ placa: placaSemMascara })
-      .fetch({ withRelated: [ 'cidade', 'cidade.estado' ]});
+      .fetch(_.merge({ withRelated: [ 'cidade', 'cidade.estado' ] }, options));
   },
 
-  validarVeiculo: function(veiculo) {
+  procurarVeiculo: function(placa) {
+    return Bookshelf.transaction(t => {
+      return Veiculo._procurarVeiculo(placa, { transacting: t });
+    });
+  },
 
+  _validarVeiculo: (veiculoFields, options) => {
     var message = [];
-    if (!veiculo.cidade_id) {
+    if (!veiculoFields.cidade_id) {
       message.push({
         attribute: 'cidade',
-        problem: 'Cidade é obrigatória!',
+        problem: 'Cidade é obrigatória!'
       });
     }
-    if (validator.isNull(veiculo.placa)) {
+    if (validator.isNull(veiculoFields.placa)) {
       message.push({
         attribute: 'placa',
-        problem: 'Campo placa é obrigatória!',
+        problem: 'Campo placa é obrigatória!'
       });
     }
-    if (validator.isNull(veiculo.modelo)) {
+    if (validator.isNull(veiculoFields.modelo)) {
       message.push({
         attribute: 'modelo',
-        problem: 'Campo modelo é obrigatório!',
+        problem: 'Campo modelo é obrigatório!'
       });
     }
-    if (validator.isNull(veiculo.marca)) {
+    if (validator.isNull(veiculoFields.marca)) {
       message.push({
         attribute: 'marca',
-        problem: 'Campo marca é obrigatório!',
+        problem: 'Campo marca é obrigatório!'
       });
     }
-    if (validator.isNull(veiculo.cor)) {
+    if (validator.isNull(veiculoFields.cor)) {
       message.push({
         attribute: 'cor',
-        problem: 'Campo cor é obrigatório!',
+        problem: 'Campo cor é obrigatório!'
       });
     }
 
     var placaSemMascara = '';
-    if (veiculo.placa) {
-      placaSemMascara = util.placaSemMascara(veiculo.placa);
+    if (veiculoFields.placa) {
+      placaSemMascara = util.placaSemMascara(veiculoFields.placa);
     }
 
     return Veiculo
-      .procurarVeiculo(placaSemMascara)
+      ._procurarVeiculo(placaSemMascara, options)
       .then(function(veiculoExistente) {
-        if (veiculoExistente && veiculoExistente.id !== veiculo.id) {
+        if (veiculoExistente && veiculoExistente.id !== veiculoFields.id) {
           message.push({
             attribute: 'placa',
             problem: 'Veiculo já cadastrado!'
@@ -152,7 +157,8 @@ var Veiculo = Bookshelf.Model.extend({
 
         return message;
       });
-  },
+
+  }
 });
 Bookshelf.model('Veiculo', Veiculo);
 

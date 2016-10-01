@@ -58,18 +58,18 @@ describe('model.veiculo', function() {
         modelo: modeloTeste,
         cor: corTeste,
         ano_fabricado: anoFabricadoTeste,
-        ano_modelo: anoModeloTeste,
+        ano_modelo: anoModeloTeste
       };
       Veiculo
-      .cadastrar(novoVeiculo)
-      .then(function(veiculo) {
-        idVeiculo = veiculo.id;
-        return done();
-      })
-      .catch(function(e) {
-        debug('erro inesperado', e);
-        done(e);
-      });
+        .cadastrar(novoVeiculo)
+        .then(function(veiculo) {
+          idVeiculo = veiculo.id;
+          return done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
     });
   });
 
@@ -77,46 +77,46 @@ describe('model.veiculo', function() {
   describe('procurarVeiculo()', function() {
     it('retorna um veiculo', function(done) {
       Veiculo.procurarVeiculo(placaTeste)
-      .then(function(veiculo) {
-        should.exist(veiculo);
-        veiculo.get('placa').should.equal(placaTeste);
-        done();
-      })
-      .catch(function(e) {
-        debug('erro inesperado', e);
-        done(e);
-      });
+        .then(function(veiculo) {
+          should.exist(veiculo);
+          veiculo.get('placa').should.equal(placaTeste);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
     });
   });
 
-    describe('desativar()', function() {
-        it('falha para veiculo inexistente', function(done) {
-            Veiculo
-                .desativar(0)
-                .then(function() {
-                    done(new Error('Não deveria desativar veículo inexistente'));
-                })
-                .catch(function(e) {
-                    should.exist(e);
-                    done();
-                });
-        });
-
-        it('desativa veiculo existente', function(done) {
-            Veiculo
-                .desativar(idVeiculo)
-                .then(function() {
-                    done();
-                })
-                .catch(function(e) {
-                  debug('erro inesperado', e);
-                  done(e);
-                });
+  describe('desativar()', function() {
+    it('falha para veiculo inexistente', function(done) {
+      Veiculo
+        .desativar(0)
+        .then(function() {
+          done(new Error('Não deveria desativar veículo inexistente'));
+        })
+        .catch(function(e) {
+          should.exist(e);
+          done();
         });
     });
 
+    it('desativa veiculo existente', function(done) {
+      Veiculo
+        .desativar(idVeiculo)
+        .then(function() {
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+  });
 
-describe('listar()', function() {
+
+  describe('listar()', function() {
     it('retorna uma lista de veiculos ', function(done) {
       Veiculos.listar(
         function(collection) {
@@ -128,7 +128,7 @@ describe('listar()', function() {
           done(err);
         });
     });
-});
+  });
 
   after(function(done) {
     apagarDadosDeTeste(placaTeste)

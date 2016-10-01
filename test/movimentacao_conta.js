@@ -29,12 +29,13 @@ describe('model.movimentacaoConta', function() {
         conta_id: revendedor.get('conta_id'),
         valor: 100.00,
         tipo: 'Cartão de credito',
-        historico: 'credito-de-teste',
+        historico: 'credito-de-teste'
       };
 
       MovimentacaoConta
         .inserirCredito(conta)
-        .then(function() {
+        .then(function(credito) {
+          should.exist(credito);
           done();
         })
         .catch(function(err) {
@@ -49,12 +50,13 @@ describe('model.movimentacaoConta', function() {
         conta_id: revendedor.get('conta_id'),
         valor: 10.00,
         tipo: 'o-que-eh-esse-tipo?',
-        historico: 'debito-de-teste',
+        historico: 'debito-de-teste'
       };
 
       MovimentacaoConta
         .inserirDebito(conta)
-        .then(function() {
+        .then(function(debito) {
+          should.exist(debito);
           done();
         })
         .catch(function(err) {

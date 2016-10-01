@@ -1,28 +1,27 @@
 'use strict';
 
+const Promise = require('bluebird');
 const AreaAzul = require('../../areaazul');
 var Bookshelf = AreaAzul.db;
 var Cidade = Bookshelf.model('Cidade');
 
 var Cidades = Bookshelf.Collection.extend({
-  model: Cidade,
+  model: Cidade
 }, {
   listar: function(idEstado) {
-    return this
-    .forge()
-    .query(function(qb) {
-      qb.where('estado_id', '=', idEstado);
-      qb.select('cidade.*');
-    })
-    .fetch()
-    .then(function(collection) {
-      return collection;
-    })
-    .catch(function(e) {
-      return e;
-    });
-  },
+    if (idEstado && idEstado !== 0 + idEstado) {
+      return Promise.reject(
+        new AreaAzul.BusinessException(
+          'idEstado deve ser numérico',
+          { idEstado: idEstado }))
+    }
+    return Cidades
+      .query(function(qb) {
+        if (idEstado) {
+          qb.where('estado_id', '=', idEstado);
+        }
+      })
+      .fetch();
+  }
 });
 Bookshelf.collection('Cidades', Cidades);
-
-module.exports = Cidades;

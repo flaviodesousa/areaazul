@@ -8,8 +8,9 @@ var UsuariosRevendedores = Bookshelf.Collection.extend({
 }, {
   listarUsuarioRevenda: function(idRevendedor) {
     return new UsuariosRevendedores()
-      .where({ id_revendedor: idRevendedor });
-  },
+      .query()
+      .where({ revendedor_id: idRevendedor });
+  }
 });
 Bookshelf.collection('UsuariosRevendedores', UsuariosRevendedores);
 
