@@ -54,7 +54,7 @@ describe('models.PessoaFisica', function() {
       })
         .then(function(pf) {
           should.exist(pf);
-          should.exist(pf.id);
+          pf.should.have.property('id');
           pf.get('cpf').should.equal(cpfTeste);
           done();
         })
