@@ -8,20 +8,20 @@ const Bookshelf = AreaAzul.db;
 const Pessoa = Bookshelf.model('Pessoa');
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 
-describe('models.PessoaFisica', function () {
+describe('models.PessoaFisica', function() {
   var cpfTeste = '04163501436';
 
   function deleteTestData(done) {
     var pessoaId = null;
-    new PessoaFisica({cpf: cpfTeste})
+    new PessoaFisica({ cpf: cpfTeste })
       .fetch()
-      .then(function (pf) {
+      .then(function(pf) {
         if (pf) {
           pessoaId = pf.id;
           return pf.destroy();
         }
       })
-      .then(function () {
+      .then(function() {
         if (pessoaId !== null) {
           return Pessoa
             .forge({
@@ -30,10 +30,10 @@ describe('models.PessoaFisica', function () {
             .destroy();
         }
       })
-      .then(function () {
+      .then(function() {
         return done();
       })
-      .catch(function (e) {
+      .catch(function(e) {
         debug('erro inesperado', e);
         done(e);
       });
@@ -41,9 +41,9 @@ describe('models.PessoaFisica', function () {
 
   before(deleteTestData);
 
-  describe('cadastrar()', function () {
+  describe('cadastrar()', function() {
 
-    it('funciona!', function (done) {
+    it('funciona!', function(done) {
       PessoaFisica.cadastrar({
         nome: 'PF preexistente',
         email: 'preexistente@example.com',
@@ -52,21 +52,21 @@ describe('models.PessoaFisica', function () {
         data_nascimento: '13/11/1981',
         sexo: 'feminino'
       })
-        .then(function (pf) {
+        .then(function(pf) {
           should.exist(pf);
           should.exist(pf.id);
           pf.get('cpf').should.equal(cpfTeste);
           done();
         })
-        .catch(function (e) {
+        .catch(function(e) {
           debug('erro inesperado', e);
           done(e);
         });
     });
 
   });
-  describe('buscarPorCPF()', function () {
-    it('retorna null se cpf não existir', function (done) {
+  describe('buscarPorCPF()', function() {
+    it('retorna null se cpf não existir', function(done) {
       var cpfInvalido = cpfTeste + '0';
       PessoaFisica.buscarPorCPF(cpfInvalido)
         .then(function(pf) {
@@ -76,20 +76,20 @@ describe('models.PessoaFisica', function () {
           }
           done();
         })
-        .catch(function (e) {
+        .catch(function(e) {
           debug('erro inesperado', e);
           done(e);
         });
     });
-    it('funciona!', function (done) {
+    it('funciona!', function(done) {
       PessoaFisica.buscarPorCPF(cpfTeste)
-        .then(function (pf) {
+        .then(function(pf) {
           should.exist(pf);
           should.exist(pf.id);
           pf.get('cpf').should.equal(cpfTeste);
           done();
         })
-        .catch(function (e) {
+        .catch(function(e) {
           debug('erro inesperado', e);
           done(e);
         });

@@ -74,8 +74,8 @@ describe('model.ativacao', function() {
             qb
               .whereExists(function() {
                 this.select('*').from('ativacao')
-                .whereRaw('ativacao.id=ativacao_usuario.ativacao_id'
-                  + ' and ativacao.data_desativacao is null');
+                  .whereRaw('ativacao.id=ativacao_usuario.ativacao_id'
+                    + ' and ativacao.data_desativacao is null');
               });
           })
           .destroy();

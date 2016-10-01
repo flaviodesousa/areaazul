@@ -15,7 +15,7 @@ describe('model.fiscalizacao', function() {
 
   before(function(done) {
     UsuarioFiscal
-      .forge({login: fiscalLogin})
+      .forge({ login: fiscalLogin })
       .fetch()
       .then(function(f) {
         if (f) {
@@ -28,16 +28,16 @@ describe('model.fiscalizacao', function() {
             nova_senha: 'senha-fiscal-teste',
             conf_senha: 'senha-fiscal-teste',
             email: fiscalLogin + '@areaazul.org',
-            cpf: '58392095707',
+            cpf: '58392095707'
           })
-          .then(function(f) {
-            fiscalId = f.id;
-            done();
-          })
-          .catch(function(e) {
-            debug('erro inesperado', e);
-            done(e);
-          });
+            .then(function(f) {
+              fiscalId = f.id;
+              done();
+            })
+            .catch(function(e) {
+              debug('erro inesperado', e);
+              done(e);
+            });
         }
       });
   });
@@ -49,7 +49,7 @@ describe('model.fiscalizacao', function() {
         .cadastrar({
           latitude: 33.5,
           longitude: 44.5,
-          usuario_fiscal_id: fiscalId,
+          usuario_fiscal_id: fiscalId
         })
         .then(function() {
           done(new Error('Nao deveria ter gravado sem placa.'));
@@ -64,7 +64,7 @@ describe('model.fiscalizacao', function() {
         .cadastrar({
           placa: 'xyz1234',
           latitude: 33.5,
-          longitude: 34.5,
+          longitude: 34.5
         })
         .then(function() {
           done(new Error('Nao deveria ter gravado sem fiscal'));
@@ -80,7 +80,7 @@ describe('model.fiscalizacao', function() {
           placa: 'xyz1234',
           latitude: 33.5,
           longitude: 34.5,
-          usuario_fiscal_id: fiscalId,
+          usuario_fiscal_id: fiscalId
         })
         .then(function(f) {
           should.exist(f);
@@ -97,7 +97,7 @@ describe('model.fiscalizacao', function() {
           placa: 'xyz1234',
           latitude: '33,5',
           longitude: '34,5',
-          usuario_fiscal_id: fiscalId,
+          usuario_fiscal_id: fiscalId
         })
         .then(function() {
           done(new Error('Nao deveria ter gravado com virgula decimal.'));
@@ -113,7 +113,7 @@ describe('model.fiscalizacao', function() {
           placa: 'lon9999',
           latitude: '-89.9999999999',
           longitude: '-179.9999999999',
-          usuario_fiscal_id: fiscalId,
+          usuario_fiscal_id: fiscalId
         })
         .then(function(novaAtivacao) {
           return new Fiscalizacao({ id: novaAtivacao.id })
@@ -135,9 +135,9 @@ describe('model.fiscalizacao', function() {
       Fiscalizacao
         .cadastrar({
           placa: 'lon9999',
-          latitude:   '-89.99999999999',
+          latitude: '-89.99999999999',
           longitude: '-179.99999999999',
-          usuario_fiscal_id: fiscalId,
+          usuario_fiscal_id: fiscalId
         })
         .then(function(fiscalizacao) {
           return new Fiscalizacao({ id: fiscalizacao.id })
@@ -166,21 +166,21 @@ describe('model.fiscalizacao', function() {
     });
     it('limita por tempo', function() {
       return Fiscalizacoes
-        .listar({minutos: 10})
+        .listar({ minutos: 10 })
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);
         });
     });
     it('limita por respostas', function() {
       return Fiscalizacoes
-        .listar({limite: 2})
+        .listar({ limite: 2 })
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);
         });
     });
     it('limita por tempo E respostas', function() {
       Fiscalizacoes
-        .listar({limite: 2, minutos: 10})
+        .listar({ limite: 2, minutos: 10 })
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);
         });

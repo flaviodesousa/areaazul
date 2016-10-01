@@ -51,7 +51,7 @@ describe('models.UsuarioRevendedor', function() {
         email: 'revenda@teste.com',
         cpf: cpfNaoExistente,
         revendedor_id: idRevendedor,
-        termo_servico: termoDeServico,
+        termo_servico: termoDeServico
       })
         .then(function(usuarioRevendedor) {
           should.exist(usuarioRevendedor);
@@ -78,7 +78,7 @@ describe('models.UsuarioRevendedor', function() {
         email: 'revenda_alterada@teste.com',
         cpf: cpfNaoExistente,
         revendedor_id: idRevendedor,
-        termo_servico: termoDeServico,
+        termo_servico: termoDeServico
       })
         .then(function(pessoa) {
           should.exist(pessoa);

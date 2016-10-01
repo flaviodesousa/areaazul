@@ -51,19 +51,19 @@ describe('models.PessoaJuridica', function() {
         nome_fantasia: 'PJ preexistente',
         razao_social: 'razao social teste',
         contato: 'contato-teste',
-        ativo: true,
+        ativo: true
       })
-      .then(function(pj) {
-        should.exist(pj);
-        should.exist(pj.attributes);
-        should.exist(pj.attributes.cnpj);
-        pj.attributes.cnpj.should.be.equal(cnpjTeste);
-        done();
-      })
-      .catch(function(e) {
-        debug('erro inesperado', e);
-        done(e);
-      });
+        .then(function(pj) {
+          should.exist(pj);
+          should.exist(pj.attributes);
+          should.exist(pj.attributes.cnpj);
+          pj.attributes.cnpj.should.be.equal(cnpjTeste);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
     });
 
   });
