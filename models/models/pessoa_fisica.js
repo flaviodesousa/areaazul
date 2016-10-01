@@ -45,14 +45,14 @@ var PessoaFisica = Bookshelf.Model.extend({
         return messages;
       })
   },
-  _camposValidosInclusao: function (pessoaFisicaFields, options) {
+  _camposValidosInclusao: function(pessoaFisicaFields, options) {
     var messages = [];
     return this
       ._camposValidos(pessoaFisicaFields, options)
       .then(function(messagesPessoa) {
         messages = _.concat(messages, messagesPessoa);
         return PessoaFisica
-          .buscarPorCPF(pessoaFisicaFields.cpf)
+          ._buscarPorCPF(pessoaFisicaFields.cpf, options)
           .then(function(pf) {
             if (pf) {
               messages.push({
