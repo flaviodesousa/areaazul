@@ -18,9 +18,7 @@ module.exports = function() {
         });
     },
     vehicles_add: function(req, res) {
-      req.user.usuario.addVeiculo({
-        placa: req.body.placa,
-      })
+      req.user.usuario.addVeiculo({ placa: req.body.placa })
         .then(function(veiculo) {
           res.json(veiculo);
         })
@@ -33,9 +31,9 @@ module.exports = function() {
         veiculo_id: req.body.veiculo_id,
         latitude: req.body.latitude,
         longitude: req.body.longitude,
-        altitude: req.body.altitude,
+        altitude: req.body.altitude
       }, function(ativacao) {
-        res.status(200).json({id: ativacao.id});
+        res.status(200).json({ id: ativacao.id });
       }, function() {
         res.status(500).end();
       });
@@ -54,12 +52,12 @@ module.exports = function() {
         veiculo_id: req.body.veiculo_id,
         latitude: req.body.latitude,
         longitude: req.body.longitude,
-        altitude: req.body.altitude,
+        altitude: req.body.altitude
       }, function() {
         res.status(200).end();
       }, function() {
         res.status(500).end();
       });
-    },
+    }
   };
 };

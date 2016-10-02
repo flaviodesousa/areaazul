@@ -3,7 +3,7 @@
 const AreaAzul = require('areaazul');
 const Bookshelf = AreaAzul.db;
 
-module.exports.registrar = function (req, res) {
+module.exports.registrar = function(req, res) {
   Bookshelf.model('Fiscalizacao')
     .cadastrar({
       usuario_fiscal_id: req.user.id,
@@ -11,15 +11,15 @@ module.exports.registrar = function (req, res) {
       latitude: req.body.latitude,
       longitude: req.body.longitude
     })
-    .then(function () {
+    .then(function() {
       res.status(200).end();
     })
-    .catch(function (result) {
+    .catch(function(result) {
       res.status(400).send('' + result);
     });
 };
 
-module.exports.listar = function (req, res) {
+module.exports.listar = function(req, res) {
   var params = {};
   if (req.query.minutos) {
     params.minutos = Number(req.query.minutos);
@@ -29,10 +29,10 @@ module.exports.listar = function (req, res) {
   }
   Bookshelf.collection('Fiscalizacoes')
     .listar(params)
-    .then(function (fiscalizacoes) {
+    .then(function(fiscalizacoes) {
       res.send(fiscalizacoes.toJSON());
     })
-    .catch(function (result) {
+    .catch(function(result) {
       res.status(400).send('' + result);
     });
 };
