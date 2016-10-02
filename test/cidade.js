@@ -16,6 +16,8 @@ describe('/cidade', function() {
 
   describe('GET', function() {
     it('obtém lista de cidades', function(done) {
+      this.slow(1500);
+      this.timeout(5000);  // Lista completa de cidades: mais lento
       superAgent
         .get('http://localhost:8080/cidade')
         .end(function(err, res) {
