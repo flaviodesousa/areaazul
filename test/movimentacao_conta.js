@@ -1,10 +1,10 @@
 'use strict';
 
 var should = require('chai').should();
-var TestHelpers = require('../helpers/test');
 const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
 var MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 describe('model.movimentacaoConta', function() {
   var revendedor = null;

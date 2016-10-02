@@ -6,7 +6,7 @@ var should = require('chai').should();
 const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
 
-var TestHelpers = require('../helpers/test');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 var Ativacao = Bookshelf.model('Ativacao');
 const AtivacaoUsuario = Bookshelf.model('AtivacaoUsuario');

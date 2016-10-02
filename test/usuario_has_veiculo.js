@@ -8,7 +8,7 @@ const Bookshelf = AreaAzul.db;
 var MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 var UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
 
-var TestHelpers = require('../helpers/test');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 describe('model.usuario_has_veiculo', function() {
   var idUsuarioComum = null;

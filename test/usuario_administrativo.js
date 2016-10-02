@@ -8,7 +8,7 @@ const Bookshelf = AreaAzul.db;
 var UsuarioAdministrativo = Bookshelf.model('UsuarioAdministrativo');
 var PessoaFisica = Bookshelf.model('PessoaFisica');
 
-var TestHelpers = require('../helpers/test');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 describe('models.UsuarioAdministrativo', function() {
   const camposUsuarioAdministrativoPreExistente = {

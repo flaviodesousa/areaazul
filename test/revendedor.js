@@ -9,7 +9,7 @@ const Bookshelf = AreaAzul.db;
 const Revendedor = Bookshelf.model('Revendedor');
 const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 
-const TestHelpers = require('../helpers/test');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 describe('model.revendedor', function() {
   const revendedorPF = {

@@ -11,7 +11,7 @@ var UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 var UsuariosRevendedores = Bookshelf.collection('UsuariosRevendedores');
 var PessoaFisica = Bookshelf.model('PessoaFisica');
 
-var TestHelpers = require('../helpers/test');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 describe('models.UsuarioRevendedor', function() {
   var cpfNaoExistente = '58316661667';

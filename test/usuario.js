@@ -8,7 +8,7 @@ const Bookshelf = AreaAzul.db;
 
 var Usuario = Bookshelf.model('Usuario');
 
-var TestHelpers = require('../helpers/test');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 describe('model.usuario', function() {
   const camposUsuarioDeTeste = {

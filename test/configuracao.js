@@ -4,7 +4,7 @@ var should = require('chai').should();
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 var Configuracao = Bookshelf.model('Configuracao');
-var TestHelpers = require('../helpers/test');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 describe('model.configuracao', function() {
   var idCidade = null;
