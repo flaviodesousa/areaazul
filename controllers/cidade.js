@@ -3,17 +3,17 @@
 const AreaAzul = require('areaazul');
 const Bookshelf = AreaAzul.db;
 
-module.exports.listar = function (req, res) {
+module.exports.listar = function(req, res) {
   var estado;
   if (req.query.estado) {
     estado = Number(req.query.estado);
   }
-  Bookshelf.collection('Estados')
+  Bookshelf.collection('Cidades')
     .listar(estado)
-    .then(function (estados) {
+    .then(function(estados) {
       res.send(estados.toJSON());
     })
-    .catch(function (result) {
+    .catch(function(result) {
       res.status(400).send('' + result);
     });
 };
