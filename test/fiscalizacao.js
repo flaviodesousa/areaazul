@@ -20,10 +20,12 @@ describe('/fiscalizacao', function() {
   };
 
   before(function(done) {
-    new UsuarioFiscal({login: fiscalTesteAPI.login})
+    new UsuarioFiscal({ login: fiscalTesteAPI.login })
       .fetch()
       .then(function(fiscal) {
-        if (fiscal) { return fiscal }
+        if (fiscal) {
+          return fiscal
+        }
         return UsuarioFiscal
           .cadastrar(fiscalTesteAPI);
       })
@@ -38,7 +40,7 @@ describe('/fiscalizacao', function() {
       })
   });
 
-  describe('POST', function () {
+  describe('POST', function() {
     it('registra uma fiscalizacao', function(done) {
       superagent
         .post('http://localhost:8080/fiscalizacao')
@@ -57,7 +59,7 @@ describe('/fiscalizacao', function() {
     });
   });
 
-  describe('GET', function () {
+  describe('GET', function() {
     it('obtém lista de fiscalizações', function(done) {
       superagent
         .get('http://localhost:8080/fiscalizacao')
