@@ -1,0 +1,32 @@
+{
+  "name": "areaazul-test-helpers",
+  "version": "1.0.0",
+  "description": "Funções para simplificar a configuração de estado para um teste",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "publishConfig": {
+    "registry": "https://npm.flaviodesousa.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@bitbucket.org/solutions-inf-br/areaazul-test-helpers.git"
+  },
+  "keywords": [
+    "test",
+    "helper"
+  ],
+  "author": "Flávio de Sousa <fl@viodesousa.com>",
+  "license": "UNLICENSED",
+  "homepage": "https://bitbucket.org/solutions-inf-br/areaazul-test-helpers#readme",
+  "dependencies": {
+    "debug": "^2.2.0",
+    "lodash": "^4.16.2",
+    "mathjs": "^3.5.3"
+  },
+  "devDependencies": {
+    "gulp": "^3.9.1",
+    "gulp-release-tasks": "0.0.3"
+  }
+}
