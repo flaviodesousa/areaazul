@@ -44,11 +44,7 @@ exports.geradorUUIDAleatorio = function() {
 exports.placaSemMascara = function(valor) {
   var valorComMascara = valor;
 
-  valorComMascara = valorComMascara.replace('.', '');
-  valorComMascara = valorComMascara.replace('-', '');
-  valorComMascara = valorComMascara.replace('/', '');
-  valorComMascara = valorComMascara.replace('_', '');
-  valorComMascara = valorComMascara.replace('*', '');
+  valorComMascara = valorComMascara.replace(/[^A-Za-z0-9]/, '');
 
   return valorComMascara;
 };

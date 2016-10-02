@@ -107,6 +107,10 @@ var Veiculo = Bookshelf.Model.extend({
     });
   },
 
+  buscarPorId: function(id) {
+    return new Veiculo({ id: id }).fetch({ require: true });
+  },
+
   _validarVeiculo: (veiculoFields, options) => {
     var message = [];
     if (!veiculoFields.cidade_id) {

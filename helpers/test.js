@@ -6,6 +6,7 @@ var Promise = require('bluebird');
 const math = require('mathjs');
 
 const AreaAzul = require('../../areaazul');
+const aazUtils = require('./util');
 const Bookshelf = AreaAzul.db;
 
 const Fiscalizacoes = Bookshelf.collection('Fiscalizacoes');
@@ -232,6 +233,7 @@ exports.apagarAtivacaoId = function(id) {
 };
 
 exports.apagarVeiculoPorPlaca = function(placa) {
+  placa = aazUtils.placaSemMascara(placa);
   return new Veiculo({ placa: placa })
     .fetch()
     .then(function(v) {
@@ -345,7 +347,7 @@ function pegarRevendedor() {
     .fetch()
     .then(function(pf) {
       if (pf) {
-        return new Revendedor({ id: pf.id})
+        return new Revendedor({ id: pf.id })
           .fetch();
       }
       debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
@@ -360,7 +362,8 @@ function pegarRevendedor() {
       return Revendedor
         .cadastrar(revendedorPessoaFisicaTeste);
     });
-}exports.pegarRevendedor = pegarRevendedor;
+}
+exports.pegarRevendedor = pegarRevendedor;
 
 var usuarioRevendedorTeste = {
   login: 'usuarioRevendedorTeste',
@@ -388,7 +391,7 @@ exports.pegarUsuarioRevendedor = function() {
           return UsuarioRevendedor
             .inserir(
               _.merge({ revendedor_id: revendedor.id },
-              usuarioRevendedorTeste));
+                usuarioRevendedorTeste));
         });
     });
 };
@@ -397,9 +400,8 @@ exports.setSaldo = function(conta, novoSaldo) {
   return MovimentacaoConta
     .inserirCredito({
       conta_id: conta.id,
-      historico: 'credito para teste de ' + conta.get('saldo')
-        + ' para ' + novoSaldo,
+      historico: `credito teste de ${conta.get('saldo')} para ${novoSaldo}`,
       tipo: 'teste',
       valor: math.chain(novoSaldo).subtract(conta.get('saldo')).done()
     });
-}
+};

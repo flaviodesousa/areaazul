@@ -1,15 +1,16 @@
 'use strict';
 
-var debug = require('debug')('areaazul:test:veiculo');
-var should = require('chai').should();
+const debug = require('debug')('areaazul:test:veiculo');
+const should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
 
-var Veiculo = Bookshelf.model('Veiculo');
-var Veiculos = Bookshelf.collection('Veiculos');
+const Veiculo = Bookshelf.model('Veiculo');
+const Veiculos = Bookshelf.collection('Veiculos');
 
-var TestHelpers = require('../helpers/test');
+const TestHelpers = require('../helpers/test');
+const AreaAzulUtils = require('../helpers/util');
 
 describe('model.veiculo', function() {
 
@@ -17,7 +18,7 @@ describe('model.veiculo', function() {
     return TestHelpers.apagarVeiculoPorPlaca(placa);
   }
 
-  var placaTeste = 'AAA1234';
+  var placaTeste = 'AAA-1234';
   var marcaTeste = 'Marca teste';
   var modeloTeste = 'Modelo Teste';
   var corTeste = 'Cor Teste';
@@ -79,7 +80,8 @@ describe('model.veiculo', function() {
       Veiculo.procurarVeiculo(placaTeste)
         .then(function(veiculo) {
           should.exist(veiculo);
-          veiculo.get('placa').should.equal(placaTeste);
+          const placaSemFormato = AreaAzulUtils.placaSemMascara(placaTeste);
+          veiculo.get('placa').should.equal(placaSemFormato);
           done();
         })
         .catch(function(e) {
