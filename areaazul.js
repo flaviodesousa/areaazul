@@ -17,7 +17,7 @@ util.inherits(AuthenticationError, Error);
 
 module.exports.log = require('./configuration/logging');
 module.exports.db = require('./configuration/database');
-module.exports.util = require('./helpers/util');
+module.exports.util = require('areaazul-utils');
 
 [
   'estado', 'cidade', 'conta', 'contrato', 'pessoa', 'pessoa_fisica',

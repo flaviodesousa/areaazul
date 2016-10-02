@@ -1,5 +1,5 @@
-var validator = require('validator');
-var util = require('../../helpers/util');
+const validator = require('validator');
+const util = require('areaazul-utils');
 
 
 exports.isCPF = function(cpf) {

@@ -1,12 +1,12 @@
 'use strict';
 
-var debug = require('debug')('areaazul:model:veiculo');
-var _ = require('lodash');
-var validator = require('validator');
+const debug = require('debug')('areaazul:model:veiculo');
+const _ = require('lodash');
+const validator = require('validator');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
-var util = require('../../helpers/util');
+const util = require('areaazul-utils');
 
 var Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',

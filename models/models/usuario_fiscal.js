@@ -4,8 +4,8 @@ const _ = require('lodash');
 const bcrypt = require('bcrypt-then');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
-var log = AreaAzul.log;
-var util = require('../../helpers/util');
+const log = AreaAzul.log;
+const util = require('areaazul-utils');
 const UsuarioHelper = require('../../helpers/usuario_helper');
 
 const Usuario = Bookshelf.model('Usuario');

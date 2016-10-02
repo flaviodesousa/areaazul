@@ -1,13 +1,13 @@
 'use strict';
 
-var _ = require('lodash');
+const _ = require('lodash');
 const bcrypt = require('bcrypt-then');
-var validator = require('validator');
+const validator = require('validator');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 
-var validation = require('./validation');
-var util = require('../../helpers/util');
+const validation = require('./validation');
+const util = require('areaazul-utils');
 
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 const PessoaJuridica = Bookshelf.model('PessoaJuridica');

@@ -1,7 +1,7 @@
 'use strict';
 
-var _ = require('lodash');
-var util = require('../../helpers/util');
+const _ = require('lodash');
+const util = require('areaazul-utils');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;

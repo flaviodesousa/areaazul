@@ -5,10 +5,11 @@ var bcrypt = require('bcrypt-then');
 var validator = require('validator');
 
 const AreaAzul = require('../../areaazul');
+const AreaAzulMailer = require('areaazul-mailer');
 const Bookshelf = AreaAzul.db;
 const log = AreaAzul.log;
-var util = require('../../helpers/util');
-var validation = require('./validation');
+const util = require('areaazul-utils');
+const validation = require('./validation');
 
 var PessoaFisica = Bookshelf.model('PessoaFisica');
 var Conta = Bookshelf.model('Conta');
@@ -90,8 +91,8 @@ var Usuario = Bookshelf.Model.extend({
         if (messages.length) {
           throw new AreaAzul
             .BusinessException(
-              'Nao foi possivel cadastrar novo Usuario. Dados invalidos',
-              messages);
+            'Nao foi possivel cadastrar novo Usuario. Dados invalidos',
+            messages);
         }
         return messages;
       })
@@ -121,7 +122,7 @@ var Usuario = Bookshelf.Model.extend({
         if (!usuario) {
           return Conta._cadastrar(null, options);
         }
-        return new Conta({ id: usuario.get('conta_id')})
+        return new Conta({ id: usuario.get('conta_id') })
           .fetch(options);
       })
       .then(function(conta) {
@@ -142,7 +143,17 @@ var Usuario = Bookshelf.Model.extend({
           .save(dadosUsuario, optionsUpdate);
       })
       .then(function(u) {
-        util.enviarEmailConfirmacao(camposUsuario, login);
+        var message = {
+          from: 'AreaAzul <cadastro@areaazul.org>',
+          to: camposUsuario.email,
+          cc: 'cadastro@areaazul.org',
+          subject: 'Confirmação de cadastro - AreaAzul',
+          html: '<p>Por favor ' + camposUsuario.nome +
+          ' clique no link abaixo para acessar a aplicação areaazul.</br>' +
+          '<a href="http://usuario.demo.areaazul.org">Área Azul</a></br>' +
+          'Usuario: ' + login
+        };
+        AreaAzulMailer.enviar.emailer(message);
         return u;
       });
   },
@@ -195,7 +206,7 @@ var Usuario = Bookshelf.Model.extend({
       .then(function(hashNovaSenha) {
         return usuario.save(
           { senha: hashNovaSenha },
-          _.merge({ method: 'update', patch: true}, options));
+          _.merge({ method: 'update', patch: true }, options));
       });
   },
 

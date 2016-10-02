@@ -5,14 +5,14 @@ const _ = require('lodash');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 
-var util = require('../../helpers/util');
+const util = require('areaazul-utils');
 
 const RecuperacaoSenha = Bookshelf.model('RecuperacaoSenha');
 
 var Pessoa = Bookshelf.Model.extend({
   tableName: 'pessoa'
 }, {
-  _camposValidos: function (camposPessoa, options) {
+  _camposValidos: function(camposPessoa, options) {
     var message = [];
 
     if (!camposPessoa.nome) {
@@ -48,7 +48,7 @@ var Pessoa = Bookshelf.Model.extend({
     return Promise.resolve(message);
   },
   _cadastrar: function(camposPessoa, options) {
-    const optionsInsert = _.merge({ method: 'insert'}, options);
+    const optionsInsert = _.merge({ method: 'insert' }, options);
     const Pessoa = this;
     return Pessoa
       ._camposValidos(camposPessoa, options)
@@ -73,23 +73,32 @@ var Pessoa = Bookshelf.Model.extend({
   },
   verificaEmail: function(pessoaAVerificar, then, fail) {
     var _uuid = util.geradorUUIDAleatorio();
-    Pessoa.forge({email: pessoaAVerificar.email})
+    Pessoa.forge({ email: pessoaAVerificar.email })
       .fetch()
       .then(function(pessoa) {
         if (pessoa !== null) {
           RecuperacaoSenha.cadastrar({
               uuid: _uuid,
-              pessoa_id: pessoa.id},
+              pessoa_id: pessoa.id
+            },
             function() {
-              util.enviarEmailNovaSenha(
-                pessoaAVerificar.email, pessoa.get('nome'), _uuid);
+              AreaAzulMailer.enviar.emailer({
+                from: 'AreaAzul <cadastro@areaazul.org>',
+                to: pessoaAVerificar.email,
+                cc: 'cadastro@areaazul.org',
+                subject: 'AreaAzul nova senha ',
+                html: `
+<p>Por favor ${pessoa.get('nome')} clique no link abaixo para alterar 
+sua senha.</p>
+<a href="https://demo.areaazul.org/${_uuid}">Trocar Senha</a>`
+              });
               then(pessoa);
             },
             function() {
               throw new Error('Erro !!!');
             });
 
-        }else {
+        } else {
           throw new Error('Email não existe!!!');
         }
       })

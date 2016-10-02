@@ -2,8 +2,8 @@
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
-var util = require('../../helpers/util');
-var _ = require('lodash');
+const util = require('areaazul-utils');
+const _ = require('lodash');
 
 var Configuracao = Bookshelf.Model.extend({
     tableName: 'configuracao'

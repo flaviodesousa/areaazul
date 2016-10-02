@@ -10,7 +10,7 @@ const Veiculo = Bookshelf.model('Veiculo');
 const Veiculos = Bookshelf.collection('Veiculos');
 
 const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
-const AreaAzulUtils = require('../helpers/util');
+const AreaAzulUtils = require('areaazul-utils');
 
 describe('model.veiculo', function() {
 
