@@ -1,0 +1,16 @@
+{
+  "root": true,
+  "parserOptions": {
+    "ecmaVersion": 6,
+    "sourceType": "module"
+  },
+  "extends": "eslint:recommended",
+  "env": {
+    "node": true
+  },
+  "rules": {
+    "semi": 2,
+    "no-template-curly-in-string": 2,
+    "block-scoped-var": 2
+  }
+}
