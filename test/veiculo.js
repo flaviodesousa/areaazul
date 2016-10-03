@@ -18,6 +18,7 @@ describe('model.veiculo', function() {
     return TestHelpers.apagarVeiculoPorPlaca(placa);
   }
 
+  var placaInexistente = 'VEI-1373';
   var placaTeste = 'AAA-1234';
   var marcaTeste = 'Marca teste';
   var modeloTeste = 'Modelo Teste';
@@ -46,6 +47,9 @@ describe('model.veiculo', function() {
       })
       .then(function() {
         return apagarDadosDeTeste(placaTeste);
+      })
+      .then(function() {
+        return apagarDadosDeTeste(placaInexistente);
       });
   });
 
@@ -82,6 +86,17 @@ describe('model.veiculo', function() {
           should.exist(veiculo);
           const placaSemFormato = AreaAzulUtils.placaSemMascara(placaTeste);
           veiculo.get('placa').should.equal(placaSemFormato);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('retorna indefinido se placa não cadastrada', function(done) {
+      Veiculo.procurarVeiculo(placaInexistente)
+        .then(function(veiculo) {
+          should.not.exist(veiculo);
           done();
         })
         .catch(function(e) {
