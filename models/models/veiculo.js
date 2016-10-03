@@ -1,6 +1,5 @@
 'use strict';
 
-const debug = require('debug')('areaazul:model:veiculo');
 const _ = require('lodash');
 const validator = require('validator');
 
@@ -66,11 +65,12 @@ var Veiculo = Bookshelf.Model.extend({
   },
 
 
-  cadastrar: function(vehicle) {
+  cadastrar: function(camposVeiculo) {
+    AreaAzul.log.info('Veiculo.cadastrar()', { campos: camposVeiculo });
 
     return Bookshelf.transaction(function(t) {
 
-      return Veiculo._cadastrar(vehicle, { transacting: t });
+      return Veiculo._cadastrar(camposVeiculo, { transacting: t });
 
     });
   },
@@ -108,7 +108,11 @@ var Veiculo = Bookshelf.Model.extend({
   },
 
   buscarPorId: function(id) {
-    return new Veiculo({ id: id }).fetch({ require: true });
+    return new Veiculo({ id: id })
+      .fetch({
+        withRelated: [ 'cidade', 'cidade.estado' ],
+        require: true
+      });
   },
 
   _validarVeiculo: (veiculoFields, options) => {
