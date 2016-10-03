@@ -13,7 +13,7 @@ var Cidades = Bookshelf.Collection.extend({
       return Promise.reject(
         new AreaAzul.BusinessException(
           'idEstado deve ser numérico',
-          { idEstado: idEstado }))
+          { idEstado: idEstado }));
     }
     return Cidades
       .query(function(qb) {
@@ -21,7 +21,7 @@ var Cidades = Bookshelf.Collection.extend({
           qb.where('estado_id', '=', idEstado);
         }
       })
-      .fetch();
+      .fetch({ withRelated: 'estado' });
   }
 });
 Bookshelf.collection('Cidades', Cidades);

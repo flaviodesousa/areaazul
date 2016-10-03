@@ -18,6 +18,7 @@ describe('collections.Cidades', function() {
           var cidades = cidadesCollection.toJSON();
           cidades.should.be.instanceOf(Array);
           cidades.length.should.not.be.equal(0);
+          cidades[0].should.have.property('estado');
           done();
         })
         .catch(function(e) {
@@ -48,6 +49,7 @@ describe('collections.Cidades', function() {
           var cidades = cidadesCollection.toJSON();
           cidades.should.be.instanceOf(Array);
           cidades.length.should.not.be.equal(0);
+          cidades[0].should.have.property('estado');
           done();
         })
         .catch(function(e) {
