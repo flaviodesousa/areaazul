@@ -7,18 +7,16 @@ require('winston-loggly');
   var env = process.env.NODE_ENV || 'development';
 
   winston.add(winston.transports.Loggly, {
-    inputToken:
-      process.env.AREAAZUL_LOGGLY_TOKEN ||
-        '2cd112b3-29ff-4c0d-8872-8d41353a9f1a',
+    inputToken: process.env.AREAAZUL_LOGGLY_TOKEN ||
+      '2cd112b3-29ff-4c0d-8872-8d41353a9f1a',
     subdomain: 'areaazul',
-    tags: ['model'],
-    json: true,
+    tags: [ 'model' ],
+    json: true
   });
 
   winston.add(winston.transports.File, {
-    filename:
-      process.env.AREAAZUL_FILE_LOG ||
-        '/tmp/areaazul.log',
+    filename: process.env.AREAAZUL_FILE_LOG ||
+    '/tmp/areaazul.log'
   });
 
   if (env !== 'development') {
