@@ -6,7 +6,6 @@ const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
 
 var CidadesCollection = Bookshelf.collection('Cidades');
-var Cidade = Bookshelf.model('Cidade');
 
 describe('collections.Cidades', function() {
   var idEstado = 1;
