@@ -93,7 +93,7 @@ module.exports = function(AreaAzul) {
           })
           .then(function() {
             return _apagarConta(idConta);
-          })
+          });
       });
   }
 
@@ -286,7 +286,7 @@ module.exports = function(AreaAzul) {
     cidade_id: 1,
     placa: 'ARE4701',
     marca: 'Bentley',
-    modelo: 'Sportster',
+    modelo: 'Racing',
     cor: 'Azul',
     ano_fabricado: 2013,
     ano_modelo: 2015
@@ -327,6 +327,10 @@ module.exports = function(AreaAzul) {
         }
         debug('cadastrando usuario de teste', usuarioTeste);
         return Usuario.inserir(usuarioTeste);
+      })
+      .then(function(usuario) {
+        usuario.senha = usuarioTeste.nova_senha;
+        return usuario;
       });
   };
 
