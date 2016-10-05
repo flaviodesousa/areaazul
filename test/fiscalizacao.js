@@ -25,7 +25,7 @@ describe('/fiscalizacao', function() {
       .fetch()
       .then(function(fiscal) {
         if (fiscal) {
-          return fiscal
+          return fiscal;
         }
         return UsuarioFiscal
           .cadastrar(fiscalTesteAPI);
@@ -38,11 +38,11 @@ describe('/fiscalizacao', function() {
       .catch(function(e) {
         debug('erro inesperado', e);
         done(e);
-      })
+      });
   });
 
   describe('POST', function() {
-    it('registra uma fiscalizacao', function(done) {
+    it('registra uma fiscalização', function(done) {
       superagent
         .post('http://localhost:8080/fiscalizacao')
         .auth(fiscalTesteAPI.login, fiscalTesteAPI.nova_senha)
@@ -55,6 +55,24 @@ describe('/fiscalizacao', function() {
           should.not.exist(err);
           should.exist(res);
           res.ok.should.be.equal(true);
+          done();
+        });
+    });
+    it('tenta registrar uma fiscalização com senha inválida', function(done) {
+      superagent
+        .post('http://localhost:8080/fiscalizacao')
+        .auth(fiscalTesteAPI.login, fiscalTesteAPI.nova_senha + 'x')
+        .send({
+          placa: 'AON6189',
+          latitude: -19.82864667,
+          longitude: -43.96678
+        })
+        .end(function(err, res) {
+          should.exist(err);
+          err.should.have.property('status', 401);
+          should.exist(res);
+          res.should.have.property('ok', false);
+          res.should.have.property('status', 401);
           done();
         });
     });

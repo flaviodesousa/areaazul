@@ -19,10 +19,13 @@ function fiscalVerify(username, password, done) {
           usuarioFiscal: usuarioFiscal
         });
       })
+      .catch(AreaAzul.AuthenticationError, function() {
+        return done(null, false);
+      })
+      .catch(AreaAzul.BusinessException, function() {
+        return done(null, false);
+      })
       .catch(function(err) {
-        if (err.authentication_event) {
-          return done(null, false);
-        }
         return done(err);
       });
   });
@@ -46,7 +49,7 @@ function usuarioVerify(username, password, done) {
         return done(null, {
           username: username,
           id: usuario.id,
-          usuario: usuario.toJSON(),
+          usuario: usuario.toJSON()
         });
       })
       .catch(function(err) {
