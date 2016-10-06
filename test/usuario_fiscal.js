@@ -72,7 +72,7 @@ describe('models.UsuarioFiscal', function() {
 
   describe('cadastrar()', function() {
 
-    it('cadastra usuario fiscal com cpf novo', function(done) {
+    it('cadastra usuário fiscal com cpf novo', function(done) {
       UsuarioFiscal
         .cadastrar(camposUsuarioFiscalNaoExistente)
         .then(function(usuarioFiscal) {
@@ -89,7 +89,7 @@ describe('models.UsuarioFiscal', function() {
         });
     });
 
-    it('cadastra usuario fiscal com cpf existente', function(done) {
+    it('cadastra usuário fiscal com cpf existente', function(done) {
       UsuarioFiscal
         .cadastrar(camposUsuarioFiscalPreExistente)
         .then(function(usuarioFiscal) {
@@ -114,7 +114,7 @@ describe('models.UsuarioFiscal', function() {
 
   describe('buscaPorId()', function() {
 
-    it('encontra id valido', function(done) {
+    it('encontra id válido', function(done) {
       UsuarioFiscal
         .buscarPorId(usuarioFiscalNaoExistente.id)
         .then(function(p) {
@@ -128,18 +128,18 @@ describe('models.UsuarioFiscal', function() {
         });
     });
 
-    it('nao encontra id invalido', function(done) {
+    it('não encontra id inválido', function(done) {
       UsuarioFiscal
         .buscarPorId(0)
         .then(function() {
-          done(new Error('Nao deveria encontrar id=0'));
+          done(new Error('Não deveria encontrar id=0'));
         })
         .catch(function(err) {
           should.exist(err);
           err.should.be.an.instanceof(AreaAzul.BusinessException);
           err.should.have.property(
             'message',
-            'UsuarioFiscal: id nao encontrado');
+            'Usuário fiscal: id não encontrado');
           done();
         });
     });
@@ -148,7 +148,7 @@ describe('models.UsuarioFiscal', function() {
 
   describe('autorizado()', function() {
 
-    it('aceita credencial valida', function(done) {
+    it('aceita credencial válida', function(done) {
       UsuarioFiscal.autorizado(
         camposUsuarioFiscalPreExistente.login,
         camposUsuarioFiscalPreExistente.nova_senha)
@@ -164,38 +164,46 @@ describe('models.UsuarioFiscal', function() {
         });
     });
 
-    it('recusa credencial invalida', function(done) {
+    it('recusa credencial inválida', function(done) {
       UsuarioFiscal.autorizado(
         camposUsuarioFiscalPreExistente.login,
         camposUsuarioFiscalPreExistente.nova_senha + '0')
         .then(function() {
-          done(new Error('Nao deve aceitar senha errada'));
+          done(new Error('Não deve aceitar senha errada'));
         })
-        .catch(function(err) {
+        .catch(AreaAzul.AuthenticationError, function(err) {
           should.exist(err);
-          err.should.be.an.instanceof(AreaAzul.BusinessException);
+          err.should.be.an.instanceof(AreaAzul.AuthenticationError);
           err.should.have.property(
             'message',
-            'UsuarioFiscal: senha incorreta');
+            'Usuário fiscal: senha incorreta');
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
-    it('recusa login invalido', function(done) {
+    it('recusa login inválido', function(done) {
       UsuarioFiscal
         .autorizado(
           camposUsuarioFiscalPreExistente.login + '0',
           camposUsuarioFiscalNaoExistente.nova_senha)
         .then(function() {
-          done(new Error('Nao deve aceitar login errado'));
+          done(new Error('Não deve aceitar login errado'));
         })
-        .catch(function(err) {
+        .catch(AreaAzul.AuthenticationError, function(err) {
           should.exist(err);
           err.should.be.an.instanceof(AreaAzul.AuthenticationError);
           err.should.have.property(
             'message',
-            'UsuarioFiscal: login invalido');
+            'Usuário fiscal: login inválido');
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 

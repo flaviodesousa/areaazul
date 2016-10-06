@@ -7,7 +7,6 @@ var _ = require('lodash');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 const log = AreaAzul.log;
-const util = require('areaazul-utils');
 const validation = require('./validation');
 
 const PessoaFisica = Bookshelf.model('PessoaFisica');
@@ -20,20 +19,17 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
 }, {
   autorizado: function(login, senha) {
     var usuarioRevendedor;
-    return UsuarioRevendedor
-      .forge({
-        login: login
+    return new UsuarioRevendedor({ login: login })
+      .fetch({ require: true })
+      .catch(Bookshelf.NotFoundError, () => {
+        const err = new AreaAzul.AuthenticationError(
+          'Usuário revendedor: login inválido', {
+            login: login
+          });
+        log.warn(err.message, err.details);
+        throw err;
       })
-      .fetch()
       .then(function(ur) {
-        if (!ur) {
-          var err = new AreaAzul.BusinessException(
-            'UsuarioRevendedor: login invalido', {
-              login: login
-            });
-          log.warn(err.message, err.details);
-          throw err;
-        }
         usuarioRevendedor = ur;
         return bcrypt.compare(senha, ur.get('senha'));
       })
@@ -41,9 +37,10 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         if (valid) {
           return usuarioRevendedor;
         }
-        var err = new AreaAzul.BusinessException(
-          'UsuarioRevendedor: senha incorreta', {
-            login: login
+        const err = new AreaAzul.AuthenticationError(
+          'Usuário revendedor: senha incorreta', {
+            login: login,
+            usuario: usuarioRevendedor
           });
         log.warn(err.message, err.details);
         throw err;
@@ -135,19 +132,6 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     });
   },
 
-  search: function(entidade, func) {
-    entidade.fetch().then(function(model, err) {
-      var retorno;
-      if (model !== null) {
-        retorno = model.attributes;
-      }
-      if (err) {
-        return func(null);
-      }
-      func(retorno);
-    });
-  },
-
   _alterarSenha: function(camposTrocaSenha, options) {
     var usuarioRevendedor;
     new UsuarioRevendedor({ id: camposTrocaSenha.id })
@@ -169,7 +153,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         return usuarioRevendedor
           .save(
             { senha: hashNovaSenha },
-            _merge({ method: 'update', patch: true }, options));
+            _.merge({ method: 'update', patch: true }, options));
       });
   },
 
@@ -199,7 +183,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       .then(function(revenda) {
         if (!revenda) {
           throw new AreaAzul.BusinessException(
-            'Desativacao: Usuario não encontrado', { id: id });
+            'Desativação de usuário revendedor: Usuário não encontrado',
+            { id: id });
         }
         return revenda
           .save({ ativo: false }, { patch: true });
@@ -217,13 +202,13 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     if (user.senha === null || user.senha === '') {
       message.push({
         attribute: 'senha',
-        problem: 'Senha é obrigatório!'
+        problem: 'Senha é obrigatória!'
       });
     }
     if (user.conf_senha === null || user.conf_senha === '') {
       message.push({
         attribute: 'conf_senha',
-        problem: 'Confirmação de senha é obrigatório!'
+        problem: 'Confirmação de senha é obrigatória!'
       });
     }
     if (user.nova_senha !== user.conf_senha) {
@@ -235,13 +220,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     if (user.senha.length < 8) {
       message.push({
         attribute: 'senha',
-        problem: 'A senha deve conter no minimo 8 caracteres!'
-      });
-    }
-    if (user.conf_senha.length < 8) {
-      message.push({
-        attribute: 'conf_senha',
-        problem: 'A confirmação de senha deve conter no minimo 8 caracteres!'
+        problem: 'A senha deve conter no mínimo 8 caracteres!'
       });
     }
 
@@ -266,14 +245,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     if (user.senha.length < 8) {
       message.push({
         attribute: 'senha',
-        problem: 'A senha deve conter no minimo 8 caracteres!'
-      });
-    }
-
-    if (user.conf_senha.length < 8) {
-      message.push({
-        attribute: 'nova_senha',
-        problem: 'A nova senha deve conter no minimo 8 caracteres!'
+        problem: 'A senha deve conter no mínimo 8 caracteres!'
       });
     }
     if (user.conf_senha !== user.senha) {
@@ -287,35 +259,30 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
 
   alterarSenhaRecuperacao: function(user) {
     var usuarioRevendedor;
-    var senha;
     return new UsuarioRevendedor({ id: user.id })
-      .fetch()
+      .fetch({ require: true })
+      .catch(Bookshelf.NotFoundError, () => {
+        throw new AreaAzul.BusinessException(
+          'Usuário não encontrado!', { user: user });
+      })
       .then(function(ur) {
-        if (!ur) {
-          throw new AreaAzul.BusinessException(
-            'Usuário não encontrado!', { user: user });
-        }
         usuarioRevendedor = ur;
         return bcrypt.hash(user.senha);
       })
       .then(function(hash) {
-        senha = hash;
         return usuarioRevendedor.save({
           primeiro_acesso: 'false',
-          senha: novaSenha
+          senha: hash
         });
       });
   },
 
   buscarPorId: function(id) {
     return new UsuarioRevendedor({ id: id })
-      .fetch()
-      .then(function(u) {
-        if (u) {
-          return u;
-        }
-        var err = new AreaAzul.BusinessException(
-          'UsuarioRevendedor: id nao encontrado', {
+      .fetch({ require: true })
+      .catch(Bookshelf.NotFoundError, () => {
+        const err = new AreaAzul.BusinessException(
+          'Usuário revendedor: id não encontrado', {
             id: id
           });
         log.warn(err.message, err.details);

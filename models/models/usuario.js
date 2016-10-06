@@ -8,8 +8,6 @@ const AreaAzul = require('../../areaazul');
 const AreaAzulMailer = require('areaazul-mailer');
 const Bookshelf = AreaAzul.db;
 const log = AreaAzul.log;
-const util = require('areaazul-utils');
-const validation = require('./validation');
 
 var PessoaFisica = Bookshelf.model('PessoaFisica');
 var Conta = Bookshelf.model('Conta');
@@ -37,7 +35,7 @@ var Usuario = Bookshelf.Model.extend({
           return u;
         }
         var err = new AreaAzul.BusinessException(
-          'Usuario: id nao encontrado', {
+          'Usuário: id não encontrado', {
             id: id
           });
         log.warn(err.message, err.details);
@@ -53,7 +51,7 @@ var Usuario = Bookshelf.Model.extend({
         usuario = u;
         if (!usuario) {
           var err = new AreaAzul.BusinessException(
-            'Usuario: login invalido', { login: login });
+            'Usuário: login inválido', { login: login });
           err.authentication_event = true;
           log.warn(err.message, err.details);
           throw err;
@@ -63,7 +61,7 @@ var Usuario = Bookshelf.Model.extend({
       .then(function(valid) {
         if (!valid) {
           throw new AreaAzul.AuthenticationError(
-            'Usuario: senha incorreta', {
+            'Usuário: senha incorreta', {
               login: login,
               usuario: usuario
             });
@@ -91,7 +89,7 @@ var Usuario = Bookshelf.Model.extend({
         if (messages.length) {
           throw new AreaAzul
             .BusinessException(
-            'Nao foi possivel cadastrar novo Usuario. Dados invalidos',
+            'Não foi possível cadastrar novo usuário. Dados inválidos',
             messages);
         }
         return messages;
@@ -173,15 +171,15 @@ var Usuario = Bookshelf.Model.extend({
   _alterarSenha: function(camposAlterarSenha, options) {
     var usuario = null;
     return new Usuario({ id: camposAlterarSenha.id })
-      .fetch(options)
+      .fetch(_.merge({ require: true }, options))
+      .catch(Bookshelf.NotFoundError, () => {
+        throw new AreaAzul
+          .BusinessException(
+          `Usuário "${camposAlterarSenha.id}" não reconhecido`,
+          { usuarioId: camposAlterarSenha.id });
+      })
       .then(function(u) {
         usuario = u;
-        if (!usuario) {
-          throw new AreaAzul
-            .BusinessException(
-            'Usuario "' + camposAlterarSenha.id + '" não reconhecido',
-            camposAlterarSenha);
-        }
         return Usuario
           ._senhaValida(camposAlterarSenha, usuario);
       })
@@ -189,7 +187,7 @@ var Usuario = Bookshelf.Model.extend({
         if (messages.length) {
           throw new AreaAzul
             .BusinessException(
-            'Nao foi possivel cadastrar novo Usuario. Dados invalidos',
+            'Não foi possível cadastrar novo usuário. Dados inválidos',
             messages);
         }
         var pwd = usuario.get('senha');
@@ -199,9 +197,9 @@ var Usuario = Bookshelf.Model.extend({
         if (!valid) {
           throw new AreaAzul.AuthenticationError(
             'Senha atual incorreta. Senha não alterada',
-            {});
+            { usuario: usuario });
         }
-        return bcrypt.hash(camposAlterarSenha.nova_senha)
+        return bcrypt.hash(camposAlterarSenha.nova_senha);
       })
       .then(function(hashNovaSenha) {
         return usuario.save(
@@ -269,7 +267,7 @@ var Usuario = Bookshelf.Model.extend({
   },
 
 
-  _senhaValida: function(camposUsuario, usuario) {
+  _senhaValida: function(camposUsuario) {
     var message = [];
 
     if (!camposUsuario.nova_senha
@@ -286,7 +284,7 @@ var Usuario = Bookshelf.Model.extend({
     } else if (camposUsuario.nova_senha.length < 8) {
       message.push({
         attribute: 'nova_senha',
-        problem: 'A nova senha deve conter no minimo 8 caracteres!'
+        problem: 'A nova senha deve conter no mínimo 8 caracteres!'
       });
     }
     return message;

@@ -4,12 +4,9 @@ const debug = require('debug')('areaazul:test:usuario_revenda');
 var should = require('chai').should();
 const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
-var BusinessException = AreaAzul.BusinessException;
 
-const Revendedor = Bookshelf.model('Revendedor');
 var UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 var UsuariosRevendedores = Bookshelf.collection('UsuariosRevendedores');
-var PessoaFisica = Bookshelf.model('PessoaFisica');
 
 const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
@@ -41,7 +38,7 @@ describe('models.UsuarioRevendedor', function() {
 
   describe('cadastrar()', function() {
 
-    it('cadastra usuario revendedor com cpf novo', function(done) {
+    it('cadastra usuário revendedor com cpf novo', function(done) {
       UsuarioRevendedor.inserir({
         login: loginRevendaNaoExistente,
         nome: 'Revenda Teste',
@@ -68,7 +65,7 @@ describe('models.UsuarioRevendedor', function() {
 
   describe('alterar()', function() {
 
-    it('altera usuario revendedor', function(done) {
+    it('altera usuário revendedor', function(done) {
       UsuarioRevendedor.alterar({
         login: loginRevendaNaoExistente,
         nome: 'Revenda Teste',
@@ -92,7 +89,7 @@ describe('models.UsuarioRevendedor', function() {
 
   describe('listarUsuarioRevenda()', function() {
 
-    it('lista usuario da revenda mantidos no banco de dados', function(done) {
+    it('lista usuários da revenda mantidos no banco de dados', function(done) {
       UsuariosRevendedores
         .listarUsuarioRevenda(idRevendedor)
         .then(function(lista) {
@@ -108,7 +105,7 @@ describe('models.UsuarioRevendedor', function() {
 
   describe('autorizado()', function() {
 
-    it('aceita credencial valida', function(done) {
+    it('aceita credencial válida', function(done) {
       UsuarioRevendedor.autorizado(
         loginRevendaNaoExistente,
         senhaRevendaNaoExistente)
@@ -122,38 +119,45 @@ describe('models.UsuarioRevendedor', function() {
         });
     });
 
-    it('recusa credencial invalida', function(done) {
+    it('recusa credencial inválida', function(done) {
       UsuarioRevendedor.autorizado(
         loginRevendaNaoExistente,
         senhaRevendaNaoExistente + '0')
         .then(function() {
-          done(new Error('Nao deve aceitar senha errada'));
+          done(new Error('Não deve aceitar senha errada'));
         })
-        .catch(function(err) {
+        .catch(AreaAzul.AuthenticationError, function(err) {
           should.exist(err);
-          err.should.be.an.instanceof(BusinessException);
+          err.should.be.an.instanceof(AreaAzul.AuthenticationError);
           err.should.have.property(
             'message',
-            'UsuarioRevendedor: senha incorreta');
+            'Usuário revendedor: senha incorreta');
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
-    it('recusa login invalido', function(done) {
-
+    it('recusa login inválido', function(done) {
       UsuarioRevendedor.autorizado(
         loginRevendaNaoExistente + '0',
         senhaRevendaNaoExistente)
         .then(function() {
-          done(new Error('Nao deve aceitar login errado'));
+          done(new Error('Não deve aceitar login errado'));
         })
-        .catch(function(err) {
+        .catch(AreaAzul.AuthenticationError, function(err) {
           should.exist(err);
-          err.should.be.an.instanceof(BusinessException);
+          err.should.be.an.instanceof(AreaAzul.AuthenticationError);
           err.should.have.property(
             'message',
-            'UsuarioRevendedor: login invalido');
+            'Usuário revendedor: login inválido');
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
@@ -161,7 +165,7 @@ describe('models.UsuarioRevendedor', function() {
 
   describe('desativar()', function() {
 
-    it('falha para usuario revendedor inexistente', function(done) {
+    it('falha para usuário revendedor inexistente', function(done) {
       UsuarioRevendedor
         .desativar(0)
         .then(function() {
@@ -173,7 +177,7 @@ describe('models.UsuarioRevendedor', function() {
         });
     });
 
-    it('desativa usuario revendedor existente', function(done) {
+    it('desativa usuário revendedor existente', function(done) {
       UsuarioRevendedor
         .desativar(idUsuarioRevendedor)
         .then(function(usuarioRevendedor) {

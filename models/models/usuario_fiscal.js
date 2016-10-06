@@ -5,10 +5,8 @@ const bcrypt = require('bcrypt-then');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 const log = AreaAzul.log;
-const util = require('areaazul-utils');
 const UsuarioHelper = require('../../helpers/usuario_helper');
 
-const Usuario = Bookshelf.model('Usuario');
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 const Conta = Bookshelf.model('Conta');
 
@@ -31,8 +29,6 @@ var UsuarioFiscal = Bookshelf.Model.extend({
       });
   },
   cadastrar: function(camposUsuarioFiscal) {
-    var pessoaFisica;
-    var usuarioFiscal;
     var conta;
 
     return Bookshelf.transaction(function(t) {
@@ -52,37 +48,40 @@ var UsuarioFiscal = Bookshelf.Model.extend({
         .then(function() {
           return new UsuarioFiscal(
             { login: camposUsuarioFiscal.login })
-            .fetch(options);
+            .fetch(_.merge({ require: true }, options));
         })
         .then(function(u) {
-          usuarioFiscal = u;
+          throw new AreaAzul.BusinessException(
+            'Alteração de usuário fiscal: ainda não suportada',
+            { usuario: u });
+        })
+        .catch(Bookshelf.NotFoundError, () => {
+          // Novo usuário fiscal
+          var pessoaFisica;
           return new PessoaFisica({ cpf: camposUsuarioFiscal.cpf })
-            .fetch(options)
-        })
-        .then(function(pf) {
-          if (!pf) {
-            return PessoaFisica._cadastrar(
-              camposUsuarioFiscal, options);
-          }
-          return pf;
-        })
-        .then(function(pf) {
-          pessoaFisica = pf;
-          return Conta._cadastrar(null, options);
-        })
-        .then(function(c) {
-          conta = c;
-          return bcrypt.hash(camposUsuarioFiscal.nova_senha);
-        })
-        .then(function(hash) {
-          return new UsuarioFiscal({
-            id: pessoaFisica.id,
-            login: camposUsuarioFiscal.login,
-            senha: hash,
-            conta_id: conta.id,
-            ativo: true
-          })
-            .save(null, optionsInsert);
+            .fetch(_.merge({ require: true }, options))
+            .catch(Bookshelf.NotFoundError, () => {
+              return PessoaFisica
+                ._cadastrar(camposUsuarioFiscal, options);
+            })
+            .then(function(pf) {
+              pessoaFisica = pf;
+              return Conta._cadastrar(null, options);
+            })
+            .then(function(c) {
+              conta = c;
+              return bcrypt.hash(camposUsuarioFiscal.nova_senha);
+            })
+            .then(function(hash) {
+              return new UsuarioFiscal({
+                id: pessoaFisica.id,
+                login: camposUsuarioFiscal.login,
+                senha: hash,
+                conta_id: conta.id,
+                ativo: true
+              })
+                .save(null, optionsInsert);
+            });
         });
     });
   },
@@ -94,7 +93,7 @@ var UsuarioFiscal = Bookshelf.Model.extend({
         usuarioFiscal = ur;
         if (!usuarioFiscal) {
           var err = new AreaAzul.AuthenticationError(
-            'UsuarioFiscal: login invalido',
+            'Usuário fiscal: login inválido',
             { login: login });
           log.warn(err.message, err.details);
           throw err;
@@ -105,22 +104,21 @@ var UsuarioFiscal = Bookshelf.Model.extend({
         if (valid) {
           return usuarioFiscal;
         }
-        var err = new AreaAzul.BusinessException(
-          'UsuarioFiscal: senha incorreta',
-          { login: login });
+        const err = new AreaAzul.AuthenticationError(
+          'Usuário fiscal: senha incorreta', {
+            login: login,
+            usuario: usuarioFiscal
+          });
         log.warn(err.message, err.details);
         throw err;
       });
   },
   buscarPorId: function(id) {
     return new UsuarioFiscal({ id: id })
-      .fetch()
-      .then(function(u) {
-        if (u) {
-          return u;
-        }
-        var err = new AreaAzul.BusinessException(
-          'UsuarioFiscal: id nao encontrado',
+      .fetch({ require: true })
+      .catch(Bookshelf.NotFoundError, () => {
+        const err = new AreaAzul.BusinessException(
+          'Usuário fiscal: id não encontrado',
           { id: id });
         log.warn(err.message, err.details);
         throw err;

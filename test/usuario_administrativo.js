@@ -72,7 +72,7 @@ describe('models.UsuarioAdministrativo', function() {
 
   describe('cadastrar()', function() {
 
-    it('cadastra usuario admin com cpf novo', function(done) {
+    it('cadastra usuário admin com cpf novo', function(done) {
       UsuarioAdministrativo
         .cadastrar(camposUsuarioAdministrativoNaoExistente)
         .then(function(usuarioAdministrativo) {
@@ -89,7 +89,7 @@ describe('models.UsuarioAdministrativo', function() {
         });
     });
 
-    it('cadastra usuario admin com cpf existente', function(done) {
+    it('cadastra usuário admin com cpf existente', function(done) {
       UsuarioAdministrativo
         .cadastrar(camposUsuarioAdministrativoPreExistente)
         .then(function(usuarioAdministrativo) {
@@ -114,7 +114,7 @@ describe('models.UsuarioAdministrativo', function() {
 
   describe('buscaPorId()', function() {
 
-    it('encontra id valido', function(done) {
+    it('encontra id válido', function(done) {
       UsuarioAdministrativo
         .buscarPorId(usuarioAdministrativoNaoExistente.id)
         .then(function(p) {
@@ -128,7 +128,7 @@ describe('models.UsuarioAdministrativo', function() {
         });
     });
 
-    it('nao encontra id invalido', function(done) {
+    it('não encontra id inválido', function(done) {
       UsuarioAdministrativo
         .buscarPorId(0)
         .then(function() {
@@ -139,7 +139,7 @@ describe('models.UsuarioAdministrativo', function() {
           err.should.be.an.instanceof(AreaAzul.BusinessException);
           err.should.have.property(
             'message',
-            'UsuarioAdministrativo: id nao encontrado');
+            'Usuario administrativo: id não encontrado');
           done();
         });
     });
@@ -148,7 +148,7 @@ describe('models.UsuarioAdministrativo', function() {
 
   describe('autorizado()', function() {
 
-    it('aceita credencial valida', function(done) {
+    it('aceita credencial válida', function(done) {
       UsuarioAdministrativo.autorizado(
         camposUsuarioAdministrativoPreExistente.login,
         camposUsuarioAdministrativoPreExistente.nova_senha)
@@ -164,38 +164,46 @@ describe('models.UsuarioAdministrativo', function() {
         });
     });
 
-    it('recusa credencial invalida', function(done) {
+    it('recusa credencial inválida', function(done) {
       UsuarioAdministrativo.autorizado(
         camposUsuarioAdministrativoPreExistente.login,
         camposUsuarioAdministrativoPreExistente.nova_senha + '0')
         .then(function() {
-          done(new Error('Nao deve aceitar senha errada'));
+          done(new Error('Não deve aceitar senha errada'));
         })
-        .catch(function(err) {
+        .catch(AreaAzul.AuthenticationError, function(err) {
           should.exist(err);
-          err.should.be.an.instanceof(AreaAzul.BusinessException);
+          err.should.be.an.instanceof(AreaAzul.AuthenticationError);
           err.should.have.property(
             'message',
-            'UsuarioAdministrativo: senha incorreta');
+            'Usuário administrativo: senha incorreta');
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
-    it('recusa login invalido', function(done) {
+    it('recusa login inválido', function(done) {
       UsuarioAdministrativo
         .autorizado(
           camposUsuarioAdministrativoPreExistente.login + '0',
           camposUsuarioAdministrativoNaoExistente.nova_senha)
         .then(function() {
-          done(new Error('Nao deve aceitar login errado'));
+          done(new Error('Não deve aceitar login errado'));
         })
-        .catch(function(err) {
+        .catch(AreaAzul.AuthenticationError, function(err) {
           should.exist(err);
           err.should.be.an.instanceof(AreaAzul.AuthenticationError);
           err.should.have.property(
             'message',
-            'UsuarioAdministrativo: login invalido');
+            'Usuário administrativo: login inválido');
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 

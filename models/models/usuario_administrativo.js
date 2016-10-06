@@ -5,10 +5,8 @@ const bcrypt = require('bcrypt-then');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 const log = AreaAzul.log;
-const util = require('areaazul-utils');
 const UsuarioHelper = require('../../helpers/usuario_helper');
 
-const Usuario = Bookshelf.model('Usuario');
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 
 var UsuarioAdministrativo = Bookshelf.Model.extend({
@@ -31,7 +29,6 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
   },
   cadastrar: function(camposUsuarioAdministrativo) {
     var pessoaFisica;
-    var usuarioAdministrativo;
 
     return Bookshelf.transaction(function(t) {
       var options = { transacting: t };
@@ -50,12 +47,17 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
         .then(function() {
           return new UsuarioAdministrativo(
             { login: camposUsuarioAdministrativo.login })
-            .fetch(options);
+            .fetch(_.merge({ require: true }, options));
         })
         .then(function(u) {
-          usuarioAdministrativo = u;
+          throw new AreaAzul.BusinessException(
+            'Usuário administrativo: alteração ainda não suportada',
+            { usuarioAdministrativo: u }
+          );
+        })
+        .catch(Bookshelf.NotFoundError, () => {
           return new PessoaFisica({ cpf: camposUsuarioAdministrativo.cpf })
-            .fetch(options)
+            .fetch(options);
         })
         .then(function(pf) {
           if (!pf) {
@@ -88,7 +90,7 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
         usuarioAdministrativo = ur;
         if (!usuarioAdministrativo) {
           var err = new AreaAzul.AuthenticationError(
-            'UsuarioAdministrativo: login invalido',
+            'Usuário administrativo: login inválido',
             { login: login });
           log.warn(err.message, err.details);
           throw err;
@@ -99,22 +101,21 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
         if (valid) {
           return usuarioAdministrativo;
         }
-        var err = new AreaAzul.BusinessException(
-          'UsuarioAdministrativo: senha incorreta',
-          { login: login });
+        const err = new AreaAzul.AuthenticationError(
+          'Usuário administrativo: senha incorreta', {
+            login: login,
+            usuario: usuarioAdministrativo
+          });
         log.warn(err.message, err.details);
         throw err;
       });
   },
   buscarPorId: function(id) {
     return new UsuarioAdministrativo({ id: id })
-      .fetch()
-      .then(function(u) {
-        if (u) {
-          return u;
-        }
-        var err = new AreaAzul.BusinessException(
-          'UsuarioAdministrativo: id nao encontrado',
+      .fetch({ require: true })
+      .catch(Bookshelf.NotFoundError, () => {
+        const err = new AreaAzul.BusinessException(
+          'Usuario administrativo: id não encontrado',
           { id: id });
         log.warn(err.message, err.details);
         throw err;

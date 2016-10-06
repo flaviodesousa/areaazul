@@ -1,13 +1,8 @@
 'use strict';
 
 const _ = require('lodash');
-const bcrypt = require('bcrypt-then');
-const validator = require('validator');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
-
-const validation = require('./validation');
-const util = require('areaazul-utils');
 
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 const PessoaJuridica = Bookshelf.model('PessoaJuridica');
@@ -18,19 +13,14 @@ var Revendedor = Bookshelf.Model.extend({
 }, {
   _cadastrar: function(revendedorFields, options) {
     var idPessoa = null;
-    var senha = null;
 
-    return bcrypt.hash(revendedorFields.nova_senha)
-      .then(function(hash) {
-        senha = hash;
-        return Revendedor
-          .validarRevenda(revendedorFields)
-      })
+    return Revendedor
+      .validarRevenda(revendedorFields)
       .then(function(messages) {
         if (messages.length) {
           throw new AreaAzul
             .BusinessException(
-            'Nao foi possivel cadastrar nova Revenda. Dados invalidos',
+            'Não foi possível cadastrar nova Revenda. Dados inválidos',
             messages);
         }
         return messages;
@@ -55,7 +45,7 @@ var Revendedor = Bookshelf.Model.extend({
             // Se não: Crie!
             return PessoaFisica
               ._cadastrar(revendedorFields, options);
-          })
+          });
       })
       .then(function(pessoa) {
         idPessoa = pessoa.id;
@@ -90,11 +80,8 @@ var Revendedor = Bookshelf.Model.extend({
   },
   _salvarRevenda: function(pessoa, options) {
     return new Revendedor({ id: pessoa.id })
-      .fetch(options)
-      .then(function(r) {
-        if (r) {
-          return r;
-        }
+      .fetch(_.merge({ require: true }, options))
+      .catch(Bookshelf.NotFoundError, function() {
         return Conta
           ._cadastrar(null, options)
           .then(function(conta) {
@@ -105,7 +92,7 @@ var Revendedor = Bookshelf.Model.extend({
             })
               .save(null, optionsInsert);
           });
-      })
+      });
   },
 
   validarRevenda: function(revenda, options) {
