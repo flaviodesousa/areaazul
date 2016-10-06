@@ -12,7 +12,7 @@ module.exports.registrar = function(req, res) {
       longitude: req.body.longitude
     })
     .then(function() {
-      res.status(200).end();
+      res.status(201).end();
     })
     .catch(function(result) {
       res.status(400).send('' + result);

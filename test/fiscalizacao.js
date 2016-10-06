@@ -55,6 +55,7 @@ describe('/fiscalizacao', function() {
           should.not.exist(err);
           should.exist(res);
           res.ok.should.be.equal(true);
+          res.should.have.property('status', 201);
           done();
         });
     });
