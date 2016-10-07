@@ -5,6 +5,8 @@ const _ = require('lodash');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 
+const AreaAzulMailer = require('areaazul-mailer');
+
 const util = require('areaazul-utils');
 
 const RecuperacaoSenha = Bookshelf.model('RecuperacaoSenha');
@@ -12,7 +14,7 @@ const RecuperacaoSenha = Bookshelf.model('RecuperacaoSenha');
 var Pessoa = Bookshelf.Model.extend({
   tableName: 'pessoa'
 }, {
-  _camposValidos: function(camposPessoa, options) {
+  _camposValidos: function(camposPessoa/*, options*/) {
     var message = [];
 
     if (!camposPessoa.nome) {
@@ -69,7 +71,7 @@ var Pessoa = Bookshelf.Model.extend({
           observacao: camposPessoa.observacao
         })
           .save(null, optionsInsert);
-      })
+      });
   },
   verificaEmail: function(pessoaAVerificar, then, fail) {
     var _uuid = util.geradorUUIDAleatorio();

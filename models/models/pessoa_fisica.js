@@ -1,8 +1,6 @@
 'use strict';
 
-const debug = require('debug')('areaazul:models:pessoa_fisica');
 const _ = require('lodash');
-const validator = require('validator');
 var validation = require('./validation');
 
 const AreaAzul = require('../../areaazul');
@@ -12,7 +10,10 @@ const util = AreaAzul.util;
 var Pessoa = Bookshelf.model('Pessoa');
 
 var PessoaFisica = Bookshelf.Model.extend({
-  tableName: 'pessoa_fisica'
+  tableName: 'pessoa_fisica',
+  pessoa: function() {
+    return this.hasOne('Pessoa', 'id');
+  }
 }, {
   _camposValidos: function(pessoaFisicaFields, options) {
     var messages = [];
@@ -34,7 +35,7 @@ var PessoaFisica = Bookshelf.Model.extend({
         messages.push({
           attribute: 'data_nascimento',
           problem: 'Data inválida!'
-        })
+        });
       }
     }
 
@@ -43,7 +44,7 @@ var PessoaFisica = Bookshelf.Model.extend({
       .then(function(messagesPessoa) {
         messages = _.concat(messages, messagesPessoa);
         return messages;
-      })
+      });
   },
   _camposValidosInclusao: function(pessoaFisicaFields, options) {
     var messages = [];
@@ -58,11 +59,11 @@ var PessoaFisica = Bookshelf.Model.extend({
               messages.push({
                 attribute: 'cpf',
                 problem: 'CPF já cadastrado!'
-              })
+              });
             }
             return messages;
           });
-      })
+      });
   },
   __cadastrarNova: function(camposPessoaFisica, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options || {});
@@ -115,7 +116,7 @@ var PessoaFisica = Bookshelf.Model.extend({
           .save({
             data_nascimento: util.dataValida(
               pessoaFisicaFields.data_nascimento)
-          }, _merge({ method: 'update', patch: true }, options));
+          }, _.merge({ method: 'update', patch: true }, options));
       });
   },
   _cadastrar: function(pessoaFisicaFields, options) {

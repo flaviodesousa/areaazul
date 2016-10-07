@@ -1,16 +1,18 @@
 'use strict';
 
 const _ = require('lodash');
-const Promise = require('bluebird');
 const validation = require('./validation');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 const Pessoa = Bookshelf.model('Pessoa');
 
 var PessoaJuridica = Bookshelf.Model.extend({
-  tableName: 'pessoa_juridica'
+  tableName: 'pessoa_juridica',
+  pessoa: function() {
+    return this.hasOne('Pessoa', 'id');
+  }
 }, {
-  _camposValidos: function(camposPessoaJuridica, options) {
+  _camposValidos: function(camposPessoaJuridica/*, options*/) {
     var message = [];
 
     if (!camposPessoaJuridica.nome_fantasia) {
@@ -34,7 +36,7 @@ var PessoaJuridica = Bookshelf.Model.extend({
       });
     }
 
-    return Promise.resolve(message);
+    return message;
   },
   _cadastrar: function(camposPessoaJuridica, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options || {});

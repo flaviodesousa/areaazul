@@ -40,7 +40,7 @@ var Ativacao = Bookshelf.Model.extend({
           attribute: 'veiculo_id',
           problem: `Não há veículo com id ${ativacao.usuario_id}`
         });
-      })
+      });
   },
   _ativar: function(camposAtivacao, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options);
@@ -154,7 +154,7 @@ var Ativacao = Bookshelf.Model.extend({
           throw err;
         }
         return new Ativacao({ id: desativacao.ativacao_id })
-          .fetch(options)
+          .fetch(options);
       })
       .then(function(d) {
         return d
@@ -276,23 +276,23 @@ var Ativacao = Bookshelf.Model.extend({
       messages.push({
         attribute: 'usuario_revendedor_id',
         problem: 'Falta identificador do revendedor'
-      })
+      });
     } else if (!validator.isNumeric('' + ativacao.usuario_revendedor_id)) {
       messages.push({
         attribute: 'usuario_revendedor_id',
         problem: 'Deve ser numérico'
-      })
+      });
     } else {
       idUsuarioRevendedor = 0 + ativacao.usuario_revendedor_id;
     }
 
     if (!ativacao.tempo) {
-      message.push({
+      messages.push({
         attribute: 'tempo',
         problem: 'Tempo é obrigatório!'
       });
     } else if (!validator.isNumeric('' + ativacao.tempo)) {
-      message.push({
+      messages.push({
         attribute: 'tempo',
         problem: 'Tempo deve ser um número'
       });
@@ -318,7 +318,7 @@ var Ativacao = Bookshelf.Model.extend({
         return Veiculo
           ._validarVeiculo(ativacao, options)
           .then(function(messagesVeiculo) {
-            messages = messages.concat(messagesVeiculo)
+            messages = messages.concat(messagesVeiculo);
           });
       })
       .then(() => {
@@ -346,7 +346,7 @@ var Ativacao = Bookshelf.Model.extend({
               problem: 'Identificador de revendedor inválido'
             });
           });
-      })
+      });
   },
   _verificaSaldoRevendedor: function(idUsuarioRevendedor, options) {
     return Conta

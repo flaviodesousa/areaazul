@@ -2,7 +2,6 @@
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
-const util = require('areaazul-utils');
 
 var Estado = Bookshelf.Model.extend({
   tableName: 'estado'

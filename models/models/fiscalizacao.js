@@ -15,10 +15,10 @@ var Fiscalizacao = Bookshelf.Model.extend({
         latitude: fiscalizacao.latitude,
         longitude: fiscalizacao.longitude,
         timestamp: new Date(),
-        usuario_fiscal_id: fiscalizacao.usuario_fiscal_id,
+        usuario_fiscal_id: fiscalizacao.usuario_fiscal_id
       })
       .save();
-  },
+  }
 });
 Bookshelf.model('Fiscalizacao', Fiscalizacao);
 
