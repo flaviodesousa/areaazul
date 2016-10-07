@@ -7,7 +7,6 @@ const superAgent = require('superagent');
 const AreaAzul = require('areaazul');
 const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 const Bookshelf = AreaAzul.db;
-const Usuario = Bookshelf.model('Usuario');
 const Veiculo = Bookshelf.model('Veiculo');
 
 describe('/veiculo', function() {
@@ -46,13 +45,30 @@ describe('/veiculo', function() {
       .catch(function(e) {
         debug('erro inesperado', e);
         done(e);
-      })
+      });
   });
 
-  describe('GET', function() {
+  describe('GET /veiculo/:id', function() {
+    it('obtém veículo com id existente', function(done) {
+      superAgent
+        .get(`${url}/${veiculoExistente.id}`)
+        .auth(usuario.get('login'), usuario.senha)
+        .end(function(err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          res.should.have.property('body');
+          res.body.should.have.property('placa', veiculoExistente.get('placa'));
+          res.ok.should.be.equal(true);
+          done();
+        });
+    });
+  });
+
+  describe('GET /veiculo?%QUERY%', function() {
     it('obtém veículo existente pela placa', function(done) {
       superAgent
         .get(`${url}?placa=${veiculoExistente.get('placa')}`)
+        .auth(usuario.get('login'), usuario.senha)
         .end(function(err, res) {
           should.not.exist(err);
           should.exist(res);
@@ -83,7 +99,7 @@ describe('/veiculo', function() {
           res.statusCode.should.be.equal(404);  // Not found
           done();
         });
-    })
+    });
   });
 
   after(function(done) {

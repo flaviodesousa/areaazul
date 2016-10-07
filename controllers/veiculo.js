@@ -24,5 +24,12 @@ module.exports.buscarPorPlaca = function(req, res) {
 };
 
 module.exports.buscarPorId = function(req, res) {
-
+  Bookshelf.model('Veiculo')
+    .buscarPorId(req.params.veiculo_id)
+    .catch(Bookshelf.NotFoundError, function() {
+      res.status(404).end();
+    })
+    .then(function(veiculo) {
+      res.send(veiculo.toJSON());
+    });
 };
