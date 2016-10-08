@@ -14,13 +14,19 @@ const PessoaFisica = Bookshelf.model('PessoaFisica');
 var UsuarioRevendedor = Bookshelf.Model.extend({
   tableName: 'usuario_revendedor',
   pessoaFisica: function() {
-    return this.hasOne('PessoaFisica', 'id');
+    return this.belongsTo('PessoaFisica');
+  },
+  revendedor: function() {
+    return this.belongsTo('Revendedor');
   }
 }, {
   autorizado: function(login, senha) {
     var usuarioRevendedor;
     return new UsuarioRevendedor({ login: login })
-      .fetch({ require: true })
+      .fetch({
+        require: true,
+        withRelated: [
+          'revendedor', 'pessoaFisica', 'pessoaFisica.pessoa' ] })
       .catch(Bookshelf.NotFoundError, () => {
         const err = new AreaAzul.AuthenticationError(
           'Usuário revendedor: login inválido', {
