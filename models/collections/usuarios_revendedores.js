@@ -1,3 +1,5 @@
+'use strict';
+
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 
@@ -8,8 +10,9 @@ var UsuariosRevendedores = Bookshelf.Collection.extend({
 }, {
   listarUsuarioRevenda: function(idRevendedor) {
     return new UsuariosRevendedores()
-      .query()
-      .where({ revendedor_id: idRevendedor });
+      .query({ where: { revendedor_id: idRevendedor } })
+      .fetch({ withRelated: [
+        'revendedor', 'pessoaFisica', 'pessoaFisica.pessoa' ] });
   }
 });
 Bookshelf.collection('UsuariosRevendedores', UsuariosRevendedores);
