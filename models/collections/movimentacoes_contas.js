@@ -3,11 +3,10 @@
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
 const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
-var moment = require('moment');
 
 
 var MovimentacoesConta = Bookshelf.Collection.extend({
-    model: MovimentacaoConta
+  model: MovimentacaoConta
 }, {
   listarMovimentacaoUsuario: function(id) {
     return new this()
@@ -18,7 +17,7 @@ var MovimentacoesConta = Bookshelf.Collection.extend({
           .select('movimentacao_conta.*');
       })
       .fetch();
-  },
+  }
 
 });
 Bookshelf.collection('MovimentacoesConta', MovimentacoesConta);

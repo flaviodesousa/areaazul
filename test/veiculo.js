@@ -25,7 +25,6 @@ describe('model.veiculo', function() {
   var corTeste = 'Cor Teste';
   var anoFabricadoTeste = '2015';
   var anoModeloTeste = '2015';
-  var idEstado = null;
   var idCidade = null;
   var idVeiculo = null;
   var idUsuarioComum = null;
@@ -35,8 +34,6 @@ describe('model.veiculo', function() {
       .then(function(cidade) {
         debug('Usando cidade ' + cidade.id);
         idCidade = cidade.id;
-        debug('Usando estado ' + cidade.estado_id);
-        idEstado = cidade.estado_id;
       })
       .then(function() {
         return TestHelpers.pegarUsuario();
@@ -135,14 +132,18 @@ describe('model.veiculo', function() {
 
   describe('listar()', function() {
     it('retorna uma lista de veiculos ', function(done) {
-      Veiculos.listar(
-        function(collection) {
-          should.exist(collection);
+      Veiculos
+        .listar()
+        .then(veiculos => {
+          should.exist(veiculos);
+          veiculos.should.have.property('ativos');
+          veiculos.should.have.property('expirando');
+          veiculos.should.have.property('expirados');
           done();
-        },
-        function(err) {
-          debug('erro inesperado', err);
-          done(err);
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
   });
