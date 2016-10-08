@@ -126,7 +126,7 @@ describe('model.usuario', function() {
     });
   });
 
-  describe('alterarSenha()', function(done) {
+  describe('alterarSenha()', function() {
     it('altera senha dos usuarios', function(done) {
       if (!usuarioDeTeste) {
         done(new Error('Sem usuário corrente'));
@@ -140,7 +140,7 @@ describe('model.usuario', function() {
       };
       Usuario.alterarSenha(usuarioTrocaSenha)
         .then(function() {
-          done()
+          done();
         })
         .catch(function(e) {
           done(e);

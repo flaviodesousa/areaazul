@@ -5,7 +5,6 @@ var should = require('chai').should();
 const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
 
-var MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 var UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
 
 const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
@@ -21,7 +20,7 @@ describe('model.usuario_has_veiculo', function() {
         idVeiculo = veiculo.id;
       })
       .then(function() {
-        return TestHelpers.pegarUsuario()
+        return TestHelpers.pegarUsuario();
       })
       .then(function(usuario) {
         idUsuarioComum = usuario.id;

@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('areaazul:test:movimentacao_conta');
 var should = require('chai').should();
 const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
@@ -18,7 +19,7 @@ describe('model.movimentacaoConta', function() {
         done();
       })
       .catch(function(e) {
-        console.dir(e);
+        debug('erro inesperado', e);
         done(e);
       });
   });

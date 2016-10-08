@@ -1,6 +1,5 @@
 'use strict';
 
-const debug = require('debug')('areaazul:test:usuario_revenda');
 const should = require('chai').should();
 const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
@@ -19,7 +18,7 @@ describe('collection Estados', function() {
         })
         .catch(function(e) {
           done(e);
-        })
+        });
     });
 
   });

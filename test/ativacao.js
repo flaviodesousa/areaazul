@@ -11,7 +11,6 @@ const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 var Ativacao = Bookshelf.model('Ativacao');
 const AtivacaoUsuario = Bookshelf.model('AtivacaoUsuario');
 const Conta = Bookshelf.model('Conta');
-const Veiculo = Bookshelf.model('Veiculo');
 var Ativacoes = Bookshelf.collection('Ativacoes');
 
 const valorTeste = 10;

@@ -125,7 +125,7 @@ describe('model.revendedor', function() {
         .procurarLogin(revendedorPJ.login)
         .then(function(usuarioRevenda) {
           idUsuarioRevenda = usuarioRevenda.get('pessoa_fisica_id');
-        })
+        });
     });
 
     it('retorna um revendedor', function(done) {
