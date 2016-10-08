@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const Promise = require('bluebird');
 const validation = require('./validation');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul.db;
@@ -36,7 +37,7 @@ var PessoaJuridica = Bookshelf.Model.extend({
       });
     }
 
-    return message;
+    return Promise.resolve(message);
   },
   _cadastrar: function(camposPessoaJuridica, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options || {});
