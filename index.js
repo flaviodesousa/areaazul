@@ -104,6 +104,10 @@ module.exports = function(AreaAzul) {
       });
   }
 
+  exports.apagarPessoaJuridica = id => {
+    return _apagarPessoaJuridica(id);
+  };
+
   function _apagarRevendedorFisica(idRevendedor) {
     return _apagarRevendedor(idRevendedor)
       .then(function() {
