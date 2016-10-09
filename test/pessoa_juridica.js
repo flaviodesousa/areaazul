@@ -5,32 +5,26 @@ var should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
 const Bookshelf = AreaAzul.db;
-var Pessoa = Bookshelf.model('Pessoa');
-var PessoaJuridica = Bookshelf.model('PessoaJuridica');
+
+const PessoaJuridica = Bookshelf.model('PessoaJuridica');
+
+const AreaazulTestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 describe('models.PessoaJuridica', function() {
-  var cnpjTeste = 'teste-pj';
+  var cnpjTeste = '16169879000130';
 
   function deleteTestData(done) {
-    var pessoaId = null;
-    PessoaJuridica
-      .forge({ cnpj: cnpjTeste })
-      .fetch()
-      .then(function(pj) {
-        if (pj) {
-          pessoaId = pj.id;
-          return pj.destroy();
-        }
-      })
-      .then(function() {
-        if (pessoaId !== null) {
-          return Pessoa
-            .forge({ id: pessoaId })
-            .destroy();
-        }
+    new PessoaJuridica({ cnpj: cnpjTeste })
+      .fetch({ require: true })
+      .then(pj => {
+        return AreaazulTestHelpers
+          .apagarPessoaJuridica(pj.id);
       })
       .then(function() {
         return done();
+      })
+      .catch(Bookshelf.NotFoundError, () => {
+        done();
       })
       .catch(function(e) {
         debug('erro inesperado', e);
@@ -50,8 +44,7 @@ describe('models.PessoaJuridica', function() {
         cnpj: cnpjTeste,
         nome_fantasia: 'PJ preexistente',
         razao_social: 'razao social teste',
-        contato: 'contato-teste',
-        ativo: true
+        contato: 'contato-teste'
       })
         .then(function(pj) {
           should.exist(pj);
