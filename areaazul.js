@@ -15,8 +15,8 @@ var AuthenticationError = function(message, details) {
 };
 util.inherits(AuthenticationError, Error);
 
-module.exports.log = require('./configuration/logging');
-module.exports.db = require('./configuration/database');
+module.exports.log = require('./logging');
+module.exports.db = require('./database');
 module.exports.util = require('areaazul-utils');
 
 [
