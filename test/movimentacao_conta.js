@@ -2,10 +2,9 @@
 
 const debug = require('debug')('areaazul:test:movimentacao_conta');
 var should = require('chai').should();
-const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 var MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
 
 describe('model.movimentacaoConta', function() {
   var revendedor = null;

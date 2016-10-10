@@ -5,8 +5,8 @@ var validator = require('validator');
 var _ = require('lodash');
 
 const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
-const log = AreaAzul.log;
+const Bookshelf = require('../../database');
+const log = require('../../logging');
 const validation = require('./validation');
 
 const PessoaFisica = Bookshelf.model('PessoaFisica');

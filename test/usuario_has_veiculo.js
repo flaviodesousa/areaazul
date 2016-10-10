@@ -2,12 +2,11 @@
 
 var should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 
 var UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
 
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
 
 describe('model.usuario_has_veiculo', function() {
   var idUsuarioComum = null;

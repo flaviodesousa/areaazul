@@ -4,11 +4,11 @@ var debug = require('debug')('areaazul:test:usuario');
 var should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 
 var Usuario = Bookshelf.model('Usuario');
 
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
 
 describe('model.usuario', function() {
   const camposUsuarioDeTeste = {

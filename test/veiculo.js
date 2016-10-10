@@ -3,13 +3,12 @@
 const debug = require('debug')('areaazul:test:veiculo');
 const should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 
 const Veiculo = Bookshelf.model('Veiculo');
 const Veiculos = Bookshelf.collection('Veiculos');
 
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
 const AreaAzulUtils = require('areaazul-utils');
 
 describe('model.veiculo', function() {

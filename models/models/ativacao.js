@@ -6,8 +6,8 @@ var moment = require('moment');
 var _ = require('lodash');
 
 const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
-const log = AreaAzul.log;
+const Bookshelf = require('../../database');
+const log = require('../../logging');
 const util = require('areaazul-utils');
 const Usuario = Bookshelf.model('Usuario');
 const UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');

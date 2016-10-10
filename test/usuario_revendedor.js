@@ -3,12 +3,12 @@
 const debug = require('debug')('areaazul:test:usuario_revenda');
 var should = require('chai').should();
 const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 
 var UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 var UsuariosRevendedores = Bookshelf.collection('UsuariosRevendedores');
 
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
 
 describe('models.UsuarioRevendedor', function() {
   var cpfNaoExistente = '58316661667';

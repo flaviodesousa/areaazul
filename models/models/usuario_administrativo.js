@@ -3,8 +3,8 @@
 const _ = require('lodash');
 const bcrypt = require('bcrypt-then');
 const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
-const log = AreaAzul.log;
+const Bookshelf = require('../../database');
+const log = require('../../logging');
 const UsuarioHelper = require('../../helpers/usuario_helper');
 
 const PessoaFisica = Bookshelf.model('PessoaFisica');

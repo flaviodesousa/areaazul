@@ -2,8 +2,7 @@
 
 var _ = require('lodash');
 
-const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../../database');
 
 var UsuarioHasVeiculo = Bookshelf.Model.extend(
   {

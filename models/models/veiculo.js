@@ -4,7 +4,8 @@ const _ = require('lodash');
 const validator = require('validator');
 
 const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../../database');
+const log = require('../../logging');
 const util = require('areaazul-utils');
 
 var Veiculo = Bookshelf.Model.extend({
@@ -66,7 +67,7 @@ var Veiculo = Bookshelf.Model.extend({
 
 
   cadastrar: function(camposVeiculo) {
-    AreaAzul.log.info('Veiculo.cadastrar()', { campos: camposVeiculo });
+    log.info('Veiculo.cadastrar()', { campos: camposVeiculo });
 
     return Bookshelf.transaction(function(t) {
 

@@ -2,8 +2,7 @@
 
 const moment = require('moment');
 
-var AreaAzul = require('../../areaazul');
-var Bookshelf = AreaAzul.db;
+var Bookshelf = require('../../database');
 var Ativacao = Bookshelf.model('Ativacao');
 
 var Ativacoes = Bookshelf.Collection.extend({

@@ -2,7 +2,7 @@
 
 var _ = require('lodash');
 const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../../database');
 var Conta = Bookshelf.model('Conta');
 var math = require('mathjs');
 

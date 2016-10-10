@@ -6,8 +6,8 @@ var validator = require('validator');
 
 const AreaAzul = require('../../areaazul');
 const AreaAzulMailer = require('areaazul-mailer');
-const Bookshelf = AreaAzul.db;
-const log = AreaAzul.log;
+const Bookshelf = require('../../database');
+const log = require('../../logging');
 
 var PessoaFisica = Bookshelf.model('PessoaFisica');
 var Conta = Bookshelf.model('Conta');

@@ -4,9 +4,9 @@ var debug = require('debug')('areaazul:test:ativacao');
 var should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
 
 var Ativacao = Bookshelf.model('Ativacao');
 const AtivacaoUsuario = Bookshelf.model('AtivacaoUsuario');

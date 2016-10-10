@@ -3,12 +3,11 @@
 const debug = require('debug')('areaazul:test:pessoa_juridica');
 var should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 
 const PessoaJuridica = Bookshelf.model('PessoaJuridica');
 
-const AreaazulTestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const AreaazulTestHelpers = require('areaazul-test-helpers')(Bookshelf);
 
 describe('models.PessoaJuridica', function() {
   var cnpjTeste = '16169879000130';

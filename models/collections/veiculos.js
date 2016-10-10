@@ -2,8 +2,7 @@
 
 
 const moment = require('moment');
-const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../../database');
 const Veiculo = Bookshelf.model('Veiculo');
 const Ativacoes = Bookshelf.collection('Ativacoes');
 

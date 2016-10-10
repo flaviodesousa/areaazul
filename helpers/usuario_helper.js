@@ -5,11 +5,9 @@
 
 'use strict';
 
-const debug = require('debug')('areaazul:helper:usuario_helper');
 var validator = require('validator');
 
-const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 
 var PessoaFisica = Bookshelf.model('PessoaFisica');
 
@@ -65,7 +63,7 @@ module.exports._camposValidos = function(campos, usuario, ModelClass, options) {
         }
       }
       return PessoaFisica
-        ._camposValidos(campos, options)
+        ._camposValidos(campos, options);
     })
     .then(function(messagesPessoaFisica) {
       messages.concat(messagesPessoaFisica);

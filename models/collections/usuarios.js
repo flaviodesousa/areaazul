@@ -1,7 +1,6 @@
 'use strict';
 
-const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../../database');
 const Usuario = Bookshelf.model('Usuario');
 
 var Usuarios = Bookshelf.Collection.extend({

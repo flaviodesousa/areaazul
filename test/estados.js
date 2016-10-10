@@ -1,8 +1,7 @@
 'use strict';
 
 const should = require('chai').should();
-const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 const Estados = Bookshelf.collection('Estados');
 
 describe('collection Estados', function() {

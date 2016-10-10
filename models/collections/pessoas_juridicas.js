@@ -1,5 +1,4 @@
-const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../../database');
 const PessoaJuridica = Bookshelf.model('PessoaJuridica');
 
 var PessoasJuridicas = Bookshelf.Collection.extend({

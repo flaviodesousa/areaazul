@@ -1,7 +1,6 @@
 'use strict';
 
-const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../../database');
 var Fiscalizacao = Bookshelf.model('Fiscalizacao');
 var moment = require('moment');
 

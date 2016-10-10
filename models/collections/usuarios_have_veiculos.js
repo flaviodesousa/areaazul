@@ -1,9 +1,8 @@
-const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../../database');
 const UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
 
 var UsuariosHaveVeiculos = Bookshelf.Collection.extend({
-  model: UsuarioHasVeiculo,
+  model: UsuarioHasVeiculo
 }, {
   listarVeiculos: function(user) {
     return UsuariosHaveVeiculos
@@ -19,7 +18,7 @@ var UsuariosHaveVeiculos = Bookshelf.Collection.extend({
           .select('veiculo.*');
       })
       .fetch();
-}
+  }
 
 });
 Bookshelf.collection('UsuariosHaveVeiculos', UsuariosHaveVeiculos);

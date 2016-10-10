@@ -1,8 +1,7 @@
 'use strict';
 
-const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
-var log = AreaAzul.log;
+const Bookshelf = require('../../database');
+var log = require('../../logging');
 
 var Fiscalizacao = Bookshelf.Model.extend({
   tableName: 'fiscalizacao'

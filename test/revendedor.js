@@ -3,13 +3,12 @@
 const debug = require('debug')('areaazul:test:revendedor');
 const should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 
 const Revendedor = Bookshelf.model('Revendedor');
 const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
 
 describe('model.revendedor', function() {
   const revendedorPF = {

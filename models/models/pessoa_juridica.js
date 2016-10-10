@@ -3,8 +3,8 @@
 const _ = require('lodash');
 const validation = require('./validation');
 const AreaAzul = require('../../areaazul');
-const log = AreaAzul.log;
-const Bookshelf = AreaAzul.db;
+const log = require('../../logging');
+const Bookshelf = require('../../database');
 const Pessoa = Bookshelf.model('Pessoa');
 
 var PessoaJuridica = Bookshelf.Model.extend({

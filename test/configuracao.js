@@ -1,10 +1,9 @@
 'use strict';
 
 var should = require('chai').should();
-const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 var Configuracao = Bookshelf.model('Configuracao');
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
 
 describe('model.configuracao', function() {
   var idCidade = null;

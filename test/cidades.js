@@ -3,7 +3,7 @@
 var should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 
 var CidadesCollection = Bookshelf.collection('Cidades');
 

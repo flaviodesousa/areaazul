@@ -3,8 +3,7 @@
 const debug = require('debug')('areaazul:test:pessoa_fisica');
 var should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 const Pessoa = Bookshelf.model('Pessoa');
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 

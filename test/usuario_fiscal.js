@@ -3,12 +3,12 @@
 const should = require('chai').should();
 const debug = require('debug')('areaazul:test:usuario_fiscal');
 const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 
 var UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
 var PessoaFisica = Bookshelf.model('PessoaFisica');
 
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
 
 describe('models.UsuarioFiscal', function() {
   const camposUsuarioFiscalPreExistente = {

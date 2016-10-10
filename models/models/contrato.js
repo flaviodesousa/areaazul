@@ -1,5 +1,4 @@
-const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../../database');
 
 var Contrato = Bookshelf.Model.extend({
   tableName: 'contrato'

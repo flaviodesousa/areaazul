@@ -3,8 +3,7 @@
 const debug = require('debug')('areaazul:test:fiscalizacao');
 var should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../database');
 var Fiscalizacao = Bookshelf.model('Fiscalizacao');
 var Fiscalizacoes = Bookshelf.collection('Fiscalizacoes');
 var UsuarioFiscal = Bookshelf.model('UsuarioFiscal');

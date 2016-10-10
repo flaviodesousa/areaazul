@@ -3,7 +3,7 @@ const validator = require('validator');
 const _ = require('lodash');
 
 const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
+const Bookshelf = require('../../database');
 
 const AreaAzulMailer = require('areaazul-mailer');
 

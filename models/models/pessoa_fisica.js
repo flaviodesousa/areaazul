@@ -4,9 +4,9 @@ const _ = require('lodash');
 var validation = require('./validation');
 
 const AreaAzul = require('../../areaazul');
-const Bookshelf = AreaAzul.db;
-const log = AreaAzul.log;
-const util = AreaAzul.util;
+const Bookshelf = require('../../database');
+const log = require('../../logging');
+const AreaAzulUtils = require('areaazul-utils');
 var Pessoa = Bookshelf.model('Pessoa');
 
 var PessoaFisica = Bookshelf.Model.extend({
@@ -31,7 +31,7 @@ var PessoaFisica = Bookshelf.Model.extend({
     }
 
     if (pessoaFisicaFields.data_nascimento) {
-      if (!util.dataValida(pessoaFisicaFields.data_nascimento)) {
+      if (!AreaAzulUtils.dataValida(pessoaFisicaFields.data_nascimento)) {
         messages.push({
           attribute: 'data_nascimento',
           problem: 'Data inválida!'
@@ -85,7 +85,7 @@ var PessoaFisica = Bookshelf.Model.extend({
       .then(function(pessoa) {
         return new PessoaFisica({
             cpf: camposPessoaFisica.cpf,
-            data_nascimento: util.dataValida(
+            data_nascimento: AreaAzulUtils.dataValida(
               camposPessoaFisica.data_nascimento),
             id: pessoa.id
           })
@@ -114,7 +114,7 @@ var PessoaFisica = Bookshelf.Model.extend({
       .then(function() {
         return pessoaFisicaRecord
           .save({
-            data_nascimento: util.dataValida(
+            data_nascimento: AreaAzulUtils.dataValida(
               pessoaFisicaFields.data_nascimento)
           }, _.merge({ method: 'update', patch: true }, options));
       });
@@ -161,7 +161,7 @@ var PessoaFisica = Bookshelf.Model.extend({
             return pessoaFisica
               .save({
                 cpf: pf.cpf,
-                data_nascimento: util.dataValida(pf.data_nascimento),
+                data_nascimento: AreaAzulUtils.dataValida(pf.data_nascimento),
                 id: pessoa.id
               }, optionsUpdate);
           });

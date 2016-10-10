@@ -2,7 +2,7 @@
 
 const Promise = require('bluebird');
 const AreaAzul = require('../../areaazul');
-var Bookshelf = AreaAzul.db;
+var Bookshelf = require('../../database');
 var Cidade = Bookshelf.model('Cidade');
 
 var Cidades = Bookshelf.Collection.extend({
