@@ -73,7 +73,7 @@ var Pessoa = Bookshelf.Model.extend({
           .save(null, optionsInsert);
       });
   },
-  verificaEmail: function(pessoaAVerificar, then, fail) {
+  _verificaEmail: function(pessoaAVerificar) {
     var _uuid = util.geradorUUIDAleatorio();
     Pessoa.forge({ email: pessoaAVerificar.email })
       .fetch()
@@ -94,7 +94,6 @@ var Pessoa = Bookshelf.Model.extend({
 sua senha.</p>
 <a href="https://demo.areaazul.org/${_uuid}">Trocar Senha</a>`
               });
-              then(pessoa);
             },
             function() {
               throw new Error('Erro !!!');
@@ -103,9 +102,6 @@ sua senha.</p>
         } else {
           throw new Error('Email não existe!!!');
         }
-      })
-      .catch(function(err) {
-        fail(err);
       });
   }
 });

@@ -129,14 +129,6 @@ var Ativacao = Bookshelf.Model.extend({
         return ativacao;
       });
   },
-  ativar: function(ativacao) {
-    log.info('ativar', { ativacao: ativacao });
-
-    return Bookshelf.transaction(function(t) {
-      var options = { transacting: t };
-      return Ativacao._ativar(ativacao, options);
-    });
-  },
 
   _desativar: function(desativacao, options) {
     var optionsPatch = _.merge({ patch: true }, options);
@@ -164,13 +156,6 @@ var Ativacao = Bookshelf.Model.extend({
         log.info('Desativacao: sucesso', { desativacao: ativacaoExistente });
         return ativacaoExistente;
       });
-  },
-  desativar: function(desativacao) {
-    log.info('desativar', desativacao);
-    return Bookshelf.transaction(function(t) {
-      var options = { transacting: t };
-      return Ativacao._desativar(desativacao, options);
-    });
   },
   _ativarPelaRevenda: function(ativacao, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options);
@@ -243,12 +228,6 @@ var Ativacao = Bookshelf.Model.extend({
             valor: 10.00
           }, options);
       });
-  },
-  ativarPelaRevenda: function(ativacao) {
-    log.info('ativarPelaRevenda()', ativacao);
-    return Bookshelf.transaction(function(t) {
-      return Ativacao._ativarPelaRevenda(ativacao, { transacting: t });
-    });
   },
   _validarAtivacao: function(ativacao, placa, options) {
     var message = [];

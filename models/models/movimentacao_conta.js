@@ -9,7 +9,6 @@ var math = require('mathjs');
 var MovimentacaoConta = Bookshelf.Model.extend({
   tableName: 'movimentacao_conta'
 }, {
-
   _inserirMovimentacaoConta: function(movimentacaoConta, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options || {});
     var optionsUpdate = _.merge({ method: 'update', patch: true },
@@ -47,24 +46,12 @@ var MovimentacaoConta = Bookshelf.Model.extend({
     return MovimentacaoConta
       ._inserirMovimentacaoConta(credito, options);
   },
-  inserirCredito: function(credito) {
-    return Bookshelf.transaction(function(t) {
-      return MovimentacaoConta
-        ._inserirCredito(credito, { transacting: t });
-    });
-  },
   _inserirDebito: function(debito, options) {
     if (debito.valor > 0) {
       debito.valor = -debito.valor;
     }
     return MovimentacaoConta
       ._inserirMovimentacaoConta(debito, options);
-  },
-  inserirDebito: function(debito) {
-    return Bookshelf.transaction(function(t) {
-      return MovimentacaoConta
-        ._inserirCredito(debito, { transacting: t });
-    });
   }
 });
 Bookshelf.model('MovimentacaoConta', MovimentacaoConta);
