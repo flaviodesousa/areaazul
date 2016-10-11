@@ -7,7 +7,6 @@ var validator = require('validator');
 const AreaAzul = require('../../areaazul');
 const AreaAzulMailer = require('areaazul-mailer');
 const Bookshelf = require('../../database');
-const log = require('../../logging');
 
 var PessoaFisica = Bookshelf.model('PessoaFisica');
 var Conta = Bookshelf.model('Conta');
@@ -23,53 +22,6 @@ var Usuario = Bookshelf.Model.extend({
   }
 
 }, {
-
-  buscarPorId: function(id) {
-    var Usuario = this;
-
-    return Usuario
-      .forge({ id: id })
-      .fetch()
-      .then(function(u) {
-        if (u) {
-          return u;
-        }
-        var err = new AreaAzul.BusinessException(
-          'Usuário: id não encontrado', {
-            id: id
-          });
-        log.warn(err.message, err.details);
-        throw err;
-      });
-  },
-
-  autorizado: function(login, senha) {
-    var usuario;
-    return new Usuario({ login: login })
-      .fetch()
-      .then(function(u) {
-        usuario = u;
-        if (!usuario) {
-          var err = new AreaAzul.BusinessException(
-            'Usuário: login inválido', { login: login });
-          err.authentication_event = true;
-          log.warn(err.message, err.details);
-          throw err;
-        }
-        return bcrypt.compare(senha, usuario.get('senha'));
-      })
-      .then(function(valid) {
-        if (!valid) {
-          throw new AreaAzul.AuthenticationError(
-            'Usuário: senha incorreta', {
-              login: login,
-              usuario: usuario
-            });
-        }
-        return usuario;
-      });
-  },
-
   _salvar: function(camposUsuario, usuario, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options);
     const optionsUpdate = _.merge({ method: 'update' }, options);
@@ -156,18 +108,6 @@ var Usuario = Bookshelf.Model.extend({
       });
   },
 
-  inserir: function(camposUsuario) {
-    return Bookshelf.transaction(function(t) {
-      return Usuario._salvar(camposUsuario, null, { transacting: t });
-    });
-  },
-
-  alterar: function(camposUsuario, usuario) {
-    return Bookshelf.transaction(function(t) {
-      return Usuario._salvar(camposUsuario, usuario, { transacting: t });
-    });
-  },
-
   _alterarSenha: function(camposAlterarSenha, options) {
     var usuario = null;
     return new Usuario({ id: camposAlterarSenha.id })
@@ -206,13 +146,6 @@ var Usuario = Bookshelf.Model.extend({
           { senha: hashNovaSenha },
           _.merge({ method: 'update', patch: true }, options));
       });
-  },
-
-  alterarSenha: function(camposAlterarSenha) {
-    return Bookshelf.transaction(function(t) {
-      return Usuario
-        ._alterarSenha(camposAlterarSenha, { transacting: t });
-    });
   },
 
   _camposValidos: function(camposUsuario, usuario, options) {

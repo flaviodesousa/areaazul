@@ -5,7 +5,6 @@ var validation = require('./validation');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
-const log = require('../../logging');
 const AreaAzulUtils = require('areaazul-utils');
 var Pessoa = Bookshelf.model('Pessoa');
 
@@ -131,16 +130,7 @@ var PessoaFisica = Bookshelf.Model.extend({
         return PessoaFisica.__cadastrarNova(pessoaFisicaFields, options);
       });
   },
-  cadastrar: function(pessoaFisica) {
-    log.info('cadastrar()', pessoaFisica);
-    var PessoaFisica = this;
-
-    return Bookshelf.transaction(function(t) {
-      return PessoaFisica
-        ._cadastrar(pessoaFisica, { transacting: t });
-    });
-  },
-  alterar: function(pf, id, options) {
+  _alterar: function(pf, id, options) {
     var optionsUpdate = _.merge({ method: 'update', patch: true }, options);
 
     return new Pessoa({ id: id })
@@ -170,11 +160,6 @@ var PessoaFisica = Bookshelf.Model.extend({
   _buscarPorCPF: function(cpf, options) {
     return new this({ cpf: cpf })
       .fetch(options);
-  },
-  buscarPorCPF: function(cpf) {
-    return Bookshelf.transaction(function(t) {
-      return PessoaFisica._buscarPorCPF(cpf, { transacting: t });
-    });
   }
 });
 Bookshelf.model('PessoaFisica', PessoaFisica);

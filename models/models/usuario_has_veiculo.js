@@ -14,16 +14,6 @@ var UsuarioHasVeiculo = Bookshelf.Model.extend(
       return this.belongsTo('Usuario', 'usuario_id');
     }
   }, {
-
-    cadastrar: function(usuarioHasVeiculo) {
-      return Bookshelf.transaction(
-        function(t) {
-          return UsuarioHasVeiculo
-            ._salvar(usuarioHasVeiculo, { transacting: t });
-        });
-    },
-
-
     _salvar: function(usuarioHasVeiculo, options) {
 
       var optionsInsert = _.merge({ method: 'insert' }, options || {});

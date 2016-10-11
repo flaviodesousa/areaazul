@@ -5,7 +5,6 @@ const validator = require('validator');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
-const log = require('../../logging');
 const util = require('areaazul-utils');
 
 var Veiculo = Bookshelf.Model.extend({
@@ -65,33 +64,6 @@ var Veiculo = Bookshelf.Model.extend({
       });
   },
 
-
-  cadastrar: function(camposVeiculo) {
-    log.info('Veiculo.cadastrar()', { campos: camposVeiculo });
-
-    return Bookshelf.transaction(function(t) {
-
-      return Veiculo._cadastrar(camposVeiculo, { transacting: t });
-
-    });
-  },
-
-  desativar: function(id) {
-    return Veiculo
-      .forge({ id: id })
-      .fetch()
-      .then(function(veiculo) {
-        if (veiculo) {
-          return veiculo
-            .save({ ativo: false }, { patch: true });
-        }
-        throw new AreaAzul.BusinessException(
-          'Desativacao: Veiculo não encontrado', {
-            desativacao: id
-          });
-      });
-  },
-
   _procurarVeiculo: (placa, options) => {
     var placaSemMascara = '';
 
@@ -100,20 +72,6 @@ var Veiculo = Bookshelf.Model.extend({
     }
     return new Veiculo({ placa: placaSemMascara })
       .fetch(_.merge({ withRelated: [ 'cidade', 'cidade.estado' ] }, options));
-  },
-
-  procurarVeiculo: function(placa) {
-    return Bookshelf.transaction(t => {
-      return Veiculo._procurarVeiculo(placa, { transacting: t });
-    });
-  },
-
-  buscarPorId: function(id) {
-    return new Veiculo({ id: id })
-      .fetch({
-        withRelated: [ 'cidade', 'cidade.estado' ],
-        require: true
-      });
   },
 
   _validarVeiculo: (veiculoFields, options) => {

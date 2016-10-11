@@ -73,12 +73,6 @@ var PessoaJuridica = Bookshelf.Model.extend({
           .save(null, optionsInsert);
       });
   },
-  cadastrar: function(camposPessoaJuridica) {
-    return Bookshelf.transaction(function(t) {
-      return PessoaJuridica
-        ._cadastrar(camposPessoaJuridica, { transacting: t });
-    });
-  },
   _buscarPorCNPJ: function(cnpj, options) {
     return PessoaJuridica.forge({ cnpj: cnpj })
       .fetch(options);
