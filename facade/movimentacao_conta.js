@@ -2,7 +2,7 @@ const log = require('../logging');
 const Bookshelf = require('../database');
 const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 
-module.export.listarMovimentacaoUsuario = function(id) {
+module.exports.listarMovimentacaoUsuario = function(id) {
   return new this()
     .query(function(qb) {
       qb
@@ -13,7 +13,7 @@ module.export.listarMovimentacaoUsuario = function(id) {
     .fetch();
 };
 
-module.export.inserirDebito = function(debito) {
+module.exports.inserirDebito = function(debito) {
   log.info('ovimentacao_conta::inserirDebito', debito);
   return Bookshelf.transaction(function(t) {
     return MovimentacaoConta
@@ -21,7 +21,7 @@ module.export.inserirDebito = function(debito) {
   });
 };
 
-module.export.inserirCredito = function(credito) {
+module.exports.inserirCredito = function(credito) {
   log.info('ovimentacao_conta::inserirCredito', credito);
   return Bookshelf.transaction(function(t) {
     return MovimentacaoConta

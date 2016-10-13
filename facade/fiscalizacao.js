@@ -6,7 +6,7 @@ const Fiscalizacao = Bookshelf.model('Fiscalizacao');
 const Fiscalizacoes = Bookshelf.collection('Fiscalizacoes');
 const moment = require('moment');
 
-module.export.listar = function(parameters) {
+module.exports.listar = function(parameters) {
   return Fiscalizacoes
     .query(function(qb) {
       var params = parameters || {};
@@ -24,7 +24,7 @@ module.export.listar = function(parameters) {
     .fetch();
 };
 
-module.export.cadastrar = function(fiscalizacao) {
+module.exports.cadastrar = function(fiscalizacao) {
   log.info('Fiscalizacao.cadastrar()', fiscalizacao);
   return new Fiscalizacao({
     placa: fiscalizacao.placa,

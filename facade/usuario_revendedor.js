@@ -7,13 +7,13 @@ const log = require('../logging');
 const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 const UsuariosRevendedores = Bookshelf.collection('UsuariosRevendedores');
 
-module.export.listarUsuarioRevenda = function(idRevendedor) {
+module.exports.listarUsuarioRevenda = function(idRevendedor) {
   return new UsuariosRevendedores()
     .query({ where: { revendedor_id: idRevendedor } })
     .fetch({ withRelated: [
       'revendedor', 'pessoaFisica', 'pessoaFisica.pessoa' ] });
 };
-module.export.autorizado = function(login, senha) {
+module.exports.autorizado = function(login, senha) {
   var usuarioRevendedor;
   return new UsuarioRevendedor({ login: login })
     .fetch({
@@ -45,13 +45,13 @@ module.export.autorizado = function(login, senha) {
       throw err;
     });
 };
-module.export.inserir = function(entidade) {
+module.exports.inserir = function(entidade) {
   return Bookshelf.transaction(function(t) {
     return UsuarioRevendedor._salvarUsuarioRevenda(
       entidade, null, { transacting: t });
   });
 };
-module.export.alterar = function(entidade) {
+module.exports.alterar = function(entidade) {
   return Bookshelf.transaction(function(t) {
     const options = { transacting: t };
     return new UsuarioRevendedor({
@@ -64,7 +64,7 @@ module.export.alterar = function(entidade) {
       });
   });
 };
-module.export.procurar = function(id, func) {
+module.exports.procurar = function(id, func) {
   UsuarioRevendedor.forge()
     .query(function(qb) {
       qb
@@ -81,7 +81,7 @@ module.export.procurar = function(id, func) {
   });
 };
 
-module.export.desativar = function(id) {
+module.exports.desativar = function(id) {
   return UsuarioRevendedor
     .forge({
       id: id
@@ -97,7 +97,7 @@ module.export.desativar = function(id) {
         .save({ ativo: false }, { patch: true });
     });
 };
-module.export.buscarPorId = function(id) {
+module.exports.buscarPorId = function(id) {
   return new UsuarioRevendedor({ id: id })
     .fetch({ require: true })
     .catch(Bookshelf.NotFoundError, () => {
@@ -109,6 +109,6 @@ module.export.buscarPorId = function(id) {
       throw err;
     });
 };
-module.export.procurarLogin = function(login) {
+module.exports.procurarLogin = function(login) {
   return this._procurarLogin(login, null);
 };

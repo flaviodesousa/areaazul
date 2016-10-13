@@ -7,7 +7,7 @@ const AreaAzul = require('../areaazul');
 const Bookshelf = require('../database');
 const Cidades = Bookshelf.collection('Cidades');
 
-module.export.listar = function(idEstado) {
+module.exports.listar = function(idEstado) {
   if (idEstado && idEstado !== 0 + idEstado) {
     return Promise.reject(
       new AreaAzul.BusinessException(

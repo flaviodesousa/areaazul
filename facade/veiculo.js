@@ -4,7 +4,7 @@ const Bookshelf = require('../database');
 const Ativacoes = Bookshelf.collection('Ativacoes');
 const Veiculo = Bookshelf.model('Veiculo');
 
-module.export.listar = function() {
+module.exports.listar = function() {
   var veiculos = {};
   return Ativacoes
     ._listarAtivacoes()
@@ -30,7 +30,7 @@ module.export.listar = function() {
     });
 };
 
-module.export.cadastrar = function(camposVeiculo) {
+module.exports.cadastrar = function(camposVeiculo) {
   log.info('Veiculo.cadastrar()', { campos: camposVeiculo });
 
   return Bookshelf.transaction(function(t) {
@@ -40,13 +40,13 @@ module.export.cadastrar = function(camposVeiculo) {
   });
 };
 
-module.export.procurarVeiculo = function(placa) {
+module.exports.procurarVeiculo = function(placa) {
   return Bookshelf.transaction(t => {
     return Veiculo._procurarVeiculo(placa, { transacting: t });
   });
 };
 
-module.export.buscarPorId = function(id) {
+module.exports.buscarPorId = function(id) {
   return new Veiculo({ id: id })
     .fetch({
       withRelated: [ 'cidade', 'cidade.estado' ],

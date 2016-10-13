@@ -2,7 +2,7 @@ const log = require('../logging');
 const Bookshelf = require('../database');
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 
-module.export.cadastrar = function(pessoaFisica) {
+module.exports.cadastrar = function(pessoaFisica) {
   log.info('cadastrar()', pessoaFisica);
   var PessoaFisica = this;
 
@@ -12,7 +12,7 @@ module.export.cadastrar = function(pessoaFisica) {
   });
 };
 
-module.export.buscarPorCPF = function(cpf) {
+module.exports.buscarPorCPF = function(cpf) {
   return Bookshelf.transaction(function(t) {
     return PessoaFisica._buscarPorCPF(cpf, { transacting: t });
   });

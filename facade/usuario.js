@@ -5,7 +5,7 @@ const Bookshelf = require('../database');
 const Usuario = Bookshelf.model('Usuario');
 const AreaAzul = require('../areaazul');
 
-module.export.buscarPorId = function(id) {
+module.exports.buscarPorId = function(id) {
   var Usuario = this;
 
   return Usuario
@@ -26,7 +26,7 @@ module.export.buscarPorId = function(id) {
     });
 };
 
-module.export.autorizado = function(login, senha) {
+module.exports.autorizado = function(login, senha) {
   var usuario;
   return new Usuario({ login: login })
     .fetch()
@@ -53,19 +53,19 @@ module.export.autorizado = function(login, senha) {
     });
 };
 
-module.export.inserir = function(camposUsuario) {
+module.exports.inserir = function(camposUsuario) {
   return Bookshelf.transaction(function(t) {
     return Usuario._salvar(camposUsuario, null, { transacting: t });
   });
 };
 
-module.export.alterar = function(camposUsuario, usuario) {
+module.exports.alterar = function(camposUsuario, usuario) {
   return Bookshelf.transaction(function(t) {
     return Usuario._salvar(camposUsuario, usuario, { transacting: t });
   });
 };
 
-module.export.alterarSenha = function(camposAlterarSenha) {
+module.exports.alterarSenha = function(camposAlterarSenha) {
   return Bookshelf.transaction(function(t) {
     return Usuario
       ._alterarSenha(camposAlterarSenha, { transacting: t });

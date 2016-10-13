@@ -5,7 +5,7 @@ const Bookshelf = require('../database');
 const Configuracao = Bookshelf.model('Configuracao');
 const validator = require('validator');
 
-module.export.getConfiguracaoTempo = function() {
+module.exports.getConfiguracaoTempo = function() {
   return [ {
     quantidade_tempo: '60',
     preco: 2.00
@@ -21,7 +21,7 @@ module.export.getConfiguracaoTempo = function() {
   } ];
 };
 
-module.export.alterar = function(config) {
+module.exports.alterar = function(config) {
   return new Configuracao()
     .fetch()
     .then(
@@ -44,13 +44,13 @@ module.export.alterar = function(config) {
       });
 };
 
-module.export.buscarConfiguracao = function() {
+module.exports.buscarConfiguracao = function() {
   return Configuracao
     .forge()
     .fetch();
 };
 
-module.export.validar = function(config) {
+module.exports.validar = function(config) {
   var message = [];
 
   if (validator.isNull(config.valor_ativacao)) {

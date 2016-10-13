@@ -6,7 +6,7 @@ const Bookshelf = require('../database');
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 const UsuarioAdministrativo = Bookshelf.model('UsuarioAdministrativo');
 
-module.export.cadastrar = function(camposUsuarioAdministrativo) {
+module.exports.cadastrar = function(camposUsuarioAdministrativo) {
   var pessoaFisica;
 
   return Bookshelf.transaction(function(t) {
@@ -62,7 +62,7 @@ module.export.cadastrar = function(camposUsuarioAdministrativo) {
   });
 };
 
-module.export.autorizado = function(login, senha) {
+module.exports.autorizado = function(login, senha) {
   var usuarioAdministrativo;
   return new UsuarioAdministrativo({ login: login })
     .fetch()
@@ -91,7 +91,7 @@ module.export.autorizado = function(login, senha) {
     });
 };
 
-module.export.buscarPorId = function(id) {
+module.exports.buscarPorId = function(id) {
   return new UsuarioAdministrativo({ id: id })
     .fetch({ require: true })
     .catch(Bookshelf.NotFoundError, () => {
