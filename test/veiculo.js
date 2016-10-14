@@ -3,17 +3,13 @@
 const debug = require('debug')('areaazul:test:veiculo');
 const should = require('chai').should();
 
-const Bookshelf = require('../database');
+const AreaAzul = require('../areaazul');
+const Veiculo = AreaAzul.facade.Veiculo;
 
-const Veiculo = Bookshelf.model('Veiculo');
-const Veiculos = Bookshelf.collection('Veiculos');
-
-const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
 const AreaAzulUtils = require('areaazul-utils');
 
-describe('model.veiculo', function() {
-
-  function apagarDadosDeTeste(placa) {
+describe('facade Veiculo', function() {
+  function apagarDadosDeTeste(TestHelpers, placa) {
     return TestHelpers.apagarVeiculoPorPlaca(placa);
   }
 
@@ -29,6 +25,8 @@ describe('model.veiculo', function() {
   var idUsuarioComum = null;
 
   before(function() {
+    const Bookshelf = require('../database');
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return TestHelpers.pegarCidade()
       .then(function(cidade) {
         debug('Usando cidade ' + cidade.id);
@@ -42,10 +40,10 @@ describe('model.veiculo', function() {
         idUsuarioComum = usuario.id;
       })
       .then(function() {
-        return apagarDadosDeTeste(placaTeste);
+        return apagarDadosDeTeste(TestHelpers, placaTeste);
       })
       .then(function() {
-        return apagarDadosDeTeste(placaInexistente);
+        return apagarDadosDeTeste(TestHelpers, placaInexistente);
       });
   });
 
@@ -131,7 +129,7 @@ describe('model.veiculo', function() {
 
   describe('listar()', function() {
     it('retorna uma lista de veiculos ', function(done) {
-      Veiculos
+      Veiculo
         .listar()
         .then(veiculos => {
           should.exist(veiculos);
@@ -148,7 +146,9 @@ describe('model.veiculo', function() {
   });
 
   after(function(done) {
-    apagarDadosDeTeste(placaTeste)
+    const Bookshelf = require('../database');
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+    apagarDadosDeTeste(TestHelpers, placaTeste)
       .then(function() {
         done();
       })

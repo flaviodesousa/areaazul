@@ -2,15 +2,12 @@
 
 const should = require('chai').should();
 const debug = require('debug')('areaazul:test:usuario_administrativo');
+
 const AreaAzul = require('../areaazul');
-const Bookshelf = require('../database');
+const UsuarioAdministrativo = AreaAzul.facade.UsuarioAdministrativo;
+const PessoaFisica = AreaAzul.facade.PessoaFisica;
 
-var UsuarioAdministrativo = Bookshelf.model('UsuarioAdministrativo');
-var PessoaFisica = Bookshelf.model('PessoaFisica');
-
-const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
-
-describe('models.UsuarioAdministrativo', function() {
+describe('facade UsuarioAdministrativo', function() {
   const camposUsuarioAdministrativoPreExistente = {
     login: 'login-uape-teste-unitario',
     nova_senha: 'senha-uape-teste-unitario-usuario',
@@ -36,6 +33,8 @@ describe('models.UsuarioAdministrativo', function() {
   var usuarioAdministrativoNaoExistente;
 
   function apagarDadosDeTeste() {
+    const Bookshelf = require('../database');
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return TestHelpers
       .apagarUsuarioAdministrativoPorLogin(
         camposUsuarioAdministrativoPreExistente.login)

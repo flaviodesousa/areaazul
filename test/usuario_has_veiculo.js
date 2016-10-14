@@ -1,18 +1,17 @@
 'use strict';
 
-var should = require('chai').should();
+const should = require('chai').should();
 
-const Bookshelf = require('../database');
+const AreaAzul = require('../areaazul');
+const UsuarioHasVeiculo = AreaAzul.facade.UsuarioHasVeiculo;
 
-var UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
-
-const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
-
-describe('model.usuario_has_veiculo', function() {
+describe('facade UsuarioHasVeiculo', function() {
   var idUsuarioComum = null;
   var idVeiculo = null;
 
   before(function() {
+    const Bookshelf = require('../database');
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return TestHelpers
       .pegarVeiculo()
       .then(function(veiculo) {

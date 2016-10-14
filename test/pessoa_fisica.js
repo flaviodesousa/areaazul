@@ -1,16 +1,18 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:pessoa_fisica');
-var should = require('chai').should();
+const should = require('chai').should();
 
-const Bookshelf = require('../database');
-const Pessoa = Bookshelf.model('Pessoa');
-const PessoaFisica = Bookshelf.model('PessoaFisica');
+const AreaAzul = require('../areaazul');
+const PessoaFisica = AreaAzul.facade.PessoaFisica;
 
-describe('models.PessoaFisica', function() {
+describe('facade PessoaFisica', function() {
   var cpfTeste = '04163501436';
 
   function deleteTestData(done) {
+    const Bookshelf = require('../database');
+    const Pessoa = Bookshelf.model('Pessoa');
+    const PessoaFisica = Bookshelf.model('PessoaFisica');
     var pessoaId = null;
     new PessoaFisica({ cpf: cpfTeste })
       .fetch()

@@ -1,19 +1,20 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:fiscalizacao');
-var should = require('chai').should();
+const should = require('chai').should();
 
-const Bookshelf = require('../database');
-var Fiscalizacao = Bookshelf.model('Fiscalizacao');
-var Fiscalizacoes = Bookshelf.collection('Fiscalizacoes');
-var UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
+const AreaAzul = require('../areaazul');
+const Fiscalizacao = AreaAzul.facade.Fiscalizacao;
 
-describe('model.fiscalizacao', function() {
+describe('facade Fiscalizacao', function() {
   var fiscalLogin = 'fiscal-teste-fiscalizacao';
   var fiscalId = null;
 
   before(function(done) {
-    UsuarioFiscal
+    const Bookshelf = require('../database');
+    const UsuarioFiscalModel = Bookshelf.model('UsuarioFiscal');
+    const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
+    UsuarioFiscalModel
       .forge({ login: fiscalLogin })
       .fetch()
       .then(function(f) {
@@ -157,28 +158,28 @@ describe('model.fiscalizacao', function() {
 
   describe('listar()', function() {
     it('retorna uma lista de fiscalizacoes', function() {
-      return Fiscalizacoes
+      return Fiscalizacao
         .listar(undefined)
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);
         });
     });
     it('limita por tempo', function() {
-      return Fiscalizacoes
+      return Fiscalizacao
         .listar({ minutos: 10 })
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);
         });
     });
     it('limita por respostas', function() {
-      return Fiscalizacoes
+      return Fiscalizacao
         .listar({ limite: 2 })
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);
         });
     });
     it('limita por tempo E respostas', function() {
-      Fiscalizacoes
+      Fiscalizacao
         .listar({ limite: 2, minutos: 10 })
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);

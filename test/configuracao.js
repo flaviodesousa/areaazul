@@ -1,14 +1,16 @@
 'use strict';
 
-var should = require('chai').should();
-const Bookshelf = require('../database');
-var Configuracao = Bookshelf.model('Configuracao');
-const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
+const should = require('chai').should();
 
-describe('model.configuracao', function() {
+const AreaAzul = require('../areaazul');
+const Configuracao = AreaAzul.facade.Configuracao;
+
+describe('fachada Configuracao', function() {
   var idCidade = null;
 
   before(function() {
+    const Bookshelf = require('../database');
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return TestHelpers
       .pegarCidade()
       .then(function(cidade) {

@@ -1,14 +1,10 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:usuario_revenda');
-var should = require('chai').should();
+const should = require('chai').should();
+
 const AreaAzul = require('../areaazul');
-const Bookshelf = require('../database');
-
-var UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
-var UsuariosRevendedores = Bookshelf.collection('UsuariosRevendedores');
-
-const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
+const UsuarioRevendedor = AreaAzul.facade.UsuarioRevendedor;
 
 describe('models.UsuarioRevendedor', function() {
   var cpfNaoExistente = '58316661667';
@@ -18,7 +14,7 @@ describe('models.UsuarioRevendedor', function() {
   var idRevendedor = null;
   var termoDeServico = true;
 
-  function apagarDadosDeTeste() {
+  function apagarDadosDeTeste(TestHelpers) {
     return TestHelpers
       .apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente)
       .then(function() {
@@ -27,6 +23,8 @@ describe('models.UsuarioRevendedor', function() {
   }
 
   before(function() {
+    const Bookshelf = require('../database');
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return apagarDadosDeTeste()
       .then(function() {
         return TestHelpers.pegarRevendedor();
@@ -90,7 +88,7 @@ describe('models.UsuarioRevendedor', function() {
   describe('listarUsuarioRevenda()', function() {
 
     it('lista usuários da revenda mantidos no banco de dados', function(done) {
-      UsuariosRevendedores
+      UsuarioRevendedor
         .listarUsuarioRevenda(idRevendedor)
         .then(function(lista) {
           should.exist(lista);

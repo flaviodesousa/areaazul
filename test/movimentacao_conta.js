@@ -1,15 +1,17 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:movimentacao_conta');
-var should = require('chai').should();
-const Bookshelf = require('../database');
-var MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
-const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
+const should = require('chai').should();
 
-describe('model.movimentacaoConta', function() {
+const AreaAzul = require('../areaazul');
+const Bookshelf = require('../database');
+const MovimentacaoConta = AreaAzul.facade.MovimentacaoDeConta;
+
+describe('facade MovimentacaoDeConta', function() {
   var revendedor = null;
 
   before(function(done) {
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     TestHelpers.pegarRevendedor()
       .then(function(r) {
         revendedor = r;

@@ -3,14 +3,11 @@
 const debug = require('debug')('areaazul:test:revendedor');
 const should = require('chai').should();
 
-const Bookshelf = require('../database');
+const AreaAzul = require('../areaazul');
+const Revendedor = AreaAzul.facade.Revendedor;
+const UsuarioRevendedor = AreaAzul.facade.UsuarioRevendedor;
 
-const Revendedor = Bookshelf.model('Revendedor');
-const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
-
-const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
-
-describe('model.revendedor', function() {
+describe('facade Revendedor', function() {
   const revendedorPF = {
     nome: 'Nome PF Teste Revendedor',
     email: 'pf-teste-revendedor@areaazul.org',
@@ -40,6 +37,8 @@ describe('model.revendedor', function() {
   };
 
   function apagarRevendedoresDeTeste() {
+    const Bookshelf = require('../database');
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return TestHelpers
       .apagarRevendedorPorCPF(revendedorPF.cpf)
       .then(function() {
@@ -119,7 +118,6 @@ describe('model.revendedor', function() {
     var idUsuarioRevenda = null;
 
     before(function() {
-      const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
       return UsuarioRevendedor
         .procurarLogin(revendedorPJ.login)
         .then(function(usuarioRevenda) {

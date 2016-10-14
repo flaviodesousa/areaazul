@@ -1,19 +1,20 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:pessoa_juridica');
-var should = require('chai').should();
+const should = require('chai').should();
 
-const Bookshelf = require('../database');
+const AreaAzul = require('../areaazul');
+const PessoaJuridica = AreaAzul.facade.PessoaJuridica;
 
-const PessoaJuridica = Bookshelf.model('PessoaJuridica');
-
-const AreaazulTestHelpers = require('areaazul-test-helpers')(Bookshelf);
-
-describe('models.PessoaJuridica', function() {
+describe('facade PessoaJuridica', function() {
   var cnpjTeste = '16169879000130';
 
   function deleteTestData(done) {
-    new PessoaJuridica({ cnpj: cnpjTeste })
+    const Bookshelf = require('../database');
+    const AreaazulTestHelpers =
+      require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+    const PessoaJuridicaModel = Bookshelf.model('PessoaJuridica');
+    new PessoaJuridicaModel({ cnpj: cnpjTeste })
       .fetch({ require: true })
       .then(pj => {
         return AreaazulTestHelpers

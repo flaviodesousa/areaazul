@@ -1,14 +1,14 @@
 'use strict';
 
-var debug = require('debug')('areaazul:test:ativacao');
-var should = require('chai').should();
+const debug = require('debug')('areaazul:test:ativacao');
+const should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
 const Ativacao = AreaAzul.facade.Ativacao;
 
 const valorTeste = 10;
 
-describe('model.ativacao', function() {
+describe('fachada Ativacao', function() {
 
   var idUsuarioComum = null;
   var veiculoExistente = null;
@@ -19,7 +19,7 @@ describe('model.ativacao', function() {
 
   before(function() {
     const Bookshelf = require('../database');
-    const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     const Ativacao = Bookshelf.model('Ativacao');
     const AtivacaoUsuario = Bookshelf.model('AtivacaoUsuario');
     const Conta = Bookshelf.model('Conta');

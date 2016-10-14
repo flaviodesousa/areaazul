@@ -1,17 +1,15 @@
 'use strict';
 
-var should = require('chai').should();
+const should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
-const Bookshelf = require('../database');
+const Cidade = AreaAzul.facade.Cidade;
 
-var CidadesCollection = Bookshelf.collection('Cidades');
-
-describe('collections.Cidades', function() {
+describe('fachada Cidade', function() {
   var idEstado = 1;
   describe('listar()', function() {
     it('lista cidades do estado 1', function(done) {
-      CidadesCollection
+      Cidade
         .listar(idEstado)
         .then(function(cidadesCollection) {
           should.exist(cidadesCollection);
@@ -26,7 +24,7 @@ describe('collections.Cidades', function() {
         });
     });
     it('falha com id estado invalido', function(done) {
-      CidadesCollection
+      Cidade
         .listar('undefined')
         .then(function() {
           done(new Error('não deveria aceitar id inválido'));
@@ -42,7 +40,7 @@ describe('collections.Cidades', function() {
         });
     });
     it('lista todas cidades se idEstado não fornecido', function(done) {
-      CidadesCollection
+      Cidade
         .listar()
         .then(function(cidadesCollection) {
           should.exist(cidadesCollection);

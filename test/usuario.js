@@ -1,16 +1,12 @@
 'use strict';
 
-var debug = require('debug')('areaazul:test:usuario');
-var should = require('chai').should();
+const debug = require('debug')('areaazul:test:usuario');
+const should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
-const Bookshelf = require('../database');
+const Usuario = AreaAzul.facade.Usuario;
 
-var Usuario = Bookshelf.model('Usuario');
-
-const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
-
-describe('model.usuario', function() {
+describe('facade Usuario', function() {
   const camposUsuarioDeTeste = {
     login: 'login-teste-unitario-usuario',
     nova_senha: 'senha-teste-unitario-usuario',
@@ -25,6 +21,8 @@ describe('model.usuario', function() {
   var usuarioDeTeste = null;
 
   function apagarDadosDeTeste() {
+    const Bookshelf = require('../database');
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return TestHelpers.apagarUsuarioPorLogin(camposUsuarioDeTeste.login);
   }
 

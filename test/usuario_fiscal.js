@@ -2,15 +2,12 @@
 
 const should = require('chai').should();
 const debug = require('debug')('areaazul:test:usuario_fiscal');
+
 const AreaAzul = require('../areaazul');
-const Bookshelf = require('../database');
+const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
+const PessoaFisica = AreaAzul.facade.PessoaFisica;
 
-var UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
-var PessoaFisica = Bookshelf.model('PessoaFisica');
-
-const TestHelpers = require('areaazul-test-helpers')(Bookshelf);
-
-describe('models.UsuarioFiscal', function() {
+describe('facade UsuarioFiscal', function() {
   const camposUsuarioFiscalPreExistente = {
     login: 'login-ufpe-teste-unitario',
     nova_senha: 'senha-ufpe-teste-unitario-usuario',
@@ -36,6 +33,8 @@ describe('models.UsuarioFiscal', function() {
   var usuarioFiscalNaoExistente;
 
   function apagarDadosDeTeste() {
+    const Bookshelf = require('../database');
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return TestHelpers
       .apagarUsuarioFiscalPorCPF(
         camposUsuarioFiscalPreExistente.cpf)
