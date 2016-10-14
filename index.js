@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(Bookshelf) {
+module.exports = function(AreaAzul, Bookshelf) {
   var exports = {};
 
   const _ = require('lodash');
@@ -26,6 +26,12 @@ module.exports = function(Bookshelf) {
   const UsuariosHaveVeiculos = Bookshelf.collection('UsuariosHaveVeiculos');
   const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
   const Cidade = Bookshelf.model('Cidade');
+
+  const VeiculoFacade = AreaAzul.facade.Veiculo;
+  const UsuarioFacade = AreaAzul.facade.Usuario;
+  const RevendedorFacade = AreaAzul.facade.Revendedor;
+  const UsuarioRevendedorFacade = AreaAzul.facade.UsuarioRevendedor;
+  const MovimentacaoContaFacade = AreaAzul.facade.MovimentacaoDeConta;
 
   function _apagarConta(idConta) {
     return new MovimentacaoConta()
@@ -304,7 +310,7 @@ module.exports = function(Bookshelf) {
           return veiculo;
         }
         debug('cadastrando veiculo de teste', veiculoTeste);
-        return Veiculo
+        return VeiculoFacade
           .cadastrar(veiculoTeste);
       });
   };
@@ -329,7 +335,7 @@ module.exports = function(Bookshelf) {
           return usuario;
         }
         debug('cadastrando usuario de teste', usuarioTeste);
-        return Usuario.inserir(usuarioTeste);
+        return UsuarioFacade.inserir(usuarioTeste);
       })
       .then(function(usuario) {
         usuario.senha = usuarioTeste.nova_senha;
@@ -359,7 +365,7 @@ module.exports = function(Bookshelf) {
             .fetch();
         }
         debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
-        return Revendedor
+        return RevendedorFacade
           .cadastrar(revendedorPessoaFisicaTeste);
       })
       .then(function(revendedor) {
@@ -367,7 +373,7 @@ module.exports = function(Bookshelf) {
           return revendedor;
         }
         debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
-        return Revendedor
+        return RevendedorFacade
           .cadastrar(revendedorPessoaFisicaTeste);
       });
   }
@@ -396,7 +402,7 @@ module.exports = function(Bookshelf) {
             }
             debug('cadastrando usuario revendedor de teste',
               usuarioRevendedorTeste);
-            return UsuarioRevendedor
+            return UsuarioRevendedorFacade
               .inserir(
                 _.merge({ revendedor_id: revendedor.id },
                   usuarioRevendedorTeste));
@@ -405,7 +411,7 @@ module.exports = function(Bookshelf) {
   };
 
   exports.setSaldo = function(conta, novoSaldo) {
-    return MovimentacaoConta
+    return MovimentacaoContaFacade
       .inserirCredito({
         conta_id: conta.id,
         historico: `credito teste de ${conta.get('saldo')} para ${novoSaldo}`,
