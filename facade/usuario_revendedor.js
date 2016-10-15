@@ -110,5 +110,5 @@ module.exports.buscarPorId = function(id) {
     });
 };
 module.exports.procurarLogin = function(login) {
-  return this._procurarLogin(login, null);
+  return UsuarioRevendedor._procurarLogin(login, null);
 };

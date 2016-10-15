@@ -48,22 +48,6 @@ describe('facade Usuario', function() {
       });
   });
 
-  describe('validade()', function() {
-    it('valida usuario', function(done) {
-      Usuario
-        ._camposValidos(camposUsuarioDeTeste, null, {})
-        .then(function(messages) {
-          should.exist(messages);
-          done();
-        })
-        .catch(function(e) {
-          debug('erro inesperado', e);
-          done(e);
-        });
-    });
-
-  });
-
   describe('cadastrar()', function() {
     it('grava usuario', function(done) {
       Usuario

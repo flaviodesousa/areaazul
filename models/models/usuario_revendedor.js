@@ -46,7 +46,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       })
       .then(function(pessoaFisica) {
         if (pessoaFisica !== null) {
-          return PessoaFisica.alterar(campos, pessoaFisica.id, options);
+          return PessoaFisica._alterar(campos, pessoaFisica.id, options);
         }
         // Caso nao exista, criar a pessoa fisica
         return PessoaFisica._cadastrar(campos, options);

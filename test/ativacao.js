@@ -307,19 +307,4 @@ describe('fachada Ativacao', function() {
     });
   });
 
-  describe('listarAtivacoes()', function() {
-
-    it.skip('lista veiculos que estão ativados e não estao fiscalizados.',
-      function(done) {
-        Ativacao
-          ._listarAtivacoes()
-          .then(function() {
-            done();
-          })
-          .catch(function(e) {
-            done(e);
-          });
-      });
-  });
-
 });

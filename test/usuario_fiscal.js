@@ -7,6 +7,10 @@ const AreaAzul = require('../areaazul');
 const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
 const PessoaFisica = AreaAzul.facade.PessoaFisica;
 
+const Bookshelf = require('../database');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+const PessoaFisicaModel = Bookshelf.model('PessoaFisica');
+
 describe('facade UsuarioFiscal', function() {
   const camposUsuarioFiscalPreExistente = {
     login: 'login-ufpe-teste-unitario',
@@ -33,8 +37,6 @@ describe('facade UsuarioFiscal', function() {
   var usuarioFiscalNaoExistente;
 
   function apagarDadosDeTeste() {
-    const Bookshelf = require('../database');
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return TestHelpers
       .apagarUsuarioFiscalPorCPF(
         camposUsuarioFiscalPreExistente.cpf)
@@ -95,7 +97,7 @@ describe('facade UsuarioFiscal', function() {
           should.exist(usuarioFiscal);
           usuarioFiscal.get('login').should.equal(
             camposUsuarioFiscalPreExistente.login);
-          return new PessoaFisica({ id: usuarioFiscal.id })
+          return new PessoaFisicaModel({ id: usuarioFiscal.id })
             .fetch();
         })
         .then(function(pessoaFisica) {

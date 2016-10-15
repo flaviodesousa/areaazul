@@ -121,6 +121,7 @@ describe('facade Revendedor', function() {
       return UsuarioRevendedor
         .procurarLogin(revendedorPJ.login)
         .then(function(usuarioRevenda) {
+          should.exist(usuarioRevenda);
           idUsuarioRevenda = usuarioRevenda.get('pessoa_fisica_id');
         });
     });

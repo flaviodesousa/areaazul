@@ -3,6 +3,9 @@
 const debug = require('debug')('areaazul:test:fiscalizacao');
 const should = require('chai').should();
 
+const Bookshelf = require('../database');
+const FiscalizacaoModel = Bookshelf.model('Fiscalizacao');
+
 const AreaAzul = require('../areaazul');
 const Fiscalizacao = AreaAzul.facade.Fiscalizacao;
 
@@ -11,7 +14,6 @@ describe('facade Fiscalizacao', function() {
   var fiscalId = null;
 
   before(function(done) {
-    const Bookshelf = require('../database');
     const UsuarioFiscalModel = Bookshelf.model('UsuarioFiscal');
     const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
     UsuarioFiscalModel
@@ -116,7 +118,7 @@ describe('facade Fiscalizacao', function() {
           usuario_fiscal_id: fiscalId
         })
         .then(function(novaAtivacao) {
-          return new Fiscalizacao({ id: novaAtivacao.id })
+          return new FiscalizacaoModel({ id: novaAtivacao.id })
             .fetch();
         })
         .then(function(f) {
@@ -140,7 +142,7 @@ describe('facade Fiscalizacao', function() {
           usuario_fiscal_id: fiscalId
         })
         .then(function(fiscalizacao) {
-          return new Fiscalizacao({ id: fiscalizacao.id })
+          return new FiscalizacaoModel({ id: fiscalizacao.id })
             .fetch();
         })
         .then(function(f) {

@@ -4,7 +4,6 @@ const PessoaFisica = Bookshelf.model('PessoaFisica');
 
 module.exports.cadastrar = function(pessoaFisica) {
   log.info('cadastrar()', pessoaFisica);
-  var PessoaFisica = this;
 
   return Bookshelf.transaction(function(t) {
     return PessoaFisica

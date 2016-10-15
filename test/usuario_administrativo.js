@@ -3,9 +3,14 @@
 const should = require('chai').should();
 const debug = require('debug')('areaazul:test:usuario_administrativo');
 
+const Bookshelf = require('../database');
+const PessoaFisicaModel = Bookshelf.model('PessoaFisica');
+
 const AreaAzul = require('../areaazul');
 const UsuarioAdministrativo = AreaAzul.facade.UsuarioAdministrativo;
 const PessoaFisica = AreaAzul.facade.PessoaFisica;
+
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
 
 describe('facade UsuarioAdministrativo', function() {
   const camposUsuarioAdministrativoPreExistente = {
@@ -33,8 +38,6 @@ describe('facade UsuarioAdministrativo', function() {
   var usuarioAdministrativoNaoExistente;
 
   function apagarDadosDeTeste() {
-    const Bookshelf = require('../database');
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return TestHelpers
       .apagarUsuarioAdministrativoPorLogin(
         camposUsuarioAdministrativoPreExistente.login)
@@ -95,7 +98,7 @@ describe('facade UsuarioAdministrativo', function() {
           should.exist(usuarioAdministrativo);
           usuarioAdministrativo.get('login').should.equal(
             camposUsuarioAdministrativoPreExistente.login);
-          return new PessoaFisica({ id: usuarioAdministrativo.id })
+          return new PessoaFisicaModel({ id: usuarioAdministrativo.id })
             .fetch();
         })
         .then(function(pessoaFisica) {
@@ -106,6 +109,7 @@ describe('facade UsuarioAdministrativo', function() {
         })
         .catch(function(e) {
           debug('erro inesperado', e);
+          done(e);
         });
     });
 

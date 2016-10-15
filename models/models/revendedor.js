@@ -35,7 +35,7 @@ var Revendedor = Bookshelf.Model.extend({
         // Mas se for pessoa física, pode ser que já exista
         // (pode ser usuária, por exemplo)
         return PessoaFisica
-          .buscarPorCPF(revendedorFields.cpf)
+          ._buscarPorCPF(revendedorFields.cpf, options)
           .then(function(pessoaFisica) {
             // Se já existe a pessoa física...
             if (pessoaFisica) {

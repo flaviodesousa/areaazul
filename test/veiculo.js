@@ -78,6 +78,7 @@ describe('facade Veiculo', function() {
       Veiculo.procurarVeiculo(placaTeste)
         .then(function(veiculo) {
           should.exist(veiculo);
+          veiculo.should.have.property('id', idVeiculo);
           const placaSemFormato = AreaAzulUtils.placaSemMascara(placaTeste);
           veiculo.get('placa').should.equal(placaSemFormato);
           done();
@@ -99,33 +100,6 @@ describe('facade Veiculo', function() {
         });
     });
   });
-
-  describe('desativar()', function() {
-    it('falha para veiculo inexistente', function(done) {
-      Veiculo
-        .desativar(0)
-        .then(function() {
-          done(new Error('Não deveria desativar veículo inexistente'));
-        })
-        .catch(function(e) {
-          should.exist(e);
-          done();
-        });
-    });
-
-    it('desativa veiculo existente', function(done) {
-      Veiculo
-        .desativar(idVeiculo)
-        .then(function() {
-          done();
-        })
-        .catch(function(e) {
-          debug('erro inesperado', e);
-          done(e);
-        });
-    });
-  });
-
 
   describe('listar()', function() {
     it('retorna uma lista de veiculos ', function(done) {

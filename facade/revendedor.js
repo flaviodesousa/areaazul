@@ -4,7 +4,6 @@ const Revendedor = Bookshelf.model('Revendedor');
 
 module.exports.cadastrar = function(revendedor) {
   log.info('revendedor::cadastrar()', revendedor);
-  var Revendedor = this;
   return Bookshelf.transaction(function(t) {
     return Revendedor._cadastrar(revendedor, { transacting: t });
   });
@@ -22,4 +21,9 @@ module.exports.buscarRevendedor = function(user) {
           'conta.*');
     })
     .fetch();
+};
+module.exports.validarRevenda = revenda => {
+  return Bookshelf.transaction(t => {
+    return Revendedor._validarRevenda(revenda, { transacting: t });
+  });
 };

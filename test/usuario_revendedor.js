@@ -6,6 +6,9 @@ const should = require('chai').should();
 const AreaAzul = require('../areaazul');
 const UsuarioRevendedor = AreaAzul.facade.UsuarioRevendedor;
 
+const Bookshelf = require('../database');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+
 describe('models.UsuarioRevendedor', function() {
   var cpfNaoExistente = '58316661667';
   var senhaRevendaNaoExistente = 'senha-revenda';
@@ -14,7 +17,7 @@ describe('models.UsuarioRevendedor', function() {
   var idRevendedor = null;
   var termoDeServico = true;
 
-  function apagarDadosDeTeste(TestHelpers) {
+  function apagarDadosDeTeste() {
     return TestHelpers
       .apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente)
       .then(function() {
@@ -23,8 +26,6 @@ describe('models.UsuarioRevendedor', function() {
   }
 
   before(function() {
-    const Bookshelf = require('../database');
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return apagarDadosDeTeste()
       .then(function() {
         return TestHelpers.pegarRevendedor();

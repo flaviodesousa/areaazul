@@ -24,6 +24,7 @@ module.exports.facade = {
   Ativacao: require('./facade/ativacao'),
   Cidade: require('./facade/cidade'),
   Configuracao: require('./facade/configuracao'),
+  Estado: require('./facade/estado'),
   Fiscalizacao: require('./facade/fiscalizacao'),
   MovimentacaoDeConta: require('./facade/movimentacao_conta'),
   PessoaFisica: require('./facade/pessoa_fisica'),
