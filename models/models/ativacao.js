@@ -157,15 +157,16 @@ var Ativacao = Bookshelf.Model.extend({
         return ativacaoExistente;
       });
   },
-  _ativarPelaRevenda: function(ativacao, options) {
-    var optionsInsert = _.merge({ method: 'insert' }, options);
+  _ativarPelaRevenda: function(camposAtivacao, options) {
+    const optionsInsert = _.merge({ method: 'insert' }, options);
+    var ativacao;
     var usuario = null;
     var placaSemMascara = '';
-    if (ativacao.placa) {
-      placaSemMascara = util.placaSemMascara(ativacao.placa);
+    if (camposAtivacao.placa) {
+      placaSemMascara = util.placaSemMascara(camposAtivacao.placa);
     }
     return Ativacao
-      ._validarAtivacaoRevenda(ativacao, placaSemMascara, options)
+      ._validarAtivacaoRevenda(camposAtivacao, placaSemMascara, options)
       .then(function(messages) {
         if (messages.length) {
           debug('ativarPelaRevenda() ativacao invalida');
@@ -193,10 +194,10 @@ var Ativacao = Bookshelf.Model.extend({
         debug('ativarPelaRevenda() veiculo nao existe, cadastrando');
         return Veiculo._cadastrar({
           placa: placaSemMascara,
-          marca: ativacao.marca,
-          cor: ativacao.cor,
-          modelo: ativacao.modelo,
-          cidade_id: ativacao.cidade
+          marca: camposAtivacao.marca,
+          cor: camposAtivacao.cor,
+          modelo: camposAtivacao.modelo,
+          cidade_id: camposAtivacao.cidade
         }, options);
       })
       .then(function(v) {
@@ -207,9 +208,10 @@ var Ativacao = Bookshelf.Model.extend({
         })
           .save(null, optionsInsert);
       })
-      .then(function() {
+      .then(function(ativacaoSalva) {
+        ativacao = ativacaoSalva;
         return new UsuarioRevendedor({
-          id: ativacao.usuario_revendedor_id
+          id: camposAtivacao.usuario_revendedor_id
         })
           .fetch(options);
       })
@@ -227,6 +229,9 @@ var Ativacao = Bookshelf.Model.extend({
             tipo: 'ativacao',
             valor: 10.00
           }, options);
+      })
+      .then(() => {
+        return ativacao;
       });
   },
   _validarAtivacao: function(ativacao, placa, options) {

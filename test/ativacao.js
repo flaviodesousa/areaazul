@@ -6,7 +6,13 @@ const should = require('chai').should();
 const AreaAzul = require('../areaazul');
 const Ativacao = AreaAzul.facade.Ativacao;
 
-const valorTeste = 10;
+const Bookshelf = require('../database');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+const AtivacaoModel = Bookshelf.model('Ativacao');
+const AtivacaoUsuarioModel = Bookshelf.model('AtivacaoUsuario');
+const ContaModel = Bookshelf.model('Conta');
+
+const valorTeste = '10.00';
 
 describe('fachada Ativacao', function() {
 
@@ -18,12 +24,6 @@ describe('fachada Ativacao', function() {
   var idAtivacao = null;
 
   before(function() {
-    const Bookshelf = require('../database');
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
-    const Ativacao = Bookshelf.model('Ativacao');
-    const AtivacaoUsuario = Bookshelf.model('AtivacaoUsuario');
-    const Conta = Bookshelf.model('Conta');
-
     return TestHelpers
       .pegarVeiculo()
       .then(function(v) {
@@ -36,7 +36,7 @@ describe('fachada Ativacao', function() {
       })
       .then(function(usuario) {
         idUsuarioComum = usuario.id;
-        return new Conta({ id: usuario.get('conta_id') })
+        return new ContaModel({ id: usuario.get('conta_id') })
           .fetch();
       })
       .then(function(contaUsuario) {
@@ -46,7 +46,7 @@ describe('fachada Ativacao', function() {
         return TestHelpers.pegarRevendedor();
       })
       .then(function(revendedor) {
-        return new Conta({ id: revendedor.get('conta_id') })
+        return new ContaModel({ id: revendedor.get('conta_id') })
           .fetch();
       })
       .then(function(contaRevendedor) {
@@ -67,7 +67,7 @@ describe('fachada Ativacao', function() {
       .then(function() {
         // Apagar ativações pendentes, para não afetar testes com novas
         // ativações.
-        return AtivacaoUsuario
+        return AtivacaoUsuarioModel
           .query(function(qb) {
             qb
               .whereExists(function() {
@@ -79,7 +79,7 @@ describe('fachada Ativacao', function() {
           .destroy();
       })
       .then(function() {
-        return Ativacao
+        return AtivacaoModel
           .query(function(qb) {
             qb
               .whereNull('data_desativacao')
@@ -155,7 +155,11 @@ describe('fachada Ativacao', function() {
           ativacao_id: idAtivacao,
           usuario_id: idUsuarioComum
         })
-        .then(function() {
+        .then(function(desativacao) {
+          should.exist(desativacao);
+          desativacao.should.have.property('id', idAtivacao);
+          desativacao.should.have.property('data_desativacao')
+            .greaterThan(desativacao.data_ativacao);
           done();
         })
         .catch(function(e) {
@@ -294,7 +298,7 @@ describe('fachada Ativacao', function() {
           valor: valorTeste
         })
         .then(function(ativacao) {
-          return ativacao
+          return new AtivacaoModel({ id: ativacao.id })
             .destroy()
             .then(function() {
               done();
