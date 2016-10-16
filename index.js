@@ -409,12 +409,30 @@ module.exports = function(AreaAzul, Bookshelf) {
   };
 
   exports.setSaldo = function(conta, novoSaldo) {
+    const diferenca = money.cmp(conta.get('saldo'), novoSaldo);
+    if (diferenca == 0) {
+      return conta;
+    }
+    if (diferenca < 0) {
+      return MovimentacaoContaFacade
+        .inserirCredito({
+          conta_id: conta.id,
+          historico: `credito teste de ${conta.get('saldo')} para ${novoSaldo}`,
+          tipo: 'teste',
+          valor: money.subtract(novoSaldo, conta.get('saldo'))
+        })
+        .then(() => {
+          return new Conta({ id: conta.id })
+            .fetch({ require: true });
+        });
+    }
+    // Diferenca > 0
     return MovimentacaoContaFacade
-      .inserirCredito({
+      .inserirDebito({
         conta_id: conta.id,
-        historico: `credito teste de ${conta.get('saldo')} para ${novoSaldo}`,
+        historico: `debito teste de ${conta.get('saldo')} para ${novoSaldo}`,
         tipo: 'teste',
-        valor: money.subtract(novoSaldo, conta.get('saldo'))
+        valor: money.subtract(conta.get('saldo'), novoSaldo)
       })
       .then(() => {
         return new Conta({ id: conta.id })
