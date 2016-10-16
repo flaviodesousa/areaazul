@@ -21,27 +21,29 @@ module.exports.getConfiguracaoTempo = function() {
   } ];
 };
 
-module.exports.alterar = function(config) {
+module.exports.alterar = function(camposConfiguracao) {
   return new Configuracao()
     .fetch()
-    .then(
-      function(configuracao) {
-        var configuracoes = {
-          valor_ativacao: config.valor_ativacao,
-          tempo_tolerancia: config.tempo_tolerancia,
-          franquia: config.franquia,
-          ciclo_ativacao: config.ciclo_ativacao,
-          ciclo_fiscalizacao: config.ciclo_fiscalizacao,
-          cidade_id: config.cidade_id
-        };
-        if (configuracao == null) {
-          return Configuracao
-            .forge(configuracoes)
-            .save();
-        }
-        return configuracao
-          .save(configuracoes, { method: 'update' }, { patch: true });
-      });
+    .then(function(configuracao) {
+      const configuracoes = {
+        valor_ativacao: camposConfiguracao.valor_ativacao,
+        tempo_tolerancia: camposConfiguracao.tempo_tolerancia,
+        franquia: camposConfiguracao.franquia,
+        ciclo_ativacao: camposConfiguracao.ciclo_ativacao,
+        ciclo_fiscalizacao: camposConfiguracao.ciclo_fiscalizacao,
+        cidade_id: camposConfiguracao.cidade_id
+      };
+      if (configuracao == null) {
+        return Configuracao
+          .forge(configuracoes)
+          .save();
+      }
+      return configuracao
+        .save(configuracoes, { method: 'update' }, { patch: true });
+    })
+    .then(configuracao => {
+      return configuracao.toJSON();
+    });
 };
 
 module.exports.buscarConfiguracao = function() {
