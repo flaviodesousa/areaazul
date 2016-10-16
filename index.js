@@ -317,7 +317,7 @@ module.exports = function(AreaAzul, Bookshelf) {
 
   exports.pegarUsuario = function pegarUsuario() {
     return new Usuario({ login: usuarioTeste.login })
-      .fetch({ withRelated: [ 'pessoaFisica', 'pessoa' ] })
+      .fetch({ withRelated: [ 'pessoaFisica', 'pessoaFisica.pessoa' ] })
       .then(function(usuario) {
         if (usuario) {
           return usuario;
