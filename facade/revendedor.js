@@ -2,10 +2,14 @@ const log = require('../logging');
 const Bookshelf = require('../database');
 const Revendedor = Bookshelf.model('Revendedor');
 
-module.exports.cadastrar = function(revendedor) {
-  log.info('revendedor::cadastrar()', revendedor);
+module.exports.cadastrar = function(camposRevendedor) {
+  log.info('revendedor::cadastrar()', camposRevendedor);
   return Bookshelf.transaction(function(t) {
-    return Revendedor._cadastrar(revendedor, { transacting: t });
+    return Revendedor
+      ._cadastrar(camposRevendedor, { transacting: t })
+      .then(revendedor => {
+        return revendedor.toJSON();
+      });
   });
 };
 module.exports.buscarRevendedor = function(user) {
@@ -20,7 +24,10 @@ module.exports.buscarRevendedor = function(user) {
         .select('revendedor.*', 'usuario_revendedor.*', 'pessoa.*',
           'conta.*');
     })
-    .fetch();
+    .fetch()
+    .then(revendedor => {
+      return revendedor.toJSON();
+    });
 };
 module.exports.validarRevenda = revenda => {
   return Bookshelf.transaction(t => {
