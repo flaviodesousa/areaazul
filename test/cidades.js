@@ -7,15 +7,16 @@ const Cidade = AreaAzul.facade.Cidade;
 
 describe('fachada Cidade', function() {
   var idEstado = 1;
+  var contagemCidadesDoEstado1 = 0;
   describe('listar()', function() {
     it('lista cidades do estado 1', function(done) {
       Cidade
         .listar(idEstado)
-        .then(function(cidadesCollection) {
-          should.exist(cidadesCollection);
-          var cidades = cidadesCollection.toJSON();
+        .then(function(cidades) {
+          should.exist(cidades);
           cidades.should.be.instanceOf(Array);
           cidades.length.should.not.be.equal(0);
+          contagemCidadesDoEstado1 = cidades.length;
           cidades[0].should.have.property('estado');
           done();
         })
@@ -42,11 +43,10 @@ describe('fachada Cidade', function() {
     it('lista todas cidades se idEstado não fornecido', function(done) {
       Cidade
         .listar()
-        .then(function(cidadesCollection) {
-          should.exist(cidadesCollection);
-          var cidades = cidadesCollection.toJSON();
+        .then(function(cidades) {
+          should.exist(cidades);
           cidades.should.be.instanceOf(Array);
-          cidades.length.should.not.be.equal(0);
+          cidades.length.should.be.greaterThan(contagemCidadesDoEstado1);
           cidades[0].should.have.property('estado');
           done();
         })

@@ -17,8 +17,11 @@ module.exports.listar = function(idEstado) {
   return Cidades
     .query(function(qb) {
       if (idEstado) {
-        qb.where('estado_id', '=', idEstado);
+        qb.where({ estado_id: idEstado });
       }
     })
-    .fetch({ withRelated: 'estado' });
+    .fetch({ withRelated: 'estado' })
+    .then(cidades => {
+      return cidades.toJSON();
+    });
 };
