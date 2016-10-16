@@ -21,7 +21,10 @@ module.exports.listar = function(parameters) {
       }
       qb.orderBy('timestamp', 'desc');
     })
-    .fetch();
+    .fetch()
+    .then(ativacoes => {
+      return ativacoes.toJSON();
+    });
 };
 
 module.exports.cadastrar = function(fiscalizacao) {
@@ -33,6 +36,8 @@ module.exports.cadastrar = function(fiscalizacao) {
     timestamp: new Date(),
     usuario_fiscal_id: fiscalizacao.usuario_fiscal_id
   })
-    .save();
-}
-;
+    .save()
+    .then(fiscalizacao => {
+      return fiscalizacao.toJSON();
+    });
+};
