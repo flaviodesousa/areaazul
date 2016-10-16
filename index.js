@@ -5,7 +5,7 @@ module.exports = function(AreaAzul, Bookshelf) {
 
   const _ = require('lodash');
   const debug = require('debug')('areaazul-test-helper');
-  const math = require('mathjs');
+  const money = require('money-math');
 
   const aazUtils = require('areaazul-utils');
 
@@ -224,9 +224,6 @@ module.exports = function(AreaAzul, Bookshelf) {
   };
 
   exports.apagarRevendedorPorCNPJ = function(cnpj) {
-    if (!cnpj) {
-      return null;
-    }
     return new PessoaJuridica({ cnpj: cnpj })
       .fetch()
       .then(function(pj) {
@@ -265,17 +262,8 @@ module.exports = function(AreaAzul, Bookshelf) {
   };
 
   exports.apagarUsuarioRevendaPorLogin = function(login) {
-    return UsuarioRevendedor
-      .forge({
-        login: login
-      })
-      .fetch()
-      .then(function(usuarioRevenda) {
-        if (usuarioRevenda) {
-          return usuarioRevenda.destroy();
-        }
-        return null;
-      });
+    return new UsuarioRevendedor({ login: login })
+      .destroy();
   };
 
   exports.apagarUsuarioRevenda = function(idUsuarioRevenda) {
@@ -288,7 +276,7 @@ module.exports = function(AreaAzul, Bookshelf) {
   exports.pegarCidade = function() {
     return Cidade
       .forge()
-      .fetch();
+      .fetch({ withRelated: 'estado' });
   };
 
   var veiculoTeste = {
@@ -304,7 +292,7 @@ module.exports = function(AreaAzul, Bookshelf) {
   exports.pegarVeiculo = function() {
     return Veiculo
       .forge({ placa: veiculoTeste.placa })
-      .fetch()
+      .fetch({ withRelated: [ 'cidade', 'cidade.estado' ] })
       .then(function(veiculo) {
         if (veiculo) {
           return veiculo;
@@ -329,7 +317,7 @@ module.exports = function(AreaAzul, Bookshelf) {
 
   exports.pegarUsuario = function pegarUsuario() {
     return new Usuario({ login: usuarioTeste.login })
-      .fetch()
+      .fetch({ withRelated: [ 'pessoaFisica', 'pessoa' ] })
       .then(function(usuario) {
         if (usuario) {
           return usuario;
@@ -358,12 +346,13 @@ module.exports = function(AreaAzul, Bookshelf) {
 
   function pegarRevendedor() {
     return new PessoaFisica({ cpf: revendedorPessoaFisicaTeste.cpf })
-      .fetch()
+      .fetch({ require: true })
       .then(function(pf) {
         if (pf) {
           return new Revendedor({ id: pf.id })
             .fetch();
         }
+        // Primeiro caso: não existe a PF ainda
         debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
         return RevendedorFacade
           .cadastrar(revendedorPessoaFisicaTeste);
@@ -372,6 +361,7 @@ module.exports = function(AreaAzul, Bookshelf) {
         if (revendedor) {
           return revendedor;
         }
+        // Segundo caso: existe a pessoa, mas ela não é Revenda
         debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
         return RevendedorFacade
           .cadastrar(revendedorPessoaFisicaTeste);
@@ -391,21 +381,25 @@ module.exports = function(AreaAzul, Bookshelf) {
     termo_servico: '1'
   };
 
-  exports.pegarUsuarioRevendedor = function() {
+  exports.pegarUsuarioRevendedor = function pegarUsuarioRevendedor() {
     return pegarRevendedor()
       .then(function(revendedor) {
         return new UsuarioRevendedor({ login: usuarioRevendedorTeste.login })
-          .fetch()
-          .then(function(ur) {
-            if (ur) {
-              return ur;
-            }
+          .fetch({
+            require: true,
+            withRelated: [
+              'pessoaFisica', 'pessoaFisica.pessoa', 'revendedor' ]
+          })
+          .catch(Bookshelf.NotFoundError, () => {
             debug('cadastrando usuario revendedor de teste',
               usuarioRevendedorTeste);
             return UsuarioRevendedorFacade
               .inserir(
                 _.merge({ revendedor_id: revendedor.id },
-                  usuarioRevendedorTeste));
+                  usuarioRevendedorTeste))
+              .then(() => {
+                return pegarUsuarioRevendedor();
+              });
           });
       });
   };
@@ -416,7 +410,11 @@ module.exports = function(AreaAzul, Bookshelf) {
         conta_id: conta.id,
         historico: `credito teste de ${conta.get('saldo')} para ${novoSaldo}`,
         tipo: 'teste',
-        valor: math.chain(novoSaldo).subtract(conta.get('saldo')).done()
+        valor: money.subtract(novoSaldo, conta.get('saldo'))
+      })
+      .then(() => {
+        return new Conta({ id: conta.id })
+          .fetch({ require: true });
       });
   };
 
