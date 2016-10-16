@@ -56,7 +56,7 @@ describe('facade PessoaFisica', function() {
         .then(function(pf) {
           should.exist(pf);
           pf.should.have.property('id');
-          pf.get('cpf').should.equal(cpfTeste);
+          pf.should.have.property('cpf', cpfTeste);
           done();
         })
         .catch(function(e) {
@@ -86,8 +86,8 @@ describe('facade PessoaFisica', function() {
       PessoaFisica.buscarPorCPF(cpfTeste)
         .then(function(pf) {
           should.exist(pf);
-          should.exist(pf.id);
-          pf.get('cpf').should.equal(cpfTeste);
+          pf.should.have.property('id');
+          pf.should.have.property('cpf', cpfTeste);
           done();
         })
         .catch(function(e) {
