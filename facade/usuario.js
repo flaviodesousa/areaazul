@@ -4,10 +4,9 @@ const log = require('../logging');
 const Bookshelf = require('../database');
 const Usuario = Bookshelf.model('Usuario');
 const AreaAzul = require('../areaazul');
+const AreaazulUtils = require('areaazul-utils');
 
 module.exports.buscarPorId = function(id) {
-  var Usuario = this;
-
   return Usuario
     .forge({ id: id })
     .fetch({
@@ -55,20 +54,35 @@ module.exports.autorizado = function(login, senha) {
 
 module.exports.inserir = function(camposUsuario) {
   return Bookshelf.transaction(function(t) {
-    return Usuario._salvar(camposUsuario, null, { transacting: t });
+    return Usuario
+      ._salvar(camposUsuario, null, { transacting: t })
+      .catch(AreaAzul.BusinessException, e => {
+        e.details = AreaazulUtils.semSenhas(e.details);
+        throw e;
+      })
+      .then(usuario => {
+        return usuario.toJSON();
+      });
   });
 };
 
 module.exports.alterar = function(camposUsuario, usuario) {
   return Bookshelf.transaction(function(t) {
-    return Usuario._salvar(camposUsuario, usuario, { transacting: t });
+    return Usuario
+      ._salvar(camposUsuario, usuario, { transacting: t })
+      .then(usuario => {
+        return usuario.toJSON();
+      });
   });
 };
 
 module.exports.alterarSenha = function(camposAlterarSenha) {
   return Bookshelf.transaction(function(t) {
     return Usuario
-      ._alterarSenha(camposAlterarSenha, { transacting: t });
+      ._alterarSenha(camposAlterarSenha, { transacting: t })
+      .then(usuario => {
+        return usuario.toJSON();
+      });
   });
 };
 

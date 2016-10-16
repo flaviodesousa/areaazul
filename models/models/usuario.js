@@ -54,7 +54,7 @@ var Usuario = Bookshelf.Model.extend({
           .fetch()
           .then(function(pessoaFisica) {
             if (pessoaFisica !== null) {
-              return PessoaFisica.alterar(
+              return PessoaFisica._alterar(
                 camposUsuario, pessoaFisica.id, options);
             }
             return PessoaFisica
