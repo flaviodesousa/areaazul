@@ -48,9 +48,8 @@ describe('facade PessoaJuridica', function() {
       })
         .then(function(pj) {
           should.exist(pj);
-          should.exist(pj.attributes);
-          should.exist(pj.attributes.cnpj);
-          pj.attributes.cnpj.should.be.equal(cnpjTeste);
+          pj.should.have.property('id');
+          pj.should.have.property('cnpj', cnpjTeste);
           done();
         })
         .catch(function(e) {
