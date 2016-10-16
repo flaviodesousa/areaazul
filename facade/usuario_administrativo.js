@@ -58,6 +58,13 @@ module.exports.cadastrar = function(camposUsuarioAdministrativo) {
           ativo: true
         })
           .save(null, optionsInsert);
+      })
+      .then(usuarioAdministrativo => {
+        return UsuarioAdministrativo
+          ._buscarPorId(usuarioAdministrativo.id, options);
+      })
+      .then(usuarioAdministrativo => {
+        return usuarioAdministrativo.toJSON();
       });
   });
 };
@@ -79,7 +86,11 @@ module.exports.autorizado = function(login, senha) {
     })
     .then(function(valid) {
       if (valid) {
-        return usuarioAdministrativo;
+        return UsuarioAdministrativo
+          ._buscarPorId(usuarioAdministrativo.id, null)
+          .then(usuAdm => {
+            return usuAdm.toJSON();
+          });
       }
       const err = new AreaAzul.AuthenticationError(
         'Usuário administrativo: senha incorreta', {
@@ -92,13 +103,9 @@ module.exports.autorizado = function(login, senha) {
 };
 
 module.exports.buscarPorId = function(id) {
-  return new UsuarioAdministrativo({ id: id })
-    .fetch({ require: true })
-    .catch(Bookshelf.NotFoundError, () => {
-      const err = new AreaAzul.BusinessException(
-        'Usuario administrativo: id não encontrado',
-        { id: id });
-      log.warn(err.message, err.details);
-      throw err;
+  return UsuarioAdministrativo
+    ._buscarPorId(id, null)
+    .then(usuAdm => {
+      return usuAdm.toJSON();
     });
 };

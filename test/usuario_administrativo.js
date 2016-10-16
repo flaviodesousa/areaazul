@@ -4,7 +4,6 @@ const should = require('chai').should();
 const debug = require('debug')('areaazul:test:usuario_administrativo');
 
 const Bookshelf = require('../database');
-const PessoaFisicaModel = Bookshelf.model('PessoaFisica');
 
 const AreaAzul = require('../areaazul');
 const UsuarioAdministrativo = AreaAzul.facade.UsuarioAdministrativo;
@@ -77,12 +76,12 @@ describe('facade UsuarioAdministrativo', function() {
     it('cadastra usuário admin com cpf novo', function(done) {
       UsuarioAdministrativo
         .cadastrar(camposUsuarioAdministrativoNaoExistente)
-        .then(function(usuarioAdministrativo) {
-          should.exist(usuarioAdministrativo);
-          usuarioAdministrativo.get('login')
-            .should.equal(camposUsuarioAdministrativoNaoExistente.login);
+        .then(function(usuAdm) {
+          should.exist(usuAdm);
+          usuAdm.should.have.property(
+            'login', camposUsuarioAdministrativoNaoExistente.login);
           // Salvar id para testes de buscarPorId()
-          usuarioAdministrativoNaoExistente = usuarioAdministrativo;
+          usuarioAdministrativoNaoExistente = usuAdm;
           done();
         })
         .catch(function(e) {
@@ -94,17 +93,13 @@ describe('facade UsuarioAdministrativo', function() {
     it('cadastra usuário admin com cpf existente', function(done) {
       UsuarioAdministrativo
         .cadastrar(camposUsuarioAdministrativoPreExistente)
-        .then(function(usuarioAdministrativo) {
-          should.exist(usuarioAdministrativo);
-          usuarioAdministrativo.get('login').should.equal(
-            camposUsuarioAdministrativoPreExistente.login);
-          return new PessoaFisicaModel({ id: usuarioAdministrativo.id })
-            .fetch();
-        })
-        .then(function(pessoaFisica) {
-          should.exist(pessoaFisica);
-          pessoaFisica.get('cpf').should.equal(
-            camposUsuarioAdministrativoPreExistente.cpf);
+        .then(function(usuAdm) {
+          should.exist(usuAdm);
+          usuAdm.should.have.property(
+            'login', camposUsuarioAdministrativoPreExistente.login);
+          usuAdm.should.have.property('pessoaFisica');
+          usuAdm.pessoaFisica.should.have.property(
+            'cpf', camposUsuarioAdministrativoPreExistente.cpf);
           done();
         })
         .catch(function(e) {
@@ -120,9 +115,15 @@ describe('facade UsuarioAdministrativo', function() {
     it('encontra id válido', function(done) {
       UsuarioAdministrativo
         .buscarPorId(usuarioAdministrativoNaoExistente.id)
-        .then(function(p) {
-          should.exist(p);
-          p.should.have.property('id', usuarioAdministrativoNaoExistente.id);
+        .then(function(usuAdm) {
+          should.exist(usuAdm);
+          usuAdm.should.have.property(
+            'id', usuarioAdministrativoNaoExistente.id);
+          usuAdm.should.have.property(
+            'login', camposUsuarioAdministrativoNaoExistente.login);
+          usuAdm.should.have.property('pessoaFisica');
+          usuAdm.pessoaFisica.should.have.property(
+            'cpf', camposUsuarioAdministrativoNaoExistente.cpf);
           done();
         })
         .catch(function(e) {
@@ -155,10 +156,13 @@ describe('facade UsuarioAdministrativo', function() {
       UsuarioAdministrativo.autorizado(
         camposUsuarioAdministrativoPreExistente.login,
         camposUsuarioAdministrativoPreExistente.nova_senha)
-        .then(function(usuarioAdministrativo) {
-          should.exist(usuarioAdministrativo);
-          usuarioAdministrativo.get('login')
-            .should.equal(camposUsuarioAdministrativoPreExistente.login);
+        .then(function(usuAdm) {
+          should.exist(usuAdm);
+          usuAdm.should.have.property(
+            'login', camposUsuarioAdministrativoPreExistente.login);
+          usuAdm.should.have.property('pessoaFisica');
+          usuAdm.pessoaFisica.should.have.property(
+            'cpf', camposUsuarioAdministrativoPreExistente.cpf);
           done();
         })
         .catch(function(e) {
