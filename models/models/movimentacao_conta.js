@@ -1,12 +1,12 @@
 'use strict';
 
-var _ = require('lodash');
+const _ = require('lodash');
+const money = require('money-math');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
-var Conta = Bookshelf.model('Conta');
-var math = require('mathjs');
+const Conta = Bookshelf.model('Conta');
 
-var MovimentacaoConta = Bookshelf.Model.extend({
+const MovimentacaoConta = Bookshelf.Model.extend({
   tableName: 'movimentacao_conta'
 }, {
   _inserirMovimentacaoConta: function(movimentacaoConta, options) {
@@ -16,20 +16,18 @@ var MovimentacaoConta = Bookshelf.Model.extend({
 
     return new Conta({ id: movimentacaoConta.conta_id })
       .fetch(_.merge({ require: true }, options))
-      .catch(function(e) {
-        if (e instanceof Bookshelf.Model.NotFoundError) {
-          throw new AreaAzul.BusinessException(
-            'Conta invalida', {
-              movimentacaoconta: movimentacaoConta
-            });
-        }
-        throw e;
+      .catch(Bookshelf.NotFoundError, () => {
+        throw new AreaAzul.BusinessException(
+          'Conta invalida', {
+            movimentacaoconta: movimentacaoConta
+          });
       })
-      .then(function(c) {
-        var saldoAtual = Number(c.get('saldo'));
-        var novoSaldo = math.sum(saldoAtual, movimentacaoConta.valor);
+      .then(function(conta) {
+        var novoSaldo = money.add(
+          conta.get('saldo'),
+          movimentacaoConta.valor);
 
-        return c.save({ saldo: novoSaldo }, optionsUpdate);
+        return conta.save({ saldo: novoSaldo }, optionsUpdate);
       })
       .then(function(c) {
         return MovimentacaoConta.forge({
@@ -43,13 +41,27 @@ var MovimentacaoConta = Bookshelf.Model.extend({
       });
   },
   _inserirCredito: function(credito, options) {
+    if (!(credito.valor instanceof String)) {
+      credito.valor = money.floatToAmount(credito.valor);
+    }
+    if (money.cmp(credito.valor, '0.00') <= 0) {
+      throw new AreaAzul.BusinessException(
+        'Valor do crédito deve ser maior que zero',
+        credito);
+    }
     return MovimentacaoConta
       ._inserirMovimentacaoConta(credito, options);
   },
   _inserirDebito: function(debito, options) {
-    if (debito.valor > 0) {
-      debito.valor = -debito.valor;
+    if (!(debito.valor instanceof String)) {
+      debito.valor = money.floatToAmount(debito.valor);
     }
+    if (money.cmp(debito.valor, '0.00') <= 0) {
+      throw new AreaAzul.BusinessException(
+        'Valor do débito deve ser maior que zero',
+        debito);
+    }
+    debito.valor = money.subtract('0.00', debito.valor);
     return MovimentacaoConta
       ._inserirMovimentacaoConta(debito, options);
   }

@@ -10,14 +10,20 @@ module.exports.listarMovimentacaoUsuario = function(id) {
         .where('usuario.id', id)
         .select('movimentacao_conta.*');
     })
-    .fetch();
+    .fetch()
+    .then(movimentacao => {
+      return movimentacao.toJSON();
+    });
 };
 
 module.exports.inserirDebito = function(debito) {
   log.info('ovimentacao_conta::inserirDebito', debito);
   return Bookshelf.transaction(function(t) {
     return MovimentacaoConta
-      ._inserirCredito(debito, { transacting: t });
+      ._inserirDebito(debito, { transacting: t })
+      .then(movimentacao => {
+        return movimentacao.toJSON();
+      });
   });
 };
 
@@ -25,6 +31,9 @@ module.exports.inserirCredito = function(credito) {
   log.info('ovimentacao_conta::inserirCredito', credito);
   return Bookshelf.transaction(function(t) {
     return MovimentacaoConta
-      ._inserirCredito(credito, { transacting: t });
+      ._inserirCredito(credito, { transacting: t })
+      .then(movimentacao => {
+        return movimentacao.toJSON();
+      });
   });
 };
