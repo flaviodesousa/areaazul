@@ -264,7 +264,9 @@ module.exports = function(AreaAzul, Bookshelf) {
   exports.apagarUsuarioRevendaPorLogin = function(login) {
     return new UsuarioRevendedor({ login: login })
       .fetch({ require: true })
-      .destroy()
+      .then(usuarioRevendedor => {
+        return usuarioRevendedor.destroy();
+      })
       .catch(Bookshelf.NotFoundError, () => {});
   };
 
