@@ -5,6 +5,7 @@ module.exports.cadastrar = function(usuarioHasVeiculo) {
   return Bookshelf.transaction(
     function(t) {
       return UsuarioHasVeiculo
-        ._salvar(usuarioHasVeiculo, { transacting: t });
+        ._salvar(usuarioHasVeiculo, { transacting: t })
+        .then(uhv => uhv.toJSON());
     });
 };

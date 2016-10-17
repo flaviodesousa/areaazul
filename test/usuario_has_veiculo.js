@@ -35,9 +35,10 @@ describe('facade UsuarioHasVeiculo', function() {
         })
         .then(function(uv) {
           should.exist(uv);
+          uv.should.have.property('id');
           should.exist(uv.id);
-          uv.get('usuario_id').should.equal(idUsuarioComum);
-          uv.get('veiculo_id').should.equal(idVeiculo);
+          uv.should.have.property('usuario_id', idUsuarioComum);
+          uv.should.have.property('veiculo_id', idVeiculo);
           done();
         })
         .catch(function(err) {
