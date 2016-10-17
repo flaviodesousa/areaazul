@@ -61,7 +61,12 @@ module.exports.cadastrar = function(camposUsuarioFiscal) {
               ativo: true
             })
               .save(null, optionsInsert);
-          });
+          })
+          .then(usuarioFiscal => {
+            return UsuarioFiscal
+              ._buscarPorId(usuarioFiscal.id, options);
+          })
+          .then(usuFis => usuFis.toJSON());
       });
   });
 };
@@ -82,7 +87,9 @@ module.exports.autorizado = function(login, senha) {
     })
     .then(function(valid) {
       if (valid) {
-        return usuarioFiscal;
+        return UsuarioFiscal
+          ._buscarPorId(usuarioFiscal.id, {})
+          .then(usuFis => usuFis.toJSON());
       }
       const err = new AreaAzul.AuthenticationError(
         'Usuário fiscal: senha incorreta', {
@@ -94,13 +101,7 @@ module.exports.autorizado = function(login, senha) {
     });
 };
 module.exports.buscarPorId = function(id) {
-  return new UsuarioFiscal({ id: id })
-    .fetch({ require: true })
-    .catch(Bookshelf.NotFoundError, () => {
-      const err = new AreaAzul.BusinessException(
-        'Usuário fiscal: id não encontrado',
-        { id: id });
-      log.warn(err.message, err.details);
-      throw err;
-    });
+  return UsuarioFiscal
+    ._buscarPorId(id, null)
+    .then(usuFis => usuFis.toJSON());
 };

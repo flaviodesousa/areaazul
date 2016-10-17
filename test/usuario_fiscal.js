@@ -9,7 +9,6 @@ const PessoaFisica = AreaAzul.facade.PessoaFisica;
 
 const Bookshelf = require('../database');
 const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
-const PessoaFisicaModel = Bookshelf.model('PessoaFisica');
 
 describe('facade UsuarioFiscal', function() {
   const camposUsuarioFiscalPreExistente = {
@@ -78,8 +77,13 @@ describe('facade UsuarioFiscal', function() {
         .cadastrar(camposUsuarioFiscalNaoExistente)
         .then(function(usuarioFiscal) {
           should.exist(usuarioFiscal);
-          usuarioFiscal.get('login')
-            .should.equal(camposUsuarioFiscalNaoExistente.login);
+          usuarioFiscal.should.have.property('id');
+          usuarioFiscal.should.have.property(
+            'login', camposUsuarioFiscalNaoExistente.login);
+          usuarioFiscal.should.have.property('pessoaFisica');
+          usuarioFiscal.pessoaFisica.should.have.property('pessoa');
+          usuarioFiscal.pessoaFisica.should.have.property(
+            'cpf', camposUsuarioFiscalNaoExistente.cpf);
           // Salvar id para testes de buscarPorId()
           usuarioFiscalNaoExistente = usuarioFiscal;
           done();
@@ -95,15 +99,13 @@ describe('facade UsuarioFiscal', function() {
         .cadastrar(camposUsuarioFiscalPreExistente)
         .then(function(usuarioFiscal) {
           should.exist(usuarioFiscal);
-          usuarioFiscal.get('login').should.equal(
-            camposUsuarioFiscalPreExistente.login);
-          return new PessoaFisicaModel({ id: usuarioFiscal.id })
-            .fetch();
-        })
-        .then(function(pessoaFisica) {
-          should.exist(pessoaFisica);
-          pessoaFisica.get('cpf').should.equal(
-            camposUsuarioFiscalPreExistente.cpf);
+          usuarioFiscal.should.have.property('id');
+          usuarioFiscal.should.have.property(
+            'login', camposUsuarioFiscalPreExistente.login);
+          usuarioFiscal.should.have.property('pessoaFisica');
+          usuarioFiscal.pessoaFisica.should.have.property('pessoa');
+          usuarioFiscal.pessoaFisica.should.have.property(
+            'cpf', camposUsuarioFiscalPreExistente.cpf);
           done();
         })
         .catch(function(e) {
@@ -155,8 +157,11 @@ describe('facade UsuarioFiscal', function() {
         camposUsuarioFiscalPreExistente.nova_senha)
         .then(function(usuarioFiscal) {
           should.exist(usuarioFiscal);
-          usuarioFiscal.get('login')
-            .should.equal(camposUsuarioFiscalPreExistente.login);
+          usuarioFiscal.should.have.property('id');
+          usuarioFiscal.should.have.property(
+            'login', camposUsuarioFiscalPreExistente.login);
+          usuarioFiscal.should.have.property('pessoaFisica');
+          usuarioFiscal.pessoaFisica.should.have.property('pessoa');
           done();
         })
         .catch(function(e) {
