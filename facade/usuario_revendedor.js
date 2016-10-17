@@ -11,7 +11,8 @@ module.exports.listarUsuarioRevenda = function(idRevendedor) {
   return new UsuariosRevendedores()
     .query({ where: { revendedor_id: idRevendedor } })
     .fetch({ withRelated: [
-      'revendedor', 'pessoaFisica', 'pessoaFisica.pessoa' ] });
+      'revendedor', 'pessoaFisica', 'pessoaFisica.pessoa' ] })
+    .then(lista => lista.toJSON());
 };
 module.exports.autorizado = function(login, senha) {
   var usuarioRevendedor;
@@ -34,7 +35,7 @@ module.exports.autorizado = function(login, senha) {
     })
     .then(function(valid) {
       if (valid) {
-        return usuarioRevendedor;
+        return;
       }
       const err = new AreaAzul.AuthenticationError(
         'Usuário revendedor: senha incorreta', {
@@ -43,72 +44,44 @@ module.exports.autorizado = function(login, senha) {
         });
       log.warn(err.message, err.details);
       throw err;
-    });
+    })
+    .then(() => UsuarioRevendedor
+      ._buscarPorId(usuarioRevendedor.id, null))
+    .then(usuRev => usuRev.toJSON());
 };
-module.exports.inserir = function(entidade) {
+module.exports.inserir = function(camposUsuarioRevendedor) {
   return Bookshelf.transaction(function(t) {
     return UsuarioRevendedor._salvarUsuarioRevenda(
-      entidade, null, { transacting: t });
-  });
+      camposUsuarioRevendedor, null, { transacting: t });
+  })
+    .then(usuRev => usuRev.toJSON());
 };
-module.exports.alterar = function(entidade) {
+module.exports.alterar = function(camposUsuarioRevendedor) {
   return Bookshelf.transaction(function(t) {
     const options = { transacting: t };
     return new UsuarioRevendedor({
-      revendedor_id: entidade.revendedor_id, login: entidade.login
+      revendedor_id: camposUsuarioRevendedor.revendedor_id,
+      login: camposUsuarioRevendedor.login
     })
       .fetch(options)
-      .then(function(usuarioRevendedor) {
-        return UsuarioRevendedor
-          ._salvarUsuarioRevenda(entidade, usuarioRevendedor, options);
-      });
-  });
-};
-module.exports.procurar = function(id, func) {
-  UsuarioRevendedor.forge()
-    .query(function(qb) {
-      qb
-        .distinct()
-        .innerJoin('pessoa_fisica', 'pessoa_fisica.id',
-          'usuario_revendedor.pessoa_fisica_id')
-        .innerJoin('pessoa', 'pessoa.id', 'pessoa_fisica.id')
-        .where('usuario_revendedor.id', id)
-        .select('pessoa_fisica.*')
-        .select('pessoa.*')
-        .select('usuario_revendedor.*');
-    }).fetch().then(function(model) {
-    func(model);
-  });
+      .then(usuRev => UsuarioRevendedor
+          ._salvarUsuarioRevenda(camposUsuarioRevendedor, usuRev, options));
+  })
+    .then(usuRev => usuRev.toJSON());
 };
 
 module.exports.desativar = function(id) {
-  return UsuarioRevendedor
-    .forge({
-      id: id
-    })
-    .fetch()
-    .then(function(revenda) {
-      if (!revenda) {
-        throw new AreaAzul.BusinessException(
-          'Desativação de usuário revendedor: Usuário não encontrado',
-          { id: id });
-      }
-      return revenda
-        .save({ ativo: false }, { patch: true });
-    });
+  return Bookshelf.transaction(t => UsuarioRevendedor
+    ._desativar(id, { transacting: t }))
+    .then(usuRev => usuRev.toJSON());
 };
 module.exports.buscarPorId = function(id) {
-  return new UsuarioRevendedor({ id: id })
-    .fetch({ require: true })
-    .catch(Bookshelf.NotFoundError, () => {
-      const err = new AreaAzul.BusinessException(
-        'Usuário revendedor: id não encontrado', {
-          id: id
-        });
-      log.warn(err.message, err.details);
-      throw err;
-    });
+  return UsuarioRevendedor
+    ._buscarPorId(id, null)
+    .then(usuRev => usuRev.toJSON());
 };
 module.exports.procurarLogin = function(login) {
-  return UsuarioRevendedor._procurarLogin(login, null);
+  return UsuarioRevendedor
+    ._procurarLogin(login, null)
+    .then(usuRev => usuRev.toJSON());
 };

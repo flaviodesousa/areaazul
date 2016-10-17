@@ -49,10 +49,12 @@ describe('models.UsuarioRevendedor', function() {
         revendedor_id: idRevendedor,
         termo_servico: termoDeServico
       })
-        .then(function(usuarioRevendedor) {
-          should.exist(usuarioRevendedor);
+        .then(function(usuRev) {
+          should.exist(usuRev);
+          usuRev.should.have.property('id');
+          usuRev.should.have.property('login', loginRevendaNaoExistente);
           // Salvar id para testes de buscarPorId()
-          idUsuarioRevendedor = usuarioRevendedor.id;
+          idUsuarioRevendedor = usuRev.id;
           done();
         })
         .catch(function(e) {
@@ -76,8 +78,10 @@ describe('models.UsuarioRevendedor', function() {
         revendedor_id: idRevendedor,
         termo_servico: termoDeServico
       })
-        .then(function(pessoa) {
-          should.exist(pessoa);
+        .then(function(usuRev) {
+          should.exist(usuRev);
+          usuRev.should.have.property('id');
+          usuRev.should.have.property('login', loginRevendaNaoExistente);
           done();
         })
         .catch(function(e) {
@@ -93,6 +97,7 @@ describe('models.UsuarioRevendedor', function() {
         .listarUsuarioRevenda(idRevendedor)
         .then(function(lista) {
           should.exist(lista);
+          lista.should.be.instanceOf(Array);
           done();
         })
         .catch(function(e) {
@@ -108,8 +113,9 @@ describe('models.UsuarioRevendedor', function() {
       UsuarioRevendedor.autorizado(
         loginRevendaNaoExistente,
         senhaRevendaNaoExistente)
-        .then(function(usuarioRevendedor) {
-          should.exist(usuarioRevendedor);
+        .then(function(usuRev) {
+          should.exist(usuRev);
+          usuRev.should.have.property('login', loginRevendaNaoExistente);
           done();
         })
         .catch(function(e) {
@@ -181,8 +187,9 @@ describe('models.UsuarioRevendedor', function() {
         .desativar(idUsuarioRevendedor)
         .then(function(usuarioRevendedor) {
           should.exist(usuarioRevendedor);
-          usuarioRevendedor.id.should.equal(idUsuarioRevendedor);
-          usuarioRevendedor.get('ativo').should.equal(false);
+          usuarioRevendedor.should.have.property(
+            'id', idUsuarioRevendedor);
+          usuarioRevendedor.should.have.property('ativo', false);
           done();
         })
         .catch(function(e) {

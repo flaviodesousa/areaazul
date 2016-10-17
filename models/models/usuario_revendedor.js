@@ -3,6 +3,7 @@
 var bcrypt = require('bcrypt-then');
 var validator = require('validator');
 var _ = require('lodash');
+const log = require('../../logging');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
@@ -48,7 +49,7 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         if (pessoaFisica !== null) {
           return PessoaFisica._alterar(campos, pessoaFisica.id, options);
         }
-        // Caso nao exista, criar a pessoa fisica
+        // Caso não exista, criar a pessoa física
         return PessoaFisica._cadastrar(campos, options);
       })
       .then(function(pessoaFisica) {
@@ -70,7 +71,8 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
         }
         return new UsuarioRevendedor(dadosUsuarioRevendedor)
           .save(null, _.merge({ method: 'insert' }, options));
-      });
+      })
+      .then(usuRev => UsuarioRevendedor._buscarPorId(usuRev.id, options));
   },
 
   _inserir: function(camposUsuarioRevendedor, options) {
@@ -84,8 +86,19 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
       ._salvarUsuarioRevenda(
         camposUsuarioRevendedor, usuarioRevendedor, options);
   },
+  _desativar: (id, options) => {
+    return new UsuarioRevendedor({ id: id })
+      .fetch(_.merge({ require: true }, options))
+      .catch(Bookshelf.NotFoundError, () => {
+        throw new AreaAzul.BusinessException(
+          'Desativação de usuário revendedor: Usuário não encontrado',
+          { id: id });
+      })
+      .then(usuRev => usuRev
+        .save({ ativo: false }, { patch: true }))
+      .then(usuRev => UsuarioRevendedor._buscarPorId(usuRev.id, null));
 
-
+  },
   _alterarSenha: function(camposTrocaSenha, options) {
     var usuarioRevendedor;
     new UsuarioRevendedor({ id: camposTrocaSenha.id })
@@ -286,6 +299,20 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
   _procurarLogin: function(login, options) {
     return new this({ login: login })
       .fetch(options);
+  },
+  _buscarPorId: function(id, options) {
+    return new UsuarioRevendedor({ id: id })
+      .fetch(_.merge({
+        require: true,
+        withRelated: [ 'pessoaFisica', 'pessoaFisica.pessoa', 'revendedor' ]
+      }, options))
+      .catch(Bookshelf.NotFoundError, () => {
+        const err = new AreaAzul.BusinessException(
+          'Usuário revendedor: id não encontrado',
+          { id: id });
+        log.warn(err.message, err.details);
+        throw err;
+      });
   }
 });
 Bookshelf.model('UsuarioRevendedor', UsuarioRevendedor);

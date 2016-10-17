@@ -122,7 +122,7 @@ describe('facade Revendedor', function() {
         .procurarLogin(revendedorPJ.login)
         .then(function(usuarioRevenda) {
           should.exist(usuarioRevenda);
-          idUsuarioRevenda = usuarioRevenda.get('pessoa_fisica_id');
+          idUsuarioRevenda = usuarioRevenda.pessoa_fisica_id;
         });
     });
 
