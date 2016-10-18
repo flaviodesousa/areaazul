@@ -35,12 +35,14 @@ module.exports.cadastrar = function(camposVeiculo) {
   return Bookshelf.transaction(t =>
     Veiculo
       ._cadastrar(camposVeiculo, { transacting: t }))
+    .then(v => Veiculo._buscarPorId(v.id, null))
     .then(veiculo => veiculo.toJSON());
 };
 
 module.exports.procurarVeiculo = placa =>
   Bookshelf.transaction(t =>
-    Veiculo._procurarVeiculo(placa, { transacting: t }))
+    Veiculo
+      ._procurarVeiculo(placa, { transacting: t }))
     .then(veiculo => veiculo ? veiculo.toJSON() : null);
 
 module.exports.buscarPorId = id => Veiculo._buscarPorId(id, null);

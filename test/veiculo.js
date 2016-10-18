@@ -67,6 +67,7 @@ describe('facade Veiculo', function() {
           should.exist(veiculo);
           veiculo.should.have.property('id');
           veiculo.should.have.property('placa', placaTesteSemMascara);
+          veiculo.should.have.property('cidade');
           idVeiculo = veiculo.id;
           return done();
         })
