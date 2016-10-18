@@ -126,8 +126,7 @@ var Veiculo = Bookshelf.Model.extend({
       });
 
   },
-  _buscarPorId: (id, options) => {
-    return new Veiculo({ id: id })
+  _buscarPorId: (id, options) => new Veiculo({ id: id })
       .fetch(_.merge({
         withRelated: [ 'cidade', 'cidade.estado' ],
         require: true
@@ -138,8 +137,7 @@ var Veiculo = Bookshelf.Model.extend({
           { id: id });
         log.warn(err.message, err.details);
         throw err;
-      });
-  }
+      })
 
 });
 Bookshelf.model('Veiculo', Veiculo);
