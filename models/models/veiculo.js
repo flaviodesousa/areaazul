@@ -5,6 +5,7 @@ const validator = require('validator');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
+const log = require('../../logging');
 const util = require('areaazul-utils');
 
 var Veiculo = Bookshelf.Model.extend({
@@ -30,7 +31,7 @@ var Veiculo = Bookshelf.Model.extend({
         if (messages && messages.length) {
           throw new AreaAzul
             .BusinessException(
-            'Nao foi possivel cadastrar novo Veiculo. Dados invalidos',
+            'Não foi possível cadastrar novo Veículo. Dados inválidos',
             messages);
         }
         return messages;
@@ -57,11 +58,10 @@ var Veiculo = Bookshelf.Model.extend({
             ._salvar({
               usuario_id: veiculoFields.usuario_id,
               veiculo_id: veiculo.id
-            }, optionsInsert)
-            .return(veiculo);
+            }, optionsInsert);
         }
-        return veiculo;
-      });
+      })
+      .then(() => veiculo);
   },
 
   _procurarVeiculo: (placa, options) => {
@@ -125,7 +125,22 @@ var Veiculo = Bookshelf.Model.extend({
         return message;
       });
 
+  },
+  _buscarPorId: (id, options) => {
+    return new Veiculo({ id: id })
+      .fetch(_.merge({
+        withRelated: [ 'cidade', 'cidade.estado' ],
+        require: true
+      }), options)
+      .catch(Bookshelf.NotFoundError, () => {
+        const err = new AreaAzul.BusinessException(
+          'Veículo: id não encontrado',
+          { id: id });
+        log.warn(err.message, err.details);
+        throw err;
+      });
   }
+
 });
 Bookshelf.model('Veiculo', Veiculo);
 

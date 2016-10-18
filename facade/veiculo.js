@@ -9,21 +9,21 @@ module.exports.listar = function() {
   return Ativacoes
     ._listarAtivacoes()
     .then(function(ativacoes) {
-      veiculos.ativos = ativacoes;
+      veiculos.ativos = ativacoes.toJSON();
     })
     .then(function() {
       return Ativacoes
         ._listarAtivacoesExpirando();
     })
     .then(function(ativacoesExpirando) {
-      veiculos.expirando = ativacoesExpirando;
+      veiculos.expirando = ativacoesExpirando.toJSON();
     })
     .then(function() {
       return Ativacoes
         ._listarAtivacoesExpiraram();
     })
     .then(function(ativacoesExpiradas) {
-      veiculos.expirados = ativacoesExpiradas;
+      veiculos.expirados = ativacoesExpiradas.toJSON();
     })
     .then(() => {
       return veiculos;
@@ -32,25 +32,17 @@ module.exports.listar = function() {
 
 module.exports.cadastrar = function(camposVeiculo) {
   log.info('Veiculo.cadastrar()', { campos: camposVeiculo });
-
-  return Bookshelf.transaction(function(t) {
-
-    return Veiculo._cadastrar(camposVeiculo, { transacting: t });
-
-  });
+  return Bookshelf.transaction(t =>
+    Veiculo
+      ._cadastrar(camposVeiculo, { transacting: t }))
+    .then(veiculo => veiculo.toJSON());
 };
 
-module.exports.procurarVeiculo = function(placa) {
-  return Bookshelf.transaction(t => {
-    return Veiculo._procurarVeiculo(placa, { transacting: t });
-  });
-};
+module.exports.procurarVeiculo = placa =>
+  Bookshelf.transaction(t =>
+    Veiculo._procurarVeiculo(placa, { transacting: t }))
+    .then(veiculo => veiculo ? veiculo.toJSON() : null);
 
-module.exports.buscarPorId = function(id) {
-  return new Veiculo({ id: id })
-    .fetch({
-      withRelated: [ 'cidade', 'cidade.estado' ],
-      require: true
-    });
-};
+module.exports.buscarPorId = id => Veiculo._buscarPorId(id, null);
+
 

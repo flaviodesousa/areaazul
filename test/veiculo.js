@@ -6,15 +6,19 @@ const should = require('chai').should();
 const AreaAzul = require('../areaazul');
 const Veiculo = AreaAzul.facade.Veiculo;
 
+const Bookshelf = require('../database');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
 const AreaAzulUtils = require('areaazul-utils');
 
 describe('facade Veiculo', function() {
-  function apagarDadosDeTeste(TestHelpers, placa) {
+  function apagarDadosDeTeste(placa) {
     return TestHelpers.apagarVeiculoPorPlaca(placa);
   }
 
   var placaInexistente = 'VEI-1373';
   var placaTeste = 'AAA-1234';
+  var placaTesteSemMascara =
+    AreaAzulUtils.placaSemMascara(placaTeste);
   var marcaTeste = 'Marca teste';
   var modeloTeste = 'Modelo Teste';
   var corTeste = 'Cor Teste';
@@ -25,8 +29,6 @@ describe('facade Veiculo', function() {
   var idUsuarioComum = null;
 
   before(function() {
-    const Bookshelf = require('../database');
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return TestHelpers.pegarCidade()
       .then(function(cidade) {
         debug('Usando cidade ' + cidade.id);
@@ -40,10 +42,10 @@ describe('facade Veiculo', function() {
         idUsuarioComum = usuario.id;
       })
       .then(function() {
-        return apagarDadosDeTeste(TestHelpers, placaTeste);
+        return apagarDadosDeTeste(placaTeste);
       })
       .then(function() {
-        return apagarDadosDeTeste(TestHelpers, placaInexistente);
+        return apagarDadosDeTeste(placaInexistente);
       });
   });
 
@@ -62,6 +64,9 @@ describe('facade Veiculo', function() {
       Veiculo
         .cadastrar(novoVeiculo)
         .then(function(veiculo) {
+          should.exist(veiculo);
+          veiculo.should.have.property('id');
+          veiculo.should.have.property('placa', placaTesteSemMascara);
           idVeiculo = veiculo.id;
           return done();
         })
@@ -79,8 +84,7 @@ describe('facade Veiculo', function() {
         .then(function(veiculo) {
           should.exist(veiculo);
           veiculo.should.have.property('id', idVeiculo);
-          const placaSemFormato = AreaAzulUtils.placaSemMascara(placaTeste);
-          veiculo.get('placa').should.equal(placaSemFormato);
+          veiculo.should.have.property('placa', placaTesteSemMascara);
           done();
         })
         .catch(function(e) {
@@ -117,19 +121,6 @@ describe('facade Veiculo', function() {
           done(e);
         });
     });
-  });
-
-  after(function(done) {
-    const Bookshelf = require('../database');
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
-    apagarDadosDeTeste(TestHelpers, placaTeste)
-      .then(function() {
-        done();
-      })
-      .catch(function(e) {
-        debug('erro inesperado', e);
-        done(e);
-      });
   });
 
 });
