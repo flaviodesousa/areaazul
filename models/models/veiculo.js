@@ -18,7 +18,6 @@ var Veiculo = Bookshelf.Model.extend({
       .through('UsuarioHasVeiculo');
   }
 }, {
-
   _cadastrar: function(veiculoFields, options) {
     var veiculo = null;
     var optionsInsert = _.merge({ method: 'insert' }, options || {});
@@ -61,9 +60,10 @@ var Veiculo = Bookshelf.Model.extend({
             }, optionsInsert);
         }
       })
-      .then(() => veiculo);
+      .then(() =>
+        Veiculo
+          ._buscarPorId(veiculo.id, options));
   },
-
   _procurarVeiculo: (placa, options) => {
     var placaSemMascara = '';
 
@@ -73,7 +73,6 @@ var Veiculo = Bookshelf.Model.extend({
     return new Veiculo({ placa: placaSemMascara })
       .fetch(_.merge({ withRelated: [ 'cidade', 'cidade.estado' ] }, options));
   },
-
   _validarVeiculo: (veiculoFields, options) => {
     var message = [];
     if (!veiculoFields.cidade_id) {
@@ -130,7 +129,7 @@ var Veiculo = Bookshelf.Model.extend({
       .fetch(_.merge({
         withRelated: [ 'cidade', 'cidade.estado' ],
         require: true
-      }), options)
+      }, options))
       .catch(Bookshelf.NotFoundError, () => {
         const err = new AreaAzul.BusinessException(
           'Veículo: id não encontrado',

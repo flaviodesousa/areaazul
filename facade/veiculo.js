@@ -35,7 +35,6 @@ module.exports.cadastrar = function(camposVeiculo) {
   return Bookshelf.transaction(t =>
     Veiculo
       ._cadastrar(camposVeiculo, { transacting: t }))
-    .then(v => Veiculo._buscarPorId(v.id, null))
     .then(veiculo => veiculo.toJSON());
 };
 
