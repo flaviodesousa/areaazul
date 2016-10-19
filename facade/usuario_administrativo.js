@@ -69,7 +69,7 @@ module.exports.cadastrar = function(camposUsuarioAdministrativo) {
   });
 };
 
-module.exports.autorizado = function(login, senha) {
+module.exports.autentico = function(login, senha) {
   var usuarioAdministrativo;
   return new UsuarioAdministrativo({ login: login })
     .fetch()

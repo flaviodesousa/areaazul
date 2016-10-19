@@ -149,10 +149,10 @@ describe('facade UsuarioFiscal', function() {
 
   });
 
-  describe('autorizado()', function() {
+  describe('autentico()', function() {
 
     it('aceita credencial válida', function(done) {
-      UsuarioFiscal.autorizado(
+      UsuarioFiscal.autentico(
         camposUsuarioFiscalPreExistente.login,
         camposUsuarioFiscalPreExistente.nova_senha)
         .then(function(usuarioFiscal) {
@@ -171,7 +171,7 @@ describe('facade UsuarioFiscal', function() {
     });
 
     it('recusa credencial inválida', function(done) {
-      UsuarioFiscal.autorizado(
+      UsuarioFiscal.autentico(
         camposUsuarioFiscalPreExistente.login,
         camposUsuarioFiscalPreExistente.nova_senha + '0')
         .then(function() {
@@ -193,7 +193,7 @@ describe('facade UsuarioFiscal', function() {
 
     it('recusa login inválido', function(done) {
       UsuarioFiscal
-        .autorizado(
+        .autentico(
           camposUsuarioFiscalPreExistente.login + '0',
           camposUsuarioFiscalNaoExistente.nova_senha)
         .then(function() {

@@ -25,7 +25,7 @@ module.exports.buscarPorId = function(id) {
     });
 };
 
-module.exports.autorizado = function(login, senha) {
+module.exports.autentico = function(login, senha) {
   var usuario;
   return new Usuario({ login: login })
     .fetch()

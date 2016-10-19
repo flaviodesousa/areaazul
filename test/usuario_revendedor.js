@@ -107,10 +107,10 @@ describe('models.UsuarioRevendedor', function() {
     });
   });
 
-  describe('autorizado()', function() {
+  describe('autentico()', function() {
 
     it('aceita credencial válida', function(done) {
-      UsuarioRevendedor.autorizado(
+      UsuarioRevendedor.autentico(
         loginRevendaNaoExistente,
         senhaRevendaNaoExistente)
         .then(function(usuRev) {
@@ -125,7 +125,7 @@ describe('models.UsuarioRevendedor', function() {
     });
 
     it('recusa credencial inválida', function(done) {
-      UsuarioRevendedor.autorizado(
+      UsuarioRevendedor.autentico(
         loginRevendaNaoExistente,
         senhaRevendaNaoExistente + '0')
         .then(function() {
@@ -146,7 +146,7 @@ describe('models.UsuarioRevendedor', function() {
     });
 
     it('recusa login inválido', function(done) {
-      UsuarioRevendedor.autorizado(
+      UsuarioRevendedor.autentico(
         loginRevendaNaoExistente + '0',
         senhaRevendaNaoExistente)
         .then(function() {

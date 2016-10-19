@@ -38,7 +38,7 @@ module.exports.cadastrar = function(camposVeiculo) {
     .then(veiculo => veiculo.toJSON());
 };
 
-module.exports.procurarVeiculo = placa =>
+module.exports.buscarPorPlaca = placa =>
   Bookshelf.transaction(t =>
     Veiculo
       ._procurarVeiculo(placa, { transacting: t }))

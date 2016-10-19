@@ -63,9 +63,9 @@ describe('facade Usuario', function() {
     });
   });
 
-  describe('autorizado()', function() {
+  describe('autentico()', function() {
     it('aceita credenciais validas', function(done) {
-      Usuario.autorizado(
+      Usuario.autentico(
         camposUsuarioDeTeste.login,
         camposUsuarioDeTeste.nova_senha)
         .then(function(usuario) {
@@ -80,7 +80,7 @@ describe('facade Usuario', function() {
     });
 
     it('recusa credencial invalida', function(done) {
-      Usuario.autorizado(
+      Usuario.autentico(
         camposUsuarioDeTeste.login,
         camposUsuarioDeTeste.nova_senha + '0')
         .then(function() {
@@ -94,7 +94,7 @@ describe('facade Usuario', function() {
     });
 
     it('recusa login invalido', function(done) {
-      Usuario.autorizado(
+      Usuario.autentico(
         camposUsuarioDeTeste.login + '0',
         camposUsuarioDeTeste.nova_senha)
         .then(function() {

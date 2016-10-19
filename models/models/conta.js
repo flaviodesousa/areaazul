@@ -4,7 +4,10 @@ var _ = require('lodash');
 const Bookshelf = require('../../database');
 
 var Conta = Bookshelf.Model.extend({
-  tableName: 'conta'
+  tableName: 'conta',
+  movimentacao: function() {
+    return this.hasMany('MovimentacaoConta', 'conta_id');
+  }
 }, {
   _cadastrar: function(conta, options) {
     conta = _.merge({

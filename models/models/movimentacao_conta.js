@@ -7,7 +7,10 @@ const Bookshelf = require('../../database');
 const Conta = Bookshelf.model('Conta');
 
 const MovimentacaoConta = Bookshelf.Model.extend({
-  tableName: 'movimentacao_conta'
+  tableName: 'movimentacao_conta',
+  conta: function() {
+    return this.belongsTo('Conta');
+  }
 }, {
   _inserirMovimentacaoConta: function(movimentacaoConta, options) {
     var optionsInsert = _.merge({ method: 'insert' }, options || {});
@@ -19,7 +22,7 @@ const MovimentacaoConta = Bookshelf.Model.extend({
       .catch(Bookshelf.NotFoundError, () => {
         throw new AreaAzul.BusinessException(
           'Conta invalida', {
-            movimentacaoconta: movimentacaoConta
+            movimentacaoConta: movimentacaoConta
           });
       })
       .then(function(conta) {

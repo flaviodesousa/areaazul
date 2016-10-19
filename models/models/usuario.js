@@ -19,8 +19,10 @@ var Usuario = Bookshelf.Model.extend({
   veiculos: function() {
     return this.hasMany('Veiculo')
       .through('UsuarioHasVeiculo');
+  },
+  conta: function() {
+    return this.hasOne('Conta');
   }
-
 }, {
   _salvar: function(camposUsuario, usuario, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options);

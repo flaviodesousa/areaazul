@@ -14,7 +14,7 @@ module.exports.listarUsuarioRevenda = function(idRevendedor) {
       'revendedor', 'pessoaFisica', 'pessoaFisica.pessoa' ] })
     .then(lista => lista.toJSON());
 };
-module.exports.autorizado = function(login, senha) {
+module.exports.autentico = function(login, senha) {
   var usuarioRevendedor;
   return new UsuarioRevendedor({ login: login })
     .fetch({

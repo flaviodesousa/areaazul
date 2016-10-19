@@ -79,9 +79,9 @@ describe('facade Veiculo', function() {
   });
 
 
-  describe('procurarVeiculo()', function() {
+  describe('buscarPorPlaca()', function() {
     it('retorna um veiculo', function(done) {
-      Veiculo.procurarVeiculo(placaTeste)
+      Veiculo.buscarPorPlaca(placaTeste)
         .then(function(veiculo) {
           should.exist(veiculo);
           veiculo.should.have.property('id', idVeiculo);
@@ -94,7 +94,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('retorna indefinido se placa não cadastrada', function(done) {
-      Veiculo.procurarVeiculo(placaInexistente)
+      Veiculo.buscarPorPlaca(placaInexistente)
         .then(function(veiculo) {
           should.not.exist(veiculo);
           done();

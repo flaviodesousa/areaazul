@@ -150,10 +150,10 @@ describe('facade UsuarioAdministrativo', function() {
 
   });
 
-  describe('autorizado()', function() {
+  describe('autentico()', function() {
 
     it('aceita credencial válida', function(done) {
-      UsuarioAdministrativo.autorizado(
+      UsuarioAdministrativo.autentico(
         camposUsuarioAdministrativoPreExistente.login,
         camposUsuarioAdministrativoPreExistente.nova_senha)
         .then(function(usuAdm) {
@@ -172,7 +172,7 @@ describe('facade UsuarioAdministrativo', function() {
     });
 
     it('recusa credencial inválida', function(done) {
-      UsuarioAdministrativo.autorizado(
+      UsuarioAdministrativo.autentico(
         camposUsuarioAdministrativoPreExistente.login,
         camposUsuarioAdministrativoPreExistente.nova_senha + '0')
         .then(function() {
@@ -194,7 +194,7 @@ describe('facade UsuarioAdministrativo', function() {
 
     it('recusa login inválido', function(done) {
       UsuarioAdministrativo
-        .autorizado(
+        .autentico(
           camposUsuarioAdministrativoPreExistente.login + '0',
           camposUsuarioAdministrativoNaoExistente.nova_senha)
         .then(function() {

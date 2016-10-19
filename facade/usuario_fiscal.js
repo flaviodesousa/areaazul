@@ -70,7 +70,7 @@ module.exports.cadastrar = function(camposUsuarioFiscal) {
       });
   });
 };
-module.exports.autorizado = function(login, senha) {
+module.exports.autentico = function(login, senha) {
   var usuarioFiscal;
   return new UsuarioFiscal({ login: login })
     .fetch()
