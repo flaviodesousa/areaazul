@@ -27,10 +27,6 @@ module.exports = function(AreaAzul, Bookshelf) {
   const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
   const Cidade = Bookshelf.model('Cidade');
 
-  const VeiculoFacade = AreaAzul.facade.Veiculo;
-  const UsuarioFacade = AreaAzul.facade.Usuario;
-  const RevendedorFacade = AreaAzul.facade.Revendedor;
-  const UsuarioRevendedorFacade = AreaAzul.facade.UsuarioRevendedor;
   const MovimentacaoContaFacade = AreaAzul.facade.MovimentacaoDeConta;
 
   function _apagarConta(idConta) {
@@ -302,8 +298,8 @@ module.exports = function(AreaAzul, Bookshelf) {
           return veiculo;
         }
         debug('cadastrando veiculo de teste', veiculoTeste);
-        return VeiculoFacade
-          .cadastrar(veiculoTeste);
+        return Veiculo
+          ._cadastrar(veiculoTeste, {});
       });
   };
 
@@ -327,7 +323,8 @@ module.exports = function(AreaAzul, Bookshelf) {
           return usuario;
         }
         debug('cadastrando usuario de teste', usuarioTeste);
-        return UsuarioFacade.inserir(usuarioTeste);
+        return Usuario
+          ._salvar(usuarioTeste, null, {});
       })
       .then(function(usuario) {
         usuario.senha = usuarioTeste.nova_senha;
@@ -352,23 +349,24 @@ module.exports = function(AreaAzul, Bookshelf) {
     return new PessoaFisica({ cpf: revendedorPessoaFisicaTeste.cpf })
       .fetch({ require: true })
       .then(function(pf) {
-        if (pf) {
-          return new Revendedor({ id: pf.id })
-            .fetch();
-        }
-        // Primeiro caso: não existe a PF ainda
+        // Caso 1: existe pessoa, vê se é revendedor
+        return new Revendedor({ id: pf.id })
+          .fetch();
+      })
+      .catch(Bookshelf.NotFoundError, () => {
+        // Caso 2: não existe pessoa ainda, cadastra tudo
         debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
-        return RevendedorFacade
-          .cadastrar(revendedorPessoaFisicaTeste);
+        return Revendedor
+          ._cadastrar(revendedorPessoaFisicaTeste, {});
       })
       .then(function(revendedor) {
         if (revendedor) {
           return revendedor;
         }
-        // Segundo caso: existe a pessoa, mas ela não é Revenda
+        // Caso 3: existe pessoa, mas não é revendedor, cadastrar
         debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
-        return RevendedorFacade
-          .cadastrar(revendedorPessoaFisicaTeste);
+        return Revendedor
+          ._cadastrar(revendedorPessoaFisicaTeste, {});
       });
   }
   exports.pegarRevendedor = pegarRevendedor;
@@ -397,10 +395,9 @@ module.exports = function(AreaAzul, Bookshelf) {
           .catch(Bookshelf.NotFoundError, () => {
             debug('cadastrando usuario revendedor de teste',
               usuarioRevendedorTeste);
-            return UsuarioRevendedorFacade
-              .inserir(
-                _.merge({ revendedor_id: revendedor.id },
-                  usuarioRevendedorTeste))
+            return UsuarioRevendedor._salvarUsuarioRevenda(
+              _.merge({ revendedor_id: revendedor.id },
+                usuarioRevendedorTeste), null, {})
               .then(() => {
                 return pegarUsuarioRevendedor();
               });
