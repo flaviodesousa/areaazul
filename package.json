@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "areaazul-mailer": "0.0.4",
+    "areaazul-test-helpers": "^1.2.6",
     "areaazul-utils": "^1.1.0",
     "bcrypt-then": "^1.1.0",
     "bluebird": "3.4.6",
