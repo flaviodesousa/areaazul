@@ -4,7 +4,7 @@ exports.up = function(knex) {
   return knex.schema.createTable('ativacao', function(table) {
     table.increments('id').primary();
     table.timestamp('data_ativacao').notNullable();
-    table.timestamp('validade').notNullable();
+    table.timestamp('data_expiracao').notNullable();
     table.timestamp('data_desativacao');
     table.decimal('latitude', 14, 10);
     table.decimal('longitude', 14, 10);
