@@ -86,3 +86,7 @@ module.exports.alterarSenha = function(camposAlterarSenha) {
   });
 };
 
+module.exports.getAtivacoes = () => {};
+module.exports.getVeiculos = () => {};
+module.exports.getSaldo = () => {};
+module.exports.getHistorico = () => {};

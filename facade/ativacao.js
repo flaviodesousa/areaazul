@@ -40,8 +40,3 @@ module.exports.ativarPelaRevenda = function(ativacao) {
       });
   });
 };
-
-module.exports.getAtivacoes = () => {};
-module.exports.getVeiculos = () => {};
-module.exports.getSaldo = () => {};
-module.exports.getHistorico = () => {};
