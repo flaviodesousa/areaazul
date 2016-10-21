@@ -21,17 +21,18 @@ module.exports.getConfiguracaoTempo = function() {
   } ];
 };
 
-module.exports.alterar = function(camposConfiguracao) {
+module.exports.alterar = function(camposConfig) {
   return new Configuracao()
     .fetch()
     .then(function(configuracao) {
       const configuracoes = {
-        valor_ativacao: camposConfiguracao.valor_ativacao,
-        tempo_tolerancia: camposConfiguracao.tempo_tolerancia,
-        franquia: camposConfiguracao.franquia,
-        ciclo_ativacao: camposConfiguracao.ciclo_ativacao,
-        ciclo_fiscalizacao: camposConfiguracao.ciclo_fiscalizacao,
-        cidade_id: camposConfiguracao.cidade_id
+        valor_ativacao_reais: camposConfig.valor_ativacao_reais,
+        tempo_tolerancia_minutos: camposConfig.tempo_tolerancia_minutos,
+        franquia_minutos: camposConfig.franquia_minutos,
+        ciclo_ativacao_minutos: camposConfig.ciclo_ativacao_minutos,
+        ciclo_fiscalizacao_minutos:
+          camposConfig.ciclo_fiscalizacao_minutos,
+        cidade_id: camposConfig.cidade_id
       };
       if (configuracao == null) {
         return Configuracao
@@ -46,23 +47,23 @@ module.exports.alterar = function(camposConfiguracao) {
     });
 };
 
-module.exports.buscarConfiguracao = function() {
+module.exports.buscar = function() {
   return Configuracao
-    .forge()
-    .fetch();
+    ._buscar()
+    .then(configuracao => configuracao.toJSON());
 };
 
 module.exports.validar = function(config) {
   var message = [];
 
-  if (validator.isNull(config.valor_ativacao)) {
+  if (validator.isNull(config.valor_ativacao_reais)) {
     message.push(
       {
         attribute: 'valor_ativacao',
         problem: 'Campo valor de ativação é obrigatório!'
       });
   }
-  if (validator.isNull(config.tempo_tolerancia)) {
+  if (validator.isNull(config.tempo_tolerancia_minutos)) {
     message.push(
       {
         attribute: 'tempo_tolerancia',
@@ -70,14 +71,14 @@ module.exports.validar = function(config) {
       });
   }
 
-  if (validator.isNull(config.franquia)) {
+  if (validator.isNull(config.franquia_minutos)) {
     message.push(
       {
         attribute: 'franquia',
         problem: 'Campo franquia é obrigatório!'
       });
   }
-  if (validator.isNull(config.ciclo_ativacao)) {
+  if (validator.isNull(config.ciclo_ativacao_minutos)) {
     message.push(
       {
         attribute: 'ciclo_ativacao',
@@ -85,7 +86,7 @@ module.exports.validar = function(config) {
       });
   }
 
-  if (validator.isNull(config.ciclo_fiscalizacao)) {
+  if (validator.isNull(config.ciclo_fiscalizacao_minutos)) {
     message.push(
       {
         attribute: 'ciclo_fiscalizacao',
