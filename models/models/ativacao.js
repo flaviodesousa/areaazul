@@ -4,6 +4,7 @@ var debug = require('debug')('areaazul:model:ativacao');
 var validator = require('validator');
 var moment = require('moment');
 var _ = require('lodash');
+const Promise = require('bluebird');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
@@ -21,10 +22,30 @@ const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 var Ativacao = Bookshelf.Model.extend({
   tableName: 'ativacao'
 }, {
+  _validarAtivacao: (ativacao) => {
+    var messages = [];
+
+    if (!ativacao.tempo) {
+      messages.push({
+        attribute: 'tempo',
+        problem: 'Tempo em minutos não fornecido'
+      });
+    } else if (!validator.isNumeric('' + ativacao.tempo)) {
+      messages.push({
+        attribute: 'tempo',
+        problem: 'Tempo em minutos deve ser um número'
+      });
+    }
+
+    return Promise.resolve(messages);
+  },
   _validarAtivacaoUsuario: (ativacao, options) => {
     var messages = [];
-    return new Usuario({ id: ativacao.usuario_id })
-      .fetch(_.merge({ required: true }, options))
+    return Ativacao
+      ._validarAtivacao(ativacao, options)
+      .then(() =>
+        new Usuario({ id: ativacao.usuario_id })
+          .fetch(_.merge({ required: true }, options)))
       .catch(Bookshelf.NotFoundError, () => {
         messages.push({
           attribute: 'usuario_id',
@@ -40,6 +61,19 @@ var Ativacao = Bookshelf.Model.extend({
           attribute: 'veiculo_id',
           problem: `Não há veículo com id ${ativacao.usuario_id}`
         });
+      })
+      .then(function() {
+        return Ativacao
+          ._verificaSaldo(ativacao.usuario_id, options);
+      })
+      .then(function(conta) {
+        if (!conta || conta.get('saldo') < ativacao.valor) {
+          messages.push({
+            attribute: 'saldo',
+            problem: 'Usuário não possui saldo em conta!'
+          });
+        }
+        return Promise.resolve(messages);
       });
   },
   _ativar: function(camposAtivacao, options) {
@@ -61,24 +95,29 @@ var Ativacao = Bookshelf.Model.extend({
       altitude = null;
     }
 
+    const dataAtivacao = moment();
+    const dataExpiracao = moment().add(camposAtivacao.tempo, 'minutes');
+
     return Ativacao
       ._validarAtivacaoUsuario(camposAtivacao, options)
       .then(function(messages) {
-        if (messages.length) {
+        if (messages && messages.length) {
           debug('_ativar() ativacao invalida');
           throw new AreaAzul
             .BusinessException(
             'Não foi possível ativar veículo. Dados inválidos',
             messages);
         }
-        debug('ativarPelaRevenda() ativacao valida');
+        debug('ativarPorRevenda() ativacao valida');
       })
       .then(function() {
         return new Ativacao({
-          data_ativacao: new Date(),
+          data_ativacao: dataAtivacao,
+          data_expiracao: dataExpiracao,
           latitude: latitude,
           longitude: longitude,
           altitude: altitude,
+          tipo: 'usuario',
           veiculo_id: camposAtivacao.veiculo_id
         })
           .save(null, optionsInsert);
@@ -105,12 +144,12 @@ var Ativacao = Bookshelf.Model.extend({
             .forge({
               usuario_id: camposAtivacao.usuario_id,
               veiculo_id: camposAtivacao.veiculo_id,
-              ultima_ativacao: new Date()
+              ultima_ativacao: dataAtivacao
             })
             .save(null, optionsInsert);
         }
         return usuariohasveiculo
-          .save({ ultima_ativacao: new Date() }, optionsUpdate);
+          .save({ ultima_ativacao: dataAtivacao }, optionsUpdate);
       })
       .then(function() {
         return new Usuario({ id: camposAtivacao.usuario_id })
@@ -157,7 +196,7 @@ var Ativacao = Bookshelf.Model.extend({
         return ativacaoExistente;
       });
   },
-  _ativarPelaRevenda: function(camposAtivacao, options) {
+  _ativarPorRevenda: function(camposAtivacao, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options);
     var ativacao;
     var usuario = null;
@@ -165,22 +204,24 @@ var Ativacao = Bookshelf.Model.extend({
     if (camposAtivacao.placa) {
       placaSemMascara = util.placaSemMascara(camposAtivacao.placa);
     }
+    const dataAtivacao = moment();
+    const dataExpiracao = moment().add(camposAtivacao.tempo, 'minutes');
     return Ativacao
       ._validarAtivacaoRevenda(camposAtivacao, placaSemMascara, options)
       .then(function(messages) {
         if (messages.length) {
-          debug('ativarPelaRevenda() ativacao invalida');
+          debug('ativarPorRevenda() ativacao invalida');
           throw new AreaAzul
             .BusinessException(
             'Nao foi possivel ativar veículo. Dados invalidos',
             messages);
         }
-        debug('ativarPelaRevenda() ativacao valida');
+        debug('ativarPorRevenda() ativacao valida');
 
         return messages;
       })
       .then(function() {
-        debug('ativarPelaRevenda() buscando veiculo com placa ' +
+        debug('ativarPorRevenda() buscando veiculo com placa ' +
           placaSemMascara);
         return Veiculo
           .forge({ placa: placaSemMascara })
@@ -188,10 +229,10 @@ var Ativacao = Bookshelf.Model.extend({
       })
       .then(function(veiculo) {
         if (veiculo) {
-          debug('ativarPelaRevenda() veiculo existe #' + veiculo.id);
+          debug('ativarPorRevenda() veiculo existe #' + veiculo.id);
           return veiculo;
         }
-        debug('ativarPelaRevenda() veiculo nao existe, cadastrando');
+        debug('ativarPorRevenda() veiculo nao existe, cadastrando');
         return Veiculo._cadastrar({
           placa: placaSemMascara,
           marca: camposAtivacao.marca,
@@ -201,9 +242,11 @@ var Ativacao = Bookshelf.Model.extend({
         }, options);
       })
       .then(function(v) {
-        debug('ativarPelaRevenda() ativando veiculo #' + v.id);
+        debug('ativarPorRevenda() ativando veiculo #' + v.id);
         return new Ativacao({
-          data_ativacao: new Date(),
+          data_ativacao: dataAtivacao,
+          data_expiracao: dataExpiracao,
+          tipo: 'revenda',
           veiculo_id: v.id
         })
           .save(null, optionsInsert);
@@ -234,24 +277,6 @@ var Ativacao = Bookshelf.Model.extend({
         return ativacao;
       });
   },
-  _validarAtivacao: function(ativacao, placa, options) {
-    var message = [];
-    return Ativacao
-      ._validarAtivacao(message, ativacao, placa, options)
-      .then(function() {
-        return Ativacao
-          ._verificaSaldo(ativacao.usuario_pessoa_id, options);
-      })
-      .then(function(conta) {
-        if (!conta || conta.get('saldo') < ativacao.valor) {
-          message.push({
-            attribute: 'saldo',
-            problem: 'Usuário não possui saldo em conta!'
-          });
-        }
-        return message;
-      });
-  },
   _validarAtivacaoRevenda: function(ativacao, placa, options) {
     var messages = [];
     var idUsuarioRevendedor;
@@ -270,20 +295,13 @@ var Ativacao = Bookshelf.Model.extend({
       idUsuarioRevendedor = 0 + ativacao.usuario_revendedor_id;
     }
 
-    if (!ativacao.tempo) {
-      messages.push({
-        attribute: 'tempo',
-        problem: 'Tempo é obrigatório!'
-      });
-    } else if (!validator.isNumeric('' + ativacao.tempo)) {
-      messages.push({
-        attribute: 'tempo',
-        problem: 'Tempo deve ser um número'
-      });
-    }
-
-    return new Veiculo({ placa: ativacao.placa })
-      .fetch(_.merge({ require: true }, options))
+    return Ativacao
+      ._validarAtivacao(ativacao, options)
+      .then(mensagensComuns => {
+        messages = messages.concat(mensagensComuns);
+        return new Veiculo({ placa: ativacao.placa })
+          .fetch(_.merge({ require: true }, options));
+      })
       .then(function(veiculo) {
         return Ativacao
           ._verificaAtivacao(veiculo.get('placa'), options);
@@ -296,15 +314,20 @@ var Ativacao = Bookshelf.Model.extend({
           });
         }
       })
-      .catch(Bookshelf.NotFoundError, () => {
+      .catch(Bookshelf.NotFoundError, () =>
         // Placa não cadastrada, verificar se há dados suficientes para
         // cadastrar novo veículo
-        return Veiculo
+        Veiculo
           ._validarVeiculo(ativacao, options)
           .then(function(messagesVeiculo) {
             messages = messages.concat(messagesVeiculo);
-          });
-      })
+          }))
+      .then(() =>
+        Ativacao
+          ._validarAtivacao(ativacao, options)
+          .then(messagesComuns => {
+            messages = messages.concat(messagesComuns);
+          }))
       .then(() => {
         if (idUsuarioRevendedor === undefined) { return messages; }
         const optionsFetch = _.merge({ require: true }, options);
@@ -353,7 +376,7 @@ var Ativacao = Bookshelf.Model.extend({
           .innerJoin('usuario', 'usuario.conta_id', 'conta.id')
           .where('usuario.id', idUsuario)
           .select('conta.*')
-          .select('usuario_revendedor.*');
+          .select('usuario.*');
       })
       .fetch(options);
   },

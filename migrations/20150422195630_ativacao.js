@@ -9,7 +9,7 @@ exports.up = function(knex) {
     table.decimal('latitude', 14, 10);
     table.decimal('longitude', 14, 10);
     table.decimal('altitude', 18, 10);
-    table.string('tipo');
+    table.enu('tipo', [ 'usuario', 'fiscal', 'revenda' ]).notNullable();
     table.integer('veiculo_id').notNullable()
       .references('id').inTable('veiculo');
   }).createTable('ativacao_usuario', function(table) {

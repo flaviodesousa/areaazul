@@ -30,11 +30,11 @@ module.exports.desativar = function(desativacao) {
   });
 };
 
-module.exports.ativarPelaRevenda = function(ativacao) {
-  log.info('ativarPelaRevenda()', ativacao);
+module.exports.ativarPorRevenda = function(ativacao) {
+  log.info('ativarPorRevenda()', ativacao);
   return Bookshelf.transaction(function(t) {
     return Ativacao
-      ._ativarPelaRevenda(ativacao, { transacting: t })
+      ._ativarPorRevenda(ativacao, { transacting: t })
       .then(ativacao => {
         return ativacao.toJSON();
       });

@@ -3,6 +3,8 @@
 const debug = require('debug')('areaazul:test:ativacao');
 const should = require('chai').should();
 
+const math = require('money-math');
+
 const AreaAzul = require('../areaazul');
 const Ativacao = AreaAzul.facade.Ativacao;
 
@@ -11,63 +13,70 @@ const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
 const AtivacaoModel = Bookshelf.model('Ativacao');
 const AtivacaoUsuarioModel = Bookshelf.model('AtivacaoUsuario');
 const ContaModel = Bookshelf.model('Conta');
-
-const valorTeste = '10.00';
+const ConfiguracaoModel = Bookshelf.model('Configuracao');
 
 describe('fachada Ativacao', function() {
 
-  var idUsuarioComum = null;
-  var veiculoExistente = null;
   const placaVeiculoNovo = 'TAT1540';
-  var idCidade = null;
-  var idUsuarioRevendedor = null;
-  var idAtivacao = null;
+  var idUsuarioComum;
+  var veiculoExistente;
+  var idCidade;
+  var idUsuarioRevendedor;
+  var idAtivacao;
+  var configuracao;
 
   before(function() {
     return TestHelpers
       .pegarVeiculo()
-      .then(function(v) {
+      .then(v => {
         veiculoExistente = v;
         return TestHelpers
           .apagarVeiculoPorPlaca(placaVeiculoNovo);
       })
-      .then(function() {
-        return TestHelpers.pegarUsuario();
+      .then(() => ConfiguracaoModel._buscar())
+      .then(c => {
+        configuracao = c;
       })
-      .then(function(usuario) {
+      .then(() => TestHelpers.pegarUsuario())
+      .then(usuario => {
         idUsuarioComum = usuario.id;
         return new ContaModel({ id: usuario.get('conta_id') })
           .fetch();
       })
-      .then(function(contaUsuario) {
-        return TestHelpers.setSaldo(contaUsuario, valorTeste);
+      .then(contaUsuario => {
+        if (math.cmp(
+            contaUsuario.get('saldo'),
+            configuracao.get('valor_ativacao_reais')) > 0) {
+          return;
+        }
+        return TestHelpers.setSaldo(
+          contaUsuario, configuracao.get('valor_ativacao_reais'));
       })
-      .then(function() {
-        return TestHelpers.pegarRevendedor();
+      .then(() => TestHelpers.pegarRevendedor())
+      .then(revendedor =>
+        new ContaModel({ id: revendedor.get('conta_id') })
+          .fetch())
+      .then(contaRevendedor => {
+        if (math.cmp(
+            contaRevendedor.get('saldo'),
+            configuracao.get('valor_ativacao_reais')) > 0) {
+          return;
+        }
+        return TestHelpers.setSaldo(
+          contaRevendedor, configuracao.get('valor_ativacao_reais'));
       })
-      .then(function(revendedor) {
-        return new ContaModel({ id: revendedor.get('conta_id') })
-          .fetch();
-      })
-      .then(function(contaRevendedor) {
-        return TestHelpers.setSaldo(contaRevendedor, valorTeste);
-      })
-      .then(function() {
-        return TestHelpers.pegarUsuarioRevendedor();
-      })
+      .then(() => TestHelpers.pegarUsuarioRevendedor())
       .then(function(usuarioRevendedor) {
         idUsuarioRevendedor = usuarioRevendedor.id;
       })
-      .then(function() {
-        return TestHelpers.pegarCidade();
-      })
-      .then(function(cidade) {
+      .then(() => TestHelpers.pegarCidade())
+      .then(cidade => {
         idCidade = cidade.id;
       })
-      .then(function() {
+      .then(() =>
         // Apagar ativações pendentes, para não afetar testes com novas
         // ativações.
-        return AtivacaoUsuarioModel
+        AtivacaoUsuarioModel
           .query(function(qb) {
             qb
               .whereExists(function() {
@@ -76,17 +85,15 @@ describe('fachada Ativacao', function() {
                     + ' and ativacao.data_desativacao is null');
               });
           })
-          .destroy();
-      })
-      .then(function() {
-        return AtivacaoModel
+          .destroy())
+      .then(() =>
+        AtivacaoModel
           .query(function(qb) {
             qb
               .whereNull('data_desativacao')
               .andWhere({ veiculo_id: veiculoExistente.id });
           })
-          .destroy();
-      })
+          .destroy())
       .catch(function(e) {
         debug('erro inesperado na before()', e);
         throw e;
@@ -99,7 +106,7 @@ describe('fachada Ativacao', function() {
       var ativacao = {
         usuario_id: idUsuarioComum,
         veiculo_id: veiculoExistente.id,
-        valor: valorTeste
+        tempo: 60
       };
 
       Ativacao
@@ -169,18 +176,17 @@ describe('fachada Ativacao', function() {
     });
   });
 
-  describe('ativarPelaRevenda()', function() {
+  describe('ativarPorRevenda()', function() {
     it('falha com ativacao revenda sem usuario revendedor', function(done) {
       Ativacao
-        .ativarPelaRevenda({
+        .ativarPorRevenda({
           cidade: idCidade,
           placa: veiculoExistente.get('placa'),
           marca: veiculoExistente.get('marca'),
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: 60,
-          valor: valorTeste
+          tempo: 60
         })
         .then(function() {
           done(new Error('Não deve ativar sem usuário de revenda'));
@@ -200,7 +206,7 @@ describe('fachada Ativacao', function() {
 
     it('falha com ativacao revenda com usuario inválido', function(done) {
       Ativacao
-        .ativarPelaRevenda({
+        .ativarPorRevenda({
           usuario_revendedor_id: 'a',
           cidade: idCidade,
           placa: veiculoExistente.get('placa'),
@@ -208,8 +214,7 @@ describe('fachada Ativacao', function() {
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: 60,
-          valor: valorTeste
+          tempo: 60
         })
         .then(function() {
           done(new Error('Não deve ativar sem usuário de revenda'));
@@ -229,7 +234,7 @@ describe('fachada Ativacao', function() {
 
     it('falha com ativacao revenda com usuário inexistente', function(done) {
       Ativacao
-        .ativarPelaRevenda({
+        .ativarPorRevenda({
           usuario_revendedor_id: 0,
           cidade: idCidade,
           placa: veiculoExistente.get('placa'),
@@ -237,8 +242,7 @@ describe('fachada Ativacao', function() {
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: 60,
-          valor: valorTeste
+          tempo: 60
         })
         .then(function() {
           done(new Error('Não deve ativar sem usuário de revenda'));
@@ -258,15 +262,14 @@ describe('fachada Ativacao', function() {
 
     it('falha com ativacao revenda sem cidade', function(done) {
       Ativacao
-        .ativarPelaRevenda({
+        .ativarPorRevenda({
           usuario_revendedor_id: idUsuarioRevendedor,
           placa: placaVeiculoNovo,
           marca: veiculoExistente.get('marca'),
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: 60,
-          valor: valorTeste
+          tempo: 60
         })
         .then(function() {
           done(new Error('Não deve ativar veículo sem cidade'));
@@ -286,7 +289,7 @@ describe('fachada Ativacao', function() {
 
     it('grava ativacao', function(done) {
       Ativacao
-        .ativarPelaRevenda({
+        .ativarPorRevenda({
           usuario_revendedor_id: idUsuarioRevendedor,
           cidade: idCidade,
           placa: veiculoExistente.get('placa'),
@@ -294,8 +297,7 @@ describe('fachada Ativacao', function() {
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: 60,
-          valor: valorTeste
+          tempo: 60
         })
         .then(function(ativacao) {
           return new AtivacaoModel({ id: ativacao.id })
