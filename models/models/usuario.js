@@ -1,17 +1,18 @@
 'use strict';
 
-var _ = require('lodash');
-var bcrypt = require('bcrypt-then');
-var validator = require('validator');
+const _ = require('lodash');
+const bcrypt = require('bcrypt-then');
+const validator = require('validator');
 
+const log = require('../../logging');
 const AreaAzul = require('../../areaazul');
 const AreaAzulMailer = require('areaazul-mailer');
 const Bookshelf = require('../../database');
 
-var PessoaFisica = Bookshelf.model('PessoaFisica');
-var Conta = Bookshelf.model('Conta');
+const PessoaFisica = Bookshelf.model('PessoaFisica');
+const Conta = Bookshelf.model('Conta');
 
-var Usuario = Bookshelf.Model.extend({
+const Usuario = Bookshelf.Model.extend({
   tableName: 'usuario',
   pessoaFisica: function() {
     return this.hasOne('PessoaFisica', 'id');
@@ -21,7 +22,7 @@ var Usuario = Bookshelf.Model.extend({
       .through('UsuarioHasVeiculo');
   },
   conta: function() {
-    return this.hasOne('Conta');
+    return this.belongsTo('Conta', 'conta_id');
   }
 }, {
   _salvar: function(camposUsuario, usuario, options) {
@@ -223,8 +224,21 @@ var Usuario = Bookshelf.Model.extend({
       });
     }
     return message;
+  },
+  _buscarPorId: function(id, options) {
+    return new Usuario({ id: id })
+      .fetch(_.merge({
+        require: true,
+        withRelated: [ 'pessoaFisica', 'pessoaFisica.pessoa', 'conta' ]
+      }, options))
+      .catch(Bookshelf.NotFoundError, () => {
+        const err = new AreaAzul.BusinessException(
+          'Usuário revendedor: id não encontrado',
+          { id: id });
+        log.warn(err.message, err.details);
+        throw err;
+      });
   }
-
 });
 Bookshelf.model('Usuario', Usuario);
 

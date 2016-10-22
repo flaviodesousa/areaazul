@@ -18,6 +18,9 @@ const ConfiguracaoModel = Bookshelf.model('Configuracao');
 describe('fachada Ativacao', function() {
 
   const placaVeiculoNovo = 'TAT1540';
+  const tempoPadrao = '120';
+  const tempoExcessivo = '121';
+  var saldoEsperado;
   var idUsuarioComum;
   var veiculoExistente;
   var idCidade;
@@ -36,35 +39,27 @@ describe('fachada Ativacao', function() {
       .then(() => ConfiguracaoModel._buscar())
       .then(c => {
         configuracao = c;
+        saldoEsperado =
+          math.div(
+            math.mul(
+              configuracao.get('valor_ativacao_reais'),
+              math.floatToAmount(tempoPadrao)),
+            '60.00');
       })
       .then(() => TestHelpers.pegarUsuario())
       .then(usuario => {
         idUsuarioComum = usuario.id;
         return new ContaModel({ id: usuario.get('conta_id') })
-          .fetch();
+          .fetch({ require: true });
       })
-      .then(contaUsuario => {
-        if (math.cmp(
-            contaUsuario.get('saldo'),
-            configuracao.get('valor_ativacao_reais')) > 0) {
-          return;
-        }
-        return TestHelpers.setSaldo(
-          contaUsuario, configuracao.get('valor_ativacao_reais'));
-      })
+      .then(contaUsuario =>
+        TestHelpers.setSaldo(contaUsuario, saldoEsperado))
       .then(() => TestHelpers.pegarRevendedor())
       .then(revendedor =>
         new ContaModel({ id: revendedor.get('conta_id') })
-          .fetch())
-      .then(contaRevendedor => {
-        if (math.cmp(
-            contaRevendedor.get('saldo'),
-            configuracao.get('valor_ativacao_reais')) > 0) {
-          return;
-        }
-        return TestHelpers.setSaldo(
-          contaRevendedor, configuracao.get('valor_ativacao_reais'));
-      })
+          .fetch({ require: true }))
+      .then(contaRevendedor =>
+        TestHelpers.setSaldo(contaRevendedor, saldoEsperado))
       .then(() => TestHelpers.pegarUsuarioRevendedor())
       .then(function(usuarioRevendedor) {
         idUsuarioRevendedor = usuarioRevendedor.id;
@@ -95,18 +90,94 @@ describe('fachada Ativacao', function() {
           })
           .destroy())
       .catch(function(e) {
-        debug('erro inesperado na before()', e);
+        debug('erro inesperado', e);
         throw e;
       });
   });
 
   describe('Ativar()', function() {
+    it('falha ativação sem usuário', function(done) {
+      var ativacao = {
+        veiculo_id: veiculoExistente.id,
+        tempo: tempoPadrao
+      };
 
-    it('grava ativacao', function(done) {
+      Ativacao
+        .ativar(ativacao)
+        .then(() => {
+          done('Não deveria ter ativado sem usuário');
+        })
+        .catch(AreaAzul.BusinessException, () => {
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('falha ativação sem veículo', function(done) {
+      var ativacao = {
+        usuario_id: idUsuarioComum,
+        tempo: tempoPadrao
+      };
+
+      Ativacao
+        .ativar(ativacao)
+        .then(() => {
+          done('Não deveria ter ativado sem veículo');
+        })
+        .catch(AreaAzul.BusinessException, () => {
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('falha ativação sem tempo', function(done) {
+      var ativacao = {
+        usuario_id: idUsuarioComum,
+        veiculo_id: veiculoExistente.id
+      };
+
+      Ativacao
+        .ativar(ativacao)
+        .then(() => {
+          done(new Error('Não deveria ter ativado sem tempo especificado'));
+        })
+        .catch(AreaAzul.BusinessException, () => {
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('falha ativação sem saldo', function(done) {
       var ativacao = {
         usuario_id: idUsuarioComum,
         veiculo_id: veiculoExistente.id,
-        tempo: 60
+        tempo: tempoExcessivo
+      };
+
+      Ativacao
+        .ativar(ativacao)
+        .then(() => {
+          done(new Error('Não deveria ter ativado sem saldo'));
+        })
+        .catch(AreaAzul.BusinessException, () => {
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('grava ativação', function(done) {
+      var ativacao = {
+        usuario_id: idUsuarioComum,
+        veiculo_id: veiculoExistente.id,
+        tempo: tempoPadrao
       };
 
       Ativacao
@@ -118,7 +189,7 @@ describe('fachada Ativacao', function() {
           done();
         })
         .catch(function(e) {
-          debug('erro inesperado na ativacao', e);
+          debug('erro inesperado', e);
           done(e);
         });
     });
@@ -126,37 +197,44 @@ describe('fachada Ativacao', function() {
 
   describe('desativar()', function() {
 
-    it('falha para ativacao inexistente', function(done) {
+    it('falha para ativação inexistente', function(done) {
       Ativacao
         .desativar({
           ativacao_id: 0,
           usuario_id: idUsuarioComum
         })
         .then(function() {
-          done('Nao deveria ter desativado uma ativacao inexistente');
+          done(new Error(
+            'Não deveria ter desativado uma ativação inexistente'));
+        })
+        .catch(AreaAzul.BusinessException, () => {
+          done();
         })
         .catch(function(e) {
-          should.exist(e);
-          done();
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
-    it('falha se usuario diferente do ativador', function(done) {
+    it('falha se usuário diferente do ativador', function(done) {
       Ativacao
         .desativar({
           ativacao_id: idAtivacao,
           usuario_id: 0
         })
         .then(function() {
-          done('Nao deveria ter desativado com usuario diferente');
+          done(new Error('Não deveria ter desativado com usuário diferente'));
+        })
+        .catch(AreaAzul.BusinessException, () => {
+          done();
         })
         .catch(function(e) {
-          should.exist(e);
-          done();
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
-    it('desativa ativacao existente', function(done) {
+    it('desativa ativação existente', function(done) {
       Ativacao
         .desativar({
           ativacao_id: idAtivacao,
@@ -177,16 +255,16 @@ describe('fachada Ativacao', function() {
   });
 
   describe('ativarPorRevenda()', function() {
-    it('falha com ativacao revenda sem usuario revendedor', function(done) {
+    it('falha com ativação revenda sem usuário revendedor', function(done) {
       Ativacao
         .ativarPorRevenda({
-          cidade: idCidade,
+          cidade_id: idCidade,
           placa: veiculoExistente.get('placa'),
           marca: veiculoExistente.get('marca'),
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: 60
+          tempo: tempoPadrao
         })
         .then(function() {
           done(new Error('Não deve ativar sem usuário de revenda'));
@@ -204,17 +282,17 @@ describe('fachada Ativacao', function() {
         });
     });
 
-    it('falha com ativacao revenda com usuario inválido', function(done) {
+    it('falha com ativação revenda com usuário inválido', function(done) {
       Ativacao
         .ativarPorRevenda({
           usuario_revendedor_id: 'a',
-          cidade: idCidade,
+          cidade_id: idCidade,
           placa: veiculoExistente.get('placa'),
           marca: veiculoExistente.get('marca'),
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: 60
+          tempo: tempoPadrao
         })
         .then(function() {
           done(new Error('Não deve ativar sem usuário de revenda'));
@@ -227,22 +305,22 @@ describe('fachada Ativacao', function() {
           done();
         })
         .catch(e => {
-          debug('erro inesperado na ativação pela revenda', e);
+          debug('erro inesperado', e);
           done(e);
         });
     });
 
-    it('falha com ativacao revenda com usuário inexistente', function(done) {
+    it('falha com ativação revenda com usuário inexistente', function(done) {
       Ativacao
         .ativarPorRevenda({
           usuario_revendedor_id: 0,
-          cidade: idCidade,
+          cidade_id: idCidade,
           placa: veiculoExistente.get('placa'),
           marca: veiculoExistente.get('marca'),
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: 60
+          tempo: tempoPadrao
         })
         .then(function() {
           done(new Error('Não deve ativar sem usuário de revenda'));
@@ -255,12 +333,12 @@ describe('fachada Ativacao', function() {
           done();
         })
         .catch(e => {
-          debug('erro inesperado na ativacao pela revenda', e);
+          debug('erro inesperado', e);
           done(e);
         });
     });
 
-    it('falha com ativacao revenda sem cidade', function(done) {
+    it('falha com ativação revenda sem cidade do veículo', function(done) {
       Ativacao
         .ativarPorRevenda({
           usuario_revendedor_id: idUsuarioRevendedor,
@@ -269,7 +347,7 @@ describe('fachada Ativacao', function() {
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: 60
+          tempo: tempoPadrao
         })
         .then(function() {
           done(new Error('Não deve ativar veículo sem cidade'));
@@ -282,24 +360,26 @@ describe('fachada Ativacao', function() {
           done();
         })
         .catch(e => {
-          debug('erro inesperado na ativacao pela revenda', e);
+          debug('erro inesperado', e);
           done(e);
         });
     });
 
-    it('grava ativacao', function(done) {
+    it('grava ativação revenda', function(done) {
       Ativacao
         .ativarPorRevenda({
           usuario_revendedor_id: idUsuarioRevendedor,
-          cidade: idCidade,
-          placa: veiculoExistente.get('placa'),
+          cidade_id: idCidade,
+          placa: placaVeiculoNovo,
           marca: veiculoExistente.get('marca'),
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: 60
+          tempo: tempoPadrao
         })
         .then(function(ativacao) {
+          should.exist(ativacao);
+          ativacao.should.have.property('id');
           return new AtivacaoModel({ id: ativacao.id })
             .destroy()
             .then(function() {
@@ -307,7 +387,7 @@ describe('fachada Ativacao', function() {
             });
         })
         .catch(function(e) {
-          debug('erro inesperado na ativacao pela revenda', e);
+          debug('erro inesperado', e);
           done(e);
         });
     });

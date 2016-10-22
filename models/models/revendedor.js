@@ -9,7 +9,10 @@ const PessoaJuridica = Bookshelf.model('PessoaJuridica');
 const Conta = Bookshelf.model('Conta');
 
 var Revendedor = Bookshelf.Model.extend({
-  tableName: 'revendedor'
+  tableName: 'revendedor',
+  conta: function() {
+    return this.belongsTo('Conta', 'conta_id');
+  }
 }, {
   _cadastrar: function(revendedorFields, options) {
     var idPessoa = null;

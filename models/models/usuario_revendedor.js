@@ -304,7 +304,9 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     return new UsuarioRevendedor({ id: id })
       .fetch(_.merge({
         require: true,
-        withRelated: [ 'pessoaFisica', 'pessoaFisica.pessoa', 'revendedor' ]
+        withRelated: [
+          'pessoaFisica', 'pessoaFisica.pessoa',
+          'revendedor', 'revendedor.conta' ]
       }, options))
       .catch(Bookshelf.NotFoundError, () => {
         const err = new AreaAzul.BusinessException(
