@@ -66,7 +66,7 @@ module.exports._camposValidos = function(campos, usuario, ModelClass, options) {
         ._camposValidos(campos, options);
     })
     .then(function(messagesPessoaFisica) {
-      messages.concat(messagesPessoaFisica);
+      messages.push.apply(messages, messagesPessoaFisica);
     })
     .then(function() {
       return PessoaFisica
@@ -84,7 +84,6 @@ module.exports._camposValidos = function(campos, usuario, ModelClass, options) {
                   problem: 'Já ha usuário com este CPF!'
                 });
               }
-              return messages;
             });
         }
         if (usuario.id !== pessoaFisica.id) {
@@ -100,7 +99,7 @@ module.exports._camposValidos = function(campos, usuario, ModelClass, options) {
       // Else:
       // Caso válido:
       // - !pessoaFisica: cpf ainda não usado
-      return messages;
-    });
+    })
+    .then(() => messages);
 
 };

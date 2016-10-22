@@ -153,12 +153,13 @@ const Usuario = Bookshelf.Model.extend({
 
   _camposValidos: function(camposUsuario, usuario, options) {
     var messages = Usuario._loginValido(camposUsuario);
-    messages.concat(Usuario._senhaValida(camposUsuario, usuario));
+    messages.push.apply(messages,
+      Usuario._senhaValida(camposUsuario, usuario));
 
     return PessoaFisica
       ._camposValidos(camposUsuario, options)
       .then(function(messagesPessoaFisica) {
-        messages.concat(messagesPessoaFisica);
+        messages.push.apply(messages, messagesPessoaFisica);
       })
       .then(function() {
         return PessoaFisica

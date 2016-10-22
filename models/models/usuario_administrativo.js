@@ -21,7 +21,7 @@ var UsuarioAdministrativo = Bookshelf.Model.extend({
         camposUsuAdm, usuarioAdministrativo,
         UsuarioAdministrativo, options)
       .then(function(messagesUsuarioHelper) {
-        return messages.concat(messagesUsuarioHelper);
+        return messages.push.apply(messages, messagesUsuarioHelper);
       });
   },
   _buscarPorId: function(id, options) {

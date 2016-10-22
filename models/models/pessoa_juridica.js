@@ -40,7 +40,7 @@ var PessoaJuridica = Bookshelf.Model.extend({
     return Pessoa
       ._camposValidos(camposPessoaJuridica, options)
       .then(function(messagesPessoa) {
-        messages = _.concat(messages, messagesPessoa);
+        messages.push.apply(messages, messagesPessoa);
         return messages;
       });
   },

@@ -93,17 +93,17 @@ var Revendedor = Bookshelf.Model.extend({
   },
 
   _validarRevenda: function(revenda, options) {
-    var message = [];
+    var messages = [];
 
     if (!revenda.login) {
-      message.push({
+      messages.push({
         attribute: 'login',
         problem: 'Login obrigatório!'
       });
     }
 
     if (!revenda.termo_servico) {
-      message.push({
+      messages.push({
         attribute: 'termo_servico',
         problem:
           'Para realizar o cadastro precisa aceitar nossos termos de serviço!'
@@ -113,44 +113,41 @@ var Revendedor = Bookshelf.Model.extend({
     return PessoaFisica
       ._camposValidos(revenda, options)
       .then(function(messagesPessoaFisica) {
-        message.concat(messagesPessoaFisica);
+        messages.push.apply(messages, messagesPessoaFisica);
         const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
         return UsuarioRevendedor
           ._procurarLogin(revenda.login, options);
       })
       .then(function(usuariorevendedor) {
         if (usuariorevendedor) {
-          message.push({
+          messages.push({
             attribute: 'login',
             problem: 'Login já cadastrado!'
           });
         }
-
-        return message;
       })
       .then(function() {
         if (!revenda.cnpj) {
-          return message;
+          return;
         }
 
         return PessoaJuridica
           ._camposValidos(revenda, options)
           .then(function(messagesPessoaJuridica) {
-            message.concat(messagesPessoaJuridica);
+            messages.push.apply(messages, messagesPessoaJuridica);
             return PessoaJuridica
               ._buscarPorCNPJ(revenda.cnpj, options);
           })
           .then(function(pessoajuridica) {
             if (pessoajuridica) {
-              message.push({
+              messages.push({
                 attribute: 'cnpj',
                 problem: 'CNPJ já cadastrado!'
               });
             }
-
-            return message;
           });
-      });
+      })
+      .then(() => messages);
   }
 });
 Bookshelf.model('Revendedor', Revendedor);

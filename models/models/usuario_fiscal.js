@@ -21,7 +21,7 @@ var UsuarioFiscal = Bookshelf.Model.extend({
         camposUsuarioFiscal, usuarioFiscal,
         UsuarioFiscal, options)
       .then(function(messagesUsuarioHelper) {
-        return messages.concat(messagesUsuarioHelper);
+        return messages.push.apply(messages, messagesUsuarioHelper);
       });
   },
   _buscarPorId: function(id, options) {
