@@ -19,14 +19,17 @@ describe('fachada Ativacao', function() {
 
   const placaVeiculoNovo = 'TAT1540';
   const tempoPadrao = '120';
-  const tempoExcessivo = '121';
-  var saldoEsperado;
+  const tempoExcessivo = '960';
+  var precoDaAtivacao;
   var idUsuarioComum;
   var veiculoExistente;
   var idCidade;
   var idUsuarioRevendedor;
   var idAtivacao;
-  var configuracao;
+  var contaRevendedor;
+  var contaUsuario;
+  const saldoInicial = '10.00';
+  var saldoFinalEsperado;
 
   before(function() {
     return TestHelpers
@@ -37,14 +40,15 @@ describe('fachada Ativacao', function() {
           .apagarVeiculoPorPlaca(placaVeiculoNovo);
       })
       .then(() => ConfiguracaoModel._buscar())
-      .then(c => {
-        configuracao = c;
-        saldoEsperado =
+      .then(configuracao => {
+        precoDaAtivacao =
           math.div(
             math.mul(
               configuracao.get('valor_ativacao_reais'),
               math.floatToAmount(tempoPadrao)),
             '60.00');
+        saldoFinalEsperado =
+          math.subtract(saldoInicial, precoDaAtivacao);
       })
       .then(() => TestHelpers.pegarUsuario())
       .then(usuario => {
@@ -52,14 +56,18 @@ describe('fachada Ativacao', function() {
         return new ContaModel({ id: usuario.get('conta_id') })
           .fetch({ require: true });
       })
-      .then(contaUsuario =>
-        TestHelpers.setSaldo(contaUsuario, saldoEsperado))
+      .then(cu => {
+        contaUsuario = cu;
+        TestHelpers.setSaldo(contaUsuario, saldoInicial);
+      })
       .then(() => TestHelpers.pegarRevendedor())
       .then(revendedor =>
         new ContaModel({ id: revendedor.get('conta_id') })
           .fetch({ require: true }))
-      .then(contaRevendedor =>
-        TestHelpers.setSaldo(contaRevendedor, saldoEsperado))
+      .then(cr => {
+        contaRevendedor = cr;
+        TestHelpers.setSaldo(contaRevendedor, saldoInicial);
+      })
       .then(() => TestHelpers.pegarUsuarioRevendedor())
       .then(function(usuarioRevendedor) {
         idUsuarioRevendedor = usuarioRevendedor.id;
@@ -186,6 +194,11 @@ describe('fachada Ativacao', function() {
           should.exist(at);
           should.exist(at.id);
           idAtivacao = at.id;
+          return new ContaModel({ id: contaUsuario.id })
+            .fetch({ require: true });
+        })
+        .then(contaUsuario => {
+          contaUsuario.get('saldo').should.equal(saldoFinalEsperado);
           done();
         })
         .catch(function(e) {
@@ -380,11 +393,12 @@ describe('fachada Ativacao', function() {
         .then(function(ativacao) {
           should.exist(ativacao);
           ativacao.should.have.property('id');
-          return new AtivacaoModel({ id: ativacao.id })
-            .destroy()
-            .then(function() {
-              done();
-            });
+          return new ContaModel({ id: contaRevendedor.id })
+            .fetch({ require: true });
+        })
+        .then(contaRevendedor => {
+          contaRevendedor.get('saldo').should.equal(saldoFinalEsperado);
+          done();
         })
         .catch(function(e) {
           debug('erro inesperado', e);

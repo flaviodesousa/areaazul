@@ -317,7 +317,7 @@ var Ativacao = Bookshelf.Model.extend({
             historico: 'ativacao-revenda usuario='
             + usuario.id + '/revenda=' + revendedor.id,
             tipo: 'ativacao',
-            valor: 10.00
+            valor: camposAtivacao.valor
           }, options);
       })
       .then(() => {
