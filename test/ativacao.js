@@ -12,6 +12,7 @@ const Bookshelf = require('../database');
 const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
 const AtivacaoModel = Bookshelf.model('Ativacao');
 const AtivacaoUsuarioModel = Bookshelf.model('AtivacaoUsuario');
+const AtivacaoUsuarioRevendedorModel = Bookshelf.model('AtivacaoUsuarioRevendedor');
 const ContaModel = Bookshelf.model('Conta');
 const ConfiguracaoModel = Bookshelf.model('Configuracao');
 
@@ -84,8 +85,22 @@ describe('fachada Ativacao', function() {
             qb
               .whereExists(function() {
                 this.select('*').from('ativacao')
-                  .whereRaw('ativacao.id=ativacao_usuario.ativacao_id'
-                    + ' and ativacao.data_desativacao is null');
+                  .whereRaw('ativacao.id = ativacao_usuario.ativacao_id')
+                  .whereRaw('ativacao.data_desativacao is null');
+              });
+          })
+          .destroy())
+      .then(() =>
+        // Apagar ativações pendentes, para não afetar testes com novas
+        // ativações.
+        AtivacaoUsuarioRevendedorModel
+          .query(function(qb) {
+            qb
+              .whereExists(function() {
+                this.select('*').from('ativacao')
+                  .whereRaw(
+                    'ativacao.id = ativacao_usuario_revendedor.ativacao_id')
+                  .whereRaw('ativacao.data_desativacao is null');
               });
           })
           .destroy())
