@@ -4,15 +4,19 @@ exports.up = function(knex) {
   return knex.schema
     .createTable('ativacao', table => {
       table.increments('id').primary();
+      table.integer('veiculo_id').notNullable()
+        .references('id').inTable('veiculo');
       table.timestamp('data_ativacao').notNullable();
       table.timestamp('data_expiracao').notNullable();
       table.timestamp('data_desativacao');
       table.decimal('latitude', 14, 10);
       table.decimal('longitude', 14, 10);
       table.decimal('altitude', 18, 10);
-      table.enu('tipo', [ 'usuario', 'fiscal', 'revenda' ]).notNullable();
-      table.integer('veiculo_id').notNullable()
-        .references('id').inTable('veiculo');
+      // Identifica quem fez a ativacao
+      table.enu('ativador', [ 'usuario', 'fiscal', 'revenda' ]).notNullable();
+      // Para permitir buscas mais rápidas, usar SEMPRE com ativador:
+      table.integer('id_ativador').notNullable();
+      table.unique(['ativador', 'id_ativador']);
     })
     .createTable('ativacao_usuario', table => {
       table.integer('ativacao_id').notNullable()
