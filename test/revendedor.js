@@ -35,6 +35,8 @@ describe('facade Revendedor', function() {
     conf_senha: 'senha-teste',
     termo_servico: 'Sim'
   };
+  var idRevendedorPessoaFisica;
+  var idRevendedorPessoaJuridica;
 
   function apagarRevendedoresDeTeste() {
     const Bookshelf = require('../database');
@@ -51,13 +53,12 @@ describe('facade Revendedor', function() {
   }
 
   before(function() {
-    debug('before');
     return apagarRevendedoresDeTeste();
   });
 
   describe('validarRevenda()', function() {
     it('Validar revendedor pessoa fisica funciona', function(done) {
-      Revendedor.validarRevenda(revendedorPF)
+      Revendedor.camposValidos(revendedorPF)
         .then(function() {
           done();
         })
@@ -68,7 +69,7 @@ describe('facade Revendedor', function() {
     });
 
     it('Validar revendedor pessoa juridica funciona', function(done) {
-      Revendedor.validarRevenda(revendedorPJ)
+      Revendedor.camposValidos(revendedorPJ)
         .then(function(mensagensRevendedorPJ) {
           should.exist(mensagensRevendedorPJ);
           mensagensRevendedorPJ.should.be.instanceOf(Array);
@@ -82,12 +83,13 @@ describe('facade Revendedor', function() {
     });
   });
 
-
   describe('cadastrar()', function() {
     it('cadastrar pessoa fisica funciona', function(done) {
       Revendedor.cadastrar(revendedorPF)
         .then(function(revenda) {
           should.exist(revenda);
+          revenda.should.have.property('id');
+          idRevendedorPessoaFisica = revenda.id;
           return UsuarioRevendedor
             .procurarLogin(revendedorPF.login);
         })
@@ -105,6 +107,8 @@ describe('facade Revendedor', function() {
       Revendedor.cadastrar(revendedorPJ)
         .then(function(revenda) {
           should.exist(revenda);
+          revenda.should.have.property('id');
+          idRevendedorPessoaJuridica = revenda.id;
           done();
         })
         .catch(function(e) {
@@ -114,7 +118,36 @@ describe('facade Revendedor', function() {
     });
   });
 
-  describe('buscarRevendedor()', function() {
+  describe('buscarPorId()', function() {
+    it('Encontra Revenda Pessoa Física pelo ID', function(done) {
+      Revendedor
+        .buscarPorId(idRevendedorPessoaFisica)
+        .then(function(revenda) {
+          should.exist(revenda);
+          revenda.should.have.property('conta');
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('Encontra Revenda Pessoa Jurídica pelo ID', function(done) {
+      Revendedor
+        .buscarPorId(idRevendedorPessoaJuridica)
+        .then(function(revenda) {
+          should.exist(revenda);
+          revenda.should.have.property('conta');
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+  });
+
+  describe('buscarPorIdUsuarioRevendedor()', function() {
     var idUsuarioRevenda = null;
 
     before(function() {
@@ -128,9 +161,10 @@ describe('facade Revendedor', function() {
 
     it('retorna um revendedor', function(done) {
       Revendedor
-        .buscarRevendedor({ pessoa_fisica_id: idUsuarioRevenda })
+        .buscarPorIdUsuarioRevendedor(idUsuarioRevenda)
         .then(function(revenda) {
           should.exist(revenda);
+          revenda.should.have.property('conta');
           done();
         })
         .catch(function(e) {
@@ -139,10 +173,4 @@ describe('facade Revendedor', function() {
         });
     });
   });
-
-  after(function() {
-    debug('after');
-    return apagarRevendedoresDeTeste();
-  });
-
 });

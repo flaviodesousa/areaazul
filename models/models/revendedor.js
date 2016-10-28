@@ -12,13 +12,16 @@ var Revendedor = Bookshelf.Model.extend({
   tableName: 'revendedor',
   conta: function() {
     return this.belongsTo('Conta', 'conta_id');
+  },
+  usuarios: function() {
+    return this.hasMany('UsuarioRevendedor');
   }
 }, {
   _cadastrar: function(revendedorFields, options) {
     var idPessoa = null;
 
     return Revendedor
-      ._validarRevenda(revendedorFields, options)
+      ._camposValidos(revendedorFields, options)
       .then(function(messages) {
         if (messages.length) {
           throw new AreaAzul
@@ -92,7 +95,7 @@ var Revendedor = Bookshelf.Model.extend({
       });
   },
 
-  _validarRevenda: function(revenda, options) {
+  _camposValidos: function(revenda, options) {
     var messages = [];
 
     if (!revenda.login) {
@@ -148,7 +151,20 @@ var Revendedor = Bookshelf.Model.extend({
           });
       })
       .then(() => messages);
-  }
+  },
+  _buscarPorIdUsuarioRevendedor: id => {
+    return new Revendedor()
+      .query(function(qb) {
+        qb.whereExists(function() {
+          this
+            .select('*').from('usuario_revendedor')
+            .where({ pessoa_fisica_id: id });
+        });
+      })
+      .fetch({ withRelated: [ 'conta' ] });
+  },
+  _buscarPorId: id => new Revendedor({ id: id })
+    .fetch({ withRelated: [ 'conta' ] })
 });
 Bookshelf.model('Revendedor', Revendedor);
 

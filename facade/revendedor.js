@@ -1,36 +1,29 @@
 const log = require('../logging');
 const Bookshelf = require('../database');
 const Revendedor = Bookshelf.model('Revendedor');
+const AreaazulUtils = require('areaazul-utils');
 
 module.exports.cadastrar = function(camposRevendedor) {
-  log.info('revendedor::cadastrar()', camposRevendedor);
-  return Bookshelf.transaction(function(t) {
-    return Revendedor
+  log.info('revendedor::cadastrar()',
+    AreaazulUtils.semSenhas(camposRevendedor));
+  return Bookshelf.transaction(t =>
+    Revendedor
       ._cadastrar(camposRevendedor, { transacting: t })
       .then(revendedor => {
         return revendedor.toJSON();
-      });
-  });
+      })
+  );
 };
-module.exports.buscarRevendedor = function(user) {
-  return Revendedor
-    .forge()
-    .query(function(qb) {
-      qb.join('pessoa', 'pessoa.id', 'revendedor.id')
-        .join('usuario_revendedor', 'usuario_revendedor.revendedor_id',
-          'revendedor.id')
-        .join('conta', 'conta.id', 'revendedor.conta_id')
-        .where('usuario_revendedor.pessoa_fisica_id', user.pessoa_fisica_id)
-        .select('revendedor.*', 'usuario_revendedor.*', 'pessoa.*',
-          'conta.*');
-    })
-    .fetch()
-    .then(revendedor => {
-      return revendedor.toJSON();
-    });
-};
-module.exports.validarRevenda = revenda => {
-  return Bookshelf.transaction(t => {
-    return Revendedor._validarRevenda(revenda, { transacting: t });
-  });
-};
+
+module.exports.buscarPorId = id =>
+  Revendedor._buscarPorId(id)
+    .then(revenda => revenda.toJSON());
+
+module.exports.buscarPorIdUsuarioRevendedor = id =>
+  Revendedor._buscarPorIdUsuarioRevendedor(id)
+    .then(revenda => revenda.toJSON());
+
+module.exports.camposValidos = revenda =>
+  Bookshelf.transaction(t =>
+    Revendedor._camposValidos(revenda, { transacting: t })
+  );
