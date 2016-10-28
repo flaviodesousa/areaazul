@@ -14,7 +14,8 @@ exports.up = function(knex) {
       table.decimal('altitude', 18, 10);
       // Identifica quem fez a ativacao
       table.enu('ativador', [ 'usuario', 'fiscal', 'revenda' ]).notNullable();
-      // Para permitir buscas mais rápidas, usar SEMPRE com ativador:
+      // Para permitir buscas mais rápidas, usar SEMPRE com ativador
+      // Nota: o nome 'id_ativador' tem id no início para não parecer uma FK
       table.integer('id_ativador').notNullable();
       table.unique(['ativador', 'id_ativador']);
     })
