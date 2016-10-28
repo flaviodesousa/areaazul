@@ -21,6 +21,7 @@ module.exports = function(AreaAzul, Bookshelf) {
   const Revendedor = Bookshelf.model('Revendedor');
   const Ativacao = Bookshelf.model('Ativacao');
   const AtivacaoUsuario = Bookshelf.model('AtivacaoUsuario');
+  const AtivacaoUsuarioRevendedor = Bookshelf.model('AtivacaoUsuarioRevendedor');
   const Ativacoes = Bookshelf.collection('Ativacoes');
   const Veiculo = Bookshelf.model('Veiculo');
   const UsuariosHaveVeiculos = Bookshelf.collection('UsuariosHaveVeiculos');
@@ -63,6 +64,28 @@ module.exports = function(AreaAzul, Bookshelf) {
       .query()
       .where({ veiculo_id: idVeiculo })
       .delete()
+      .then(function() {
+        return AtivacaoUsuario
+          .collection()
+          .query()
+          .whereExists(function() {
+            this.select('*').from('ativacao')
+              .where({ veiculo_id: idVeiculo })
+              .whereRaw('ativacao_id = ativacao.id');
+          })
+          .delete();
+      })
+      .then(function() {
+        return AtivacaoUsuarioRevendedor
+          .collection()
+          .query()
+          .whereExists(function() {
+            this.select('*').from('ativacao')
+              .where({ veiculo_id: idVeiculo })
+              .whereRaw('ativacao_id = ativacao.id');
+          })
+          .delete();
+      })
       .then(function() {
         return new Ativacoes()
           .query()
