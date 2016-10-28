@@ -8,6 +8,11 @@ var app = express();
 var passport = require('passport');
 var basicAuthentication = require('./basic-authentication');
 
+app.get('/robots.txt', function(req, res) {
+  res.type('text/plain');
+  res.send('User-agent: *\nDisallow: /');
+});
+
 passport.use(new basicAuthentication.FiscalBasicStrategy({}));
 passport.use(new basicAuthentication.UsuarioBasicStrategy({}));
 
@@ -33,7 +38,7 @@ app.use(function(req, res, next) {
   return next();
 });
 
-// Controler - Rotas
+// Controller - Rotas
 load('controllers').then('routes').into(app, passport);
 
 module.exports = app;
