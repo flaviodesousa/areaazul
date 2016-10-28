@@ -22,6 +22,7 @@ module.exports = function(AreaAzul, Bookshelf) {
   const Ativacao = Bookshelf.model('Ativacao');
   const AtivacaoUsuario = Bookshelf.model('AtivacaoUsuario');
   const AtivacaoUsuarioRevendedor = Bookshelf.model('AtivacaoUsuarioRevendedor');
+  const AtivacaoUsuarioFiscal = Bookshelf.model('AtivacaoUsuarioFiscal');
   const Ativacoes = Bookshelf.collection('Ativacoes');
   const Veiculo = Bookshelf.model('Veiculo');
   const UsuariosHaveVeiculos = Bookshelf.collection('UsuariosHaveVeiculos');
@@ -186,6 +187,12 @@ module.exports = function(AreaAzul, Bookshelf) {
           .where({ usuario_id: usuario.id })
           .delete();
       })
+      .then(() => {
+        return Ativacao
+          .query()
+          .where({ ativador: 'usuario', id_ativador: usuario.id })
+          .delete();
+      })
       .then(function() {
         return new Usuario({ id: usuario.id })
           .destroy();
@@ -253,10 +260,32 @@ module.exports = function(AreaAzul, Bookshelf) {
       });
   };
 
-  exports.apagarAtivacaoId = function(id) {
+  exports.apagarAtivacaoId = _apagarAtivacaoId;
+  function _apagarAtivacaoId(id) {
+    var ativacao;
     return new Ativacao({ id: id })
+      .fetch({ require: true })
+      .then(at => {
+        ativacao = at;
+        switch (ativacao.get('ativador')) {
+          case 'usuario': {
+            return AtivacaoUsuario
+              .query({ ativacao_id: id });
+          }
+          case 'revenda': {
+            return AtivacaoUsuarioRevendedor
+              .query({ ativacao_id: id });
+          }
+          case 'fiscal': {
+            return AtivacaoUsuarioFiscal
+              .query({ ativacao_id: id });
+          }
+        }
+      })
+      .delete()
+      .then(() => ativacao)
       .destroy();
-  };
+  }
 
   exports.apagarVeiculoPorPlaca = function(placa) {
     placa = aazUtils.placaSemMascara(placa);
@@ -276,8 +305,7 @@ module.exports = function(AreaAzul, Bookshelf) {
   };
 
   exports.apagarAtivacao = function(id) {
-    return new Ativacao({ id: id })
-      .destroy();
+    return _apagarAtivacaoId(id);
   };
 
   exports.apagarUsuarioRevendaPorLogin = function(login) {
