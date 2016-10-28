@@ -8,35 +8,24 @@ const Ativacao = Bookshelf.model('Ativacao');
 
 module.exports.ativar = function(camposAtivacao) {
   log.info('ativar', { ativacao: camposAtivacao });
-
-  return Bookshelf.transaction(function(t) {
-    return Ativacao
+  return Bookshelf.transaction(t =>
+    Ativacao
       ._ativar(camposAtivacao, { transacting: t })
-      .then(ativacao => {
-        return ativacao.toJSON();
-      });
-  });
+      .then(ativacao => ativacao.toJSON()));
 };
 
 module.exports.desativar = function(desativacao) {
   log.info('desativar', desativacao);
-  return Bookshelf.transaction(function(t) {
-    var options = { transacting: t };
-    return Ativacao
-      ._desativar(desativacao, options)
-      .then(desativacao => {
-        return desativacao.toJSON();
-      });
-  });
+  return Bookshelf.transaction(t =>
+    Ativacao
+      ._desativar(desativacao, { transacting: t })
+      .then(desativacao => desativacao.toJSON()));
 };
 
 module.exports.ativarPorRevenda = function(ativacao) {
   log.info('ativarPorRevenda()', ativacao);
-  return Bookshelf.transaction(function(t) {
-    return Ativacao
+  return Bookshelf.transaction(t =>
+    Ativacao
       ._ativarPorRevenda(ativacao, { transacting: t })
-      .then(ativacao => {
-        return ativacao.toJSON();
-      });
-  });
+      .then(ativacao => ativacao.toJSON()));
 };
