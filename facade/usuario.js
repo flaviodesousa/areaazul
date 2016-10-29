@@ -32,9 +32,8 @@ module.exports.autentico = function(login, senha) {
     .then(function(u) {
       usuario = u;
       if (!usuario) {
-        var err = new AreaAzul.BusinessException(
+        var err = new AreaAzul.AuthenticationError(
           'Usuário: login inválido', { login: login });
-        err.authentication_event = true;
         log.warn(err.message, err.details);
         throw err;
       }
@@ -42,11 +41,13 @@ module.exports.autentico = function(login, senha) {
     })
     .then(function(valid) {
       if (!valid) {
-        throw new AreaAzul.AuthenticationError(
+        const authenticationError = new AreaAzul.AuthenticationError(
           'Usuário: senha incorreta', {
             login: login,
             usuario: usuario
           });
+        log.warn(authenticationError.message, authenticationError.details);
+        throw authenticationError;
       }
       return usuario;
     });
@@ -86,7 +87,13 @@ module.exports.alterarSenha = function(camposAlterarSenha) {
   });
 };
 
-module.exports.getAtivacoes = () => {};
+module.exports.listaAtivacoes = (id, antesDe = new Date(), limite = 100) =>
+  Usuario
+    ._listaAtivacoes(id, antesDe, limite)
+    .then(lista => lista.toJSON());
+
 module.exports.getVeiculos = () => {};
+
 module.exports.getSaldo = () => {};
+
 module.exports.getHistorico = () => {};

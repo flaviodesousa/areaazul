@@ -2,9 +2,15 @@
 
 const debug = require('debug')('areaazul:test:usuario');
 const should = require('chai').should();
+const Promise = require('bluebird');
 
 const AreaAzul = require('../areaazul');
 const Usuario = AreaAzul.facade.Usuario;
+const Ativacao = AreaAzul.facade.Ativacao;
+
+const Bookshelf = require('../database');
+
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
 
 describe('facade Usuario', function() {
   const camposUsuarioDeTeste = {
@@ -21,8 +27,6 @@ describe('facade Usuario', function() {
   var usuarioDeTeste = null;
 
   function apagarDadosDeTeste() {
-    const Bookshelf = require('../database');
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
     return TestHelpers.apagarUsuarioPorLogin(camposUsuarioDeTeste.login);
   }
 
@@ -86,10 +90,13 @@ describe('facade Usuario', function() {
         .then(function() {
           done(new Error('Nao deve aceitar senha errada'));
         })
-        .catch(function(err) {
+        .catch(AreaAzul.AuthenticationError, function(err) {
           should.exist(err);
-          err.should.be.an.instanceOf(AreaAzul.AuthenticationError);
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
@@ -100,10 +107,13 @@ describe('facade Usuario', function() {
         .then(function() {
           done(new Error('Nao deve aceitar login errado'));
         })
-        .catch(function(err) {
+        .catch(AreaAzul.AuthenticationError, function(err) {
           should.exist(err);
-          err.should.be.an.instanceOf(AreaAzul.BusinessException);
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
   });
@@ -125,6 +135,94 @@ describe('facade Usuario', function() {
           done();
         })
         .catch(function(e) {
+          done(e);
+        });
+    });
+  });
+
+  describe('listaAtivacoes()', function() {
+    var veiculo;
+    var usuario;
+    var ativacoes = [];
+    before(function(done) {
+      this.timeout(5000);
+      TestHelpers.pegarVeiculo()
+        .then(v => {
+          veiculo = v;
+        })
+        .then(() => TestHelpers.pegarUsuario())
+        .then(u => {
+          usuario = u;
+        })
+        .then(() =>
+          TestHelpers.setSaldo(usuario.related('conta'), '88.88'))
+        .then(() => {
+          let variasAtivacoes = [];
+          for (let i = 0; i < 10; ++i) {
+            variasAtivacoes.push(new Promise((resolve, reject) =>
+              setTimeout(
+                () => Ativacao
+                  .ativar({
+                    usuario_id: usuario.id,
+                    veiculo_id: veiculo.id,
+                    tempo: 60
+                  })
+                  .then(a => ativacoes[ i ] = a)
+                  .then(() => Ativacao.desativar({
+                    ativacao_id: ativacoes[ i ].id,
+                    usuario_id: usuario.id
+                  }))
+                  .then(() => resolve(ativacoes[ i ]))
+                  .catch((e) => reject(e)),
+                50 * i)));
+          }
+          return Promise.all(variasAtivacoes);
+        })
+        .then(() => done())
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+
+    it('obtém lista das últimas ativações', function(done) {
+      Usuario
+        .listaAtivacoes(usuario.id)
+        .then(lista => {
+          should.exist(lista);
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('obtém lista com apenas as 5 últimas ativações', function(done) {
+      Usuario
+        .listaAtivacoes(usuario.id, new Date(), 5)
+        .then(lista => {
+          should.exist(lista);
+          lista.length.should.equal(5);
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('obtém lista com apenas as 2 ativações anteriores à 5a', function(done) {
+      Usuario
+        .listaAtivacoes(usuario.id, ativacoes[4].data_ativacao, 2)
+        .then(lista => {
+          should.exist(lista);
+          lista.length.should.equal(2);
+          lista[0].data_ativacao.should.be.below(ativacoes[4].data_ativacao);
+          lista[1].data_ativacao.should.be.below(ativacoes[4].data_ativacao);
+          lista[1].data_ativacao.should.be.below(lista[0].data_ativacao);
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
           done(e);
         });
     });

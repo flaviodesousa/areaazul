@@ -23,6 +23,9 @@ const Usuario = Bookshelf.Model.extend({
   },
   conta: function() {
     return this.belongsTo('Conta', 'conta_id');
+  },
+  ativacoes: function() {
+    return this.hasMany('Ativacao').through('AtivacaoUsuario');
   }
 }, {
   _salvar: function(camposUsuario, usuario, options) {
@@ -108,7 +111,8 @@ const Usuario = Bookshelf.Model.extend({
         };
         AreaAzulMailer.enviar.emailer(message);
         return u;
-      });
+      })
+      .then(usuario => Usuario._buscarPorId(usuario.id, options));
   },
 
   _alterarSenha: function(camposAlterarSenha, options) {
@@ -239,7 +243,14 @@ const Usuario = Bookshelf.Model.extend({
         log.warn(err.message, err.details);
         throw err;
       });
-  }
+  },
+  _listaAtivacoes: (id, antesDe = new Date(), limite = 100, options = null) =>
+    Bookshelf.model('Ativacao')
+      ._lista(id, antesDe, limite, 'usuario', options)
+  ,
+  _getVeiculos: () => {},
+  _getSaldo: () => {},
+  _getHistorico: () => {}
 });
 Bookshelf.model('Usuario', Usuario);
 

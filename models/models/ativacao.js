@@ -417,14 +417,22 @@ var Ativacao = Bookshelf.Model.extend({
         qb
           .innerJoin('veiculo', 'veiculo.id', 'ativacao.veiculo_id')
           .whereNull('ativacao.data_desativacao')
-          .andWhere('ativacao.data_ativacao', '>=',
-            moment().subtract(60, 'minutes').calendar())
+          .andWhere('ativacao.data_expiracao', '>=', moment())
           .andWhere('veiculo.placa', '=', placa)
           .select('ativacao.*')
           .select('veiculo.*');
       })
       .fetch(options);
-  }
+  },
+  _lista: (idAtivador, antesDe, limite, ativador, options) =>
+    Ativacao
+      .query(qb => {
+        qb.where({ ativador: ativador, id_ativador: idAtivador })
+          .where('data_ativacao', '<', antesDe)
+          .orderBy('data_ativacao', 'desc')
+          .limit(limite);
+      })
+      .fetchAll(options)
 });
 Bookshelf.model('Ativacao', Ativacao);
 
