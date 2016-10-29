@@ -366,13 +366,13 @@ module.exports = function(AreaAzul, Bookshelf) {
     sexo: 'feminino'
   };
 
-  exports.pegarUsuario = function pegarUsuario() {
+  function pegarUsuario() {
     return new Usuario({ login: usuarioTeste.login })
-      .fetch({ withRelated: [ 'pessoaFisica', 'pessoaFisica.pessoa' ] })
-      .then(function(usuario) {
-        if (usuario) {
-          return usuario;
-        }
+      .fetch({
+        withRelated: [ 'pessoaFisica', 'pessoaFisica.pessoa', 'conta' ],
+        require: true
+      })
+      .catch(Bookshelf.NotFoundError, () => {
         debug('cadastrando usuario de teste', usuarioTeste);
         return Usuario
           ._salvar(usuarioTeste, null, {});
@@ -381,7 +381,9 @@ module.exports = function(AreaAzul, Bookshelf) {
         usuario.senha = usuarioTeste.nova_senha;
         return usuario;
       });
-  };
+  }
+
+  exports.pegarUsuario = pegarUsuario;
 
   var revendedorPessoaFisicaTeste = {
     nome: 'Nome Revendedor Pessoa Fisica',
