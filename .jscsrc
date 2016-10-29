@@ -1,6 +1,7 @@
 {
   "preset": "node-style-guide",
   "disallowTrailingComma": true,
+  "maximumLineLength": { "value": 120, "allExcept": [ "regex", "comments" ] },
   "requireCamelCaseOrUpperCaseIdentifiers": "ignoreProperties",
   "requireSpacesInsideObjectBrackets": "all",
   "requireTrailingComma": null
