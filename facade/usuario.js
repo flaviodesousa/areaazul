@@ -92,7 +92,10 @@ module.exports.listaAtivacoes = (id, antesDe = new Date(), limite = 100) =>
     ._listaAtivacoes(id, antesDe, limite)
     .then(lista => lista.toJSON());
 
-module.exports.getVeiculos = () => {};
+module.exports.listaVeiculos = (id, antesDe = new Date(), limite = 10) =>
+  Usuario
+    ._listaVeiculos(id, antesDe, limite)
+    .then(lista => lista.toJSON());
 
 module.exports.getSaldo = () => {};
 

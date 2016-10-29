@@ -248,9 +248,20 @@ const Usuario = Bookshelf.Model.extend({
     Bookshelf.model('Ativacao')
       ._lista(id, antesDe, limite, 'usuario', options)
   ,
-  _getVeiculos: () => {},
-  _getSaldo: () => {},
-  _getHistorico: () => {}
+  _listaVeiculos: (id, antesDe = new Date(), limite = 10, options) =>
+    Usuario
+      .query(qb => {
+        qb
+          .innerJoin('usuario_has_veiculo', 'usuario_id', 'usuario.id')
+          .innerJoin('veiculo', 'veiculo_id', 'veiculo.id')
+          .where('ultima_ativacao', '<', antesDe)
+          .orderBy('ultima_ativacao', 'desc')
+          .limit(limite)
+          .select('veiculo.*')
+          .select('ultima_ativacao');
+      })
+      .fetchAll(options),
+  _historicoFinanceiro: () => {}
 });
 Bookshelf.model('Usuario', Usuario);
 

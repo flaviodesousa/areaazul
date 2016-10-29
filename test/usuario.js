@@ -228,4 +228,61 @@ describe('facade Usuario', function() {
     });
   });
 
+  describe('listaVeiculos()', function() {
+    var usuario;
+    var dataAtivacaoMaisRecente;
+    before(function(done) {
+      TestHelpers.pegarUsuario()
+        .then(usu => {
+          usuario = usu;
+        })
+        .then(() => done())
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+
+    it('obtém lista dos últimos veículos ativados', function(done) {
+      Usuario
+        .listaVeiculos(usuario.id)
+        .then(lista => {
+          should.exist(lista);
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('obtém lista com apenas o último veículo ativado', function(done) {
+      Usuario
+        .listaVeiculos(usuario.id, new Date(), 1)
+        .then(lista => {
+          should.exist(lista);
+          lista.length.should.equal(1);
+          dataAtivacaoMaisRecente = lista[0].ultima_ativacao;
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('obtém lista com apenas as 2 ativações anteriores à 1a', function(done) {
+      Usuario
+        .listaVeiculos(usuario.id, dataAtivacaoMaisRecente, 1)
+        .then(lista => {
+          should.exist(lista);
+          lista.length.should.equal(1);
+          lista[0].ultima_ativacao.should.be.below(dataAtivacaoMaisRecente);
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+  });
+
 });
