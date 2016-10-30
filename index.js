@@ -330,29 +330,54 @@ module.exports = function(AreaAzul, Bookshelf) {
       .fetch({ withRelated: 'estado' });
   };
 
-  var veiculoTeste = {
-    cidade_id: 1,
-    placa: 'ARE4701',
-    marca: 'Bentley',
-    modelo: 'Racing',
-    cor: 'Azul',
-    ano_fabricado: 2013,
-    ano_modelo: 2015
-  };
+  var veiculoParaTeste = [
+    {
+      cidade_id: 1,
+      placa: 'ARE4701',
+      marca: 'Bentley',
+      modelo: 'Racing',
+      cor: 'Azul',
+      ano_fabricado: 2013,
+      ano_modelo: 2015
+    },
+    {
+      cidade_id: 1775,
+      placa: 'GTA6266',
+      marca: 'Fiat',
+      modelo: 'Uno',
+      cor: 'Branca',
+      ano_fabricado: 1984,
+      ano_modelo: 1984
+    },
+    {
+      cidade_id: 1775,
+      placa: 'AON6188',
+      marca: 'Fiat',
+      modelo: 'Palio',
+      cor: 'Preta',
+      ano_fabricado: 2007,
+      ano_modelo: 2007
+    }
+  ];
 
-  exports.pegarVeiculo = function() {
-    return Veiculo
-      .forge({ placa: veiculoTeste.placa })
-      .fetch({ withRelated: [ 'cidade', 'cidade.estado' ] })
+  function pegarVeiculo(numero) {
+    if (isNaN(numero)) { numero = 0; }
+    return new Veiculo({ placa: veiculoParaTeste[numero].placa })
+      .fetch({
+        withRelated: [ 'cidade', 'cidade.estado' ],
+        require: true
+      })
       .then(function(veiculo) {
-        if (veiculo) {
-          return veiculo;
-        }
-        debug('cadastrando veiculo de teste', veiculoTeste);
+        return veiculo;
+      })
+      .catch(Bookshelf.NotFoundError, () => {
+        debug('cadastrando veículo de teste', veiculoParaTeste[numero]);
         return Veiculo
-          ._cadastrar(veiculoTeste, {});
+          ._cadastrar(veiculoParaTeste[numero], {});
       });
-  };
+  }
+
+  exports.pegarVeiculo = pegarVeiculo;
 
   var usuarioTeste = {
     login: 'usuarioTeste',
@@ -407,7 +432,7 @@ module.exports = function(AreaAzul, Bookshelf) {
           .fetch();
       })
       .catch(Bookshelf.NotFoundError, () => {
-        // Caso 2: não existe pessoa ainda, cadastra tudo
+        // Caso 2: não existe pessoa ainda, cadastra tudo PF e Revendedor
         debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
         return Revendedor
           ._cadastrar(revendedorPessoaFisicaTeste, {});
@@ -416,7 +441,7 @@ module.exports = function(AreaAzul, Bookshelf) {
         if (revendedor) {
           return revendedor;
         }
-        // Caso 3: existe pessoa, mas não é revendedor, cadastrar
+        // Caso 3: existe pessoa, mas não é revendedor, cadastrar Revendedor
         debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
         return Revendedor
           ._cadastrar(revendedorPessoaFisicaTeste, {});
@@ -467,7 +492,7 @@ module.exports = function(AreaAzul, Bookshelf) {
       return MovimentacaoContaFacade
         .inserirCredito({
           conta_id: conta.id,
-          historico: `credito teste de ${conta.get('saldo')} para ${novoSaldo}`,
+          historico: `Crédito teste de ${conta.get('saldo')} para ${novoSaldo}`,
           tipo: 'teste',
           valor: money.subtract(novoSaldo, conta.get('saldo'))
         })
@@ -476,11 +501,11 @@ module.exports = function(AreaAzul, Bookshelf) {
             .fetch({ require: true });
         });
     }
-    // Diferenca > 0
+    // Diferença > 0
     return MovimentacaoContaFacade
       .inserirDebito({
         conta_id: conta.id,
-        historico: `debito teste de ${conta.get('saldo')} para ${novoSaldo}`,
+        historico: `Débito teste de ${conta.get('saldo')} para ${novoSaldo}`,
         tipo: 'teste',
         valor: money.subtract(conta.get('saldo'), novoSaldo)
       })
