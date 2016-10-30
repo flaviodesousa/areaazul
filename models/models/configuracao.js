@@ -2,7 +2,6 @@
 
 const _ = require('lodash');
 const debug = require('debug')('areaazul:model:configuracao');
-const money = require('money-math');
 const validator = require('validator');
 const Promise = require('bluebird');
 
@@ -59,24 +58,13 @@ var Configuracao = Bookshelf.Model.extend(
   _buscar: () =>
     new Configuracao()
       .fetch({ require: true })
-      .catch(Bookshelf.NotFoundError, () =>
+      .catch(Bookshelf.NotFoundError, () => {
         // TODO: Falhar neste caso, configuração via sysadmin tools
-        new Configuracao({
-          // Minutos sem necessidade de ativação
-          franquia_minutos: 15,
-          // Minutos após a primeira notificação sem autuação
-          tempo_tolerancia_minutos: 10,
-          // Ciclo ativação (?)
-          ciclo_ativacao_minutos: 0,
-          // Ciclo fiscalização (?)
-          ciclo_fiscalizacao_minutos: 0,
-          // Valor da ativação (1 hora)
-          valor_ativacao_reais: money.floatToAmount(1.20),
-          // Cidade
-          cidade_id: 1
-        })
-          .save()
-          .then(configuracao => configuracao.fetch())),
+        throw new AreaAzul.BusinessException(
+          'Não há configuração disponível',
+          'Inicializar manualmente com seed ou sysadmin tools'
+        );
+      }),
   _alterar: (camposConfig, options) => Configuracao
     ._camposValidos(camposConfig)
     .then(messages => {
