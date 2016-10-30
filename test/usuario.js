@@ -141,18 +141,24 @@ describe('facade Usuario', function() {
   });
 
   describe('listaAtivacoes()', function() {
-    var veiculo;
     var usuario;
     var ativacoes = [];
     before(function(done) {
+      var veiculos = [];
+
       this.timeout(5000);
-      TestHelpers.pegarVeiculo()
-        .then(v => {
-          veiculo = v;
-        })
-        .then(() => TestHelpers.pegarUsuario())
+      TestHelpers.pegarUsuario()
         .then(u => {
           usuario = u;
+        })
+        .then(() => {
+          var p = [];
+          for (let i = 0; i < 3; ++i) {
+            p.push(
+              TestHelpers.pegarVeiculo(i)
+                .then(v => veiculos[i] = v));
+          }
+          return Promise.all(p);
         })
         .then(() =>
           TestHelpers.setSaldo(usuario.related('conta'), '88.88'))
@@ -164,7 +170,7 @@ describe('facade Usuario', function() {
                 () => Ativacao
                   .ativar({
                     usuario_id: usuario.id,
-                    veiculo_id: veiculo.id,
+                    veiculo_id: veiculos[i % 3].id,
                     tempo: 60
                   })
                   .then(a => ativacoes[ i ] = a)
@@ -330,10 +336,10 @@ describe('facade Usuario', function() {
     });
     it('obtém extrato com as 15 transações que precederam a primeira', function(done) {
       Usuario
-        .extratoFinanceiro(usuario.id, transacaoMaisRecente, 15)
+        .extratoFinanceiro(usuario.id, transacaoMaisRecente, 8)
         .then(lista => {
           should.exist(lista);
-          lista.length.should.equal(15);
+          lista.length.should.equal(8);
           lista[0].data.should.be.below(transacaoMaisRecente);
           done();
         })
