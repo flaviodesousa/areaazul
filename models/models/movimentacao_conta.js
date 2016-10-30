@@ -2,6 +2,7 @@
 
 const _ = require('lodash');
 const money = require('money-math');
+const log = require('../../logging');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
 const Conta = Bookshelf.model('Conta');
@@ -13,15 +14,20 @@ const MovimentacaoConta = Bookshelf.Model.extend({
   }
 }, {
   _inserirMovimentacaoConta: function(movimentacaoConta, options) {
-    var optionsInsert = _.merge({ method: 'insert' }, options || {});
+    if (!options || !options.transacting) {
+      log.err('Tentativa de movimentação de conta fora de uma transação',
+        { movimentacaoConta: movimentacaoConta, options: options });
+      throw new Error('Falta transação');
+    }
+    var optionsInsert = _.merge({ method: 'insert' }, options);
     var optionsUpdate = _.merge({ method: 'update', patch: true },
-      options || {});
+      options);
 
     return new Conta({ id: movimentacaoConta.conta_id })
       .fetch(_.merge({ require: true }, options))
       .catch(Bookshelf.NotFoundError, () => {
         throw new AreaAzul.BusinessException(
-          'Conta invalida', {
+          'Conta inválida', {
             movimentacaoConta: movimentacaoConta
           });
       })
@@ -33,13 +39,14 @@ const MovimentacaoConta = Bookshelf.Model.extend({
         return conta.save({ saldo: novoSaldo }, optionsUpdate);
       })
       .then(function(c) {
-        return MovimentacaoConta.forge({
-            data: new Date(),
-            historico: movimentacaoConta.historico,
-            tipo: movimentacaoConta.tipo,
-            valor: movimentacaoConta.valor,
-            conta_id: c.id
-          })
+        return new MovimentacaoConta({
+          data: new Date(),
+          historico: movimentacaoConta.historico,
+          tipo: movimentacaoConta.tipo,
+          valor: movimentacaoConta.valor,
+          saldo_resultante: c.get('saldo'),
+          conta_id: c.id
+        })
           .save(null, optionsInsert);
       });
   },
