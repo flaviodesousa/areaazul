@@ -87,7 +87,7 @@ module.exports.alterarSenha = function(camposAlterarSenha) {
   });
 };
 
-module.exports.listaAtivacoes = (id, antesDe = new Date(), limite = 100) =>
+module.exports.listaAtivacoes = (id, antesDe = new Date(), limite = 10) =>
   Usuario
     ._listaAtivacoes(id, antesDe, limite)
     .then(lista => lista.toJSON());
@@ -97,6 +97,7 @@ module.exports.listaVeiculos = (id, antesDe = new Date(), limite = 10) =>
     ._listaVeiculos(id, antesDe, limite)
     .then(lista => lista.toJSON());
 
-module.exports.getSaldo = () => {};
-
-module.exports.getHistorico = () => {};
+module.exports.extratoFinanceiro = (id, antesDe = new Date(), limite = 10) =>
+  Usuario
+    ._extratoFinanceiro(id, antesDe, limite)
+    .then(lista => lista.toJSON());

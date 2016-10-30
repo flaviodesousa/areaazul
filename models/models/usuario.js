@@ -255,13 +255,25 @@ const Usuario = Bookshelf.Model.extend({
           .innerJoin('usuario_has_veiculo', 'usuario_id', 'usuario.id')
           .innerJoin('veiculo', 'veiculo_id', 'veiculo.id')
           .where('ultima_ativacao', '<', antesDe)
+          .where('usuario.id', id)
           .orderBy('ultima_ativacao', 'desc')
           .limit(limite)
           .select('veiculo.*')
           .select('ultima_ativacao');
       })
       .fetchAll(options),
-  _historicoFinanceiro: () => {}
+  _extratoFinanceiro: (id, antesDe = new Date(), limite = 10, options) =>
+    Usuario
+      .query(qb => {
+        qb
+          .innerJoin('movimentacao_conta', 'usuario.conta_id', 'movimentacao_conta.conta_id')
+          .where('usuario.id', id)
+          .where('data', '<', antesDe)
+          .orderBy('data', 'desc')
+          .limit(limite)
+          .select('movimentacao_conta.*');
+      })
+      .fetchAll(options)
 });
 Bookshelf.model('Usuario', Usuario);
 

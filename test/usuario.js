@@ -231,6 +231,7 @@ describe('facade Usuario', function() {
   describe('listaVeiculos()', function() {
     var usuario;
     var dataAtivacaoMaisRecente;
+
     before(function(done) {
       TestHelpers.pegarUsuario()
         .then(usu => {
@@ -269,13 +270,71 @@ describe('facade Usuario', function() {
           done(e);
         });
     });
-    it('obtém lista com apenas as 2 ativações anteriores à 1a', function(done) {
+    it('obtém lista com apenas os 2 veículos ativados antes do primeiro', function(done) {
       Usuario
         .listaVeiculos(usuario.id, dataAtivacaoMaisRecente, 1)
         .then(lista => {
           should.exist(lista);
           lista.length.should.equal(1);
           lista[0].ultima_ativacao.should.be.below(dataAtivacaoMaisRecente);
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+  });
+
+  describe('extratoFinanceiro()', function() {
+    var usuario;
+    var transacaoMaisRecente;
+
+    before(function(done) {
+      TestHelpers.pegarUsuario()
+        .then(usu => {
+          usuario = usu;
+        })
+        .then(() => done())
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+
+    it('obtém extrato financeiro', function(done) {
+      Usuario
+        .extratoFinanceiro(usuario.id)
+        .then(lista => {
+          should.exist(lista);
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('obtém extrato com apenas a transação mais recente', function(done) {
+      Usuario
+        .extratoFinanceiro(usuario.id, new Date(), 1)
+        .then(lista => {
+          should.exist(lista);
+          lista.length.should.equal(1);
+          transacaoMaisRecente = lista[0].data;
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('obtém extrato com as 15 transações que precederam a primeira', function(done) {
+      Usuario
+        .extratoFinanceiro(usuario.id, transacaoMaisRecente, 15)
+        .then(lista => {
+          should.exist(lista);
+          lista.length.should.equal(15);
+          lista[0].data.should.be.below(transacaoMaisRecente);
           done();
         })
         .catch(e => {

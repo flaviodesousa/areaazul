@@ -34,7 +34,7 @@ const MovimentacaoConta = Bookshelf.Model.extend({
       })
       .then(function(c) {
         return MovimentacaoConta.forge({
-            data_deposito: new Date(),
+            data: new Date(),
             historico: movimentacaoConta.historico,
             tipo: movimentacaoConta.tipo,
             valor: movimentacaoConta.valor,
