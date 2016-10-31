@@ -16,8 +16,8 @@ var AuthenticationError = function(message, details) {
 };
 util.inherits(AuthenticationError, Error);
 
-require('./database');
-
+module.exports._internals = {};
+module.exports._internals.Bookshelf = require('./database');
 module.exports.BusinessException = BusinessException;
 module.exports.AuthenticationError = AuthenticationError;
 module.exports.facade = {

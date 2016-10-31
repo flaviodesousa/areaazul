@@ -39,8 +39,7 @@ describe('facade Revendedor', function() {
   var idRevendedorPessoaJuridica;
 
   function apagarRevendedoresDeTeste() {
-    const Bookshelf = require('../database');
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
     return TestHelpers
       .apagarRevendedorPorCPF(revendedorPF.cpf)
       .then(function() {

@@ -6,8 +6,7 @@ const should = require('chai').should();
 const AreaAzul = require('../areaazul');
 const Veiculo = AreaAzul.facade.Veiculo;
 
-const Bookshelf = require('../database');
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 const AreaAzulUtils = require('areaazul-utils');
 
 describe('facade Veiculo', function() {

@@ -7,8 +7,7 @@ const AreaAzul = require('../areaazul');
 const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
 const PessoaFisica = AreaAzul.facade.PessoaFisica;
 
-const Bookshelf = require('../database');
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 describe('facade UsuarioFiscal', function() {
   const camposUsuarioFiscalPreExistente = {

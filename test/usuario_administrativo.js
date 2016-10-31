@@ -3,13 +3,11 @@
 const should = require('chai').should();
 const debug = require('debug')('areaazul:test:usuario_administrativo');
 
-const Bookshelf = require('../database');
-
 const AreaAzul = require('../areaazul');
 const UsuarioAdministrativo = AreaAzul.facade.UsuarioAdministrativo;
 const PessoaFisica = AreaAzul.facade.PessoaFisica;
 
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 describe('facade UsuarioAdministrativo', function() {
   const camposUsuarioAdministrativoPreExistente = {

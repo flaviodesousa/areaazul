@@ -36,7 +36,7 @@
     "winston-loggly": "^1.3.1"
   },
   "devDependencies": {
-    "areaazul-test-helpers": "^1.2.10",
+    "areaazul-test-helpers": "^1.2.11",
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "gulp-release-tasks": "0.0.3",

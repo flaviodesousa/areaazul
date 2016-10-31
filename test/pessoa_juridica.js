@@ -12,7 +12,7 @@ describe('facade PessoaJuridica', function() {
   function deleteTestData(done) {
     const Bookshelf = require('../database');
     const AreaazulTestHelpers =
-      require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+      require('areaazul-test-helpers')(AreaAzul);
     const PessoaJuridicaModel = Bookshelf.model('PessoaJuridica');
     new PessoaJuridicaModel({ cnpj: cnpjTeste })
       .fetch({ require: true })

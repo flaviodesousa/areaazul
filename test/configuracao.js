@@ -10,8 +10,7 @@ describe('fachada Configuracao', function() {
   var idCidade = null;
 
   before(function() {
-    const Bookshelf = require('../database');
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+    const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
     return TestHelpers
       .pegarCidade()
       .then(function(cidade) {
