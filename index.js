@@ -340,6 +340,7 @@ module.exports = function(AreaAzul, Bookshelf) {
     {
       cidade_id: 1,
       placa: 'ARE4701',
+      tipo: 'moto',
       marca: 'Bentley',
       modelo: 'Racing',
       cor: 'Azul',
@@ -349,6 +350,7 @@ module.exports = function(AreaAzul, Bookshelf) {
     {
       cidade_id: 1775,
       placa: 'GTA6266',
+      tipo: 'camionete',
       marca: 'Fiat',
       modelo: 'Uno',
       cor: 'Branca',
@@ -358,6 +360,7 @@ module.exports = function(AreaAzul, Bookshelf) {
     {
       cidade_id: 1775,
       placa: 'AON6188',
+      tipo: 'carro',
       marca: 'Fiat',
       modelo: 'Palio',
       cor: 'Preta',
