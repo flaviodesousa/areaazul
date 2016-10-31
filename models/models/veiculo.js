@@ -64,15 +64,6 @@ var Veiculo = Bookshelf.Model.extend({
         Veiculo
           ._buscarPorId(veiculo.id, options));
   },
-  _procurarVeiculo: (placa, options) => {
-    var placaSemMascara = '';
-
-    if (placa) {
-      placaSemMascara = util.placaSemMascara(placa);
-    }
-    return new Veiculo({ placa: placaSemMascara })
-      .fetch(_.merge({ withRelated: [ 'cidade', 'cidade.estado' ] }, options));
-  },
   _validarVeiculo: (veiculoFields, options) => {
     var message = [];
     if (!veiculoFields.cidade_id) {
@@ -112,7 +103,7 @@ var Veiculo = Bookshelf.Model.extend({
     }
 
     return Veiculo
-      ._procurarVeiculo(placaSemMascara, options)
+      ._buscarPorPlaca(placaSemMascara, options)
       .then(function(veiculoExistente) {
         if (veiculoExistente && veiculoExistente.id !== veiculoFields.id) {
           message.push({
@@ -124,6 +115,15 @@ var Veiculo = Bookshelf.Model.extend({
         return message;
       });
 
+  },
+  _buscarPorPlaca: (placa, options) => {
+    var placaSemMascara = '';
+
+    if (placa) {
+      placaSemMascara = util.placaSemMascara(placa);
+    }
+    return new Veiculo({ placa: placaSemMascara })
+      .fetch(_.merge({ withRelated: [ 'cidade', 'cidade.estado' ] }, options));
   },
   _buscarPorId: (id, options) => new Veiculo({ id: id })
       .fetch(_.merge({
