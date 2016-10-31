@@ -56,8 +56,12 @@ describe('facade Fiscalizacao', function() {
         .then(function() {
           done(new Error('Nao deveria ter gravado sem placa.'));
         })
-        .catch(function() {
+        .catch(AreaAzul.BusinessException, () => {
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
@@ -71,15 +75,19 @@ describe('facade Fiscalizacao', function() {
         .then(function() {
           done(new Error('Nao deveria ter gravado sem fiscal'));
         })
-        .catch(function() {
+        .catch(AreaAzul.BusinessException, () => {
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
     it('grava com placa e fiscal', function(done) {
       Fiscalizacao
         .cadastrar({
-          placa: 'xyz1234',
+          placa: 'are4701',
           latitude: 33.5,
           longitude: 34.5,
           usuario_fiscal_id: fiscalId
@@ -88,8 +96,27 @@ describe('facade Fiscalizacao', function() {
           should.exist(f);
           done();
         })
-        .catch(function(err) {
-          done(err);
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+
+    it('grava com placa desconhecida e fiscal', function(done) {
+      Fiscalizacao
+        .cadastrar({
+          placa: 'zzz9999',
+          latitude: 33.5,
+          longitude: 34.5,
+          usuario_fiscal_id: fiscalId
+        })
+        .then(function(f) {
+          should.exist(f);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
@@ -104,6 +131,9 @@ describe('facade Fiscalizacao', function() {
         .then(function() {
           done(new Error('Nao deveria ter gravado com virgula decimal.'));
         })
+        .catch(AreaAzul.BusinessException, () => {
+          done(new Error('Nao deveria ter lançado exceção de negócio com virgula decimal.'));
+        })
         .catch(function() {
           done();
         });
@@ -112,13 +142,13 @@ describe('facade Fiscalizacao', function() {
     it('lat/lon devem ter até 10 casas decimais', function(done) {
       Fiscalizacao
         .cadastrar({
-          placa: 'lon9999',
+          placa: 'tat1540',
           latitude: '-89.9999999999',
           longitude: '-179.9999999999',
           usuario_fiscal_id: fiscalId
         })
-        .then(function(novaAtivacao) {
-          return new FiscalizacaoModel({ id: novaAtivacao.id })
+        .then(function(fiscalizacao) {
+          return new FiscalizacaoModel({ id: fiscalizacao.id })
             .fetch();
         })
         .then(function(f) {
@@ -129,6 +159,7 @@ describe('facade Fiscalizacao', function() {
           done();
         })
         .catch(function(e) {
+          debug('erro inesperado', e);
           done(e);
         });
     });
@@ -136,7 +167,7 @@ describe('facade Fiscalizacao', function() {
     it('lat/lon arredonda com mais de 10 casas decimais', function(done) {
       Fiscalizacao
         .cadastrar({
-          placa: 'lon9999',
+          placa: 'are4701',
           latitude: '-89.99999999999',
           longitude: '-179.99999999999',
           usuario_fiscal_id: fiscalId
@@ -153,38 +184,75 @@ describe('facade Fiscalizacao', function() {
           done();
         })
         .catch(function(e) {
+          debug('erro inesperado', e);
           done(e);
         });
     });
   });
 
   describe('listar()', function() {
-    it('retorna uma lista de fiscalizacoes', function() {
-      return Fiscalizacao
-        .listar(undefined)
-        .then(function(fiscalizacoes) {
-          should.exist(fiscalizacoes);
-        });
-    });
-    it('limita por tempo', function() {
-      return Fiscalizacao
-        .listar({ minutos: 10 })
-        .then(function(fiscalizacoes) {
-          should.exist(fiscalizacoes);
-        });
-    });
-    it('limita por respostas', function() {
-      return Fiscalizacao
-        .listar({ limite: 2 })
-        .then(function(fiscalizacoes) {
-          should.exist(fiscalizacoes);
-        });
-    });
-    it('limita por tempo E respostas', function() {
+    it('retorna uma lista de fiscalizacoes', function(done) {
       Fiscalizacao
-        .listar({ limite: 2, minutos: 10 })
+        .listar()
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('limita por tempo', function(done) {
+      Fiscalizacao
+        .listar(new Date())
+        .then(function(fiscalizacoes) {
+          should.exist(fiscalizacoes);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('limita por tempo e respostas', function(done) {
+      Fiscalizacao
+        .listar(new Date(), 2)
+        .then(function(fiscalizacoes) {
+          should.exist(fiscalizacoes);
+          fiscalizacoes.should.have.property('length', 2);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+  });
+
+  describe('listarAtivas()', function() {
+    it('retorna uma lista de fiscalizacoes', function(done) {
+      Fiscalizacao
+        .listarAtivas()
+        .then(function(fiscalizacoes) {
+          should.exist(fiscalizacoes);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('limita por 1 minuto', function(done) {
+      Fiscalizacao
+        .listarAtivas(1)
+        .then(function(fiscalizacoes) {
+          should.exist(fiscalizacoes);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
   });
