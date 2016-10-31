@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function(AreaAzul, Bookshelf) {
+module.exports = function(AreaAzul) {
   var exports = {};
 
   const _ = require('lodash');
@@ -9,6 +9,7 @@ module.exports = function(AreaAzul, Bookshelf) {
 
   const aazUtils = require('areaazul-utils');
 
+  const Bookshelf = AreaAzul._internals.Bookshelf;
   const Fiscalizacoes = Bookshelf.collection('Fiscalizacoes');
   const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
   const Usuario = Bookshelf.model('Usuario');
