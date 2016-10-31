@@ -29,9 +29,7 @@ var Fiscalizacao = Bookshelf.Model.extend({
       })
       .fetchAll({
         withRelated: [
-          // 'veiculo', 'veiculo.cidade',
           'veiculo.cidade.estado',
-          // 'usuarioFiscal', 'usuarioFiscal.pessoaFisica',
           'usuarioFiscal.pessoaFisica.pessoa' ]
       });
   },
@@ -46,9 +44,7 @@ var Fiscalizacao = Bookshelf.Model.extend({
       })
       .fetchAll({
         withRelated: [
-          // 'veiculo', 'veiculo.cidade',
           'veiculo.cidade.estado',
-          // 'usuarioFiscal', 'usuarioFiscal.pessoaFisica',
           'usuarioFiscal.pessoaFisica.pessoa' ]
       });
   },
