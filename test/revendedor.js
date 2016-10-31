@@ -56,33 +56,6 @@ describe('facade Revendedor', function() {
     return apagarRevendedoresDeTeste();
   });
 
-  describe('validarRevenda()', function() {
-    it('Validar revendedor pessoa fisica funciona', function(done) {
-      Revendedor.camposValidos(revendedorPF)
-        .then(function() {
-          done();
-        })
-        .catch(function(e) {
-          debug('erro inesperado', e);
-          done(e);
-        });
-    });
-
-    it('Validar revendedor pessoa juridica funciona', function(done) {
-      Revendedor.camposValidos(revendedorPJ)
-        .then(function(mensagensRevendedorPJ) {
-          should.exist(mensagensRevendedorPJ);
-          mensagensRevendedorPJ.should.be.instanceOf(Array);
-          mensagensRevendedorPJ.length.should.be.equal(0);
-          done();
-        })
-        .catch(function(e) {
-          debug('erro inesperado', e);
-          done(e);
-        });
-    });
-  });
-
   describe('cadastrar()', function() {
     it('cadastrar pessoa fisica funciona', function(done) {
       Revendedor.cadastrar(revendedorPF)

@@ -22,8 +22,3 @@ module.exports.buscarPorId = id =>
 module.exports.buscarPorIdUsuarioRevendedor = id =>
   Revendedor._buscarPorIdUsuarioRevendedor(id)
     .then(revenda => revenda.toJSON());
-
-module.exports.camposValidos = revenda =>
-  Bookshelf.transaction(t =>
-    Revendedor._camposValidos(revenda, { transacting: t })
-  );
