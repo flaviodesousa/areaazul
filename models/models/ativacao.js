@@ -29,7 +29,7 @@ var Ativacao = Bookshelf.Model.extend({
         attribute: 'tempo',
         problem: 'Tempo em minutos não fornecido'
       });
-    } else if (!validator.isNumeric('' + ativacao.tempo)) {
+    } else if (isNaN(ativacao.tempo)) {
       messages.push({
         attribute: 'tempo',
         problem: 'Tempo em minutos deve ser um número'
@@ -290,6 +290,7 @@ var Ativacao = Bookshelf.Model.extend({
         debug('ativarPorRevenda() veiculo nao existe, cadastrando');
         return Veiculo._cadastrar({
           placa: placaSemMascara,
+          tipo: camposAtivacao.tipo,
           marca: camposAtivacao.marca,
           cor: camposAtivacao.cor,
           modelo: camposAtivacao.modelo,
