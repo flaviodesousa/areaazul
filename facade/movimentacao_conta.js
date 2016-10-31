@@ -2,20 +2,6 @@ const log = require('../logging');
 const Bookshelf = require('../database');
 const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 
-module.exports.listarMovimentacaoUsuario = function(id) {
-  return new this()
-    .query(function(qb) {
-      qb
-        .innerJoin('usuario', 'usuario.conta_id', 'movimentacao_conta.id')
-        .where('usuario.id', id)
-        .select('movimentacao_conta.*');
-    })
-    .fetch()
-    .then(movimentacao => {
-      return movimentacao.toJSON();
-    });
-};
-
 module.exports.inserirDebito = function(debito) {
   log.info('ovimentacao_conta::inserirDebito', debito);
   return Bookshelf.transaction(function(t) {
