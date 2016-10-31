@@ -20,7 +20,41 @@ var UsuarioRevendedor = Bookshelf.Model.extend({
     return this.belongsTo('Revendedor');
   }
 }, {
-
+  _autentico: (login, senha) => {
+    var usuarioRevendedor;
+    return new UsuarioRevendedor({ login: login })
+      .fetch({
+        require: true,
+        withRelated: [
+          'revendedor', 'pessoaFisica', 'pessoaFisica.pessoa' ]
+      })
+      .catch(Bookshelf.NotFoundError, () => {
+        const err = new AreaAzul.AuthenticationError(
+          'Usuário revendedor: login inválido', {
+            login: login
+          });
+        log.warn(err.message, err.details);
+        throw err;
+      })
+      .then(function(ur) {
+        usuarioRevendedor = ur;
+        return bcrypt.compare(senha, ur.get('senha'));
+      })
+      .then(function(valid) {
+        if (valid) {
+          return;
+        }
+        const err = new AreaAzul.AuthenticationError(
+          'Usuário revendedor: senha incorreta', {
+            login: login,
+            usuario: usuarioRevendedor
+          });
+        log.warn(err.message, err.details);
+        throw err;
+      })
+      .then(() => UsuarioRevendedor
+        ._buscarPorId(usuarioRevendedor.id, null));
+  },
   _salvarUsuarioRevenda: function(campos, usuarioRevendedor, options) {
     var UsuarioRevendedor = this;
     var senha;

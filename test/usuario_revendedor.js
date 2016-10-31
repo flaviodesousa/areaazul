@@ -90,11 +90,11 @@ describe('models.UsuarioRevendedor', function() {
     });
   });
 
-  describe('listarUsuarioRevenda()', function() {
+  describe('listarPorRevenda()', function() {
 
     it('lista usuários da revenda mantidos no banco de dados', function(done) {
       UsuarioRevendedor
-        .listarUsuarioRevenda(idRevendedor)
+        .listarPorRevenda(idRevendedor)
         .then(function(lista) {
           should.exist(lista);
           lista.should.be.instanceOf(Array);

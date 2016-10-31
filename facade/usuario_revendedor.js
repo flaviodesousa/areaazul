@@ -1,59 +1,29 @@
-var bcrypt = require('bcrypt-then');
-
-const AreaAzul = require('../areaazul');
 const Bookshelf = require('../database');
-const log = require('../logging');
 
 const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 const UsuariosRevendedores = Bookshelf.collection('UsuariosRevendedores');
 
-module.exports.listarUsuarioRevenda = function(idRevendedor) {
+function _listarPorRevenda(idRevendedor) {
   return new UsuariosRevendedores()
     .query({ where: { revendedor_id: idRevendedor } })
-    .fetch({ withRelated: [
-      'revendedor', 'pessoaFisica', 'pessoaFisica.pessoa' ] })
+    .fetch({
+      withRelated: [
+        'revendedor', 'pessoaFisica', 'pessoaFisica.pessoa' ]
+    });
+}
+module.exports.listarPorRevenda = function(idRevendedor) {
+  return _listarPorRevenda(idRevendedor)
     .then(lista => lista.toJSON());
 };
 module.exports.autentico = function(login, senha) {
-  var usuarioRevendedor;
-  return new UsuarioRevendedor({ login: login })
-    .fetch({
-      require: true,
-      withRelated: [
-        'revendedor', 'pessoaFisica', 'pessoaFisica.pessoa' ] })
-    .catch(Bookshelf.NotFoundError, () => {
-      const err = new AreaAzul.AuthenticationError(
-        'Usuário revendedor: login inválido', {
-          login: login
-        });
-      log.warn(err.message, err.details);
-      throw err;
-    })
-    .then(function(ur) {
-      usuarioRevendedor = ur;
-      return bcrypt.compare(senha, ur.get('senha'));
-    })
-    .then(function(valid) {
-      if (valid) {
-        return;
-      }
-      const err = new AreaAzul.AuthenticationError(
-        'Usuário revendedor: senha incorreta', {
-          login: login,
-          usuario: usuarioRevendedor
-        });
-      log.warn(err.message, err.details);
-      throw err;
-    })
-    .then(() => UsuarioRevendedor
-      ._buscarPorId(usuarioRevendedor.id, null))
+  return UsuarioRevendedor
+    ._autentico(login, senha)
     .then(usuRev => usuRev.toJSON());
 };
 module.exports.inserir = function(camposUsuarioRevendedor) {
-  return Bookshelf.transaction(function(t) {
-    return UsuarioRevendedor._salvarUsuarioRevenda(
-      camposUsuarioRevendedor, null, { transacting: t });
-  })
+  return Bookshelf.transaction(t =>
+    UsuarioRevendedor
+      ._salvarUsuarioRevenda(camposUsuarioRevendedor, null, { transacting: t }))
     .then(usuRev => usuRev.toJSON());
 };
 module.exports.alterar = function(camposUsuarioRevendedor) {
@@ -80,7 +50,7 @@ module.exports.buscarPorId = function(id) {
     ._buscarPorId(id, null)
     .then(usuRev => usuRev.toJSON());
 };
-module.exports.procurarLogin = function(login) {
+module.exports.buscarPorLogin = function(login) {
   return UsuarioRevendedor
     ._procurarLogin(login, null)
     .then(usuRev => usuRev.toJSON());

@@ -64,7 +64,7 @@ describe('facade Revendedor', function() {
           revenda.should.have.property('id');
           idRevendedorPessoaFisica = revenda.id;
           return UsuarioRevendedor
-            .procurarLogin(revendedorPF.login);
+            .buscarPorLogin(revendedorPF.login);
         })
         .then(function(urpf) {
           should.exist(urpf);
@@ -125,7 +125,7 @@ describe('facade Revendedor', function() {
 
     before(function() {
       return UsuarioRevendedor
-        .procurarLogin(revendedorPJ.login)
+        .buscarPorLogin(revendedorPJ.login)
         .then(function(usuarioRevenda) {
           should.exist(usuarioRevenda);
           idUsuarioRevenda = usuarioRevenda.pessoa_fisica_id;
