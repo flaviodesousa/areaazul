@@ -94,6 +94,12 @@ module.exports = function(AreaAzul, Bookshelf) {
           .delete();
       })
       .then(function() {
+        return new Fiscalizacoes()
+          .query()
+          .where({ veiculo_id: idVeiculo })
+          .delete();
+      })
+      .then(function() {
         return new Veiculo({ id: idVeiculo })
           .destroy();
       });
