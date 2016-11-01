@@ -15,7 +15,10 @@ results
 
 npm-debug.log
 node_modules
+coverage
+
+.tern-project
 
 *.sublime-workspace
 .idea
-/.project
+.project
