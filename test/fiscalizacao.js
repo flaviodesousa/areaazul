@@ -6,8 +6,7 @@ var app = require('../app');
 var superagent = require('superagent');
 
 var AreaAzul = require('areaazul');
-const Bookshelf = AreaAzul.db;
-const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
+const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
 
 describe('/fiscalizacao', function() {
   var server;

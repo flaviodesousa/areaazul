@@ -1,7 +1,6 @@
 'use strict';
 
 const AreaAzul = require('areaazul');
-const Bookshelf = AreaAzul.db;
 
 module.exports.buscarPorPlaca = function(req, res) {
   var placa;
@@ -10,13 +9,13 @@ module.exports.buscarPorPlaca = function(req, res) {
     return;
   }
   placa = req.query.placa;
-  Bookshelf.model('Veiculo')
-    .procurarVeiculo(placa)
+  AreaAzul.facade.Veiculo
+    .buscarPorPlaca(placa)
     .then(function(veiculo) {
-      if (!veiculo) {
-        return res.status(404).end();
-      }
-      res.send(veiculo.toJSON());
+      res.send(veiculo);
+    })
+    .catch(AreaAzul.BusinessException, () => {
+      res.status(404).end();
     })
     .catch(function(error) {
       res.status(400).send('' + error);
@@ -24,12 +23,12 @@ module.exports.buscarPorPlaca = function(req, res) {
 };
 
 module.exports.buscarPorId = function(req, res) {
-  Bookshelf.model('Veiculo')
+  AreaAzul.facade.Veiculo
     .buscarPorId(req.params.veiculo_id)
-    .catch(Bookshelf.NotFoundError, function() {
+    .catch(AreaAzul.BusinessException, function() {
       res.status(404).end();
     })
     .then(function(veiculo) {
-      res.send(veiculo.toJSON());
+      res.send(veiculo);
     });
 };

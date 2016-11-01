@@ -5,9 +5,9 @@ const should = require('chai').should();
 const app = require('../app');
 const superAgent = require('superagent');
 const AreaAzul = require('areaazul');
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
-const Bookshelf = AreaAzul.db;
-const Veiculo = Bookshelf.model('Veiculo');
+const Bookshelf = require('bookshelf');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+const Veiculo = AreaAzul.facade.Veiculo;
 
 describe('/veiculo', function() {
   var server;
@@ -28,7 +28,7 @@ describe('/veiculo', function() {
       .then(function(v) {
         veiculoExistente = v;
         return Veiculo
-          .procurarVeiculo(placaVeiculoNaoExistente);
+          .buscarPorPlaca(placaVeiculoNaoExistente);
       })
       .then(function(v) {
         if (v) {

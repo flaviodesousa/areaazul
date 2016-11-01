@@ -1,10 +1,9 @@
 'use strict';
 
 const AreaAzul = require('areaazul');
-const Bookshelf = AreaAzul.db;
 
 module.exports.registrar = function(req, res) {
-  Bookshelf.model('Fiscalizacao')
+  AreaAzul.facade.Fiscalizacao
     .cadastrar({
       usuario_fiscal_id: req.user.id,
       placa: req.body.placa,
@@ -20,17 +19,14 @@ module.exports.registrar = function(req, res) {
 };
 
 module.exports.listar = function(req, res) {
-  var params = {};
+  var minutos;
   if (req.query.minutos) {
-    params.minutos = Number(req.query.minutos);
+    minutos = Number(req.query.minutos);
   }
-  if (req.query.limite) {
-    params.limite = Number(req.query.limite);
-  }
-  Bookshelf.collection('Fiscalizacoes')
-    .listar(params)
+  AreaAzul.facade.Fiscalizacao
+    .listar(minutos)
     .then(function(fiscalizacoes) {
-      res.send(fiscalizacoes.toJSON());
+      res.send(fiscalizacoes);
     })
     .catch(function(result) {
       res.status(400).send('' + result);

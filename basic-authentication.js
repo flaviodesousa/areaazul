@@ -5,9 +5,8 @@ var util = require('util');
 var BasicStrategy = require('passport-http').BasicStrategy;
 
 const AreaAzul = require('areaazul');
-const Bookshelf = AreaAzul.db;
-const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
-const Usuario = Bookshelf.model('Usuario');
+const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
+const Usuario = AreaAzul.facade.Usuario;
 
 function fiscalVerify(username, password, done) {
   process.nextTick(function() {
