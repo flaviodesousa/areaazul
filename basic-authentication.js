@@ -10,7 +10,7 @@ const Usuario = AreaAzul.facade.Usuario;
 
 function fiscalVerify(username, password, done) {
   process.nextTick(function() {
-    UsuarioFiscal.autorizado(username, password)
+    UsuarioFiscal.autentico(username, password)
       .then(function(usuarioFiscal) {
         return done(null, {
           username: username,
@@ -43,7 +43,7 @@ util.inherits(FiscalBasicStrategy, BasicStrategy);
 function usuarioVerify(username, password, done) {
   process.nextTick(function() {
     Usuario
-      .autorizado(username, password)
+      .autentico(username, password)
       .then(function(usuario) {
         return done(null, {
           username: username,
