@@ -8,6 +8,9 @@ var superagent = require('superagent');
 var AreaAzul = require('areaazul');
 const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
 
+const Bookshelf = AreaAzul._internals.Bookshelf;
+const UsuarioFiscalModel = Bookshelf.model('UsuarioFiscal');
+
 describe('/fiscalizacao', function() {
   var server;
   var fiscalTesteAPI = {
@@ -20,7 +23,7 @@ describe('/fiscalizacao', function() {
   };
 
   before(function(done) {
-    new UsuarioFiscal({ login: fiscalTesteAPI.login })
+    new UsuarioFiscalModel({ login: fiscalTesteAPI.login })
       .fetch()
       .then(function(fiscal) {
         if (fiscal) {
