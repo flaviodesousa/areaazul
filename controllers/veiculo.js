@@ -12,6 +12,9 @@ module.exports.buscarPorPlaca = function(req, res) {
   AreaAzul.facade.Veiculo
     .buscarPorPlaca(placa)
     .then(function(veiculo) {
+      if (!veiculo) {
+        return res.status(404).end();
+      }
       res.send(veiculo);
     })
     .catch(AreaAzul.BusinessException, () => {
