@@ -1,6 +1,5 @@
 'use strict';
 
-const debug = require('debug')('areaazul-api-web:controller:cidade');
 var should = require('chai').should();
 var app = require('../app');
 var superAgent = require('superagent');

@@ -20,7 +20,7 @@
     "url": "git@bitbucket.org:solutions-inf-br/areaazul-api-web.git"
   },
   "dependencies": {
-    "areaazul": "^0.5.5",
+    "areaazul": "^0.6.2",
     "body-parser": "1.15.2",
     "debug": "2.2.0",
     "express": "4.14.0",
@@ -33,7 +33,7 @@
     "winston": "*"
   },
   "devDependencies": {
-    "areaazul-test-helpers": "^1.0.0",
+    "areaazul-test-helpers": "^1.2.11",
     "chai": "3.5.0",
     "gulp": "^3.9.1",
     "gulp-release-tasks": "0.0.3",

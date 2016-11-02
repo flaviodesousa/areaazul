@@ -1,17 +1,16 @@
 'use strict';
 
 const AreaAzul = require('areaazul');
-const Bookshelf = AreaAzul.db;
 
 module.exports.listar = function(req, res) {
   var estado;
   if (req.query.estado) {
     estado = Number(req.query.estado);
   }
-  Bookshelf.collection('Cidades')
+  AreaAzul.facade.Cidade
     .listar(estado)
-    .then(function(estados) {
-      res.send(estados.toJSON());
+    .then(function(cidades) {
+      res.send(cidades);
     })
     .catch(function(result) {
       res.status(400).send('' + result);

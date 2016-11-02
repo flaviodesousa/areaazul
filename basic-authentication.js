@@ -5,13 +5,12 @@ var util = require('util');
 var BasicStrategy = require('passport-http').BasicStrategy;
 
 const AreaAzul = require('areaazul');
-const Bookshelf = AreaAzul.db;
-const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
-const Usuario = Bookshelf.model('Usuario');
+const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
+const Usuario = AreaAzul.facade.Usuario;
 
 function fiscalVerify(username, password, done) {
   process.nextTick(function() {
-    UsuarioFiscal.autorizado(username, password)
+    UsuarioFiscal.autentico(username, password)
       .then(function(usuarioFiscal) {
         return done(null, {
           username: username,
@@ -19,10 +18,13 @@ function fiscalVerify(username, password, done) {
           usuarioFiscal: usuarioFiscal
         });
       })
+      .catch(AreaAzul.AuthenticationError, function() {
+        return done(null, false);
+      })
+      .catch(AreaAzul.BusinessException, function() {
+        return done(null, false);
+      })
       .catch(function(err) {
-        if (err.authentication_event) {
-          return done(null, false);
-        }
         return done(err);
       });
   });
@@ -41,12 +43,12 @@ util.inherits(FiscalBasicStrategy, BasicStrategy);
 function usuarioVerify(username, password, done) {
   process.nextTick(function() {
     Usuario
-      .autorizado(username, password)
+      .autentico(username, password)
       .then(function(usuario) {
         return done(null, {
           username: username,
           id: usuario.id,
-          usuario: usuario.toJSON(),
+          usuario: usuario.toJSON()
         });
       })
       .catch(function(err) {
