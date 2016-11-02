@@ -20,7 +20,7 @@
     "url": "git@bitbucket.org:solutions-inf-br/areaazul-api-web.git"
   },
   "dependencies": {
-    "areaazul": "^0.6.1",
+    "areaazul": "^0.6.2",
     "body-parser": "1.15.2",
     "debug": "2.2.0",
     "express": "4.14.0",
