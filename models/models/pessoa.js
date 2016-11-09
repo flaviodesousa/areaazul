@@ -9,7 +9,7 @@ const AreaAzulMailer = require('areaazul-mailer');
 
 const util = require('areaazul-utils');
 
-const RecuperacaoSenha = Bookshelf.model('RecuperacaoSenha');
+const Token = Bookshelf.model('Token');
 
 var Pessoa = Bookshelf.Model.extend({
   tableName: 'pessoa'
@@ -79,11 +79,11 @@ var Pessoa = Bookshelf.Model.extend({
       .fetch()
       .then(function(pessoa) {
         if (pessoa !== null) {
-          RecuperacaoSenha.cadastrar({
-              uuid: _uuid,
-              pessoa_id: pessoa.id
-            },
-            function() {
+          Token.cadastrar({
+            uuid: _uuid,
+            pessoa_id: pessoa.id,
+            proposito: 'solicitacao_nova_senha' })
+            .then(token => {
               AreaAzulMailer.enviar.emailer({
                 from: 'AreaAzul <cadastro@areaazul.org>',
                 to: pessoaAVerificar.email,
@@ -92,11 +92,8 @@ var Pessoa = Bookshelf.Model.extend({
                 html: `
 <p>Por favor ${pessoa.get('nome')} clique no link abaixo para alterar 
 sua senha.</p>
-<a href="https://demo.areaazul.org/${_uuid}">Trocar Senha</a>`
+<a href="https://demo.areaazul.org/${token.id}">Trocar Senha</a>`
               });
-            },
-            function() {
-              throw new Error('Erro !!!');
             });
 
         } else {

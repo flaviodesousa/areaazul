@@ -16,7 +16,7 @@ debug('Bookshelf loaded', Bookshelf.VERSION);
   'pessoa_juridica', 'usuario_revendedor', 'revendedor', 'funcionario',
   'veiculo', 'configuracao', 'movimentacao_conta',
   'usuario', 'usuario_administrativo', 'usuario_fiscal',
-  'usuario_has_veiculo', 'ativacao', 'fiscalizacao'
+  'usuario_has_veiculo', 'ativacao', 'fiscalizacao', 'token'
 ].forEach(model => {
   debug('Registrando modelo ' + model);
   require('./models/models/' + model);
