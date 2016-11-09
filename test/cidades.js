@@ -1,5 +1,6 @@
 'use strict';
 
+const debug = require('debug')('areaazul:teste:cidade');
 const should = require('chai').should();
 
 const AreaAzul = require('../areaazul');
@@ -11,7 +12,7 @@ describe('fachada Cidade', function() {
   describe('listar()', function() {
     it('lista cidades do estado 1', function(done) {
       Cidade
-        .listar(idEstado)
+        .listar({ idEstado: idEstado })
         .then(function(cidades) {
           should.exist(cidades);
           cidades.should.be.instanceOf(Array);
@@ -20,23 +21,26 @@ describe('fachada Cidade', function() {
           cidades[0].should.have.property('estado');
           done();
         })
-        .catch(function(e) {
+        .catch(e => {
+          debug('erro inesperado', e);
           done(e);
         });
     });
     it('falha com id estado invalido', function(done) {
       Cidade
-        .listar('undefined')
+        .listar({ idEstado: 'undefined' })
         .then(function() {
           done(new Error('não deveria aceitar id inválido'));
         })
         .catch(AreaAzul.BusinessException, function(err) {
           should.exist(err);
           err.should.have.property('details');
-          err.details.should.have.property('idEstado', 'undefined');
+          err.details.should.have.property('filtro');
+          err.details.filtro.should.have.property('idEstado', 'undefined');
           done();
         })
-        .catch(function(e) {
+        .catch(e => {
+          debug('erro inesperado', e);
           done(e);
         });
     });
@@ -50,7 +54,23 @@ describe('fachada Cidade', function() {
           cidades[0].should.have.property('estado');
           done();
         })
-        .catch(function(e) {
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('lista todas cidades com termo', function(done) {
+      Cidade
+        .listar({ termos: '  São  Mig  ' })
+        .then(function(cidades) {
+          should.exist(cidades);
+          cidades.should.be.instanceOf(Array);
+          cidades.length.should.be.greaterThan(contagemCidadesDoEstado1);
+          cidades[0].should.have.property('estado');
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
           done(e);
         });
     });
