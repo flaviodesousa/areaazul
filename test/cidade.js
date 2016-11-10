@@ -26,6 +26,30 @@ describe('/cidade', function() {
           done();
         });
     });
+    it('obtém lista de cidades de um estado', function(done) {
+      this.slow(1500);
+      this.timeout(5000);  // Lista completa de cidades: mais lento
+      superAgent
+        .get('http://localhost:8080/cidade?estado=1')
+        .end(function(err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          res.ok.should.be.equal(true);
+          done();
+        });
+    });
+    it('obtém lista de cidades contendo termos', function(done) {
+      this.slow(1500);
+      this.timeout(5000);  // Lista completa de cidades: mais lento
+      superAgent
+        .get('http://localhost:8080/cidade?termos=São+Mig')
+        .end(function(err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          res.ok.should.be.equal(true);
+          done();
+        });
+    });
   });
 
   after(function(done) {

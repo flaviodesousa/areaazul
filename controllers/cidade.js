@@ -3,14 +3,17 @@
 const AreaAzul = require('areaazul');
 
 module.exports.listar = function(req, res) {
-  var estado;
+  var filtro = {};
   if (req.query.estado) {
-    estado = Number(req.query.estado);
+    filtro.idEstado = Number(req.query.estado);
+  }
+  if (req.query.termos) {
+    filtro.termos = req.query.termos;
   }
   AreaAzul.facade.Cidade
-    .listar(estado)
-    .then(function(cidades) {
-      res.send(cidades);
+    .listar(filtro)
+    .then(function(listaCidades) {
+      res.send(listaCidades);
     })
     .catch(function(result) {
       res.status(400).send('' + result);
