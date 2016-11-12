@@ -8,6 +8,7 @@ const Cidade = AreaAzul.facade.Cidade;
 
 describe('fachada Cidade', function() {
   var idEstado = 1;
+  var cidade1000;
   var contagemCidadesDoEstado1 = 0;
   describe('listar()', function() {
     it('lista cidades do estado 1', function(done) {
@@ -50,7 +51,8 @@ describe('fachada Cidade', function() {
         .then(function(cidades) {
           should.exist(cidades);
           cidades.should.be.instanceOf(Array);
-          cidades.length.should.be.greaterThan(contagemCidadesDoEstado1);
+          cidades.length.should.be.greaterThan(1001);
+          cidade1000 = cidades[1000];
           cidades[0].should.have.property('estado');
           done();
         })
@@ -67,6 +69,22 @@ describe('fachada Cidade', function() {
           cidades.should.be.instanceOf(Array);
           cidades.length.should.be.greaterThan(contagemCidadesDoEstado1);
           cidades[0].should.have.property('estado');
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+  });
+  describe('buscarPorID()', function() {
+    it('obtém cidade existente pelo id', function(done) {
+      Cidade
+        .buscarPorId(cidade1000.id)
+        .then(cidade => {
+          should.exist(cidade);
+          cidade.should.have.property('id', cidade1000.id);
+          cidade.should.have.property('nome', cidade1000.nome);
           done();
         })
         .catch(e => {
