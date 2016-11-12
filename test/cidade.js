@@ -47,6 +47,12 @@ describe('/cidade', function() {
           should.not.exist(err);
           should.exist(res);
           res.ok.should.be.equal(true);
+          res.should.have.property('body');
+          res.body.should.be.instanceOf(Array);
+          for (let cidade of res.body) {
+            cidade.should.have.property('nome_busca');
+            /sao.*mig/.test(cidade.nome_busca).should.equal(true);
+          }
           done();
         });
     });
