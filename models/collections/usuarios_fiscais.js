@@ -1,7 +1,7 @@
 const Bookshelf = require('../../database');
 const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
 
-var UsuariosFiscais = Bookshelf.Collection.extend({
+const UsuariosFiscais = Bookshelf.Collection.extend({
   model: UsuarioFiscal
 });
 Bookshelf.collection('UsuariosFiscais', UsuariosFiscais);

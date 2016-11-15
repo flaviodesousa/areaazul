@@ -9,7 +9,7 @@ const PessoaFisica = Bookshelf.model('PessoaFisica');
 const Conta = Bookshelf.model('Conta');
 const UsuarioHelper = require('../../helpers/usuario_helper');
 
-var UsuarioFiscal = Bookshelf.Model.extend({
+const UsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'usuario_fiscal',
   pessoaFisica: function() {
     return this.hasOne('PessoaFisica', 'id');

@@ -1,6 +1,6 @@
 const Bookshelf = require('../../database');
 
-var Contrato = Bookshelf.Model.extend({
+const Contrato = Bookshelf.Model.extend({
   tableName: 'contrato'
 });
 Bookshelf.model('Contrato', Contrato);

@@ -18,7 +18,7 @@ const Revendedor = Bookshelf.model('Revendedor');
 const UsuarioRevendedor = Bookshelf.model('UsuarioRevendedor');
 const Configuracao = Bookshelf.model('Configuracao');
 
-var Ativacao = Bookshelf.Model.extend({
+const Ativacao = Bookshelf.Model.extend({
   tableName: 'ativacao'
 }, {
   _validarAtivacao: (ativacao) => {

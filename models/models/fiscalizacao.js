@@ -11,7 +11,7 @@ const AreaazulUtils = require('areaazul-utils');
 const Veiculo = Bookshelf.model('Veiculo');
 const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
 
-var Fiscalizacao = Bookshelf.Model.extend({
+const Fiscalizacao = Bookshelf.Model.extend({
   tableName: 'fiscalizacao',
   veiculo: function() {
     return this.belongsTo('Veiculo');

@@ -1,5 +1,5 @@
 const Bookshelf = require('../database');
-var Estados = Bookshelf.collection('Estados');
+const Estados = Bookshelf.collection('Estados');
 
 module.exports.listar = function() {
   return new Estados()

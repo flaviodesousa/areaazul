@@ -8,7 +8,7 @@ const PessoaFisica = Bookshelf.model('PessoaFisica');
 const PessoaJuridica = Bookshelf.model('PessoaJuridica');
 const Conta = Bookshelf.model('Conta');
 
-var Revendedor = Bookshelf.Model.extend({
+const Revendedor = Bookshelf.Model.extend({
   tableName: 'revendedor',
   conta: function() {
     return this.belongsTo('Conta', 'conta_id');

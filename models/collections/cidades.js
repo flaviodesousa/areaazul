@@ -6,7 +6,7 @@ const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
 const Cidade = Bookshelf.model('Cidade');
 
-var Cidades = Bookshelf.Collection.extend({
+const Cidades = Bookshelf.Collection.extend({
   model: Cidade
 }, {
   _listar: function(filtro) {

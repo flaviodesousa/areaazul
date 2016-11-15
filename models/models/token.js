@@ -3,7 +3,7 @@
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
 
-var Token = Bookshelf.Model.extend({
+const Token = Bookshelf.Model.extend({
   tableName: 'token',
   pessoaFisica: function() {
     return this.belongsTo('PessoaFisica');

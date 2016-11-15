@@ -1,9 +1,9 @@
 'use strict';
 
 const Bookshelf = require('../../database');
-var Estado = Bookshelf.model('Estado');
+const Estado = Bookshelf.model('Estado');
 
-var Estados = Bookshelf.Collection.extend({
+const Estados = Bookshelf.Collection.extend({
   model: Estado
 }, {
 });

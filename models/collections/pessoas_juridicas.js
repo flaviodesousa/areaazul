@@ -1,7 +1,7 @@
 const Bookshelf = require('../../database');
 const PessoaJuridica = Bookshelf.model('PessoaJuridica');
 
-var PessoasJuridicas = Bookshelf.Collection.extend({
+const PessoasJuridicas = Bookshelf.Collection.extend({
   model: PessoaJuridica
 });
 Bookshelf.collection('PessoasJuridicas', PessoasJuridicas);

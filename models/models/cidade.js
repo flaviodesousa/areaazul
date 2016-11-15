@@ -5,7 +5,7 @@ const log = require('../../logging');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
 
-var Cidade = Bookshelf.Model.extend({
+const Cidade = Bookshelf.Model.extend({
   tableName: 'cidade',
   estado: function() {
     return this.belongsTo('Estado', 'estado_id');

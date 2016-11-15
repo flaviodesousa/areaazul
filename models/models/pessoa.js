@@ -11,7 +11,7 @@ const util = require('areaazul-utils');
 
 const Token = Bookshelf.model('Token');
 
-var Pessoa = Bookshelf.Model.extend({
+const Pessoa = Bookshelf.Model.extend({
   tableName: 'pessoa'
 }, {
   _camposValidos: function(camposPessoa/*, options*/) {

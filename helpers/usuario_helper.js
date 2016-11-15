@@ -9,7 +9,7 @@ const validator = require('validator');
 
 const Bookshelf = require('../database');
 
-var PessoaFisica = Bookshelf.model('PessoaFisica');
+const PessoaFisica = Bookshelf.model('PessoaFisica');
 
 module.exports._camposValidos = function(campos, usuario, ModelClass, options) {
   var messages = [];

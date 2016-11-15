@@ -8,7 +8,7 @@ const Promise = require('bluebird');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
 
-var Configuracao = Bookshelf.Model.extend(
+const Configuracao = Bookshelf.Model.extend(
 {
   tableName: 'configuracao'
 }, {

@@ -1,7 +1,7 @@
 const Bookshelf = require('../../database');
 const UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
 
-var UsuariosHaveVeiculos = Bookshelf.Collection.extend({
+const UsuariosHaveVeiculos = Bookshelf.Collection.extend({
   model: UsuarioHasVeiculo
 }, {
 });

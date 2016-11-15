@@ -4,7 +4,7 @@ const _ = require('lodash');
 
 const Bookshelf = require('../../database');
 
-var UsuarioHasVeiculo = Bookshelf.Model.extend(
+const UsuarioHasVeiculo = Bookshelf.Model.extend(
   {
     tableName: 'usuario_has_veiculo',
     veiculo: function() {

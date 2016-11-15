@@ -8,7 +8,7 @@ const Bookshelf = require('../../database');
 const log = require('../../logging');
 const util = require('areaazul-utils');
 
-var Veiculo = Bookshelf.Model.extend({
+const Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',
   cidade: function() {
     return this.belongsTo('Cidade', 'cidade_id');

@@ -3,7 +3,7 @@
 const Bookshelf = require('../../database');
 const Usuario = Bookshelf.model('Usuario');
 
-var Usuarios = Bookshelf.Collection.extend({
+const Usuarios = Bookshelf.Collection.extend({
   model: Usuario
 }, {
 });

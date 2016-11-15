@@ -3,9 +3,9 @@
 const moment = require('moment');
 
 const Bookshelf = require('../../database');
-var Ativacao = Bookshelf.model('Ativacao');
+const Ativacao = Bookshelf.model('Ativacao');
 
-var Ativacoes = Bookshelf.Collection.extend({
+const Ativacoes = Bookshelf.Collection.extend({
     model: Ativacao
   }, {
 

@@ -3,7 +3,7 @@
 const _ = require('lodash');
 const Bookshelf = require('../../database');
 
-var Conta = Bookshelf.Model.extend({
+const Conta = Bookshelf.Model.extend({
   tableName: 'conta',
   movimentacao: function() {
     return this.hasMany('MovimentacaoConta', 'conta_id');

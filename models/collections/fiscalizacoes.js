@@ -1,9 +1,9 @@
 'use strict';
 
 const Bookshelf = require('../../database');
-var Fiscalizacao = Bookshelf.model('Fiscalizacao');
+const Fiscalizacao = Bookshelf.model('Fiscalizacao');
 
-var Fiscalizacoes = Bookshelf.Collection.extend({
+const Fiscalizacoes = Bookshelf.Collection.extend({
   model: Fiscalizacao
 }, {
 });

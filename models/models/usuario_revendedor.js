@@ -11,7 +11,7 @@ const validation = require('./validation');
 
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 
-var UsuarioRevendedor = Bookshelf.Model.extend({
+const UsuarioRevendedor = Bookshelf.Model.extend({
   tableName: 'usuario_revendedor',
   pessoaFisica: function() {
     return this.belongsTo('PessoaFisica');

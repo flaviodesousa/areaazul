@@ -6,9 +6,9 @@ const validation = require('./validation');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');
 const AreaAzulUtils = require('areaazul-utils');
-var Pessoa = Bookshelf.model('Pessoa');
+const Pessoa = Bookshelf.model('Pessoa');
 
-var PessoaFisica = Bookshelf.Model.extend({
+const PessoaFisica = Bookshelf.Model.extend({
   tableName: 'pessoa_fisica',
   pessoa: function() {
     return this.hasOne('Pessoa', 'id');

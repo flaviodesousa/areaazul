@@ -4,7 +4,7 @@ const Bookshelf = require('../../database');
 const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
 
 
-var MovimentacoesConta = Bookshelf.Collection.extend({
+const MovimentacoesConta = Bookshelf.Collection.extend({
   model: MovimentacaoConta
 }, {
 });

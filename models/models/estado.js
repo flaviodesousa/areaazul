@@ -2,7 +2,7 @@
 
 const Bookshelf = require('../../database');
 
-var Estado = Bookshelf.Model.extend({
+const Estado = Bookshelf.Model.extend({
   tableName: 'estado'
 }, {
   procurar: function(id) {

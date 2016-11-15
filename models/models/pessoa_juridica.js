@@ -7,7 +7,7 @@ const log = require('../../logging');
 const Bookshelf = require('../../database');
 const Pessoa = Bookshelf.model('Pessoa');
 
-var PessoaJuridica = Bookshelf.Model.extend({
+const PessoaJuridica = Bookshelf.Model.extend({
   tableName: 'pessoa_juridica',
   pessoa: function() {
     return this.hasOne('Pessoa', 'id');
