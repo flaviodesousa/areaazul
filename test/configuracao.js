@@ -7,7 +7,7 @@ const AreaAzul = require('../areaazul');
 const Configuracao = AreaAzul.facade.Configuracao;
 
 describe('fachada Configuracao', function() {
-  var idCidade = null;
+  let idCidade = null;
 
   before(function() {
     const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
@@ -34,7 +34,7 @@ describe('fachada Configuracao', function() {
 
   describe('alterar()', function() {
     it('alterar as configurações', function(done) {
-      var config = {
+      const config = {
         valor_ativacao_reais: '1.20',
         tempo_tolerancia_minutos: '16',
         franquia_minutos: '10',

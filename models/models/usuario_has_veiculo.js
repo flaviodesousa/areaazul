@@ -16,8 +16,8 @@ const UsuarioHasVeiculo = Bookshelf.Model.extend(
   }, {
     _salvar: function(usuarioHasVeiculo, options) {
 
-      var optionsInsert = _.merge({ method: 'insert' }, options || {});
-      var optionsUpdate = _.merge({ method: 'update', patch: true },
+      const optionsInsert = _.merge({ method: 'insert' }, options || {});
+      const optionsUpdate = _.merge({ method: 'update', patch: true },
                                   options || {});
 
       return new UsuarioHasVeiculo(

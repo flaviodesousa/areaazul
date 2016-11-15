@@ -15,7 +15,7 @@ const Pessoa = Bookshelf.Model.extend({
   tableName: 'pessoa'
 }, {
   _camposValidos: function(camposPessoa/*, options*/) {
-    var message = [];
+    let message = [];
 
     if (!camposPessoa.nome) {
       message.push({
@@ -74,7 +74,7 @@ const Pessoa = Bookshelf.Model.extend({
       });
   },
   _verificaEmail: function(pessoaAVerificar) {
-    var _uuid = util.geradorUUIDAleatorio();
+    const _uuid = util.geradorUUIDAleatorio();
     Pessoa.forge({ email: pessoaAVerificar.email })
       .fetch()
       .then(function(pessoa) {

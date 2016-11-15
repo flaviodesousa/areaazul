@@ -18,7 +18,7 @@ const Revendedor = Bookshelf.Model.extend({
   }
 }, {
   _cadastrar: function(revendedorFields, options) {
-    var idPessoa = null;
+    let idPessoa = null;
 
     return Revendedor
       ._camposValidos(revendedorFields, options)
@@ -85,7 +85,7 @@ const Revendedor = Bookshelf.Model.extend({
         return Conta
           ._cadastrar(null, options)
           .then(function(conta) {
-            var optionsInsert = _.merge({ method: 'insert' }, options || {});
+            const optionsInsert = _.merge({ method: 'insert' }, options || {});
 
             return new Revendedor({
               id: pessoa.id, conta_id: conta.id
@@ -96,7 +96,7 @@ const Revendedor = Bookshelf.Model.extend({
   },
 
   _camposValidos: function(revenda, options) {
-    var messages = [];
+    let messages = [];
 
     if (!revenda.login) {
       messages.push({

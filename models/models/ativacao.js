@@ -22,7 +22,7 @@ const Ativacao = Bookshelf.Model.extend({
   tableName: 'ativacao'
 }, {
   _validarAtivacao: (ativacao) => {
-    var messages = [];
+    let messages = [];
 
     if (!ativacao.tempo) {
       messages.push({
@@ -56,9 +56,9 @@ const Ativacao = Bookshelf.Model.extend({
       .then(() => messages);
   },
   _validarAtivacaoUsuario: (ativacao, options) => {
-    var messages = [];
-    var semUsuarioId = false;
-    var semVeiculoId = false;
+    let messages = [];
+    let semUsuarioId = false;
+    let semVeiculoId = false;
 
     if (!ativacao.usuario_id) {
       messages.push({
@@ -129,13 +129,13 @@ const Ativacao = Bookshelf.Model.extend({
       .then(() => messages);
   },
   _ativar: function(camposAtivacao, options) {
-    var optionsInsert = _.merge({ method: 'insert' }, options);
-    var optionsUpdate = _.merge({ method: 'update', patch: true }, options);
-    var ativacao = null;
+    const optionsInsert = _.merge({ method: 'insert' }, options);
+    const optionsUpdate = _.merge({ method: 'update', patch: true }, options);
+    let ativacao = null;
 
-    var latitude = camposAtivacao.latitude;
-    var altitude = camposAtivacao.longitude;
-    var longitude = camposAtivacao.altitude;
+    let latitude = camposAtivacao.latitude;
+    let altitude = camposAtivacao.longitude;
+    let longitude = camposAtivacao.altitude;
 
     if (!validator.isNumeric('' + latitude)) {
       latitude = null;
@@ -218,7 +218,7 @@ const Ativacao = Bookshelf.Model.extend({
   },
 
   _desativar: function(desativacao, options) {
-    var optionsPatch = _.merge({ patch: true }, options);
+    const optionsPatch = _.merge({ patch: true }, options);
     return new AtivacaoUsuario({
       ativacao_id: desativacao.ativacao_id,
       usuario_id: desativacao.usuario_id
@@ -226,7 +226,7 @@ const Ativacao = Bookshelf.Model.extend({
       .fetch(options)
       .then(function(d) {
         if (!d) {
-          var err = new AreaAzul.BusinessException(
+          const err = new AreaAzul.BusinessException(
             'Desativacao: Ativacao nao reconhecida',
             { desativacao: desativacao });
           log.error(err.message, err.details);
@@ -246,9 +246,9 @@ const Ativacao = Bookshelf.Model.extend({
   },
   _ativarPorRevenda: function(camposAtivacao, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options);
-    var ativacao;
-    var usuarioRevendedor = null;
-    var placaSemMascara = '';
+    let ativacao;
+    let usuarioRevendedor = null;
+    let placaSemMascara = '';
     if (camposAtivacao.placa) {
       placaSemMascara = util.placaSemMascara(camposAtivacao.placa);
     }
@@ -335,8 +335,8 @@ const Ativacao = Bookshelf.Model.extend({
       });
   },
   _validarAtivacaoRevenda: function(ativacao, placa, options) {
-    var messages = [];
-    var idUsuarioRevendedor;
+    let messages = [];
+    let idUsuarioRevendedor;
 
     if (!ativacao.usuario_revendedor_id) {
       messages.push({

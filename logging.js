@@ -4,7 +4,7 @@ const winston = require('winston');
 require('winston-loggly');
 
 (function() {
-  var env = process.env.NODE_ENV || 'development';
+  const env = process.env.NODE_ENV || 'development';
 
   winston.add(winston.transports.Loggly, {
     inputToken: process.env.AREAAZUL_LOGGLY_TOKEN ||

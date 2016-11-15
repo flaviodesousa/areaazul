@@ -31,10 +31,10 @@ const Usuario = Bookshelf.Model.extend({
   _salvar: function(camposUsuario, usuario, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options);
     const optionsUpdate = _.merge({ method: 'update' }, options);
-    var Usuario = this;
-    var login;
-    var hashSenha;
-    var pessoaFisica = null;
+    let Usuario = this;
+    let login;
+    let hashSenha;
+    let pessoaFisica = null;
 
     if (!camposUsuario.login) {
       login = camposUsuario.cpf;
@@ -82,7 +82,7 @@ const Usuario = Bookshelf.Model.extend({
           .fetch(options);
       })
       .then(function(conta) {
-        var dadosUsuario = {
+        const dadosUsuario = {
           id: pessoaFisica.id,
           login: login,
           senha: hashSenha,
@@ -99,7 +99,7 @@ const Usuario = Bookshelf.Model.extend({
           .save(dadosUsuario, optionsUpdate);
       })
       .then(function(u) {
-        var message = {
+        const message = {
           from: 'AreaAzul <cadastro@areaazul.org>',
           to: camposUsuario.email,
           cc: 'cadastro@areaazul.org',
@@ -116,7 +116,7 @@ const Usuario = Bookshelf.Model.extend({
   },
 
   _alterarSenha: function(camposAlterarSenha, options) {
-    var usuario = null;
+    let usuario = null;
     return new Usuario({ id: camposAlterarSenha.id })
       .fetch(_.merge({ require: true }, options))
       .catch(Bookshelf.NotFoundError, () => {
@@ -137,7 +137,7 @@ const Usuario = Bookshelf.Model.extend({
             'Não foi possível cadastrar novo usuário. Dados inválidos',
             messages);
         }
-        var pwd = usuario.get('senha');
+        const pwd = usuario.get('senha');
         return bcrypt.compare(camposAlterarSenha.senha, pwd);
       })
       .then(function(valid) {
@@ -156,7 +156,7 @@ const Usuario = Bookshelf.Model.extend({
   },
 
   _camposValidos: function(camposUsuario, usuario, options) {
-    var messages = Usuario._loginValido(camposUsuario);
+    let messages = Usuario._loginValido(camposUsuario);
     messages.push.apply(messages,
       Usuario._senhaValida(camposUsuario, usuario));
 
@@ -192,7 +192,7 @@ const Usuario = Bookshelf.Model.extend({
   },
 
   _loginValido: function(user) {
-    var message = [];
+    let message = [];
     if (!user.login || validator.isNull(user.login)) {
       message.push({
         attribute: 'login',
@@ -209,7 +209,7 @@ const Usuario = Bookshelf.Model.extend({
 
 
   _senhaValida: function(camposUsuario) {
-    var message = [];
+    let message = [];
 
     if (!camposUsuario.nova_senha
       || validator.isNull(camposUsuario.nova_senha)) {

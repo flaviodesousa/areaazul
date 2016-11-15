@@ -17,8 +17,8 @@ const UsuarioAdministrativo = Bookshelf.Model.extend({
   }
 }, {
   _cadastrar: (camposUsuarioAdministrativo, options) => {
-    var pessoaFisica;
-    var optionsInsert = _.merge({ method: 'insert' }, options);
+    let pessoaFisica;
+    const optionsInsert = _.merge({ method: 'insert' }, options);
     return UsuarioAdministrativo
       ._camposValidos(camposUsuarioAdministrativo, null, options)
       .then(function(messages) {
@@ -72,13 +72,13 @@ const UsuarioAdministrativo = Bookshelf.Model.extend({
       });
   },
   _autentico: (login, senha) => {
-    var usuarioAdministrativo;
+    let usuarioAdministrativo;
     return new UsuarioAdministrativo({ login: login })
       .fetch()
       .then(function(ur) {
         usuarioAdministrativo = ur;
         if (!usuarioAdministrativo) {
-          var err = new AreaAzul.AuthenticationError(
+          const err = new AreaAzul.AuthenticationError(
             'Usuário administrativo: login inválido',
             { login: login });
           log.warn(err.message, err.details);
@@ -101,7 +101,7 @@ const UsuarioAdministrativo = Bookshelf.Model.extend({
       });
   },
   _camposValidos: function(camposUsuAdm, usuarioAdministrativo, options) {
-    var messages = [];
+    let messages = [];
 
     return UsuarioHelper
       ._camposValidos(

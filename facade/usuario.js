@@ -16,7 +16,7 @@ module.exports.buscarPorId = function(id) {
       if (u) {
         return u;
       }
-      var err = new AreaAzul.BusinessException(
+      const err = new AreaAzul.BusinessException(
         'Usuário: id não encontrado', {
           id: id
         });
@@ -26,13 +26,13 @@ module.exports.buscarPorId = function(id) {
 };
 
 module.exports.autentico = function(login, senha) {
-  var usuario;
+  let usuario;
   return new Usuario({ login: login })
     .fetch()
     .then(function(u) {
       usuario = u;
       if (!usuario) {
-        var err = new AreaAzul.AuthenticationError(
+        const err = new AreaAzul.AuthenticationError(
           'Usuário: login inválido', { login: login });
         log.warn(err.message, err.details);
         throw err;

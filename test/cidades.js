@@ -7,9 +7,9 @@ const AreaAzul = require('../areaazul');
 const Cidade = AreaAzul.facade.Cidade;
 
 describe('fachada Cidade', function() {
-  var idEstado = 1;
-  var cidade1000;
-  var contagemCidadesDoEstado1 = 0;
+  let idEstado = 1;
+  let cidade1000;
+  let contagemCidadesDoEstado1 = 0;
   describe('listar()', function() {
     it('lista cidades do estado 1', function(done) {
       Cidade

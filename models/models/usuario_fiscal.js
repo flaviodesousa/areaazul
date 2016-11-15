@@ -16,8 +16,8 @@ const UsuarioFiscal = Bookshelf.Model.extend({
   }
 }, {
   _cadastrar: (camposUsuarioFiscal, options) => {
-    var conta;
-    var optionsInsert = _.merge({ method: 'insert' }, options);
+    let conta;
+    const optionsInsert = _.merge({ method: 'insert' }, options);
     return UsuarioFiscal
       ._camposValidos(camposUsuarioFiscal, null, options)
       .then(function(messages) {
@@ -41,7 +41,7 @@ const UsuarioFiscal = Bookshelf.Model.extend({
       })
       .catch(Bookshelf.NotFoundError, () => {
         // Novo usuário fiscal
-        var pessoaFisica;
+        let pessoaFisica;
         return new PessoaFisica({ cpf: camposUsuarioFiscal.cpf })
           .fetch(_.merge({ require: true }, options))
           .catch(Bookshelf.NotFoundError, () => {
@@ -73,13 +73,13 @@ const UsuarioFiscal = Bookshelf.Model.extend({
       });
   },
   _autentico: (login, senha) => {
-    var usuarioFiscal;
+    let usuarioFiscal;
     return new UsuarioFiscal({ login: login })
       .fetch()
       .then(function(ur) {
         usuarioFiscal = ur;
         if (!usuarioFiscal) {
-          var err = new AreaAzul.AuthenticationError(
+          const err = new AreaAzul.AuthenticationError(
             'Usuário fiscal: login inválido',
             { login: login });
           log.warn(err.message, err.details);
@@ -102,7 +102,7 @@ const UsuarioFiscal = Bookshelf.Model.extend({
       });
   },
   _camposValidos: function(camposUsuarioFiscal, usuarioFiscal, options) {
-    var messages = [];
+    let messages = [];
 
     return UsuarioHelper
       ._camposValidos(

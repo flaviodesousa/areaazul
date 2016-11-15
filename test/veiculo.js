@@ -24,9 +24,9 @@ describe('facade Veiculo', function() {
   const anoFabricadoTeste = '2015';
   const anoModeloTeste = '2015';
 
-  var idCidade = null;
-  var idVeiculo = null;
-  var idUsuarioComum = null;
+  let idCidade = null;
+  let idVeiculo = null;
+  let idUsuarioComum = null;
 
   before(function() {
     return TestHelpers.pegarCidade()
@@ -51,7 +51,7 @@ describe('facade Veiculo', function() {
 
   describe('cadastrar()', function() {
     it('falha gravar veiculo sem placa', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         // Falta: placa: placaTeste,
@@ -77,7 +77,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('falha gravar veiculo sem cidade', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         // Falta: cidade_id: idCidade,
         placa: placaTeste,
@@ -103,7 +103,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('falha gravar veiculo com cidade inválida', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: 0,
         placa: placaTeste,
@@ -129,7 +129,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('falha gravar veiculo com placa inválida (+3 letras)', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: placaTeste + 'A',
@@ -155,7 +155,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('falha gravar veiculo com placa inválida (+3 letras)', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: 'AAAA111',
@@ -181,7 +181,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('falha gravar veiculo com placa inválida (+4 números)', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: 'AB32123',
@@ -207,7 +207,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('falha gravar veiculo com placa inválida (len>7)', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: 'ABC12345',
@@ -233,7 +233,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('falha gravar veiculo com placa inválida (len<7)', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: 'ABC123',
@@ -259,7 +259,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('falha gravar veiculo sem tipo', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: placaTeste,
@@ -285,7 +285,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('falha gravar veiculo com tipo inválido', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: placaTeste,
@@ -311,7 +311,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('falha gravar veiculo sem modelo/marca/cor', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: placaTeste,
@@ -337,7 +337,7 @@ describe('facade Veiculo', function() {
         });
     });
     it('grava veiculo', function(done) {
-      var novoVeiculo = {
+      const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: placaTeste,

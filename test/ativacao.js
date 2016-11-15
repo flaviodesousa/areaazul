@@ -21,16 +21,16 @@ describe('fachada Ativacao', function() {
   const placaVeiculoNovo = 'TAT1540';
   const tempoPadrao = '120';
   const tempoExcessivo = '960';
-  var precoDaAtivacao;
-  var idUsuarioComum;
-  var veiculoExistente;
-  var idCidade;
-  var idUsuarioRevendedor;
-  var idAtivacao;
-  var contaRevendedor;
-  var contaUsuario;
+  let precoDaAtivacao;
+  let idUsuarioComum;
+  let veiculoExistente;
+  let idCidade;
+  let idUsuarioRevendedor;
+  let idAtivacao;
+  let contaRevendedor;
+  let contaUsuario;
   const saldoInicial = '10.00';
-  var saldoFinalEsperado;
+  let saldoFinalEsperado;
 
   before(function() {
     return TestHelpers
@@ -120,7 +120,7 @@ describe('fachada Ativacao', function() {
 
   describe('Ativar()', function() {
     it('falha ativação sem usuário', function(done) {
-      var ativacao = {
+      const ativacao = {
         veiculo_id: veiculoExistente.id,
         tempo: tempoPadrao
       };
@@ -139,7 +139,7 @@ describe('fachada Ativacao', function() {
         });
     });
     it('falha ativação sem veículo', function(done) {
-      var ativacao = {
+      const ativacao = {
         usuario_id: idUsuarioComum,
         tempo: tempoPadrao
       };
@@ -158,7 +158,7 @@ describe('fachada Ativacao', function() {
         });
     });
     it('falha ativação sem tempo', function(done) {
-      var ativacao = {
+      const ativacao = {
         usuario_id: idUsuarioComum,
         veiculo_id: veiculoExistente.id
       };
@@ -177,7 +177,7 @@ describe('fachada Ativacao', function() {
         });
     });
     it('falha ativação sem saldo', function(done) {
-      var ativacao = {
+      const ativacao = {
         usuario_id: idUsuarioComum,
         veiculo_id: veiculoExistente.id,
         tempo: tempoExcessivo
@@ -197,7 +197,7 @@ describe('fachada Ativacao', function() {
         });
     });
     it('grava ativação', function(done) {
-      var ativacao = {
+      const ativacao = {
         usuario_id: idUsuarioComum,
         veiculo_id: veiculoExistente.id,
         tempo: tempoPadrao

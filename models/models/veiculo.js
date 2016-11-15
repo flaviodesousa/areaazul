@@ -19,10 +19,10 @@ const Veiculo = Bookshelf.Model.extend({
   }
 }, {
   _cadastrar: function(veiculoFields, options) {
-    var veiculo = null;
-    var optionsInsert = _.merge({ method: 'insert' }, options || {});
+    let veiculo = null;
+    const optionsInsert = _.merge({ method: 'insert' }, options || {});
 
-    var placaSemMascara = util.placaSemMascara(veiculoFields.placa);
+    const placaSemMascara = util.placaSemMascara(veiculoFields.placa);
 
     return Veiculo
       ._validarVeiculo(veiculoFields, options)
@@ -66,7 +66,7 @@ const Veiculo = Bookshelf.Model.extend({
   },
   TIPOS: /^(carro|moto|camionete)$/,
   _validarVeiculo: (veiculoFields, options) => {
-    var message = [];
+    let message = [];
 
     if (!veiculoFields.cidade_id) {
       message.push({
@@ -82,7 +82,7 @@ const Veiculo = Bookshelf.Model.extend({
       });
     }
 
-    var placaSemMascara = util.placaSemMascara(veiculoFields.placa);
+    const placaSemMascara = util.placaSemMascara(veiculoFields.placa);
     if (!placaSemMascara ||
       placaSemMascara.replace(/[^0-9]/g, '').length != 4 ||
       placaSemMascara.replace(/[^A-Z]/gi, '').length != 3) {
@@ -140,7 +140,7 @@ const Veiculo = Bookshelf.Model.extend({
 
   },
   _buscarPorPlaca: (placa, options) => {
-    var placaSemMascara = '';
+    let placaSemMascara = '';
 
     if (placa) {
       placaSemMascara = util.placaSemMascara(placa);

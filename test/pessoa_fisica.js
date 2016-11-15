@@ -7,13 +7,13 @@ const AreaAzul = require('../areaazul');
 const PessoaFisica = AreaAzul.facade.PessoaFisica;
 
 describe('facade PessoaFisica', function() {
-  var cpfTeste = '04163501436';
+  const cpfTeste = '04163501436';
 
   function deleteTestData(done) {
     const Bookshelf = require('../database');
     const Pessoa = Bookshelf.model('Pessoa');
     const PessoaFisica = Bookshelf.model('PessoaFisica');
-    var pessoaId = null;
+    let pessoaId = null;
     new PessoaFisica({ cpf: cpfTeste })
       .fetch()
       .then(function(pf) {
@@ -68,7 +68,7 @@ describe('facade PessoaFisica', function() {
   });
   describe('buscarPorCPF()', function() {
     it('retorna null se cpf não existir', function(done) {
-      var cpfInvalido = cpfTeste + '0';
+      const cpfInvalido = cpfTeste + '0';
       PessoaFisica.buscarPorCPF(cpfInvalido)
         .then(function(pf) {
           if (pf) {

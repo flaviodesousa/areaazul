@@ -15,7 +15,7 @@ const PessoaFisica = Bookshelf.Model.extend({
   }
 }, {
   _camposValidos: function(pessoaFisicaFields, options) {
-    var messages = [];
+    let messages = [];
 
     if (!pessoaFisicaFields.cpf) {
       messages.push({
@@ -46,7 +46,7 @@ const PessoaFisica = Bookshelf.Model.extend({
       });
   },
   _camposValidosInclusao: function(pessoaFisicaFields, options) {
-    var messages = [];
+    let messages = [];
     return this
       ._camposValidos(pessoaFisicaFields, options)
       .then(function(messagesPessoa) {
@@ -65,7 +65,7 @@ const PessoaFisica = Bookshelf.Model.extend({
       });
   },
   __cadastrarNova: function(camposPessoaFisica, options) {
-    var optionsInsert = _.merge({ method: 'insert' }, options || {});
+    const optionsInsert = _.merge({ method: 'insert' }, options || {});
     return PessoaFisica
       ._camposValidosInclusao(camposPessoaFisica, options)
       .then(function(messages) {
@@ -119,7 +119,7 @@ const PessoaFisica = Bookshelf.Model.extend({
       });
   },
   _cadastrar: function(pessoaFisicaFields, options) {
-    var PessoaFisica = this;
+    let PessoaFisica = this;
     return new PessoaFisica({ cpf: pessoaFisicaFields.cpf })
       .fetch(options)
       .then(function(pessoaFisicaRecord) {
@@ -131,7 +131,7 @@ const PessoaFisica = Bookshelf.Model.extend({
       });
   },
   _alterar: function(pf, id, options) {
-    var optionsUpdate = _.merge({ method: 'update', patch: true }, options);
+    const optionsUpdate = _.merge({ method: 'update', patch: true }, options);
 
     return new Pessoa({ id: id })
       .fetch(options)

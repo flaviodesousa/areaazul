@@ -14,7 +14,7 @@ const PessoaJuridica = Bookshelf.Model.extend({
   }
 }, {
   _camposValidos: function(camposPessoaJuridica, options) {
-    var messages = [];
+    let messages = [];
 
     if (!camposPessoaJuridica.nome_fantasia) {
       messages.push({
@@ -45,7 +45,7 @@ const PessoaJuridica = Bookshelf.Model.extend({
       });
   },
   _cadastrar: function(camposPessoaJuridica, options) {
-    var optionsInsert = _.merge({ method: 'insert' }, options || {});
+    const optionsInsert = _.merge({ method: 'insert' }, options || {});
     return PessoaJuridica
       ._camposValidos(camposPessoaJuridica, options)
       .then(messages => {

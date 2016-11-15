@@ -22,7 +22,7 @@ describe('facade Usuario', function() {
     data_nascimento: '10/04/1980',
     sexo: 'feminino'
   };
-  var usuarioDeTeste = null;
+  let usuarioDeTeste = null;
 
   function apagarDadosDeTeste() {
     return TestHelpers.apagarUsuarioPorLogin(camposUsuarioDeTeste.login);
@@ -139,10 +139,10 @@ describe('facade Usuario', function() {
   });
 
   describe('listaAtivacoes()', function() {
-    var usuario;
-    var ativacoes = [];
+    let usuario;
+    let ativacoes = [];
     before(function(done) {
-      var veiculos = [];
+      let veiculos = [];
 
       this.timeout(5000);
       TestHelpers.pegarUsuario()
@@ -150,7 +150,7 @@ describe('facade Usuario', function() {
           usuario = u;
         })
         .then(() => {
-          var p = [];
+          let p = [];
           for (let i = 0; i < 3; ++i) {
             p.push(
               TestHelpers.pegarVeiculo(i)
@@ -233,8 +233,8 @@ describe('facade Usuario', function() {
   });
 
   describe('listaVeiculos()', function() {
-    var usuario;
-    var dataAtivacaoMaisRecente;
+    let usuario;
+    let dataAtivacaoMaisRecente;
 
     before(function(done) {
       TestHelpers.pegarUsuario()
@@ -291,8 +291,8 @@ describe('facade Usuario', function() {
   });
 
   describe('extratoFinanceiro()', function() {
-    var usuario;
-    var transacaoMaisRecente;
+    let usuario;
+    let transacaoMaisRecente;
 
     before(function(done) {
       TestHelpers.pegarUsuario()

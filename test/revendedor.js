@@ -35,8 +35,8 @@ describe('facade Revendedor', function() {
     conf_senha: 'senha-teste',
     termo_servico: 'Sim'
   };
-  var idRevendedorPessoaFisica;
-  var idRevendedorPessoaJuridica;
+  let idRevendedorPessoaFisica;
+  let idRevendedorPessoaJuridica;
 
   function apagarRevendedoresDeTeste() {
     const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
@@ -120,7 +120,7 @@ describe('facade Revendedor', function() {
   });
 
   describe('buscarPorIdUsuarioRevendedor()', function() {
-    var idUsuarioRevenda = null;
+    let idUsuarioRevenda = null;
 
     before(function() {
       return UsuarioRevendedor

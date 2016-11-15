@@ -49,7 +49,7 @@ const Fiscalizacao = Bookshelf.Model.extend({
       });
   },
   _camposValidos: (camFis) => {
-    var messages = [];
+    let messages = [];
     const placa = AreaazulUtils.placaSemMascara(camFis.placa);
 
     if (!placa ||

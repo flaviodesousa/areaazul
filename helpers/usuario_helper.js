@@ -12,8 +12,8 @@ const Bookshelf = require('../database');
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 
 module.exports._camposValidos = function(campos, usuario, ModelClass, options) {
-  var messages = [];
-  var usuarioComEsteLogin;
+  let messages = [];
+  let usuarioComEsteLogin;
 
   if (!campos.login || validator.isNull(campos.login)) {
     messages.push({

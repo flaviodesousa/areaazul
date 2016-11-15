@@ -6,8 +6,8 @@ const AreaAzul = require('../areaazul');
 const UsuarioHasVeiculo = AreaAzul.facade.UsuarioHasVeiculo;
 
 describe('facade UsuarioHasVeiculo', function() {
-  var idUsuarioComum = null;
-  var idVeiculo = null;
+  let idUsuarioComum = null;
+  let idVeiculo = null;
 
   before(function() {
     const TestHelpers = require('areaazul-test-helpers')(AreaAzul);

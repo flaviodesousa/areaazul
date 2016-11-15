@@ -1,7 +1,7 @@
 
 
 exports.isCPF = function(cpf) {
-  var i,rev,add;
+  let i,rev,add;
   cpf = cpf.replace(/[^\d]+/g, '');
   if (cpf == '') { return false; }
   // Elimina CPFs invalidos conhecidos
@@ -39,7 +39,7 @@ exports.isCPF = function(cpf) {
 };
 
 exports.isCNPJ = function(str) {
-  var cnpj, numeros, digitos, soma, i, resultado, pos, tamanho, digitosIguais;
+  let cnpj, numeros, digitos, soma, i, resultado, pos, tamanho, digitosIguais;
   str = str.replace('.', '');
   str = str.replace('.', '');
   str = str.replace('.', '');

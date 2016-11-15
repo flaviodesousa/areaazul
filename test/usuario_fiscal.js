@@ -32,7 +32,7 @@ describe('facade UsuarioFiscal', function() {
     data_nascimento: '14/04/1980',
     sexo: 'feminino'
   };
-  var usuarioFiscalNaoExistente;
+  let usuarioFiscalNaoExistente;
 
   function apagarDadosDeTeste() {
     return TestHelpers

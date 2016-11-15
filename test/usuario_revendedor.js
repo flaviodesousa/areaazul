@@ -9,12 +9,12 @@ const UsuarioRevendedor = AreaAzul.facade.UsuarioRevendedor;
 const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 
 describe('models.UsuarioRevendedor', function() {
-  var cpfNaoExistente = '58316661667';
-  var senhaRevendaNaoExistente = 'senha-revenda';
-  var loginRevendaNaoExistente = 'revenda-teste';
-  var idUsuarioRevendedor = null;
-  var idRevendedor = null;
-  var termoDeServico = true;
+  const cpfNaoExistente = '58316661667';
+  const senhaRevendaNaoExistente = 'senha-revenda';
+  const loginRevendaNaoExistente = 'revenda-teste';
+  let idUsuarioRevendedor = null;
+  let idRevendedor = null;
+  const termoDeServico = true;
 
   function apagarDadosDeTeste() {
     return TestHelpers

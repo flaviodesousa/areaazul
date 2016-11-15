@@ -13,7 +13,7 @@ const Configuracao = Bookshelf.Model.extend(
   tableName: 'configuracao'
 }, {
   _camposValidos: function(config) {
-    var message = [];
+    let message = [];
 
     if (validator.isNull(config.valor_ativacao_reais)) {
       message.push(

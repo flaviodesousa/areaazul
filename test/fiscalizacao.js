@@ -10,8 +10,8 @@ const AreaAzul = require('../areaazul');
 const Fiscalizacao = AreaAzul.facade.Fiscalizacao;
 
 describe('facade Fiscalizacao', function() {
-  var fiscalLogin = 'fiscal-teste-fiscalizacao';
-  var fiscalId = null;
+  const fiscalLogin = 'fiscal-teste-fiscalizacao';
+  let fiscalId = null;
 
   before(function(done) {
     const UsuarioFiscalModel = Bookshelf.model('UsuarioFiscal');

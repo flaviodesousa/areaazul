@@ -5,7 +5,7 @@ const Ativacoes = Bookshelf.collection('Ativacoes');
 const Veiculo = Bookshelf.model('Veiculo');
 
 module.exports.listar = function() {
-  var veiculos = {};
+  let veiculos = {};
   return Ativacoes
     ._listarAtivacoes()
     .then(function(ativacoes) {

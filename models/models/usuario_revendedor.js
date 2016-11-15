@@ -21,7 +21,7 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
   }
 }, {
   _autentico: (login, senha) => {
-    var usuarioRevendedor;
+    let usuarioRevendedor;
     return new UsuarioRevendedor({ login: login })
       .fetch({
         require: true,
@@ -56,8 +56,8 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
         ._buscarPorId(usuarioRevendedor.id, null));
   },
   _salvarUsuarioRevenda: function(campos, usuarioRevendedor, options) {
-    var UsuarioRevendedor = this;
-    var senha;
+    let UsuarioRevendedor = this;
+    let senha;
 
     return UsuarioRevendedor
       ._validarUsuarioRevenda(campos, options.method, options)
@@ -87,7 +87,7 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
         return PessoaFisica._cadastrar(campos, options);
       })
       .then(function(pessoaFisica) {
-        var dadosUsuarioRevendedor = {
+        const dadosUsuarioRevendedor = {
           login: campos.login,
           senha: senha,
           autorizacao: campos.autorizacao,
@@ -134,7 +134,7 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
 
   },
   _alterarSenha: function(camposTrocaSenha, options) {
-    var usuarioRevendedor;
+    let usuarioRevendedor;
     new UsuarioRevendedor({ id: camposTrocaSenha.id })
       .fetch()
       .then(function(model) {
@@ -160,7 +160,7 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
 
 
   validarSenha: function(user) {
-    var message = [];
+    let message = [];
     if (user.nova_senha === null || user.nova_senha === '') {
       message.push({
         attribute: 'nova_senha',
@@ -195,7 +195,7 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
     return message;
   },
   validarSenhaAlteracao: function(user) {
-    var message = [];
+    let message = [];
 
     if (validator.isNull(user.conf_senha)) {
       message.push({
@@ -226,7 +226,7 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
   },
 
   alterarSenhaRecuperacao: function(user) {
-    var usuarioRevendedor;
+    let usuarioRevendedor;
     return new UsuarioRevendedor({ id: user.id })
       .fetch({ require: true })
       .catch(Bookshelf.NotFoundError, () => {
@@ -247,7 +247,7 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
 
 
   _validarUsuarioRevenda: function(userReseller, operacao, options) {
-    var message = [];
+    let message = [];
 
     if (!userReseller.nome) {
       message.push({

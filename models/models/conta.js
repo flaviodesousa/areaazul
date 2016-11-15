@@ -14,7 +14,7 @@ const Conta = Bookshelf.Model.extend({
       saldo: 0,
       data_abertura: new Date(),
       ativo: true }, conta || {});
-    var optionsInsert = _.merge({ method: 'insert' }, options);
+    const optionsInsert = _.merge({ method: 'insert' }, options);
     return new Conta(conta)
       .save(null, optionsInsert);
   }

@@ -10,8 +10,8 @@ const Cidades = Bookshelf.Collection.extend({
   model: Cidade
 }, {
   _listar: function(filtro) {
-    var termos;
-    var idEstado;
+    let termos;
+    let idEstado;
     if (filtro) {
       if (filtro.idEstado) {
         if (isNaN(filtro.idEstado)) {

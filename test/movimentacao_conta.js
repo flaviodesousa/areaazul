@@ -11,8 +11,8 @@ const Bookshelf = require('../database');
 const ContaModel = Bookshelf.model('Conta');
 
 describe('facade MovimentacaoDeConta', function() {
-  var revendedor = null;
-  var conta = null;
+  let revendedor = null;
+  let conta = null;
 
   function buscarConta(id) {
     return new ContaModel({ id: id })
@@ -41,7 +41,7 @@ describe('facade MovimentacaoDeConta', function() {
 
   describe('inserirCredito()', function() {
     it('insere credito na conta', function(done) {
-      var transacao = {
+      const transacao = {
         conta_id: conta.id,
         valor: 100.00,
         tipo: 'Cartão de credito',
@@ -72,7 +72,7 @@ describe('facade MovimentacaoDeConta', function() {
 
   describe('inserirDebito()', function() {
     it('debita na conta', function(done) {
-      var transacao = {
+      const transacao = {
         conta_id: revendedor.get('conta_id'),
         valor: 10.00,
         tipo: 'o-que-eh-esse-tipo?',

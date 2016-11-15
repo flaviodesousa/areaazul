@@ -4,13 +4,13 @@ const debug = require('debug')('areaazul:main');
 const util = require('util');
 const log = require('./logging');
 
-var BusinessException = function(message, details) {
+const BusinessException = function(message, details) {
   this.message = message;
   this.details = details;
 };
 util.inherits(BusinessException, Error);
 
-var AuthenticationError = function(message, details) {
+const AuthenticationError = function(message, details) {
   this.message = message;
   this.details = details;
 };

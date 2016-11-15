@@ -19,8 +19,8 @@ const MovimentacaoConta = Bookshelf.Model.extend({
         { movimentacaoConta: movimentacaoConta, options: options });
       throw new Error('Falta transação');
     }
-    var optionsInsert = _.merge({ method: 'insert' }, options);
-    var optionsUpdate = _.merge({ method: 'update', patch: true },
+    const optionsInsert = _.merge({ method: 'insert' }, options);
+    const optionsUpdate = _.merge({ method: 'update', patch: true },
       options);
 
     return new Conta({ id: movimentacaoConta.conta_id })
@@ -32,7 +32,7 @@ const MovimentacaoConta = Bookshelf.Model.extend({
           });
       })
       .then(function(conta) {
-        var novoSaldo = money.add(
+        const novoSaldo = money.add(
           conta.get('saldo'),
           movimentacaoConta.valor);
 
