@@ -1,11 +1,11 @@
 'use strict';
 
-const Bookshelf = require('../../database');
+const Bookshelf = require('../database');
 const moment = require('moment');
 const Promise = require('bluebird');
 
-const AreaAzul = require('../../areaazul');
-const log = require('../../logging');
+const AreaAzul = require('../areaazul');
+const log = require('../logging');
 const AreaazulUtils = require('areaazul-utils');
 
 const Veiculo = Bookshelf.model('Veiculo');
@@ -115,4 +115,8 @@ const Fiscalizacao = Bookshelf.Model.extend({
 });
 Bookshelf.model('Fiscalizacao', Fiscalizacao);
 
-module.exports = Fiscalizacao;
+const Fiscalizacoes = Bookshelf.Collection.extend({
+  model: Fiscalizacao
+}, {
+});
+Bookshelf.collection('Fiscalizacoes', Fiscalizacoes);

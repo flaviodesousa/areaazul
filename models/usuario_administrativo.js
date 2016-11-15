@@ -2,13 +2,13 @@
 
 const _ = require('lodash');
 const bcrypt = require('bcrypt-then');
-const log = require('../../logging');
-const Bookshelf = require('../../database');
+const log = require('../logging');
+const Bookshelf = require('../database');
 
-const AreaAzul = require('../../areaazul');
+const AreaAzul = require('../areaazul');
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 
-const UsuarioHelper = require('../../helpers/usuario_helper');
+const UsuarioHelper = require('../helpers/usuario_helper');
 
 const UsuarioAdministrativo = Bookshelf.Model.extend({
   tableName: 'usuario_administrativo',

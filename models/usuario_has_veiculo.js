@@ -2,7 +2,7 @@
 
 const _ = require('lodash');
 
-const Bookshelf = require('../../database');
+const Bookshelf = require('../database');
 
 const UsuarioHasVeiculo = Bookshelf.Model.extend(
   {
@@ -44,4 +44,8 @@ const UsuarioHasVeiculo = Bookshelf.Model.extend(
   });
 Bookshelf.model('UsuarioHasVeiculo', UsuarioHasVeiculo);
 
-module.exports = UsuarioHasVeiculo;
+const UsuariosHaveVeiculos = Bookshelf.Collection.extend({
+  model: UsuarioHasVeiculo
+}, {
+});
+Bookshelf.collection('UsuariosHaveVeiculos', UsuariosHaveVeiculos);

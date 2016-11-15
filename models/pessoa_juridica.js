@@ -2,9 +2,9 @@
 
 const _ = require('lodash');
 const validation = require('./validation');
-const AreaAzul = require('../../areaazul');
-const log = require('../../logging');
-const Bookshelf = require('../../database');
+const AreaAzul = require('../areaazul');
+const log = require('../logging');
+const Bookshelf = require('../database');
 const Pessoa = Bookshelf.model('Pessoa');
 
 const PessoaJuridica = Bookshelf.Model.extend({
@@ -80,4 +80,7 @@ const PessoaJuridica = Bookshelf.Model.extend({
 });
 Bookshelf.model('PessoaJuridica', PessoaJuridica);
 
-module.exports = PessoaJuridica;
+const PessoasJuridicas = Bookshelf.Collection.extend({
+  model: PessoaJuridica
+});
+Bookshelf.collection('PessoasJuridicas', PessoasJuridicas);

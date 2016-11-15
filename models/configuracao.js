@@ -5,8 +5,8 @@ const debug = require('debug')('areaazul:model:configuracao');
 const validator = require('validator');
 const Promise = require('bluebird');
 
-const AreaAzul = require('../../areaazul');
-const Bookshelf = require('../../database');
+const AreaAzul = require('../areaazul');
+const Bookshelf = require('../database');
 
 const Configuracao = Bookshelf.Model.extend(
 {

@@ -2,8 +2,8 @@ const Promise = require('bluebird');
 const validator = require('validator');
 const _ = require('lodash');
 
-const AreaAzul = require('../../areaazul');
-const Bookshelf = require('../../database');
+const AreaAzul = require('../areaazul');
+const Bookshelf = require('../database');
 
 const AreaAzulMailer = require('areaazul-mailer');
 
@@ -104,4 +104,7 @@ sua senha.</p>
 });
 Bookshelf.model('Pessoa', Pessoa);
 
-module.exports = Pessoa;
+const Pessoas = Bookshelf.Collection.extend({
+  model: Pessoa
+});
+Bookshelf.collection('Pessoas', Pessoas);

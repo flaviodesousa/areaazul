@@ -1,10 +1,34 @@
 'use strict';
 
+const _ = require('lodash');
+const log = require('../logging');
 const Promise = require('bluebird');
 const Diacritics = require('diacritics');
-const AreaAzul = require('../../areaazul');
-const Bookshelf = require('../../database');
-const Cidade = Bookshelf.model('Cidade');
+const AreaAzul = require('../areaazul');
+const Bookshelf = require('../database');
+
+const Cidade = Bookshelf.Model.extend({
+  tableName: 'cidade',
+  estado: function() {
+    return this.belongsTo('Estado', 'estado_id');
+  }
+}, {
+  _buscarPorId: function(id, options) {
+    return new Cidade({ id: id })
+      .fetch(_.merge({
+        require: true,
+        withRelated: [ 'estado' ]
+      }, options))
+      .catch(Bookshelf.NotFoundError, () => {
+        const err = new AreaAzul.BusinessException(
+          'Cidade: id não encontrado',
+          { id: id });
+        log.warn(err.message, err.details);
+        throw err;
+      });
+  }
+});
+Bookshelf.model('Cidade', Cidade);
 
 const Cidades = Bookshelf.Collection.extend({
   model: Cidade

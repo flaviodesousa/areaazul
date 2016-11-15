@@ -2,12 +2,12 @@
 
 const _ = require('lodash');
 const bcrypt = require('bcrypt-then');
-const log = require('../../logging');
-const AreaAzul = require('../../areaazul');
-const Bookshelf = require('../../database');
+const log = require('../logging');
+const AreaAzul = require('../areaazul');
+const Bookshelf = require('../database');
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 const Conta = Bookshelf.model('Conta');
-const UsuarioHelper = require('../../helpers/usuario_helper');
+const UsuarioHelper = require('../helpers/usuario_helper');
 
 const UsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'usuario_fiscal',
@@ -129,4 +129,7 @@ const UsuarioFiscal = Bookshelf.Model.extend({
 });
 Bookshelf.model('UsuarioFiscal', UsuarioFiscal);
 
-module.exports = UsuarioFiscal;
+const UsuariosFiscais = Bookshelf.Collection.extend({
+  model: UsuarioFiscal
+});
+Bookshelf.collection('UsuariosFiscais', UsuariosFiscais);

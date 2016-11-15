@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-const Bookshelf = require('../../database');
+const Bookshelf = require('../database');
 
 const Conta = Bookshelf.Model.extend({
   tableName: 'conta',
@@ -21,4 +21,7 @@ const Conta = Bookshelf.Model.extend({
 });
 Bookshelf.model('Conta', Conta);
 
-module.exports = Conta;
+const Contas = Bookshelf.Collection.extend({
+  model: Conta
+});
+Bookshelf.collection('Contas', Contas);

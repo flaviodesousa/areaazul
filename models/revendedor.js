@@ -1,8 +1,8 @@
 'use strict';
 
 const _ = require('lodash');
-const AreaAzul = require('../../areaazul');
-const Bookshelf = require('../../database');
+const AreaAzul = require('../areaazul');
+const Bookshelf = require('../database');
 
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 const PessoaJuridica = Bookshelf.model('PessoaJuridica');
@@ -168,4 +168,7 @@ const Revendedor = Bookshelf.Model.extend({
 });
 Bookshelf.model('Revendedor', Revendedor);
 
-module.exports = Revendedor;
+const Revendedores = Bookshelf.Collection.extend({
+  model: Revendedor
+});
+Bookshelf.collection('Revendedores', Revendedores);

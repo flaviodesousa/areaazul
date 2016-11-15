@@ -1,6 +1,6 @@
 'use strict';
 
-const Bookshelf = require('../../database');
+const Bookshelf = require('../database');
 
 const Estado = Bookshelf.Model.extend({
   tableName: 'estado'
@@ -13,6 +13,8 @@ const Estado = Bookshelf.Model.extend({
 });
 Bookshelf.model('Estado', Estado);
 
-module.exports = Estado;
-
-
+const Estados = Bookshelf.Collection.extend({
+  model: Estado
+}, {
+});
+Bookshelf.collection('Estados', Estados);

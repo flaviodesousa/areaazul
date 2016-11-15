@@ -2,9 +2,9 @@
 
 const _ = require('lodash');
 const money = require('money-math');
-const log = require('../../logging');
-const AreaAzul = require('../../areaazul');
-const Bookshelf = require('../../database');
+const log = require('../logging');
+const AreaAzul = require('../areaazul');
+const Bookshelf = require('../database');
 const Conta = Bookshelf.model('Conta');
 
 const MovimentacaoConta = Bookshelf.Model.extend({
@@ -78,4 +78,8 @@ const MovimentacaoConta = Bookshelf.Model.extend({
 });
 Bookshelf.model('MovimentacaoConta', MovimentacaoConta);
 
-module.exports = MovimentacaoConta;
+const MovimentacoesConta = Bookshelf.Collection.extend({
+  model: MovimentacaoConta
+}, {
+});
+Bookshelf.collection('MovimentacoesConta', MovimentacoesConta);

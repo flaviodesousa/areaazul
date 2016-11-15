@@ -3,8 +3,8 @@
 const _ = require('lodash');
 const validation = require('./validation');
 
-const AreaAzul = require('../../areaazul');
-const Bookshelf = require('../../database');
+const AreaAzul = require('../areaazul');
+const Bookshelf = require('../database');
 const AreaAzulUtils = require('areaazul-utils');
 const Pessoa = Bookshelf.model('Pessoa');
 
@@ -164,5 +164,7 @@ const PessoaFisica = Bookshelf.Model.extend({
 });
 Bookshelf.model('PessoaFisica', PessoaFisica);
 
-module.exports = PessoaFisica;
-
+const PessoasFisicas = Bookshelf.Collection.extend({
+  model: PessoaFisica
+});
+Bookshelf.collection('PessoasFisicas', PessoasFisicas);

@@ -19,19 +19,7 @@ debug('Bookshelf loaded', Bookshelf.VERSION);
   'usuario_has_veiculo', 'ativacao', 'fiscalizacao', 'token'
 ].forEach(model => {
   debug('Registrando modelo ' + model);
-  require('./models/models/' + model);
+  require('./models/' + model);
 });
 
 debug('Models registrados');
-
-[
-  'ativacoes', 'cidades', 'contas', 'contratos', 'estados', 'fiscalizacoes',
-  'funcionarios', 'movimentacoes_contas', 'pessoas', 'pessoas_fisicas',
-  'pessoas_juridicas', 'revendedores', 'usuarios', 'usuarios_have_veiculos',
-  'usuarios_revendedores', 'usuarios_fiscais', 'veiculos'
-].forEach(collection => {
-  debug('Registrando coleção ' + collection);
-  require('./models/collections/' + collection);
-});
-
-debug('Collections registradas');

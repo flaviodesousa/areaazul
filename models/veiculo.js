@@ -2,10 +2,11 @@
 
 const _ = require('lodash');
 const validator = require('validator');
+const moment = require('moment');
 
-const AreaAzul = require('../../areaazul');
-const Bookshelf = require('../../database');
-const log = require('../../logging');
+const AreaAzul = require('../areaazul');
+const Bookshelf = require('../database');
+const log = require('../logging');
 const util = require('areaazul-utils');
 
 const Veiculo = Bookshelf.Model.extend({
@@ -164,4 +165,27 @@ const Veiculo = Bookshelf.Model.extend({
 });
 Bookshelf.model('Veiculo', Veiculo);
 
-module.exports = Veiculo;
+const Veiculos = Bookshelf.Collection.extend({
+  model: Veiculo
+}, {
+
+  _listarVeiculosIrregulares: function() {
+    return Veiculos.forge()
+      .query(function(qb) {
+        qb
+          .innerJoin('fiscalizacao', function() {
+            this.on('fiscalizacao.placa', '!=', 'veiculo.placa');
+          })
+          .leftJoin('ativacao', function() {
+            this.on('ativacao.veiculo_id', '!=', 'fiscalizacao.veiculo_id');
+          })
+          .where('fiscalizacao.timestamp', '>', moment()
+            .subtract(75, 'minutes')
+            .calendar())
+          .select('veiculo.*')
+          .select('fiscalizacao.*');
+      })
+      .fetch();
+  }
+});
+Bookshelf.collection('Veiculos', Veiculos);

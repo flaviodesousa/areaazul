@@ -4,10 +4,10 @@ const _ = require('lodash');
 const bcrypt = require('bcrypt-then');
 const validator = require('validator');
 
-const log = require('../../logging');
-const AreaAzul = require('../../areaazul');
+const log = require('../logging');
+const AreaAzul = require('../areaazul');
 const AreaAzulMailer = require('areaazul-mailer');
-const Bookshelf = require('../../database');
+const Bookshelf = require('../database');
 
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 const Conta = Bookshelf.model('Conta');
@@ -277,4 +277,8 @@ const Usuario = Bookshelf.Model.extend({
 });
 Bookshelf.model('Usuario', Usuario);
 
-module.exports = Usuario;
+const Usuarios = Bookshelf.Collection.extend({
+  model: Usuario
+}, {
+});
+Bookshelf.collection('Usuarios', Usuarios);

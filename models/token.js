@@ -1,7 +1,7 @@
 'use strict';
 
-const AreaAzul = require('../../areaazul');
-const Bookshelf = require('../../database');
+const AreaAzul = require('../areaazul');
+const Bookshelf = require('../database');
 
 const Token = Bookshelf.Model.extend({
   tableName: 'token',
