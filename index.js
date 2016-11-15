@@ -148,16 +148,27 @@ module.exports = function(AreaAzul) {
   }
 
   function _apagarUsuarioFiscal(idUsuarioFiscal) {
+    var contaId;
     return new Fiscalizacoes()
       .query()
       .where({ usuario_fiscal_id: idUsuarioFiscal })
       .delete()
       .then(function() {
         return new UsuarioFiscal({ id: idUsuarioFiscal })
+          .fetch();
+      })
+      .then(function(usuFis) {
+        contaId = usuFis.get('conta_id');
+      })
+      .then(function() {
+        return new UsuarioFiscal({ id: idUsuarioFiscal })
           .destroy();
       })
       .then(function() {
         return _apagarPessoaFisica(idUsuarioFiscal);
+      })
+      .then(function() {
+        return _apagarConta(contaId);
       });
   }
 
