@@ -1,7 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
-var validation = require('./validation');
+const validation = require('./validation');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('../../database');

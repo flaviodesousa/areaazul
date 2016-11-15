@@ -1,8 +1,8 @@
 'use strict';
 
-var bcrypt = require('bcrypt-then');
-var validator = require('validator');
-var _ = require('lodash');
+const bcrypt = require('bcrypt-then');
+const validator = require('validator');
+const _ = require('lodash');
 const log = require('../../logging');
 
 const AreaAzul = require('../../areaazul');

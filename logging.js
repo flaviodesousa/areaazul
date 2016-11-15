@@ -1,6 +1,6 @@
 'use strict';
 
-var winston = require('winston');
+const winston = require('winston');
 require('winston-loggly');
 
 (function() {

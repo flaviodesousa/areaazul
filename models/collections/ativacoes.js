@@ -2,7 +2,7 @@
 
 const moment = require('moment');
 
-var Bookshelf = require('../../database');
+const Bookshelf = require('../../database');
 var Ativacao = Bookshelf.model('Ativacao');
 
 var Ativacoes = Bookshelf.Collection.extend({

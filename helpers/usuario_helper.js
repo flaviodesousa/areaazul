@@ -5,7 +5,7 @@
 
 'use strict';
 
-var validator = require('validator');
+const validator = require('validator');
 
 const Bookshelf = require('../database');
 

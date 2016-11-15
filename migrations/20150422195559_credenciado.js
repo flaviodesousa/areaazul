@@ -1,6 +1,6 @@
 'use strict';
 
-var Promise = require('bluebird');
+const Promise = require('bluebird');
 
 exports.up = function() {
   return Promise.resolve(null);

@@ -1,7 +1,7 @@
 'use strict';
 
-var debug = require('debug')('areaazul:main');
-var util = require('util');
+const debug = require('debug')('areaazul:main');
+const util = require('util');
 const log = require('./logging');
 
 var BusinessException = function(message, details) {
