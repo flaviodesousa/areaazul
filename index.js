@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = function(AreaAzul) {
-  var exports = {};
+  let exports = {};
 
   const _ = require('lodash');
   const debug = require('debug')('areaazul-test-helper');
@@ -107,7 +107,7 @@ module.exports = function(AreaAzul) {
   }
 
   function _apagarRevendedor(idRevenda) {
-    var idConta = null;
+    let idConta = null;
     return new Revendedor({ id: idRevenda })
       .fetch()
       .then(function(r) {
@@ -148,7 +148,7 @@ module.exports = function(AreaAzul) {
   }
 
   function _apagarUsuarioFiscal(idUsuarioFiscal) {
-    var contaId;
+    let contaId;
     return new Fiscalizacoes()
       .query()
       .where({ usuario_fiscal_id: idUsuarioFiscal })
@@ -280,7 +280,7 @@ module.exports = function(AreaAzul) {
 
   exports.apagarAtivacaoId = _apagarAtivacaoId;
   function _apagarAtivacaoId(id) {
-    var ativacao;
+    let ativacao;
     return new Ativacao({ id: id })
       .fetch({ require: true })
       .then(at => {
@@ -348,7 +348,7 @@ module.exports = function(AreaAzul) {
       .fetch({ withRelated: 'estado' });
   };
 
-  var veiculoParaTeste = [
+  const veiculoParaTeste = [
     {
       cidade_id: 1,
       placa: 'ARE4701',
@@ -400,7 +400,7 @@ module.exports = function(AreaAzul) {
 
   exports.pegarVeiculo = pegarVeiculo;
 
-  var usuarioTeste = {
+  const usuarioTeste = {
     login: 'usuarioTeste',
     nova_senha: 'senhaTeste',
     conf_senha: 'senhaTeste',
@@ -431,7 +431,7 @@ module.exports = function(AreaAzul) {
 
   exports.pegarUsuario = pegarUsuario;
 
-  var revendedorPessoaFisicaTeste = {
+  const revendedorPessoaFisicaTeste = {
     nome: 'Nome Revendedor Pessoa Fisica',
     email: 'revendedor-teste-unitario@areaazul.org',
     telefone: '00 0000 0000',
@@ -470,7 +470,7 @@ module.exports = function(AreaAzul) {
   }
   exports.pegarRevendedor = pegarRevendedor;
 
-  var usuarioRevendedorTeste = {
+  const usuarioRevendedorTeste = {
     login: 'usuarioRevendedorTeste',
     nome: 'usuário Revenda Teste',
     autorizacao: 'funcionario',
