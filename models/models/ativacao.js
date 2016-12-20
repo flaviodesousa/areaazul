@@ -258,13 +258,13 @@ var Ativacao = Bookshelf.Model.extend({
       ._validarAtivacaoRevenda(camposAtivacao, placaSemMascara, options)
       .then(function(messages) {
         if (messages.length) {
-          debug('ativarPorRevenda() ativacao invalida');
+          debug('ativarPorRevenda() ativação inválida');
           throw new AreaAzul
             .BusinessException(
             'Não foi possível ativar veículo. Dados inválidos',
             messages);
         }
-        debug('ativarPorRevenda() ativacao valida');
+        debug('ativarPorRevenda() ativação válida');
       })
       .then(() => {
         return new UsuarioRevendedor({
@@ -356,7 +356,7 @@ var Ativacao = Bookshelf.Model.extend({
       ._validarAtivacao(ativacao, options)
       .then(mensagensComuns => {
         messages.push.apply(messages, mensagensComuns);
-        return new Veiculo({ placa: ativacao.placa })
+        return new Veiculo({ placa: placa })
           .fetch(_.merge({ require: true }, options));
       })
       .then(function(veiculo) {
