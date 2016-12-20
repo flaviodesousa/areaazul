@@ -3,14 +3,14 @@
 const debug = require('debug')('areaazul:test:pessoa_juridica');
 const should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const PessoaJuridica = AreaAzul.facade.PessoaJuridica;
 
 describe('facade PessoaJuridica', function() {
   var cnpjTeste = '16169879000130';
 
   function deleteTestData(done) {
-    const Bookshelf = require('../database');
+    const Bookshelf = require('../../database');
     const AreaazulTestHelpers =
       require('areaazul-test-helpers')(AreaAzul);
     const PessoaJuridicaModel = Bookshelf.model('PessoaJuridica');

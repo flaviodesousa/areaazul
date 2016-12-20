@@ -2,7 +2,7 @@
 
 const should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const UsuarioHasVeiculo = AreaAzul.facade.UsuarioHasVeiculo;
 
 describe('facade UsuarioHasVeiculo', function() {

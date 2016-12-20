@@ -3,7 +3,7 @@
 const debug = require('debug')('areaazul:teste:cidade');
 const should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const Cidade = AreaAzul.facade.Cidade;
 
 describe('fachada Cidade', function() {

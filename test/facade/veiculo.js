@@ -3,7 +3,7 @@
 const debug = require('debug')('areaazul:test:veiculo');
 const should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const Veiculo = AreaAzul.facade.Veiculo;
 
 const TestHelpers = require('areaazul-test-helpers')(AreaAzul);

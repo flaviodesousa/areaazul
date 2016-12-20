@@ -4,10 +4,10 @@ const debug = require('debug')('areaazul:test:movimentacao_conta');
 const should = require('chai').should();
 const money = require('money-math');
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const MovimentacaoConta = AreaAzul.facade.MovimentacaoDeConta;
 
-const Bookshelf = require('../database');
+const Bookshelf = require('../../database');
 const ContaModel = Bookshelf.model('Conta');
 
 describe('facade MovimentacaoDeConta', function() {

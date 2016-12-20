@@ -3,7 +3,7 @@
 const debug = require('debug')('areaazul:test:revendedor');
 const should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const Revendedor = AreaAzul.facade.Revendedor;
 const UsuarioRevendedor = AreaAzul.facade.UsuarioRevendedor;
 

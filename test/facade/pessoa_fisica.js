@@ -3,14 +3,14 @@
 const debug = require('debug')('areaazul:test:pessoa_fisica');
 const should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const PessoaFisica = AreaAzul.facade.PessoaFisica;
 
 describe('facade PessoaFisica', function() {
   var cpfTeste = '04163501436';
 
   function deleteTestData(done) {
-    const Bookshelf = require('../database');
+    const Bookshelf = require('../../database');
     const Pessoa = Bookshelf.model('Pessoa');
     const PessoaFisica = Bookshelf.model('PessoaFisica');
     var pessoaId = null;

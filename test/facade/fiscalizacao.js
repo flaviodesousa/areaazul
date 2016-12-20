@@ -3,10 +3,10 @@
 const debug = require('debug')('areaazul:test:fiscalizacao');
 const should = require('chai').should();
 
-const Bookshelf = require('../database');
+const Bookshelf = require('../../database');
 const FiscalizacaoModel = Bookshelf.model('Fiscalizacao');
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const Fiscalizacao = AreaAzul.facade.Fiscalizacao;
 
 describe('facade Fiscalizacao', function() {

@@ -5,10 +5,10 @@ const should = require('chai').should();
 
 const math = require('money-math');
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const Ativacao = AreaAzul.facade.Ativacao;
 
-const Bookshelf = require('../database');
+const Bookshelf = require('../../database');
 const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 const AtivacaoModel = Bookshelf.model('Ativacao');
 const AtivacaoUsuarioModel = Bookshelf.model('AtivacaoUsuario');
