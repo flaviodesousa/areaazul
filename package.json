@@ -9,7 +9,7 @@
   },
   "main": "areaazul.js",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha --recursive"
   },
   "publishConfig": {
     "registry": "https://npm.flaviodesousa.com"
