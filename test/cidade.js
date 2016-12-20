@@ -1,0 +1,66 @@
+'use strict';
+
+var should = require('chai').should();
+var app = require('../app');
+var superAgent = require('superagent');
+
+describe('/cidade', function() {
+  var server;
+
+  before(function(done) {
+    server = app.listen(8080, function() {
+      done();
+    });
+  });
+
+  describe('GET', function() {
+    it('obtém lista de cidades', function(done) {
+      this.slow(1500);
+      this.timeout(5000);  // Lista completa de cidades: mais lento
+      superAgent
+        .get('http://localhost:8080/cidade')
+        .end(function(err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          res.ok.should.be.equal(true);
+          done();
+        });
+    });
+    it('obtém lista de cidades de um estado', function(done) {
+      this.slow(1500);
+      this.timeout(5000);  // Lista completa de cidades: mais lento
+      superAgent
+        .get('http://localhost:8080/cidade?estado=1')
+        .end(function(err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          res.ok.should.be.equal(true);
+          done();
+        });
+    });
+    it('obtém lista de cidades contendo termos', function(done) {
+      this.slow(1500);
+      this.timeout(5000);  // Lista completa de cidades: mais lento
+      superAgent
+        .get('http://localhost:8080/cidade?termos=São+Mig')
+        .end(function(err, res) {
+          should.not.exist(err);
+          should.exist(res);
+          res.ok.should.be.equal(true);
+          res.should.have.property('body');
+          res.body.should.be.instanceOf(Array);
+          for (let cidade of res.body) {
+            cidade.should.have.property('nome_busca');
+            /sao.*mig/.test(cidade.nome_busca).should.equal(true);
+          }
+          done();
+        });
+    });
+  });
+
+  after(function(done) {
+    server.close();
+    done();
+  });
+
+});

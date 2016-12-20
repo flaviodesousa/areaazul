@@ -9,6 +9,7 @@
   },
   "main": "areaazul.js",
   "scripts": {
+    "start": "node ./bin/areaazul-api-web.js",
     "test": "mocha --recursive"
   },
   "publishConfig": {
@@ -34,13 +35,23 @@
     "pg": "^6.1.0",
     "validator": "5.6.0",
     "winston": "^2.2.0",
-    "winston-loggly": "^1.3.1"
+    "winston-loggly": "^1.3.1",
+    "body-parser": "1.15.2",
+    "express": "4.14.0",
+    "express-load": "*",
+    "express-validator": "^2.20.10",
+    "http-status": "0.2.3",
+    "morgan": "1.7.0",
+    "passport": "0.3.2",
+    "passport-http": "*",
+    "winston": "*"
   },
   "devDependencies": {
     "areaazul-test-helpers": "^1.2.12",
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "gulp-release-tasks": "0.0.3",
-    "mocha": "^3.0.2"
+    "mocha": "^3.1.0",
+    "superagent": "^2.3.0"
   }
 }
