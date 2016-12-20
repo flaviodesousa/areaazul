@@ -1,7 +1,7 @@
 'use strict';
 
 var should = require('chai').should();
-var app = require('../app');
+var app = require('../../app');
 var superAgent = require('superagent');
 
 describe('/cidade', function() {

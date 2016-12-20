@@ -2,10 +2,10 @@
 
 const debug = require('debug')('areaazul-api-web:controller:fiscalizacao');
 var should = require('chai').should();
-var app = require('../app');
+var app = require('../../app');
 var superagent = require('superagent');
 
-var AreaAzul = require('areaazul');
+var AreaAzul = require('../../areaazul');
 const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
 
 const Bookshelf = AreaAzul._internals.Bookshelf;

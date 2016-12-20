@@ -2,9 +2,9 @@
 
 const debug = require('debug')('areaazul-api-web:controller:veiculo');
 const should = require('chai').should();
-const app = require('../app');
+const app = require('../../app');
 const superAgent = require('superagent');
-const AreaAzul = require('areaazul');
+const AreaAzul = require('../../areaazul');
 const Bookshelf = require('bookshelf');
 const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
 const Veiculo = AreaAzul.facade.Veiculo;

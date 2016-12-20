@@ -4,7 +4,7 @@ var passport = require('passport');
 var util = require('util');
 var BasicStrategy = require('passport-http').BasicStrategy;
 
-const AreaAzul = require('areaazul');
+const AreaAzul = require('./areaazul');
 const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
 const Usuario = AreaAzul.facade.Usuario;
 

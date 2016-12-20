@@ -1,6 +1,6 @@
 'use strict';
 
-const AreaAzul = require('areaazul');
+const AreaAzul = require('../areaazul');
 
 module.exports.registrar = function(req, res) {
   AreaAzul.facade.Fiscalizacao

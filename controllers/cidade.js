@@ -1,6 +1,6 @@
 'use strict';
 
-const AreaAzul = require('areaazul');
+const AreaAzul = require('../areaazul');
 
 module.exports.listar = function(req, res) {
   var filtro = {};
