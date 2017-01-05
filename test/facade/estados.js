@@ -2,7 +2,7 @@
 
 const should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const Estado = AreaAzul.facade.Estado;
 
 describe('fachada Estado', function() {

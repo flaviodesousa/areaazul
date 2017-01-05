@@ -3,7 +3,7 @@
 const should = require('chai').should();
 const debug = require('debug')('areaazul:test:usuario_administrativo');
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const UsuarioAdministrativo = AreaAzul.facade.UsuarioAdministrativo;
 const PessoaFisica = AreaAzul.facade.PessoaFisica;
 

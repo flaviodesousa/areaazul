@@ -3,7 +3,7 @@
 const should = require('chai').should();
 const debug = require('debug')('areaazul:test:usuario_fiscal');
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
 const PessoaFisica = AreaAzul.facade.PessoaFisica;
 

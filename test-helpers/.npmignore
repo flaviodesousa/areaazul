@@ -1,0 +1,10 @@
+.editorconfig
+.gitignore
+.jscsrc
+.jshintrc
+.idea
+.project
+.ternproject
+gulpfile.js
+test
+coverage

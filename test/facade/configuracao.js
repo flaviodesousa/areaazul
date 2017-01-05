@@ -3,7 +3,7 @@
 const debug = require('debug')('areaazul:test:configuracao');
 const should = require('chai').should();
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const Configuracao = AreaAzul.facade.Configuracao;
 
 describe('fachada Configuracao', function() {

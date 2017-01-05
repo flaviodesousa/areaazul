@@ -4,7 +4,7 @@ const debug = require('debug')('areaazul:test:usuario');
 const should = require('chai').should();
 const Promise = require('bluebird');
 
-const AreaAzul = require('../areaazul');
+const AreaAzul = require('../../areaazul');
 const Usuario = AreaAzul.facade.Usuario;
 const Ativacao = AreaAzul.facade.Ativacao;
 
