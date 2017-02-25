@@ -1,12 +1,12 @@
 'use strict';
 
-var express = require('express');
-var load = require('express-load');
-var logger = require('morgan');
-var bodyParser = require('body-parser');
-var app = express();
-var passport = require('passport');
-var basicAuthentication = require('./basic-authentication');
+const express = require('express');
+const load = require('express-load');
+const logger = require('morgan');
+const bodyParser = require('body-parser');
+const app = express();
+const passport = require('passport');
+const basicAuthentication = require('./basic-authentication');
 
 app.get('/robots.txt', function(req, res) {
   res.type('text/plain');
