@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const load = require('express-load');
+const consign = require('consign');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const app = express();
@@ -38,7 +38,10 @@ app.use(function(req, res, next) {
   return next();
 });
 
-// Controller - Rotas
-load('controllers').then('routes').into(app, passport);
+// Controllers - Rotas
+consign()
+  .include('controllers')
+  .then('routes')
+  .into(app, passport);
 
 module.exports = app;
