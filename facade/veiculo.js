@@ -1,5 +1,6 @@
 const log = require('../logging');
 const Bookshelf = require('../database');
+const AreaAzul = require('../areaazul');
 
 const Ativacoes = Bookshelf.collection('Ativacoes');
 const Veiculo = Bookshelf.model('Veiculo');
@@ -27,6 +28,9 @@ module.exports.listar = function() {
     })
     .then(() => {
       return veiculos;
+    })
+    .catch((e) => {
+      throw new AreaAzul.BusinessException('Falha obtendo relatórios de veículos', { exception: e });
     });
 };
 

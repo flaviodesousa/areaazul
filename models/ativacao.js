@@ -467,11 +467,13 @@ const Ativacoes = Bookshelf.Collection.extend({
           .innerJoin('veiculo', 'veiculo.id', 'ativacao.veiculo_id')
           .leftJoin('fiscalizacao',
             'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
-          .where('ativacao.data_ativacao', '>=',
-            moment().subtract(2, 'minutes').calendar())
+          .where('ativacao.data_expiracao', '>=',
+            new Date())
           .select('ativacao.*')
           .select('veiculo.*');
-      }).fetch().then(function(collectionVeiculosSomenteAtivados) {
+      })
+      .fetch()
+      .then(function(collectionVeiculosSomenteAtivados) {
         return collectionVeiculosSomenteAtivados;
       });
   },
@@ -484,10 +486,10 @@ const Ativacoes = Bookshelf.Collection.extend({
           .innerJoin('veiculo', 'veiculo.id', 'ativacao.veiculo_id')
           .leftJoin('fiscalizacao',
             'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
-          .where('ativacao.data_ativacao', '<=',
-            moment().subtract(2, 'minutes').calendar())
-          .andWhere('ativacao.data_ativacao', '>=',
-            moment().subtract(4, 'minutes').calendar())
+          .where('ativacao.data_expiracao', '<=',
+            moment().subtract(5, 'minutes').calendar())
+          .andWhere('ativacao.data_expiracao', '>=',
+            moment().subtract(5, 'minutes').calendar())
           .select('ativacao.*')
           .select('veiculo.*');
       })
@@ -506,10 +508,7 @@ const Ativacoes = Bookshelf.Collection.extend({
             'veiculo.id', 'ativacao.veiculo_id')
           .leftJoin('fiscalizacao',
             'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
-          .where('ativacao.data_ativacao', '<=',
-            moment().subtract(5, 'minutes').calendar())
-          .andWhere('ativacao.data_ativacao', '>=',
-            moment().subtract(6, 'minutes').calendar())
+          .where('ativacao.data_expiracao', '>', new Date())
           .select('ativacao.*')
           .select('veiculo.*');
       })
