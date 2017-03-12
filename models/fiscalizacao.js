@@ -20,10 +20,10 @@ const Fiscalizacao = Bookshelf.Model.extend({
     return this.belongsTo('UsuarioFiscal');
   }
 }, {
-  _listar: (antesDe = new Date(), limite = 10) => {
+  _listar: (apos, antesDe = new Date(), limite = 10) => {
     return Fiscalizacao
       .query(function(qb) {
-        qb.where('timestamp', '<', antesDe)
+        qb.whereBetween('timestamp', [apos, antesDe])
           .orderBy('timestamp', 'desc')
           .limit(limite);
       })

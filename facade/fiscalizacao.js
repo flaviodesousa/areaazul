@@ -4,9 +4,9 @@ const log = require('../logging');
 const Bookshelf = require('../database');
 const Fiscalizacao = Bookshelf.model('Fiscalizacao');
 
-module.exports.listar = function(antesDe = new Date(), limite = 10) {
+module.exports.listar = function(apos, antesDe = new Date(), limite = 10) {
   return Fiscalizacao
-    ._listar(antesDe, limite)
+    ._listar(apos, antesDe, limite)
     .then(fiscalizacoes => {
       return fiscalizacoes.toJSON();
     });

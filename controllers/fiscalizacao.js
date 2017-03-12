@@ -1,5 +1,6 @@
 'use strict';
 
+const moment = require('moment');
 const AreaAzul = require('../areaazul');
 
 module.exports.registrar = function(req, res) {
@@ -19,12 +20,15 @@ module.exports.registrar = function(req, res) {
 };
 
 module.exports.listar = function(req, res) {
-  var minutos;
+  let apos;
   if (req.query.minutos) {
-    minutos = Number(req.query.minutos);
+    let minutos = Number(req.query.minutos);
+    apos = moment().subtract(minutos, 'minutes').toDate();
+  } else {
+    apos = new Date();
   }
   AreaAzul.facade.Fiscalizacao
-    .listar(minutos)
+    .listar(apos)
     .then(function(fiscalizacoes) {
       res.send(fiscalizacoes);
     })

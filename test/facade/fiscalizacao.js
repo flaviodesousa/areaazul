@@ -2,6 +2,7 @@
 
 const debug = require('debug')('areaazul:test:fiscalizacao');
 const should = require('chai').should();
+const moment = require('moment');
 
 const Bookshelf = require('../../database');
 const FiscalizacaoModel = Bookshelf.model('Fiscalizacao');
@@ -191,9 +192,10 @@ describe('facade Fiscalizacao', function() {
   });
 
   describe('listar()', function() {
+    const tenMinutesAgo = moment().subtract(10, 'minutes');
     it('retorna uma lista de fiscalizacoes', function(done) {
       Fiscalizacao
-        .listar()
+        .listar(tenMinutesAgo)
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);
           done();
@@ -205,7 +207,7 @@ describe('facade Fiscalizacao', function() {
     });
     it('limita por tempo', function(done) {
       Fiscalizacao
-        .listar(new Date())
+        .listar(tenMinutesAgo, new Date())
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);
           done();
@@ -217,7 +219,7 @@ describe('facade Fiscalizacao', function() {
     });
     it('limita por tempo e respostas', function(done) {
       Fiscalizacao
-        .listar(new Date(), 2)
+        .listar(tenMinutesAgo, new Date(), 2)
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);
           fiscalizacoes.should.have.property('length', 2);
