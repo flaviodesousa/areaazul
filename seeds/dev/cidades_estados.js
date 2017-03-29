@@ -2,14 +2,10 @@
 
 const Diacritics = require('diacritics');
 
-exports.seed = function(knex, Promise) {
-  return Promise.join(
-    // Deletes ALL existing entries
-    knex('cidade').del(),
-    knex('estado').del(),
-
-    // Inserts seed entries
-    knex('estado').insert([
+exports.seed = function(knex) {
+  return knex('cidade').del()
+    .then(() => knex('estado').del())
+    .then(() => knex('estado').insert([
       { id: 1, uf: 'AC', nome: 'Acre' },
       { id: 2, uf: 'AL', nome: 'Alagoas' },
       { id: 3, uf: 'AP', nome: 'Amapá' },
@@ -36,9 +32,8 @@ exports.seed = function(knex, Promise) {
       { id: 24, uf: 'TO', nome: 'Tocantins' },
       { id: 25, uf: 'SC', nome: 'Santa Catarina' },
       { id: 26, uf: 'SP', nome: 'São Paulo' },
-      { id: 27, uf: 'SE', nome: 'Sergipe' }]),
-
-    knex('cidade').insert([
+      { id: 27, uf: 'SE', nome: 'Sergipe' }]))
+    .then(() => knex('cidade').insert([
       { id: 1, nome: 'Acrelândia', nome_busca: Diacritics.remove('acrelândia').toLowerCase(), estado_id: 1 },
       { id: 2, nome: 'Assis Brasil', nome_busca: Diacritics.remove('assis brasil').toLowerCase(), estado_id: 1 },
       { id: 3, nome: 'Brasiléia', nome_busca: Diacritics.remove('brasiléia').toLowerCase(), estado_id: 1 },
@@ -10059,7 +10054,6 @@ exports.seed = function(knex, Promise) {
       { id: 10019, nome: 'Aroeiras Do Itaim', nome_busca: Diacritics.remove('aroeiras do itaim').toLowerCase(), estado_id: 19 },
       { id: 10020, nome: 'Ipiranga Do Norte', nome_busca: Diacritics.remove('ipiranga do norte').toLowerCase(), estado_id: 12 },
       { id: 10021, nome: 'Itanhangá', nome_busca: Diacritics.remove('itanhangá').toLowerCase(), estado_id: 12 },
-      { id: 10022, nome: 'Campinas', nome_busca: Diacritics.remove('campinas').toLowerCase(), estado_id: 1 }])
-  );
+      { id: 10022, nome: 'Campinas', nome_busca: Diacritics.remove('campinas').toLowerCase(), estado_id: 1 }]));
 };
 

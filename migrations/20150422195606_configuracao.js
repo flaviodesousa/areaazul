@@ -11,6 +11,8 @@ exports.up = function(knex) {
     table.json('parametros');
     table.integer('cidade_id').notNullable()
       .references('id').inTable('cidade');
+    table.integer('conta_id').notNullable()
+      .references('id').inTable('conta');
   });
 };
 

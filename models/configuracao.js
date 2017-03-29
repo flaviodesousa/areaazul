@@ -10,7 +10,13 @@ const Bookshelf = require('../database');
 
 const Configuracao = Bookshelf.Model.extend(
   {
-    tableName: 'configuracao'
+    tableName: 'configuracao',
+    cidade: function() {
+      return this.belongsTo('Cidade', 'cidade_id');
+    },
+    conta: function() {
+      return this.belongsTo('Conta', 'conta_id');
+    }
   }, {
     _camposValidos: function(config) {
       let message = [];
@@ -57,7 +63,12 @@ const Configuracao = Bookshelf.Model.extend(
     },
     _buscar: () =>
       new Configuracao()
-        .fetch({ require: true })
+        .fetch({
+          require: true,
+          withRelated: [
+            'conta',
+            'cidade.estado'
+          ]})
         .catch(Bookshelf.NotFoundError, () => {
           // TODO: Falhar neste caso, configuração via sysadmin tools
           throw new AreaAzul.BusinessException(
@@ -83,8 +94,7 @@ const Configuracao = Bookshelf.Model.extend(
           tempo_tolerancia_minutos: camposConfig.tempo_tolerancia_minutos,
           franquia_minutos: camposConfig.franquia_minutos,
           ciclo_ativacao_minutos: camposConfig.ciclo_ativacao_minutos,
-          ciclo_fiscalizacao_minutos:
-          camposConfig.ciclo_fiscalizacao_minutos,
+          ciclo_fiscalizacao_minutos: camposConfig.ciclo_fiscalizacao_minutos,
           cidade_id: camposConfig.cidade_id
         };
         if (configuracao) {
