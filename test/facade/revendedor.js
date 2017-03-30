@@ -4,6 +4,7 @@ const debug = require('debug')('areaazul:test:revendedor');
 const should = require('chai').should();
 
 const AreaAzul = require('../../areaazul');
+const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
 const Revendedor = AreaAzul.facade.Revendedor;
 const UsuarioRevendedor = AreaAzul.facade.UsuarioRevendedor;
 
@@ -140,6 +141,49 @@ describe('facade Revendedor', function() {
           done();
         })
         .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+  });
+
+  describe('comprarCreditos()', function() {
+    it('compra créditos', function(done) {
+      Revendedor
+        .comprarCreditos({
+          idRevendedor: idRevendedorPessoaFisica,
+          valorCompra: '937.00' })
+        .then(() => {
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+  });
+
+  describe('venderCreditos()', function() {
+    let idUsuario = null;
+
+    before(function() {
+      return TestHelpers.pegarUsuario()
+        .then(usuario => {
+          idUsuario = usuario.id;
+        });
+    });
+
+    it('vende créditos', function(done) {
+      Revendedor
+        .venderCreditos({
+          idRevendedor: idRevendedorPessoaFisica,
+          idUsuario: idUsuario,
+          valorVenda: '50'
+        })
+        .then(() => {
+          done();
+        })
+        .catch(e => {
           debug('erro inesperado', e);
           done(e);
         });

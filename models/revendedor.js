@@ -4,9 +4,12 @@ const _ = require('lodash');
 const AreaAzul = require('../areaazul');
 const Bookshelf = require('../database');
 
+const Configuracao = Bookshelf.model('Configuracao');
 const PessoaFisica = Bookshelf.model('PessoaFisica');
 const PessoaJuridica = Bookshelf.model('PessoaJuridica');
 const Conta = Bookshelf.model('Conta');
+const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
+const Usuario = Bookshelf.model('Usuario');
 
 const Revendedor = Bookshelf.Model.extend({
   tableName: 'revendedor',
@@ -163,8 +166,62 @@ const Revendedor = Bookshelf.Model.extend({
       })
       .fetch({ withRelated: [ 'conta' ] });
   },
-  _buscarPorId: id => new Revendedor({ id: id })
-    .fetch({ withRelated: [ 'conta' ] })
+  _buscarPorId: (id, options) => new Revendedor({ id: id })
+    .fetch(_.merge({ withRelated: [ 'conta' ] }, options)),
+  /**
+   * Adiciona créditos na conta da revenda
+   * @param {object} camposCompra {idRevendedor, valorCompra}
+   * @param {object} options {transacting}
+   * @returns {Promise.<null>}
+   * @throws AreaAzul.BusinessException
+   */
+  _comprarCreditos: (camposCompra, options) => {
+    const movimentacao = {
+      historico: `Compra de ${camposCompra.valorCompra} créditos pela revenda ${camposCompra.idRevendedor}`,
+      tipo: 'compraCreditosPelaRevenda',
+      valor: camposCompra.valorCompra,
+    };
+
+    return Configuracao
+      ._buscar()
+      .then(configuracao => MovimentacaoConta
+        ._inserirCredito(
+          _.merge({ conta_id: configuracao.related('conta').id }, movimentacao),
+          options))
+      .then(() => Revendedor
+        ._buscarPorId(camposCompra.idRevendedor, options))
+      .then(revendedor => MovimentacaoConta
+        ._inserirCredito(
+          _.merge({ conta_id: revendedor.related('conta').id }, movimentacao),
+          options));
+  },
+  /**
+   * Transfere créditos da conta da revenda para conta do usuário
+   * @param {object} camposVenda {idRevendedor, idUsuario, valorVenda}
+   * @param {object} options {transacting}
+   * @returns {Promise.<null>}
+   * @throws AreaAzul.BusinessException
+   */
+  _venderCreditos: (camposVenda, options) => {
+    const movimentacao = {
+      historico: `Compra de ${camposVenda.valorVenda} créditos pela revenda ${camposVenda.idRevendedor} ao usuario ${camposVenda.idUsuario}`,
+      tipo: 'vendaCreditosPelaRevenda',
+      valor: camposVenda.valorVenda,
+    };
+
+    return Usuario
+      ._buscarPorId(camposVenda.idUsuario, options)
+      .then(usuario => MovimentacaoConta
+        ._inserirCredito(
+          _.merge({ conta_id: usuario.related('conta').id }, movimentacao),
+          options))
+      .then(() => Revendedor
+        ._buscarPorId(camposVenda.idRevendedor, options))
+      .then(revendedor => MovimentacaoConta
+        ._inserirDebito(
+          _.merge({ conta_id: revendedor.related('conta').id }, movimentacao),
+          options));
+  }
 });
 Bookshelf.model('Revendedor', Revendedor);
 

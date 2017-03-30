@@ -12,10 +12,13 @@ module.exports = Bookshelf;
 debug('Bookshelf loaded', Bookshelf.VERSION);
 
 [
-  'estado', 'cidade', 'conta', 'contrato', 'pessoa', 'pessoa_fisica',
-  'pessoa_juridica', 'usuario_revendedor', 'revendedor', 'funcionario',
-  'veiculo', 'configuracao', 'movimentacao_conta',
+  'estado', 'cidade', 'conta',
+  'configuracao', 'movimentacao_conta',
+  'contrato',
+  'pessoa', 'pessoa_fisica', 'pessoa_juridica',
+  'funcionario', 'veiculo',
   'usuario', 'usuario_administrativo', 'usuario_fiscal',
+  'usuario_revendedor', 'revendedor',
   'usuario_has_veiculo', 'ativacao', 'fiscalizacao', 'token'
 ].forEach(model => {
   debug('Registrando modelo ' + model);
