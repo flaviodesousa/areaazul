@@ -153,7 +153,10 @@ describe('facade Revendedor', function() {
         .comprarCreditos({
           idRevendedor: idRevendedorPessoaFisica,
           valorCompra: '937.00' })
-        .then(() => {
+        .then(movimentacao => {
+          should.exist(movimentacao);
+          movimentacao.should.have.property('conta');
+          movimentacao.conta.should.have.property('saldo', '937.00');
           done();
         })
         .catch(e => {
@@ -180,7 +183,10 @@ describe('facade Revendedor', function() {
           idUsuario: idUsuario,
           valorVenda: '50'
         })
-        .then(() => {
+        .then(movimentacao => {
+          should.exist(movimentacao);
+          movimentacao.should.have.property('conta');
+          movimentacao.conta.should.have.property('saldo', '887.00');
           done();
         })
         .catch(e => {

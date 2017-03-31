@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const debug = require('debug')('areaazul:models:movimentacao_conta');
 const money = require('money-math');
 const log = require('../logging');
 const AreaAzul = require('../areaazul');
@@ -10,11 +11,11 @@ const Conta = Bookshelf.model('Conta');
 const MovimentacaoConta = Bookshelf.Model.extend({
   tableName: 'movimentacao_conta',
   conta: function() {
-    return this.belongsTo('Conta');
+    return this.belongsTo('Conta', 'conta_id');
   }
 }, {
   /**
-   * Insere transação na conta, atualizando o saldo
+   * Insere transação na conta e atualiza o saldo da conta
    * @param movimentacaoConta {object} - detalhes da transação
    * @param movimentacaoConta.conta_id {number} - id da conta
    * @param movimentacaoConta.historico {string} - descrição detalhada
@@ -59,8 +60,21 @@ const MovimentacaoConta = Bookshelf.Model.extend({
           conta_id: c.id
         })
           .save(null, optionsInsert);
-      });
+      })
+      .then(m => new MovimentacaoConta({ id: m.id })
+        .fetch(_.merge({ withRelated: [ 'conta' ] }, options)));
   },
+  /**
+   * Insere transação a débito na conta e atualiza o saldo
+   * @param credito {object} - detalhes da transação
+   * @param credito.conta_id {number} - id da conta
+   * @param credito.historico {string} - descrição detalhada
+   * @param credito.tipo {string} - texto arbitrário que identifica o tipo
+   * @param credito.valor {string} - valor positivo a creditar
+   * @param options {object} - opções do knex
+   * @param options.transacting {object} - transação ativa
+   * @returns {Promise.<MovimentacaoConta>}
+   */
   _inserirCredito: function(credito, options) {
     if (!(credito.valor instanceof String)) {
       credito.valor = money.floatToAmount(credito.valor);
@@ -73,6 +87,17 @@ const MovimentacaoConta = Bookshelf.Model.extend({
     return MovimentacaoConta
       ._inserirMovimentacaoConta(credito, options);
   },
+  /**
+   * Insere transação na conta e atualiza o saldo
+   * @param debito {object} - detalhes da transação
+   * @param debito.conta_id {number} - id da conta
+   * @param debito.historico {string} - descrição detalhada
+   * @param debito.tipo {string} - texto arbitrário que identifica o tipo
+   * @param debito.valor {string} - valor positivo a debitar
+   * @param options {object} - opções do knex
+   * @param options.transacting {object} - transação ativa
+   * @returns {Promise.<MovimentacaoConta>}
+   */
   _inserirDebito: function(debito, options) {
     if (!(debito.valor instanceof String)) {
       debito.valor = money.floatToAmount(debito.valor);

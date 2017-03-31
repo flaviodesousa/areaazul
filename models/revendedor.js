@@ -175,7 +175,7 @@ const Revendedor = Bookshelf.Model.extend({
    * @param {string} camposCompra.valorCompra - créditos comprados
    * @param {object} options - opções do knex
    * @param {object} options.transacting - transação ativa
-   * @returns {Promise.<null>}
+   * @returns {Promise.<MovimentacaoConta>}
    * @throws AreaAzul.BusinessException
    */
   _comprarCreditos: (camposCompra, options) => {
@@ -206,7 +206,7 @@ const Revendedor = Bookshelf.Model.extend({
    * @param {string} camposVenda.valorVenda - créditos vendidos
    * @param {object} options - opções do knex
    * @param {object} options.transacting - transação ativa
-   * @returns {Promise.<null>}
+   * @returns {Promise.<MovimentacaoConta>}
    * @throws AreaAzul.BusinessException
    */
   _venderCreditos: (camposVenda, options) => {

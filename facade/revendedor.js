@@ -26,11 +26,15 @@ module.exports.buscarPorIdUsuarioRevendedor = id =>
 module.exports.comprarCreditos = camposCompra => {
   log.info('revendedor::comprarCreditos', camposCompra);
   return Bookshelf.transaction(t =>
-    Revendedor._comprarCreditos(camposCompra, { transacting: t }));
+    Revendedor
+      ._comprarCreditos(camposCompra, { transacting: t }))
+    .then(movimentacao => movimentacao.toJSON());
 };
 
 module.exports.venderCreditos = camposVenda => {
   log.info('revendedor::venderCreditos', camposVenda);
   return Bookshelf.transaction(t =>
-    Revendedor._venderCreditos(camposVenda, { transacting: t }));
+    Revendedor
+      ._venderCreditos(camposVenda, { transacting: t }))
+    .then(movimentacao => movimentacao.toJSON());
 };
