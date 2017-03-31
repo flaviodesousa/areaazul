@@ -170,8 +170,11 @@ const Revendedor = Bookshelf.Model.extend({
     .fetch(_.merge({ withRelated: [ 'conta' ] }, options)),
   /**
    * Adiciona créditos na conta da revenda
-   * @param {object} camposCompra {idRevendedor, valorCompra}
-   * @param {object} options {transacting}
+   * @param {object} camposCompra - descrição da compra
+   * @param {number} camposCompra.idRevendedor - revendedor comprando créditos
+   * @param {string} camposCompra.valorCompra - créditos comprados
+   * @param {object} options - opções do knex
+   * @param {object} options.transacting - transação ativa
    * @returns {Promise.<null>}
    * @throws AreaAzul.BusinessException
    */
@@ -197,8 +200,12 @@ const Revendedor = Bookshelf.Model.extend({
   },
   /**
    * Transfere créditos da conta da revenda para conta do usuário
-   * @param {object} camposVenda {idRevendedor, idUsuario, valorVenda}
-   * @param {object} options {transacting}
+   * @param {object} camposVenda - descrição da venda
+   * @param {number} camposVenda.idRevendedor - revendedor vendendo créditos
+   * @param {number} camposVenda.idUsuario - usuário comprando créditos
+   * @param {string} camposVenda.valorVenda - créditos vendidos
+   * @param {object} options - opções do knex
+   * @param {object} options.transacting - transação ativa
    * @returns {Promise.<null>}
    * @throws AreaAzul.BusinessException
    */
