@@ -13,6 +13,17 @@ const MovimentacaoConta = Bookshelf.Model.extend({
     return this.belongsTo('Conta');
   }
 }, {
+  /**
+   * Insere transação na conta, atualizando o saldo
+   * @param movimentacaoConta {object} - detalhes da transação
+   * @param movimentacaoConta.conta_id {number} - id da conta
+   * @param movimentacaoConta.historico {string} - descrição detalhada
+   * @param movimentacaoConta.tipo {string} - texto arbitrário que identifica o tipo
+   * @param movimentacaoConta.valor {string} - valor positivo ou negativo
+   * @param options {object} - opções do knex
+   * @param options.transacting {object} - transação ativa
+   * @returns {Promise.<MovimentacaoConta>}
+   */
   _inserirMovimentacaoConta: function(movimentacaoConta, options) {
     if (!options || !options.transacting) {
       log.err('Tentativa de movimentação de conta fora de uma transação',
