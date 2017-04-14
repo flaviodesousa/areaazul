@@ -1,6 +1,8 @@
 'use strict';
 
 const _ = require('lodash');
+const AU = require('areaazul-utils');
+
 const validation = require('./validation');
 const AreaAzul = require('../areaazul');
 const log = require('../logging');
@@ -16,24 +18,31 @@ const PessoaJuridica = Bookshelf.Model.extend({
   _camposValidos: function(camposPessoaJuridica, options) {
     let messages = [];
 
-    if (!camposPessoaJuridica.nome_fantasia) {
+    if (!AU.isTexto(camposPessoaJuridica.nome_fantasia)) {
       messages.push({
         attribute: 'nome_fantasia',
-        problem: 'Nome fantasia obrigatório!'
+        problem: 'Nome fantasia obrigatório'
       });
     }
 
-    if (!camposPessoaJuridica.razao_social) {
+    if (!AU.isTexto(camposPessoaJuridica.razao_social)) {
       messages.push({
         attribute: 'razao_social',
-        problem: 'Razão social obrigatória!'
+        problem: 'Razão social obrigatória'
       });
     }
 
-    if (validation.isCNPJ(camposPessoaJuridica.cnpj) === false) {
+    if (!AU.isTexto(camposPessoaJuridica.contato)) {
+      messages.push({
+        attribute: 'contato',
+        problem: 'Contato é obrigatório'
+      });
+    }
+
+    if (!validation.isCNPJ(camposPessoaJuridica.cnpj)) {
       messages.push({
         attribute: 'cnpj',
-        problem: 'CNPJ inválido!'
+        problem: 'CNPJ inválido'
       });
     }
 

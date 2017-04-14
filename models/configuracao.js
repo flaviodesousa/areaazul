@@ -21,14 +21,14 @@ const Configuracao = Bookshelf.Model.extend(
     _camposValidos: function(config) {
       let message = [];
 
-      if (validator.isNull(''+config.valor_ativacao_reais)) {
+      if (!validator.isDecimal(''+config.valor_ativacao_reais)) {
         message.push(
           {
             attribute: 'valor_ativacao_reais',
             problem: 'Valor de ativação é obrigatório!'
           });
       }
-      if (validator.isNull(''+config.tempo_tolerancia_minutos)) {
+      if (!validator.isNumeric(''+config.tempo_tolerancia_minutos)) {
         message.push(
           {
             attribute: 'tempo_tolerancia_minutos',
@@ -36,14 +36,14 @@ const Configuracao = Bookshelf.Model.extend(
           });
       }
 
-      if (validator.isNull(''+config.franquia_minutos)) {
+      if (!validator.isNumeric(''+config.franquia_minutos)) {
         message.push(
           {
             attribute: 'franquia_minutos',
             problem: 'Franquia é obrigatória!'
           });
       }
-      if (validator.isNull(''+config.ciclo_ativacao_minutos)) {
+      if (!validator.isNumeric(''+config.ciclo_ativacao_minutos)) {
         message.push(
           {
             attribute: 'ciclo_ativacao_minutos',
@@ -51,7 +51,7 @@ const Configuracao = Bookshelf.Model.extend(
           });
       }
 
-      if (validator.isNull(''+config.ciclo_fiscalizacao_minutos)) {
+      if (!validator.isNumeric(''+config.ciclo_fiscalizacao_minutos)) {
         message.push(
           {
             attribute: 'ciclo_fiscalizacao_minutos',

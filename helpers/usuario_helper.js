@@ -5,7 +5,7 @@
 
 'use strict';
 
-const validator = require('validator');
+const AU = require('areaazul-utils');
 
 const Bookshelf = require('../database');
 
@@ -15,7 +15,7 @@ module.exports._camposValidos = function(campos, usuario, ModelClass, options) {
   let messages = [];
   let usuarioComEsteLogin;
 
-  if (!campos.login || validator.isNull(campos.login)) {
+  if (!AU.isTexto(campos.login)) {
     messages.push({
       attribute: 'login',
       problem: 'Login é obrigatório!'
@@ -27,8 +27,7 @@ module.exports._camposValidos = function(campos, usuario, ModelClass, options) {
     });
   }
 
-  if (!campos.nova_senha
-    || validator.isNull(campos.nova_senha)) {
+  if (!AU.isTexto(campos.nova_senha)) {
     messages.push({
       attribute: 'nova_senha',
       problem: 'Senha é obrigatória!'
@@ -55,7 +54,7 @@ module.exports._camposValidos = function(campos, usuario, ModelClass, options) {
         // - usuário encontrado é diferente do usuário corrente
         // Então:
         // - login já em uso
-        if (!usuario || usuario && usuario.id != usuarioComEsteLogin.id) {
+        if (!usuario || usuario && usuario.id !== usuarioComEsteLogin.id) {
           messages.push({
             attribute: 'login',
             problem: 'login já em uso!'

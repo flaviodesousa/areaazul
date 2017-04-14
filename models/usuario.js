@@ -2,11 +2,11 @@
 
 const _ = require('lodash');
 const bcrypt = require('bcrypt-then');
-const validator = require('validator');
 
 const log = require('../logging');
 const AreaAzul = require('../areaazul');
 const AreaAzulMailer = require('areaazul-mailer');
+const AU = require('areaazul-utils');
 const Bookshelf = require('../database');
 
 const PessoaFisica = Bookshelf.model('PessoaFisica');
@@ -193,7 +193,7 @@ const Usuario = Bookshelf.Model.extend({
 
   _loginValido: function(user) {
     let message = [];
-    if (!user.login || validator.isNull(user.login)) {
+    if (!AU.isTexto(user.login)) {
       message.push({
         attribute: 'login',
         problem: 'Login é obrigatório!'
@@ -211,8 +211,7 @@ const Usuario = Bookshelf.Model.extend({
   _senhaValida: function(camposUsuario) {
     let message = [];
 
-    if (!camposUsuario.nova_senha
-      || validator.isNull(camposUsuario.nova_senha)) {
+    if (!AU.isTexto(camposUsuario.nova_senha)) {
       message.push({
         attribute: 'nova_senha',
         problem: 'Senha é obrigatória!'

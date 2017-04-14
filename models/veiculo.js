@@ -1,13 +1,12 @@
 'use strict';
 
 const _ = require('lodash');
-const validator = require('validator');
-const moment = require('moment');
+const AU = require('areaazul-utils');
 
+const moment = require('moment');
 const AreaAzul = require('../areaazul');
 const Bookshelf = require('../database');
 const log = require('../logging');
-const util = require('areaazul-utils');
 
 const Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',
@@ -23,7 +22,7 @@ const Veiculo = Bookshelf.Model.extend({
     let veiculo = null;
     const optionsInsert = _.merge({ method: 'insert' }, options || {});
 
-    const placaSemMascara = util.placaSemMascara(veiculoFields.placa);
+    const placaSemMascara = AU.placaSemMascara(veiculoFields.placa);
 
     return Veiculo
       ._validarVeiculo(veiculoFields, options)
@@ -76,24 +75,22 @@ const Veiculo = Bookshelf.Model.extend({
       });
     }
 
-    if (!veiculoFields.placa || validator.isNull('' + veiculoFields.placa)) {
+    if (!AU.isTexto(veiculoFields.placa)) {
       message.push({
         attribute: 'placa',
         problem: 'Campo placa é obrigatória!'
       });
     }
 
-    const placaSemMascara = util.placaSemMascara(veiculoFields.placa);
-    if (!placaSemMascara ||
-      placaSemMascara.replace(/[^0-9]/g, '').length != 4 ||
-      placaSemMascara.replace(/[^A-Z]/gi, '').length != 3) {
+    const placaSemMascara = AU.placaSemMascara(veiculoFields.placa);
+    if (!AU.isPlaca(veiculoFields.placa)) {
       message.push({
         attribute: 'placa',
-        problem: 'Placa inválida, deve ter 3 letras e 4 dígitos'
+        problem: 'Placa inválida. Deve seguir o padrão DENATRAN ou Mercosul.'
       });
     }
 
-    if (!veiculoFields.tipo || validator.isNull('' + veiculoFields.tipo)) {
+    if (!AU.isTexto(veiculoFields.tipo)) {
       message.push({
         attribute: 'tipo',
         problem: 'Tipo de veículo é obrigatório'
@@ -102,27 +99,6 @@ const Veiculo = Bookshelf.Model.extend({
       message.push({
         attribute: 'tipo',
         problem: 'Tipo de veículo não reconhecido'
-      });
-    }
-
-    if (!veiculoFields.modelo || validator.isNull('' + veiculoFields.modelo)) {
-      message.push({
-        attribute: 'modelo',
-        problem: 'Campo modelo é obrigatório!'
-      });
-    }
-
-    if (!veiculoFields.marca || validator.isNull('' + veiculoFields.marca)) {
-      message.push({
-        attribute: 'marca',
-        problem: 'Campo marca é obrigatório!'
-      });
-    }
-
-    if (!veiculoFields.cor || validator.isNull('' + veiculoFields.cor)) {
-      message.push({
-        attribute: 'cor',
-        problem: 'Campo cor é obrigatório!'
       });
     }
 
@@ -144,7 +120,7 @@ const Veiculo = Bookshelf.Model.extend({
     let placaSemMascara = '';
 
     if (placa) {
-      placaSemMascara = util.placaSemMascara(placa);
+      placaSemMascara = AU.placaSemMascara(placa);
     }
     return new Veiculo({ placa: placaSemMascara })
       .fetch(_.merge({ withRelated: [ 'cidade.estado' ] }, options));
@@ -168,24 +144,5 @@ Bookshelf.model('Veiculo', Veiculo);
 const Veiculos = Bookshelf.Collection.extend({
   model: Veiculo
 }, {
-
-  _listarVeiculosIrregulares: function() {
-    return Veiculos.forge()
-      .query(function(qb) {
-        qb
-          .innerJoin('fiscalizacao', function() {
-            this.on('fiscalizacao.placa', '!=', 'veiculo.placa');
-          })
-          .leftJoin('ativacao', function() {
-            this.on('ativacao.veiculo_id', '!=', 'fiscalizacao.veiculo_id');
-          })
-          .where('fiscalizacao.timestamp', '>', moment()
-            .subtract(75, 'minutes')
-            .calendar())
-          .select('veiculo.*')
-          .select('fiscalizacao.*');
-      })
-      .fetch();
-  }
 });
 Bookshelf.collection('Veiculos', Veiculos);
