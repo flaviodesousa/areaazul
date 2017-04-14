@@ -158,7 +158,9 @@ module.exports = function(AreaAzul) {
           .fetch();
       })
       .then(function(usuFis) {
-        contaId = usuFis.get('conta_id');
+        if (usuFis) {
+          contaId = usuFis.get('conta_id');
+        }
       })
       .then(function() {
         return new UsuarioFiscal({ id: idUsuarioFiscal })
@@ -168,7 +170,10 @@ module.exports = function(AreaAzul) {
         return _apagarPessoaFisica(idUsuarioFiscal);
       })
       .then(function() {
-        return _apagarConta(contaId);
+        if (contaId) {
+          return _apagarConta(contaId);
+        }
+        return null;
       });
   }
 
@@ -506,7 +511,7 @@ module.exports = function(AreaAzul) {
 
   exports.setSaldo = function(conta, novoSaldo) {
     const diferenca = money.cmp(conta.get('saldo'), novoSaldo);
-    if (diferenca == 0) {
+    if (diferenca === 0) {
       return conta;
     }
     if (diferenca < 0) {
