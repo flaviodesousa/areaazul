@@ -6,7 +6,7 @@ const should = require('chai').should();
 const AreaAzul = require('../../areaazul');
 const Veiculo = AreaAzul.facade.Veiculo;
 
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('../../test-helpers')(AreaAzul);
 const AreaAzulUtils = require('areaazul-utils');
 
 describe('facade Veiculo', function() {
@@ -14,8 +14,8 @@ describe('facade Veiculo', function() {
     return TestHelpers.apagarVeiculoPorPlaca(placa);
   }
 
-  const placaInexistente = 'VEI-1373';
-  const placaTeste = 'AAA-1234';
+  const placaInexistente = 'VEI1373';
+  const placaTeste = 'AAA1234';
   const tipoTeste = 'carro';
   const placaTesteSemMascara = AreaAzulUtils.placaSemMascara(placaTeste);
   const marcaTeste = 'Marca teste';
@@ -293,32 +293,6 @@ describe('facade Veiculo', function() {
         marca: marcaTeste,
         modelo: modeloTeste,
         cor: corTeste,
-        ano_fabricado: anoFabricadoTeste,
-        ano_modelo: anoModeloTeste
-      };
-      Veiculo
-        .cadastrar(novoVeiculo)
-        .then(function() {
-          return done(new Error('Não deveria aceitar veículo inválido'));
-        })
-        .catch(AreaAzul.BusinessException, (be) => {
-          should.exist(be);
-          done();
-        })
-        .catch(function(e) {
-          debug('erro inesperado', e);
-          done(e);
-        });
-    });
-    it('falha gravar veiculo sem modelo/marca/cor', function(done) {
-      const novoVeiculo = {
-        usuario_id: idUsuarioComum,
-        cidade_id: idCidade,
-        placa: placaTeste,
-        tipo: tipoTeste,
-        // Falta: marca: marcaTeste,
-        // Falta: modelo: modeloTeste,
-        // Falta: cor: corTeste,
         ano_fabricado: anoFabricadoTeste,
         ano_modelo: anoModeloTeste
       };

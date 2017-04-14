@@ -23,7 +23,7 @@ describe('facade MovimentacaoDeConta', function() {
   }
 
   before(function(done) {
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+    const TestHelpers = require('../../test-helpers')(AreaAzul);
     TestHelpers.pegarRevendedor()
       .then(function(r) {
         revendedor = r;

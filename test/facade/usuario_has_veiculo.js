@@ -10,7 +10,7 @@ describe('facade UsuarioHasVeiculo', function() {
   let idVeiculo = null;
 
   before(function() {
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+    const TestHelpers = require('../../test-helpers')(AreaAzul);
     return TestHelpers
       .pegarVeiculo()
       .then(function(veiculo) {

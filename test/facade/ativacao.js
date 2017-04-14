@@ -9,7 +9,7 @@ const AreaAzul = require('../../areaazul');
 const Ativacao = AreaAzul.facade.Ativacao;
 
 const Bookshelf = require('../../database');
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('../../test-helpers')(AreaAzul);
 const AtivacaoModel = Bookshelf.model('Ativacao');
 const AtivacaoUsuarioModel = Bookshelf.model('AtivacaoUsuario');
 const AtivacaoUsuarioRevendedorModel = Bookshelf.model('AtivacaoUsuarioRevendedor');

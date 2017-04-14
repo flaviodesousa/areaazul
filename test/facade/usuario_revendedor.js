@@ -6,7 +6,7 @@ const should = require('chai').should();
 const AreaAzul = require('../../areaazul');
 const UsuarioRevendedor = AreaAzul.facade.UsuarioRevendedor;
 
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('../../test-helpers')(AreaAzul);
 
 describe('models.UsuarioRevendedor', function() {
   const cpfNaoExistente = '58316661667';

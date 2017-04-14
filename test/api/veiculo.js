@@ -6,13 +6,13 @@ const app = require('../../app');
 const superAgent = require('superagent');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('bookshelf');
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul, Bookshelf);
+const TestHelpers = require('../../test-helpers')(AreaAzul, Bookshelf);
 const Veiculo = AreaAzul.facade.Veiculo;
 
 describe('/veiculo', function() {
-  var server;
-  var usuario;
-  var veiculoExistente;
+  let server;
+  let usuario;
+  let veiculoExistente;
   const placaVeiculoNaoExistente = 'API0000';
   const port = 8080;
   const url = `http://localhost:${port}/veiculo`;

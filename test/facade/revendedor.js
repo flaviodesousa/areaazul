@@ -4,7 +4,7 @@ const debug = require('debug')('areaazul:test:revendedor');
 const should = require('chai').should();
 
 const AreaAzul = require('../../areaazul');
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('../../test-helpers')(AreaAzul);
 const Revendedor = AreaAzul.facade.Revendedor;
 const UsuarioRevendedor = AreaAzul.facade.UsuarioRevendedor;
 
@@ -40,7 +40,7 @@ describe('facade Revendedor', function() {
   let idRevendedorPessoaJuridica;
 
   function apagarRevendedoresDeTeste() {
-    const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+    const TestHelpers = require('../../test-helpers')(AreaAzul);
     return TestHelpers
       .apagarRevendedorPorCPF(revendedorPF.cpf)
       .then(function() {

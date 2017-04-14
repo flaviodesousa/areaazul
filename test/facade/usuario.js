@@ -8,7 +8,7 @@ const AreaAzul = require('../../areaazul');
 const Usuario = AreaAzul.facade.Usuario;
 const Ativacao = AreaAzul.facade.Ativacao;
 
-const TestHelpers = require('areaazul-test-helpers')(AreaAzul);
+const TestHelpers = require('../../test-helpers')(AreaAzul);
 
 describe('facade Usuario', function() {
   const camposUsuarioDeTeste = {
