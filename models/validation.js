@@ -39,6 +39,9 @@ exports.isCPF = function(cpf) {
 };
 
 exports.isCNPJ = function(str) {
+  if (typeof str !== 'string') {
+    return false;
+  }
   let cnpj, numeros, digitos, soma, i, resultado, pos, tamanho, digitosIguais;
   str = str.replace('.', '');
   str = str.replace('.', '');

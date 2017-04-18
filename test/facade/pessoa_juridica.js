@@ -2,29 +2,26 @@
 
 const debug = require('debug')('areaazul:test:pessoa_juridica');
 const should = require('chai').should();
+const Promise = require('bluebird');
 
 const AreaAzul = require('../../areaazul');
 const PessoaJuridica = AreaAzul.facade.PessoaJuridica;
 
 describe('facade PessoaJuridica', function() {
   const cnpjTeste = '16169879000130';
+  const cnpjTesteSemContato = '39074454000142';
+  const cnpjTesteSemTelefone = '13345236000101';
 
   function deleteTestData(done) {
-    const Bookshelf = require('../../database');
     const AreaazulTestHelpers =
       require('../../test-helpers')(AreaAzul);
-    const PessoaJuridicaModel = Bookshelf.model('PessoaJuridica');
-    new PessoaJuridicaModel({ cnpj: cnpjTeste })
-      .fetch({ require: true })
-      .then(pj => {
-        return AreaazulTestHelpers
-          .apagarPessoaJuridica(pj.id);
-      })
+    Promise.all([
+      AreaazulTestHelpers.apagarPessoaJuridicaPeloCNPJ(cnpjTeste),
+      AreaazulTestHelpers.apagarPessoaJuridicaPeloCNPJ(cnpjTesteSemContato),
+      AreaazulTestHelpers.apagarPessoaJuridicaPeloCNPJ(cnpjTesteSemTelefone)
+    ])
       .then(function() {
         return done();
-      })
-      .catch(Bookshelf.NotFoundError, () => {
-        done();
       })
       .catch(function(e) {
         debug('erro inesperado', e);
@@ -48,27 +45,32 @@ describe('facade PessoaJuridica', function() {
         .then(function() {
           done(new Error('deveria ter falhado'));
         })
-        .catch(function(e) {
+        .catch(AreaAzul.BusinessException, function(e) {
           should.exist(e);
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
-    it('falha sem telefone', function(done) {
+    it('PASSA sem telefone', function(done) {
       PessoaJuridica.cadastrar({
-        nome: 'nome-preexistente',
+        nome: 'nome-nao-existente',
         email: 'email@teste.teste',
-        cnpj: cnpjTeste,
-        nome_fantasia: 'PJ preexistente',
+        cnpj: cnpjTesteSemTelefone,
+        nome_fantasia: 'PJ nao existente',
         razao_social: 'razao social teste',
         contato: 'contato-teste'
       })
-        .then(function() {
-          done(new Error('deveria ter falhado'));
+        .then(function(pj) {
+          should.exist(pj);
+          done();
         })
         .catch(function(e) {
-          should.exist(e);
-          done();
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
@@ -84,9 +86,13 @@ describe('facade PessoaJuridica', function() {
         .then(function() {
           done(new Error('deveria ter falhado'));
         })
-        .catch(function(e) {
+        .catch(AreaAzul.BusinessException, function(e) {
           should.exist(e);
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
@@ -102,9 +108,13 @@ describe('facade PessoaJuridica', function() {
         .then(function() {
           done(new Error('deveria ter falhado'));
         })
-        .catch(function(e) {
+        .catch(AreaAzul.BusinessException, function(e) {
           should.exist(e);
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
@@ -120,9 +130,13 @@ describe('facade PessoaJuridica', function() {
         .then(function() {
           done(new Error('deveria ter falhado'));
         })
-        .catch(function(e) {
+        .catch(AreaAzul.BusinessException, function(e) {
           should.exist(e);
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
@@ -138,27 +152,32 @@ describe('facade PessoaJuridica', function() {
         .then(function() {
           done(new Error('deveria ter falhado'));
         })
-        .catch(function(e) {
+        .catch(AreaAzul.BusinessException, function(e) {
           should.exist(e);
           done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 
-    it('falha sem contato', function(done) {
+    it('PASSA sem contato', function(done) {
       PessoaJuridica.cadastrar({
         nome: 'nome-preexistente',
         telefone: '00 0000 0000',
         email: 'email@teste.teste',
-        cnpj: cnpjTeste,
+        cnpj: cnpjTesteSemContato,
         nome_fantasia: 'PJ preexistente',
         razao_social: 'razao social teste'
       })
-        .then(function() {
-          done(new Error('deveria ter falhado'));
+        .then(pj => {
+          should.exist(pj);
+          done();
         })
         .catch(function(e) {
-          should.exist(e);
-          done();
+          debug('erro inesperado', e);
+          done(e);
         });
     });
 

@@ -32,13 +32,6 @@ const PessoaJuridica = Bookshelf.Model.extend({
       });
     }
 
-    if (!AU.isTexto(camposPessoaJuridica.contato)) {
-      messages.push({
-        attribute: 'contato',
-        problem: 'Contato é obrigatório'
-      });
-    }
-
     if (!validation.isCNPJ(camposPessoaJuridica.cnpj)) {
       messages.push({
         attribute: 'cnpj',

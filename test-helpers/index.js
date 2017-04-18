@@ -140,6 +140,13 @@ module.exports = function(AreaAzul) {
     return _apagarPessoaJuridica(id);
   };
 
+  exports.apagarPessoaJuridicaPeloCNPJ = cnpj => {
+    return new PessoaJuridica({ cnpj: cnpj })
+      .fetch({ require: true })
+      .then(pj => _apagarPessoaJuridica(pj.id))
+      .catch(Bookshelf.NotFoundError, () => null);
+  };
+
   function _apagarRevendedorFisica(idRevendedor) {
     return _apagarRevendedor(idRevendedor)
       .then(function() {

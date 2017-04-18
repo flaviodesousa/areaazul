@@ -8,7 +8,7 @@ exports.up = function(knex) {
     table.string('cnpj').unique().notNullable();
     table.string('nome_fantasia').notNullable();
     table.string('razao_social').notNullable();
-    table.string('contato').notNullable();
+    table.string('contato');
   });
 };
 
