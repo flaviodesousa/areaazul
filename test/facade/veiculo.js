@@ -128,11 +128,11 @@ describe('facade Veiculo', function() {
           done(e);
         });
     });
-    it('falha gravar veiculo com placa inválida (+3 letras)', function(done) {
+    it('falha gravar veiculo com placa inválida (len<7 caracteres)', function(done) {
       const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
-        placa: placaTeste + 'A',
+        placa: 'AAA123',
         tipo: tipoTeste,
         marca: marcaTeste,
         modelo: modeloTeste,
@@ -154,11 +154,11 @@ describe('facade Veiculo', function() {
           done(e);
         });
     });
-    it('falha gravar veiculo com placa inválida (+3 letras)', function(done) {
+    it('falha gravar veiculo com placa inválida (+4 letras)', function(done) {
       const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
-        placa: 'AAAA111',
+        placa: 'AAAAA11',
         tipo: tipoTeste,
         marca: marcaTeste,
         modelo: modeloTeste,
@@ -180,11 +180,37 @@ describe('facade Veiculo', function() {
           done(e);
         });
     });
-    it('falha gravar veiculo com placa inválida (+4 números)', function(done) {
+    it('falha gravar veiculo com placa inválida (-2 números)', function(done) {
       const novoVeiculo = {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: 'AB32123',
+        tipo: tipoTeste,
+        marca: marcaTeste,
+        modelo: modeloTeste,
+        cor: corTeste,
+        ano_fabricado: anoFabricadoTeste,
+        ano_modelo: anoModeloTeste
+      };
+      Veiculo
+        .cadastrar(novoVeiculo)
+        .then(function() {
+          return done(new Error('Não deveria aceitar veículo inválido'));
+        })
+        .catch(AreaAzul.BusinessException, (be) => {
+          should.exist(be);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('falha gravar veiculo com placa inválida (nem DENATRAN nem Mercosul)', function(done) {
+      const novoVeiculo = {
+        usuario_id: idUsuarioComum,
+        cidade_id: idCidade,
+        placa: 'AB1234C', // No padrão DENATRAN as 3 letras vem no começo
         tipo: tipoTeste,
         marca: marcaTeste,
         modelo: modeloTeste,
