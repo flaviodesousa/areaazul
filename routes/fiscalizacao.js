@@ -1,6 +1,6 @@
 'use strict';
 
-var passport = require('passport');
+const passport = require('passport');
 
 module.exports = function(app) {
   app.post('/fiscalizacao',

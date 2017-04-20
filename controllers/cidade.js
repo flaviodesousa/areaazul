@@ -3,7 +3,7 @@
 const AreaAzul = require('../areaazul');
 
 module.exports.listar = function(req, res) {
-  var filtro = {};
+  let filtro = {};
   if (req.query.estado) {
     filtro.idEstado = Number(req.query.estado);
   }
