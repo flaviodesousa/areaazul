@@ -21,6 +21,12 @@ exports.seed = function(knex) {
       cidade_id: 2061,
       conta_id: conta[0],
       parametros: {
+        revenda: {
+          preco_credito: {
+            normal: 0.95,
+            credenciado: 0.9
+          }
+        },
         permanencia_maxima_minutos: 240,
         matriz_precos: [ {
           label: '1 hora',

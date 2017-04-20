@@ -1,6 +1,6 @@
 {
   "name": "areaazul",
-  "version": "2.1.5",
+  "version": "2.1.6",
   "license": "UNLICENSED",
   "author": {
     "name": "Flávio de Sousa",
@@ -41,6 +41,7 @@
     "passport": "0.3.2",
     "passport-http": "^0.3.0",
     "pg": "^6.1.0",
+    "uuid": "^3.0.1",
     "validator": "^7.0.0",
     "winston": "^2.2.0",
     "winston-daily-rotate-file": "^1.4.6"
