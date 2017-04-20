@@ -6,6 +6,7 @@ exports.up = function(knex) {
           table.integer('id')
             .primary()
             .references('id').inTable('pessoa');
+          table.enu('tipo', [ 'normal', 'credenciado' ]).notNullable();
           table.integer('conta_id').notNullable()
             .references('id').inTable('conta');
         });

@@ -91,7 +91,9 @@ const Revendedor = Bookshelf.Model.extend({
             const optionsInsert = _.merge({ method: 'insert' }, options || {});
 
             return new Revendedor({
-              id: pessoa.id, conta_id: conta.id
+              id: pessoa.id,
+              conta_id: conta.id,
+              tipo: 'normal'
             })
               .save(null, optionsInsert);
           });
