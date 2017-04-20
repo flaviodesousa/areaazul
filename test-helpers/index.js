@@ -355,8 +355,7 @@ module.exports = function(AreaAzul) {
   };
 
   exports.pegarCidade = function() {
-    return Cidade
-      .forge()
+    return new Cidade({ id: 1775 })
       .fetch({ withRelated: 'estado' });
   };
 

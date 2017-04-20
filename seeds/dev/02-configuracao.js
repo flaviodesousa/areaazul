@@ -18,7 +18,7 @@ exports.seed = function(knex) {
       ciclo_fiscalizacao_minutos: 0,
       // Valor da ativação (1 hora)
       valor_ativacao_reais: 1.20,
-      cidade_id: 2061,
+      cidade_id: 1775,
       conta_id: conta[0],
       parametros: {
         revenda: {
