@@ -1,5 +1,31 @@
 'use strict';
 
+const debug = require('debug')('areaazul:app');
+
+(() => {
+  let missingVars = 0;
+  [
+    'AREAAZUL_LOG_LEVEL',
+    'AREAAZUL_LOG_DIR',
+    'AREAAZUL_API_ENDPOINT',
+    'AREAAZUL_WEB_SECRET',
+    'AREAAZUL_EMAIL_USER',
+    'AREAAZUL_EMAIL_PASSWORD',
+    'AREAAZUL_EMAIL_SMTP_SERVER',
+    'AREAAZUL_DB',
+    'AREAAZUL_API_NOHOST',
+    'AREAAZUL_API_PORT'
+  ].forEach(envVar => {
+    if (!process.env[envVar]) {
+      debug(`Variável de ambiente obrigatória '${envVar}' não definida`);
+      ++missingVars;
+    }
+  });
+  if (missingVars) {
+    process.exit(1);
+  }
+})();
+
 const express = require('express');
 const consign = require('consign');
 const logger = require('morgan');

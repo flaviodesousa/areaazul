@@ -1,29 +1,30 @@
 'use strict';
 
 const winston = require('winston');
-require('winston-loggly');
+const fs = require('fs');
+const level = process.env.AREAAZUL_LOG_LEVEL;
+const logDir = process.env.AREAAZUL_LOG_DIR;
+// Create the log directory if it does not exist
+if (!fs.existsSync(logDir)) {
+  fs.mkdirSync(logDir);
+}
+const tsFormat = () => (new Date()).toLocaleTimeString();
+const logger = new (winston.Logger)({
+  transports: [
+    // Colorize the output to the console
+    new (winston.transports.Console)({
+      timestamp: tsFormat,
+      colorize: true,
+      level: 'info'
+    }),
+    new (require('winston-daily-rotate-file'))({
+      filename: `${logDir}/-results.log`,
+      timestamp: tsFormat,
+      datePattern: 'yyyy-MM-dd',
+      prepend: true,
+      level: level
+    })
+  ]
+});
 
-(function() {
-  const env = process.env.NODE_ENV || 'development';
-
-  winston.add(winston.transports.Loggly, {
-    inputToken: process.env.AREAAZUL_LOGGLY_TOKEN ||
-      '2cd112b3-29ff-4c0d-8872-8d41353a9f1a',
-    subdomain: 'areaazul',
-    tags: [ 'model' ],
-    json: true
-  });
-
-  winston.add(winston.transports.File, {
-    filename: process.env.AREAAZUL_FILE_LOG ||
-    '/tmp/areaazul.log'
-  });
-
-  if (env !== 'development') {
-    winston.remove(winston.transports.Console);
-  }
-
-  winston.info('Logging started');
-})();
-
-module.exports = winston;
+module.exports = logger;
