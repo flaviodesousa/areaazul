@@ -40,8 +40,10 @@ const Revendedor = Bookshelf.Model.extend({
         // Verifica se revendedor é pessoa jurídica...
         if (revendedorFields.cnpj) {
           // ...Se for, cadastra, não pode existir antes
+          let revendedorPessoaJuridica = JSON.parse(JSON.stringify(revendedorFields));
+          revendedorPessoaJuridica.nome = revendedorPessoaJuridica.razao_social;
           return PessoaJuridica
-            ._cadastrar(revendedorFields, options);
+            ._cadastrar(revendedorPessoaJuridica, options);
         }
         // Mas se for pessoa física, pode ser que já exista
         // (pode ser usuária, por exemplo)
@@ -216,7 +218,7 @@ const Revendedor = Bookshelf.Model.extend({
         let cotacao = money.floatToAmount(configuracao.get('parametros')
           .revenda.preco_credito[revendedor.get('tipo')]);
         preco = money.mul(
-          camposCompra.creditos,
+          money.floatToAmount(camposCompra.creditos),
           cotacao);
       })
       .then(() => MovimentacaoConta
