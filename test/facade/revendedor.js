@@ -148,11 +148,27 @@ describe('facade Revendedor', function() {
   });
 
   describe('comprarCreditos()', function() {
-    it('compra créditos', function(done) {
+    it('compra créditos PF', function(done) {
       Revendedor
         .comprarCreditos({
-          idRevendedor: idRevendedorPessoaFisica,
-          valorCompra: '937.00' })
+          cpf: revendedorPF.cpf,
+          creditos: '937.00' })
+        .then(movimentacao => {
+          should.exist(movimentacao);
+          movimentacao.should.have.property('conta');
+          movimentacao.conta.should.have.property('saldo', '937.00');
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+    it('compra créditos PJ', function(done) {
+      Revendedor
+        .comprarCreditos({
+          cnpj: revendedorPJ.cnpj,
+          creditos: '937.00' })
         .then(movimentacao => {
           should.exist(movimentacao);
           movimentacao.should.have.property('conta');

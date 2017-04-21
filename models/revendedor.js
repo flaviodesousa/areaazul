@@ -1,6 +1,8 @@
 'use strict';
 
 const _ = require('lodash');
+const money = require('money-math');
+
 const AreaAzul = require('../areaazul');
 const Bookshelf = require('../database');
 
@@ -169,35 +171,71 @@ const Revendedor = Bookshelf.Model.extend({
       .fetch({ withRelated: [ 'conta' ] });
   },
   _buscarPorId: (id, options) => new Revendedor({ id: id })
-    .fetch(_.merge({ withRelated: [ 'conta' ] }, options)),
+    .fetch(_.merge({ required: true, withRelated: [ 'conta' ] }, options)),
+  _buscarPorCPFouCNPJ: (chave, options) => {
+    if (!chave || (!chave.cpf && !chave.cnpj)) {
+      throw new AreaAzul.BusinessException(
+        'Chave deve conter CPF ou CNPJ', { chave: chave }
+      );
+    }
+    if (chave.cpf) {
+      return PessoaFisica
+        ._buscarPorCPF(chave.cpf, options)
+        .then(pf => Revendedor._buscarPorId(pf.id, options));
+    } else if (chave.cnpj) {
+      return PessoaJuridica
+        ._buscarPorCNPJ(chave.cnpj, options)
+        .then(pj => Revendedor._buscarPorId(pj.id, options));
+    }
+  },
   /**
    * Adiciona créditos na conta da revenda
    * @param {object} camposCompra - descrição da compra
-   * @param {number} camposCompra.idRevendedor - revendedor comprando créditos
-   * @param {string} camposCompra.valorCompra - créditos comprados
+   * @param {string} camposCompra.cpf - revendedor comprando créditos (PF)
+   * @param {string} camposCompra.cnpj - revendedor comprando créditos (PF)
+   * @param {string} camposCompra.creditos - créditos comprados
    * @param {object} options - opções do knex
    * @param {object} options.transacting - transação ativa
    * @returns {Promise.<MovimentacaoConta>}
    * @throws AreaAzul.BusinessException
    */
   _comprarCreditos: (camposCompra, options) => {
-    const movimentacao = {
-      historico: `Compra de ${camposCompra.valorCompra} créditos pela revenda ${camposCompra.idRevendedor}`,
-      tipo: 'compraCreditosPelaRevenda',
-      valor: camposCompra.valorCompra,
-    };
+    let revendedor;
+    let configuracao;
+    let preco;
 
-    return Configuracao
-      ._buscar()
-      .then(configuracao => MovimentacaoConta
+    return Revendedor
+      ._buscarPorCPFouCNPJ(camposCompra, options)
+      .then(r => {
+        revendedor = r;
+      })
+      .then(() => Configuracao
+          ._buscar())
+      .then(c => {
+        configuracao = c;
+        let cotacao = money.floatToAmount(configuracao.get('parametros')
+          .revenda.preco_credito[revendedor.get('tipo')]);
+        preco = money.div(
+          camposCompra.creditos,
+          cotacao);
+      })
+      .then(() => MovimentacaoConta
         ._inserirCredito(
-          _.merge({ conta_id: configuracao.related('conta').id }, movimentacao),
+          {
+            conta_id: configuracao.related('conta').id,
+            historico: `Venda de ${camposCompra.creditos} créditos por R$${preco} pela revenda #${revendedor.id}`,
+            tipo: 'compraCreditosPelaRevenda',
+            valor: preco
+          },
           options))
-      .then(() => Revendedor
-        ._buscarPorId(camposCompra.idRevendedor, options))
-      .then(revendedor => MovimentacaoConta
+      .then(() => MovimentacaoConta
         ._inserirCredito(
-          _.merge({ conta_id: revendedor.related('conta').id }, movimentacao),
+          {
+            conta_id: revendedor.related('conta').id,
+            historico: `Compra de ${camposCompra.creditos} créditos por R$${preco}`,
+            tipo: 'compraCreditosPelaRevenda',
+            valor: camposCompra.creditos
+          },
           options));
   },
   /**
