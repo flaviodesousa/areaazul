@@ -20,6 +20,7 @@ module.exports._internals = {};
 module.exports._internals.Bookshelf = require('./database');
 module.exports.BusinessException = BusinessException;
 module.exports.AuthenticationError = AuthenticationError;
+module.exports.log = log;
 module.exports.facade = {
   Ativacao: require('./facade/ativacao'),
   Cidade: require('./facade/cidade'),
