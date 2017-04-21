@@ -1,8 +1,6 @@
 const debug = require('debug')('areaazul:configuration:database');
 
-const knexfile = require('./knexfile');
-
-const knex = require('knex')(knexfile[process.env.NODE_ENV || 'development']);
+const knex = require('knex')(JSON.parse(process.env.AREAAZUL_DB));
 debug('knex loaded');
 
 const Bookshelf = require('bookshelf')(knex);
