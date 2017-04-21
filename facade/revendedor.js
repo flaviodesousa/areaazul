@@ -28,7 +28,11 @@ module.exports.comprarCreditos = camposCompra => {
   return Bookshelf.transaction(t =>
     Revendedor
       ._comprarCreditos(camposCompra, { transacting: t }))
-    .then(movimentacao => movimentacao.toJSON());
+    .then(movimentacao => movimentacao.toJSON())
+    .catch(e => {
+      log.error('revendedor::comprarCreditos erro', { error: e });
+      throw new AreaazulUtils.BusinessException('Erro ao comprar créditos');
+    });
 };
 
 module.exports.venderCreditos = camposVenda => {
@@ -36,5 +40,9 @@ module.exports.venderCreditos = camposVenda => {
   return Bookshelf.transaction(t =>
     Revendedor
       ._venderCreditos(camposVenda, { transacting: t }))
-    .then(movimentacao => movimentacao.toJSON());
+    .then(movimentacao => movimentacao.toJSON())
+    .catch(e => {
+      log.error('revendedor::venderCreditos erro', { error: e });
+      throw new AreaazulUtils.BusinessException('Erro ao vender créditos');
+    });
 };
