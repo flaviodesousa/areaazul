@@ -215,7 +215,7 @@ const Revendedor = Bookshelf.Model.extend({
         configuracao = c;
         let cotacao = money.floatToAmount(configuracao.get('parametros')
           .revenda.preco_credito[revendedor.get('tipo')]);
-        preco = money.div(
+        preco = money.mul(
           camposCompra.creditos,
           cotacao);
       })
