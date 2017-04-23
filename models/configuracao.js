@@ -89,14 +89,18 @@ const Configuracao = Bookshelf.Model.extend(
         return new Configuracao().fetch();
       })
       .then(configuracao => {
-        const configuracoes = {
-          valor_ativacao_reais: camposConfig.valor_ativacao_reais,
-          tempo_tolerancia_minutos: camposConfig.tempo_tolerancia_minutos,
-          franquia_minutos: camposConfig.franquia_minutos,
-          ciclo_ativacao_minutos: camposConfig.ciclo_ativacao_minutos,
-          ciclo_fiscalizacao_minutos: camposConfig.ciclo_fiscalizacao_minutos,
-          cidade_id: camposConfig.cidade_id
-        };
+        const configuracoes = _.merge(
+          configuracao && configuracao.toJSON() || {},
+          {
+            valor_ativacao_reais: camposConfig.valor_ativacao_reais,
+            tempo_tolerancia_minutos: camposConfig.tempo_tolerancia_minutos,
+            franquia_minutos: camposConfig.franquia_minutos,
+            ciclo_ativacao_minutos: camposConfig.ciclo_ativacao_minutos,
+            ciclo_fiscalizacao_minutos: camposConfig.ciclo_fiscalizacao_minutos,
+            cidade_id: camposConfig.cidade_id,
+            parametros: camposConfig.parametros
+          }
+          );
         if (configuracao) {
           return configuracao
             .save(configuracoes,
