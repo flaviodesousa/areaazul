@@ -7,6 +7,7 @@ const debug = require('debug')('areaazul:app');
   [
     'AREAAZUL_LOG_LEVEL',
     'AREAAZUL_LOG_DIR',
+    'AREAAZUL_LOG_FILE_BASE',
     'AREAAZUL_API_ENDPOINT',
     'AREAAZUL_WEB_SECRET',
     'AREAAZUL_EMAIL_USER',

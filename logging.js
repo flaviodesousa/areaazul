@@ -4,6 +4,7 @@ const winston = require('winston');
 const fs = require('fs');
 const level = process.env.AREAAZUL_LOG_LEVEL;
 const logDir = process.env.AREAAZUL_LOG_DIR;
+const logFileBase = process.env.AREAAZUL_LOG_FILE_BASE;
 // Create the log directory if it does not exist
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
@@ -18,7 +19,7 @@ const logger = new (winston.Logger)({
       level: 'info'
     }),
     new (require('winston-daily-rotate-file'))({
-      filename: `${logDir}/-results.log`,
+      filename: `${logDir}/-${logFileBase}.log`,
       timestamp: tsFormat,
       datePattern: 'yyyy-MM-dd',
       prepend: true,
