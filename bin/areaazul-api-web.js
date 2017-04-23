@@ -7,10 +7,7 @@ const app = require('../app');
 
 let server;
 let port = process.env.AREAAZUL_API_PORT || 18300;
-let host;
-if (!process.env.AREAAZUL_API_NOHOST) {
-  host = process.env.AREAAZUL_API_HOST || 'localhost';
-}
+let host = process.env.AREAAZUL_API_HOST || 'localhost';
 
 function onListening() {
   debug('Express server listening on port ' + server.address().port);

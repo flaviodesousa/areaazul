@@ -14,7 +14,6 @@ const debug = require('debug')('areaazul:app');
     'AREAAZUL_EMAIL_PASSWORD',
     'AREAAZUL_EMAIL_SMTP_SERVER',
     'AREAAZUL_DB',
-    'AREAAZUL_API_NOHOST',
     'AREAAZUL_API_PORT'
   ].forEach(envVar => {
     if (!process.env[envVar]) {
