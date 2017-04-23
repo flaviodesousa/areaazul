@@ -21,6 +21,11 @@ exports.seed = function(knex) {
       cidade_id: 1775,
       conta_id: conta[0],
       parametros: {
+        mapa: {
+          latitude: -15.797808,
+          longitude: -47.887430,
+          zoom: 10
+        },
         revenda: {
           preco_credito: {
             normal: 0.95,
