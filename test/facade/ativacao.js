@@ -397,6 +397,36 @@ describe('fachada Ativacao', function() {
         });
     });
 
+    it('falha com telefone inválido', function(done) {
+      Ativacao
+        .ativarPorRevenda({
+          usuario_revendedor_id: idUsuarioRevendedor,
+          cidade_id: idCidade,
+          placa: placaVeiculoNovo,
+          tipo: veiculoExistente.get('tipo'),
+          marca: veiculoExistente.get('marca'),
+          modelo: veiculoExistente.get('modelo'),
+          cor: veiculoExistente.get('cor'),
+          tipo_veiculo: veiculoExistente.get('tipo'),
+          tempo: tempoPadrao,
+          telefone: '982119222'
+        })
+        .then(function() {
+          done(new Error('Não deve ativar veículo com telefone inválido'));
+        })
+        .catch(AreaAzul.BusinessException, function(e) {
+          should.exist(e);
+          should.exist(e.details);
+          e.details.should.be.an('array');
+          e.details.length.should.be.greaterThan(0);
+          done();
+        })
+        .catch(e => {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+
     it('grava ativação revenda', function(done) {
       Ativacao
         .ativarPorRevenda({
@@ -408,7 +438,8 @@ describe('fachada Ativacao', function() {
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: tempoPadrao
+          tempo: tempoPadrao,
+          telefone: '61982119222'
         })
         .then(function(ativacao) {
           should.exist(ativacao);

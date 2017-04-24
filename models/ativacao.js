@@ -5,6 +5,7 @@ const validator = require('validator');
 const moment = require('moment');
 const _ = require('lodash');
 const math = require('money-math');
+const superagent = require('superagent');
 
 const AreaAzul = require('../areaazul');
 const Bookshelf = require('../database');
@@ -331,6 +332,34 @@ const Ativacao = Bookshelf.Model.extend({
           }, options);
       })
       .then(() => {
+        if (process.env.AREAAZUL_SMS_API_URL && camposAtivacao.telefone) {
+          let expiracao = dataExpiracao.format('H:mm');
+          superagent
+            .post(process.env.AREAAZUL_SMS_API_URL)
+            .send({
+              telefone: camposAtivacao.telefone,
+              texto: `areaazul.org informa: seu veículo placa ${placaSemMascara} está ativado até ${expiracao}`
+            })
+            .end((err, res) => {
+              if (err || !res.ok) {
+                log.error('Ativação: Erro ao enviar SMS', {
+                  err: err,
+                  res: res,
+                  camposAtivacao: camposAtivacao,
+                  ativacao: ativacao
+                });
+                return;
+              }
+              log.verbose('Ativação: SMS enviado', {
+                res: res,
+                camposAtivacao: camposAtivacao,
+                ativacao: ativacao
+              });
+            });
+        }
+        return null;
+      })
+      .then(() => {
         return ativacao;
       });
   },
@@ -350,6 +379,15 @@ const Ativacao = Bookshelf.Model.extend({
       });
     } else {
       idUsuarioRevendedor = 0 + ativacao.usuario_revendedor_id;
+    }
+
+    if (ativacao.telefone) {
+      if (!/^\d{11}$/.test(ativacao.telefone)) {
+        messages.push({
+          attribute: 'telefone',
+          problem: 'O número de telefone, se presente, deve ter exatamente 11 dígitos'
+        });
+      }
     }
 
     return Ativacao
