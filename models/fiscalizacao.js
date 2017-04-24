@@ -10,6 +10,7 @@ const AreaazulUtils = require('areaazul-utils');
 
 const Veiculo = Bookshelf.model('Veiculo');
 const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
+const Configuracao = Bookshelf.model('Configuracao');
 
 const Fiscalizacao = Bookshelf.Model.extend({
   tableName: 'fiscalizacao',
@@ -20,18 +21,24 @@ const Fiscalizacao = Bookshelf.Model.extend({
     return this.belongsTo('UsuarioFiscal');
   }
 }, {
-  _listar: (apos, antesDe = new Date(), limite = 10) => {
-    return Fiscalizacao
-      .query(function(qb) {
-        qb.whereBetween('timestamp', [apos, antesDe])
-          .orderBy('timestamp', 'desc')
-          .limit(limite);
+  _listar: () => {
+    return Configuracao
+      ._buscar()
+      .then(configuracao => {
+        let apos = moment()
+          .subtract(configuracao.get('ciclo_fiscalizacao_minutos'), 'minutes')
+          .toDate();
+        return Fiscalizacao
+          .query(function(qb) {
+            qb.where('timestamp', '>', apos)
+              .orderBy('timestamp', 'desc');
+          })
+          .fetchAll({
+            withRelated: [
+              'veiculo.cidade.estado',
+              'usuarioFiscal.pessoaFisica.pessoa' ]
+          });
       })
-      .fetchAll({
-        withRelated: [
-          'veiculo.cidade.estado',
-          'usuarioFiscal.pessoaFisica.pessoa' ]
-      });
   },
   _listarAtivas: (minutos = 5) => {
     return Fiscalizacao
@@ -53,8 +60,8 @@ const Fiscalizacao = Bookshelf.Model.extend({
     const placa = AreaazulUtils.placaSemMascara(camFis.placa);
 
     if (!placa ||
-      placa.replace(/[^0-9]/g, '').length != 4 ||
-      placa.replace(/[^A-Z]/gi, '').length != 3) {
+      placa.replace(/[^0-9]/g, '').length !== 4 ||
+      placa.replace(/[^A-Z]/gi, '').length !== 3) {
       messages.push({
         attribute: 'placa',
         problem: 'Placa inválida'

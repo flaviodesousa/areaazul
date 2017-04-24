@@ -192,37 +192,11 @@ describe('facade Fiscalizacao', function() {
   });
 
   describe('listar()', function() {
-    const tenMinutesAgo = moment().subtract(10, 'minutes');
     it('retorna uma lista de fiscalizacoes', function(done) {
       Fiscalizacao
-        .listar(tenMinutesAgo)
+        .listar()
         .then(function(fiscalizacoes) {
           should.exist(fiscalizacoes);
-          done();
-        })
-        .catch(function(e) {
-          debug('erro inesperado', e);
-          done(e);
-        });
-    });
-    it('limita por tempo', function(done) {
-      Fiscalizacao
-        .listar(tenMinutesAgo, new Date())
-        .then(function(fiscalizacoes) {
-          should.exist(fiscalizacoes);
-          done();
-        })
-        .catch(function(e) {
-          debug('erro inesperado', e);
-          done(e);
-        });
-    });
-    it('limita por tempo e respostas', function(done) {
-      Fiscalizacao
-        .listar(tenMinutesAgo, new Date(), 2)
-        .then(function(fiscalizacoes) {
-          should.exist(fiscalizacoes);
-          fiscalizacoes.should.have.property('length', 2);
           done();
         })
         .catch(function(e) {
