@@ -5,6 +5,7 @@
 const Bookshelf = require('../database');
 const log = require('../logging');
 const Ativacao = Bookshelf.model('Ativacao');
+const Ativacoes = Bookshelf.collection('Ativacoes');
 
 module.exports.ativar = function(camposAtivacao) {
   log.info('ativar', { ativacao: camposAtivacao });
@@ -28,4 +29,10 @@ module.exports.ativarPorRevenda = function(ativacao) {
     Ativacao
       ._ativarPorRevenda(ativacao, { transacting: t })
       .then(ativacao => ativacao.toJSON()));
+};
+
+module.exports.listarAtivacoes = function() {
+  return Ativacoes
+    ._listarAtivacoes()
+    .then(ativacoes => ativacoes.toJSON());
 };
