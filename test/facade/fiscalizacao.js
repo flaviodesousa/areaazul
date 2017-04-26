@@ -121,6 +121,24 @@ describe('facade Fiscalizacao', function() {
         });
     });
 
+    it('grava com placa Mercosul', function(done) {
+      Fiscalizacao
+        .cadastrar({
+          placa: '89ar9br',
+          latitude: 33.5,
+          longitude: 34.5,
+          usuario_fiscal_id: fiscalId
+        })
+        .then(function(f) {
+          should.exist(f);
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
+
     it('nao deve aceitar virgula decimal', function(done) {
       Fiscalizacao
         .cadastrar({
