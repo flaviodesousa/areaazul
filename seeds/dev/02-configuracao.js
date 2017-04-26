@@ -26,6 +26,10 @@ exports.seed = function(knex) {
           longitude: -47.887430,
           zoom: 10
         },
+        hora: 'Brazil/East',
+        horas: ['America/Manaus', 'Brazil/West', 'America/Noronha', 'Brazil/DeNoronha', 'America/Rio_Branco', 'Brazil/Acre',
+          'America/Sao_Paulo', 'Brazil/East'
+        ],
         revenda: {
           preco_credito: {
             normal: 0.95,

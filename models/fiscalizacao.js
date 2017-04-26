@@ -59,9 +59,7 @@ const Fiscalizacao = Bookshelf.Model.extend({
     let messages = [];
     const placa = AreaazulUtils.placaSemMascara(camFis.placa);
 
-    if (!placa ||
-      placa.replace(/[^0-9]/g, '').length !== 4 ||
-      placa.replace(/[^A-Z]/gi, '').length !== 3) {
+    if (!AreaazulUtils.isPlaca(placa)) {
       messages.push({
         attribute: 'placa',
         problem: 'Placa inválida'
