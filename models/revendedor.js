@@ -245,30 +245,34 @@ const Revendedor = Bookshelf.Model.extend({
    * @param {object} camposVenda - descrição da venda
    * @param {number} camposVenda.idRevendedor - revendedor vendendo créditos
    * @param {number} camposVenda.idUsuario - usuário comprando créditos
-   * @param {string} camposVenda.valorVenda - créditos vendidos
+   * @param {string} camposVenda.creditos - créditos vendidos
    * @param {object} options - opções do knex
    * @param {object} options.transacting - transação ativa
    * @returns {Promise.<MovimentacaoConta>}
    * @throws AreaAzul.BusinessException
    */
   _venderCreditos: (camposVenda, options) => {
-    const movimentacao = {
-      historico: `Compra de ${camposVenda.valorVenda} créditos pela revenda ${camposVenda.idRevendedor} ao usuario ${camposVenda.idUsuario}`,
-      tipo: 'vendaCreditosPelaRevenda',
-      valor: camposVenda.valorVenda,
-    };
-
     return Usuario
       ._buscarPorId(camposVenda.idUsuario, options)
       .then(usuario => MovimentacaoConta
         ._inserirCredito(
-          _.merge({ conta_id: usuario.related('conta').id }, movimentacao),
+          {
+            historico: `Compra de ${camposVenda.creditos} créditos da revenda #${camposVenda.idRevendedor}`,
+            tipo: 'compraDeCreditosPelaRevenda',
+            valor: camposVenda.creditos,
+            conta_id: usuario.related('conta').id
+          },
           options))
       .then(() => Revendedor
         ._buscarPorId(camposVenda.idRevendedor, options))
       .then(revendedor => MovimentacaoConta
         ._inserirDebito(
-          _.merge({ conta_id: revendedor.related('conta').id }, movimentacao),
+          {
+            historico: `Venda de ${camposVenda.creditos} créditos para o usuário #${camposVenda.idUsuario}`,
+            tipo: 'vendaDeCreditosPelaRevenda',
+            valor: camposVenda.creditos,
+            conta_id: revendedor.related('conta').id
+          },
           options));
   }
 });

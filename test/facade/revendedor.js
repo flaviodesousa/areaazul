@@ -197,7 +197,7 @@ describe('facade Revendedor', function() {
         .venderCreditos({
           idRevendedor: idRevendedorPessoaFisica,
           idUsuario: idUsuario,
-          valorVenda: '50'
+          creditos: '50'
         })
         .then(movimentacao => {
           should.exist(movimentacao);

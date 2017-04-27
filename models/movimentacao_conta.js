@@ -76,9 +76,7 @@ const MovimentacaoConta = Bookshelf.Model.extend({
    * @returns {Promise.<MovimentacaoConta>}
    */
   _inserirCredito: function(credito, options) {
-    if (!(credito.valor instanceof String)) {
-      credito.valor = money.floatToAmount(credito.valor);
-    }
+    credito.valor = money.floatToAmount(credito.valor);
     if (money.cmp(credito.valor, '0.00') <= 0) {
       throw new AreaAzul.BusinessException(
         'Valor do crédito deve ser maior que zero',
@@ -99,9 +97,7 @@ const MovimentacaoConta = Bookshelf.Model.extend({
    * @returns {Promise.<MovimentacaoConta>}
    */
   _inserirDebito: function(debito, options) {
-    if (!(debito.valor instanceof String)) {
-      debito.valor = money.floatToAmount(debito.valor);
-    }
+    debito.valor = money.floatToAmount(debito.valor);
     if (money.cmp(debito.valor, '0.00') <= 0) {
       throw new AreaAzul.BusinessException(
         'Valor do débito deve ser maior que zero',
