@@ -5,7 +5,9 @@
 const AreaAzul = require('../areaazul');
 
 module.exports = function(app) {
-  app.get('/ativacao',function(req, res) {
+
+
+  app.get('/ativacao', function(req, res) {
     AreaAzul.facade.Ativacao
       .listarAtivacoes()
       .then(function(listaAtivacoes) {
@@ -13,7 +15,10 @@ module.exports = function(app) {
       })
       .catch(function(err) {
         AreaAzul.log.error('Erro obtendo lista de ativações', { error: err });
-        res.status(400).end();
+        res.status(400)
+          .end();
       });
   });
+
+
 };

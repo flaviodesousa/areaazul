@@ -8,6 +8,8 @@ const log = require('../logging');
 const UUID = require('uuid');
 
 module.exports = function(app) {
+
+
   app.get('/configuracao', function(req, res) {
     AreaAzul.facade.Configuracao
       .buscar()
@@ -21,4 +23,6 @@ module.exports = function(app) {
           .send(`Error ${uuid}`);
       });
   });
+
+
 };
