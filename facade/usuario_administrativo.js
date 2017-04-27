@@ -1,7 +1,10 @@
+const log = require('../logging');
+const AreaazulUtils = require('areaazul-utils');
 const Bookshelf = require('../database');
 const UsuarioAdministrativo = Bookshelf.model('UsuarioAdministrativo');
 
 module.exports.cadastrar = function(camposUsuarioAdministrativo) {
+  log.info('UsuarioAdministrativo::cadastrar()', { parametros: AreaazulUtils.semSenhas(camposUsuarioAdministrativo) });
   return Bookshelf.transaction(t =>
     UsuarioAdministrativo
       ._cadastrar(camposUsuarioAdministrativo, { transacting: t }))

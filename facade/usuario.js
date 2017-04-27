@@ -11,7 +11,8 @@ module.exports.buscarPorId = function(id) {
     .forge({ id: id })
     .fetch({
       require: true,
-      withRelated: [ 'pessoaFisica', 'pessoaFisica.pessoa' ] })
+      withRelated: [ 'pessoaFisica', 'pessoaFisica.pessoa' ]
+    })
     .then(function(u) {
       if (u) {
         return u;
@@ -54,6 +55,7 @@ module.exports.autentico = function(login, senha) {
 };
 
 module.exports.inserir = function(camposUsuario) {
+  log.info('Usuario::inserir()', { parametros: camposUsuario });
   return Bookshelf.transaction(function(t) {
     return Usuario
       ._salvar(camposUsuario, null, { transacting: t })
@@ -68,6 +70,13 @@ module.exports.inserir = function(camposUsuario) {
 };
 
 module.exports.alterar = function(camposUsuario, usuario) {
+  log.info('Usuario::inserir()',
+    {
+      parametros: {
+        camposUsuario: camposUsuario,
+        usuario: usuario
+      }
+    });
   return Bookshelf.transaction(function(t) {
     return Usuario
       ._salvar(camposUsuario, usuario, { transacting: t })

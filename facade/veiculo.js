@@ -5,6 +5,7 @@ const AreaAzul = require('../areaazul');
 const Ativacoes = Bookshelf.collection('Ativacoes');
 const Veiculo = Bookshelf.model('Veiculo');
 
+
 module.exports.listar = function() {
   let veiculos = {};
   return Ativacoes
@@ -34,13 +35,15 @@ module.exports.listar = function() {
     });
 };
 
+
 module.exports.cadastrar = function(camposVeiculo) {
-  log.info('Veiculo.cadastrar()', { campos: camposVeiculo });
+  log.info('Veiculo.cadastrar()', { parametros: camposVeiculo });
   return Bookshelf.transaction(t =>
     Veiculo
       ._cadastrar(camposVeiculo, { transacting: t }))
     .then(veiculo => veiculo.toJSON());
 };
+
 
 module.exports.buscarPorPlaca = placa =>
   Bookshelf.transaction(t =>
@@ -49,5 +52,3 @@ module.exports.buscarPorPlaca = placa =>
     .then(veiculo => veiculo ? veiculo.toJSON() : null);
 
 module.exports.buscarPorId = id => Veiculo._buscarPorId(id, null);
-
-
