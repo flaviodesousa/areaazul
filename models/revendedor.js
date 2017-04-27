@@ -225,7 +225,7 @@ const Revendedor = Bookshelf.Model.extend({
         ._inserirCredito(
           {
             conta_id: configuracao.related('conta').id,
-            historico: `Venda de ${camposCompra.creditos} créditos por R$${preco} pela revenda #${revendedor.id}`,
+            historico: `Venda por R$${preco} de ${camposCompra.creditos} créditos para a revenda #${revendedor.id}`,
             tipo: 'compraCreditosPelaRevenda',
             valor: preco
           },
@@ -234,7 +234,7 @@ const Revendedor = Bookshelf.Model.extend({
         ._inserirCredito(
           {
             conta_id: revendedor.related('conta').id,
-            historico: `Compra de ${camposCompra.creditos} créditos por R$${preco}`,
+            historico: `Compra por R$${preco} de ${camposCompra.creditos} créditos`,
             tipo: 'compraCreditosPelaRevenda',
             valor: camposCompra.creditos
           },
