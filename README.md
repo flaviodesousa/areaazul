@@ -6,4 +6,4 @@ Módulo principal: API de negócio.
 - Interface com banco de dados
 - Regras de negócio
 
-Mais detalhes na [Wiki](wiki)
+Mais detalhes na Wiki
