@@ -2,6 +2,7 @@
 
 const _ = require('lodash');
 const bcrypt = require('bcrypt-then');
+const moment = require('moment');
 
 const log = require('../logging');
 const AreaAzul = require('../areaazul');
@@ -243,11 +244,11 @@ const Usuario = Bookshelf.Model.extend({
         throw err;
       });
   },
-  _listaAtivacoes: (id, antesDe = new Date(), limite = 100, options = null) =>
+  _listaAtivacoes: (id, antesDe = moment().utc(), limite = 100, options = null) =>
     Bookshelf.model('Ativacao')
       ._lista(id, antesDe, limite, 'usuario', options)
   ,
-  _listaVeiculos: (id, antesDe = new Date(), limite = 10, options) =>
+  _listaVeiculos: (id, antesDe = moment().utc(), limite = 10, options) =>
     Usuario
       .query(qb => {
         qb
@@ -261,7 +262,7 @@ const Usuario = Bookshelf.Model.extend({
           .select('ultima_ativacao');
       })
       .fetchAll(options),
-  _extratoFinanceiro: (id, antesDe = new Date(), limite = 10, options) =>
+  _extratoFinanceiro: (id, antesDe = moment().utc(), limite = 10, options) =>
     Usuario
       .query(qb => {
         qb

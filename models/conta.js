@@ -2,6 +2,7 @@
 
 const _ = require('lodash');
 const Bookshelf = require('../database');
+const moment = require('moment');
 
 const Conta = Bookshelf.Model.extend({
   tableName: 'conta',
@@ -12,7 +13,7 @@ const Conta = Bookshelf.Model.extend({
   _cadastrar: function(conta, options) {
     conta = _.merge({
       saldo: 0,
-      data_abertura: new Date(),
+      data_abertura: moment().utc(),
       ativo: true }, conta || {});
     const optionsInsert = _.merge({ method: 'insert' }, options);
     return new Conta(conta)

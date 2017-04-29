@@ -2,6 +2,7 @@
 
 const AreaAzul = require('../areaazul');
 const Bookshelf = require('../database');
+const moment = require('moment');
 
 const Token = Bookshelf.Model.extend({
   tableName: 'token',
@@ -13,7 +14,7 @@ const Token = Bookshelf.Model.extend({
     return new Token({
       id: camposToken.uuid,
       pessoa_id: camposToken.pessoa_id,
-      data_expiracao: new Date(),
+      data_expiracao: moment().utc(),
       proposito: camposToken.proposito
     })
       .save(null, { method: 'insert' });

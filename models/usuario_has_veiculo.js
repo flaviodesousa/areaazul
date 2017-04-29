@@ -1,6 +1,7 @@
 'use strict';
 
 const _ = require('lodash');
+const moment = require('moment');
 
 const Bookshelf = require('../database');
 
@@ -33,12 +34,12 @@ const UsuarioHasVeiculo = Bookshelf.Model.extend(
                 {
                   usuario_id: usuarioHasVeiculo.usuario_id,
                   veiculo_id: usuarioHasVeiculo.veiculo_id,
-                  ultima_ativacao: new Date()
+                  ultima_ativacao: moment().utc()
                 })
                 .save(null, optionsInsert);
             }
             return usuariohasveiculo
-              .save({ ultima_ativacao: new Date() }, optionsUpdate);
+              .save({ ultima_ativacao: moment().utc() }, optionsUpdate);
           });
     }
   });

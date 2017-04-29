@@ -3,10 +3,12 @@
  */
 
 'use strict';
+const moment = require('moment');
+
 exports.seed = function(knex) {
   return knex('configuracao').del()
     .then(() => knex('conta').del())
-    .then(() => knex('conta').returning('id').insert({ data_abertura: new Date() }))
+    .then(() => knex('conta').returning('id').insert({ data_abertura: moment().utc() }))
     .then(conta => knex('configuracao').insert({
       // Minutos sem necessidade de ativação
       franquia_minutos: 15,

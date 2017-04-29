@@ -1,11 +1,11 @@
 'use strict';
 
 const _ = require('lodash');
-const debug = require('debug')('areaazul:models:movimentacao_conta');
 const money = require('money-math');
 const log = require('../logging');
 const AreaAzul = require('../areaazul');
 const Bookshelf = require('../database');
+const moment = require('moment');
 const Conta = Bookshelf.model('Conta');
 
 const MovimentacaoConta = Bookshelf.Model.extend({
@@ -52,7 +52,7 @@ const MovimentacaoConta = Bookshelf.Model.extend({
       })
       .then(function(c) {
         return new MovimentacaoConta({
-          data: new Date(),
+          data: moment().utc(),
           historico: movimentacaoConta.historico,
           tipo: movimentacaoConta.tipo,
           valor: movimentacaoConta.valor,

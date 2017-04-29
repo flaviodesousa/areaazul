@@ -148,8 +148,8 @@ const Ativacao = Bookshelf.Model.extend({
       altitude = null;
     }
 
-    const dataAtivacao = moment();
-    const dataExpiracao = moment().add(camposAtivacao.tempo, 'minutes');
+    const dataAtivacao = moment().utc();
+    const dataExpiracao = moment().utc().add(camposAtivacao.tempo, 'minutes');
 
     return Ativacao
       ._validarAtivacaoUsuario(camposAtivacao, options)
@@ -238,7 +238,7 @@ const Ativacao = Bookshelf.Model.extend({
       })
       .then(function(d) {
         return d
-          .save({ data_desativacao: new Date() }, optionsPatch);
+          .save({ data_desativacao: moment().utc() }, optionsPatch);
       })
       .then(function(ativacaoExistente) {
         log.info('Desativacao: sucesso', { desativacao: ativacaoExistente });
@@ -253,8 +253,8 @@ const Ativacao = Bookshelf.Model.extend({
     if (camposAtivacao.placa) {
       placaSemMascara = util.placaSemMascara(camposAtivacao.placa);
     }
-    const dataAtivacao = moment();
-    const dataExpiracao = moment().add(camposAtivacao.tempo, 'minutes');
+    const dataAtivacao = moment().utc();
+    const dataExpiracao = moment().utc().add(camposAtivacao.tempo, 'minutes');
     return Ativacao
       ._validarAtivacaoRevenda(camposAtivacao, placaSemMascara, options)
       .then(function(messages) {
@@ -456,7 +456,7 @@ const Ativacao = Bookshelf.Model.extend({
         qb
           .innerJoin('veiculo', 'veiculo.id', 'ativacao.veiculo_id')
           .whereNull('ativacao.data_desativacao')
-          .andWhere('ativacao.data_expiracao', '>=', moment())
+          .andWhere('ativacao.data_expiracao', '>=', moment().utc())
           .andWhere('veiculo.placa', '=', placa)
           .select('ativacao.*')
           .select('veiculo.*');
@@ -505,8 +505,7 @@ const Ativacoes = Bookshelf.Collection.extend({
           .innerJoin('veiculo', 'veiculo.id', 'ativacao.veiculo_id')
           .leftJoin('fiscalizacao',
             'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
-          .where('ativacao.data_expiracao', '>=',
-            new Date())
+          .where('ativacao.data_expiracao', '>=', moment().utc())
           .select('ativacao.*')
           .select('veiculo.*');
       })
@@ -525,9 +524,9 @@ const Ativacoes = Bookshelf.Collection.extend({
           .leftJoin('fiscalizacao',
             'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
           .where('ativacao.data_expiracao', '<=',
-            moment().subtract(5, 'minutes').calendar())
+            moment().utc().subtract(5, 'minutes').calendar())
           .andWhere('ativacao.data_expiracao', '>=',
-            moment().subtract(5, 'minutes').calendar())
+            moment().utc().subtract(5, 'minutes').calendar())
           .select('ativacao.*')
           .select('veiculo.*');
       })
@@ -546,7 +545,7 @@ const Ativacoes = Bookshelf.Collection.extend({
             'veiculo.id', 'ativacao.veiculo_id')
           .leftJoin('fiscalizacao',
             'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
-          .where('ativacao.data_expiracao', '>', new Date())
+          .where('ativacao.data_expiracao', '>', moment().utc())
           .select('ativacao.*')
           .select('veiculo.*');
       })
