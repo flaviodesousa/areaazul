@@ -3,6 +3,7 @@
 const debug = require('debug')('areaazul:test:usuario');
 const should = require('chai').should();
 const Promise = require('bluebird');
+const moment = require('moment');
 
 const AreaAzul = require('../../areaazul');
 const Usuario = AreaAzul.facade.Usuario;
@@ -203,7 +204,7 @@ describe('facade Usuario', function() {
     });
     it('obtém lista com apenas as 5 últimas ativações', function(done) {
       Usuario
-        .listaAtivacoes(usuario.id, new Date(), 5)
+        .listaAtivacoes(usuario.id, moment().utc(), 5)
         .then(lista => {
           should.exist(lista);
           lista.length.should.equal(5);
@@ -262,7 +263,7 @@ describe('facade Usuario', function() {
     });
     it('obtém lista com apenas o último veículo ativado', function(done) {
       Usuario
-        .listaVeiculos(usuario.id, new Date(), 1)
+        .listaVeiculos(usuario.id, moment().utc(), 1)
         .then(lista => {
           should.exist(lista);
           lista.length.should.equal(1);
@@ -320,7 +321,7 @@ describe('facade Usuario', function() {
     });
     it('obtém extrato com apenas a transação mais recente', function(done) {
       Usuario
-        .extratoFinanceiro(usuario.id, new Date(), 1)
+        .extratoFinanceiro(usuario.id, moment().utc(), 1)
         .then(lista => {
           should.exist(lista);
           lista.length.should.equal(1);

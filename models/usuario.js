@@ -2,6 +2,7 @@
 
 const _ = require('lodash');
 const bcrypt = require('bcrypt-then');
+const moment = require('moment');
 
 const log = require('../logging');
 const AreaAzul = require('../areaazul');
@@ -28,6 +29,8 @@ const Usuario = Bookshelf.Model.extend({
     return this.hasMany('Ativacao').through('AtivacaoUsuario');
   }
 }, {
+
+
   _salvar: function(camposUsuario, usuario, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options);
     const optionsUpdate = _.merge({ method: 'update' }, options);
@@ -115,6 +118,7 @@ const Usuario = Bookshelf.Model.extend({
       .then(usuario => Usuario._buscarPorId(usuario.id, options));
   },
 
+
   _alterarSenha: function(camposAlterarSenha, options) {
     let usuario = null;
     return new Usuario({ id: camposAlterarSenha.id })
@@ -155,6 +159,7 @@ const Usuario = Bookshelf.Model.extend({
       });
   },
 
+
   _camposValidos: function(camposUsuario, usuario, options) {
     let messages = Usuario._loginValido(camposUsuario);
     messages.push.apply(messages,
@@ -190,6 +195,7 @@ const Usuario = Bookshelf.Model.extend({
         return messages;
       });
   },
+
 
   _loginValido: function(user) {
     let message = [];
@@ -229,6 +235,8 @@ const Usuario = Bookshelf.Model.extend({
     }
     return message;
   },
+
+
   _buscarPorId: function(id, options) {
     return new Usuario({ id: id })
       .fetch(_.merge({
@@ -243,11 +251,15 @@ const Usuario = Bookshelf.Model.extend({
         throw err;
       });
   },
-  _listaAtivacoes: (id, antesDe = new Date(), limite = 100, options = null) =>
+
+
+  _listaAtivacoes: (id, antesDe = moment().utc(), limite = 100, options = null) =>
     Bookshelf.model('Ativacao')
       ._lista(id, antesDe, limite, 'usuario', options)
   ,
-  _listaVeiculos: (id, antesDe = new Date(), limite = 10, options) =>
+
+
+  _listaVeiculos: (id, antesDe = moment().utc(), limite = 10, options) =>
     Usuario
       .query(qb => {
         qb
@@ -261,7 +273,9 @@ const Usuario = Bookshelf.Model.extend({
           .select('ultima_ativacao');
       })
       .fetchAll(options),
-  _extratoFinanceiro: (id, antesDe = new Date(), limite = 10, options) =>
+
+
+  _extratoFinanceiro: (id, antesDe = moment().utc(), limite = 10, options) =>
     Usuario
       .query(qb => {
         qb
@@ -273,6 +287,8 @@ const Usuario = Bookshelf.Model.extend({
           .select('movimentacao_conta.*');
       })
       .fetchAll(options)
+
+
 });
 Bookshelf.model('Usuario', Usuario);
 

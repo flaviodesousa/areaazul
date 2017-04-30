@@ -15,6 +15,8 @@ const PessoaJuridica = Bookshelf.Model.extend({
     return this.hasOne('Pessoa', 'id');
   }
 }, {
+
+
   _camposValidos: function(camposPessoaJuridica, options) {
     let messages = [];
 
@@ -46,6 +48,8 @@ const PessoaJuridica = Bookshelf.Model.extend({
         return messages;
       });
   },
+
+
   _cadastrar: function(camposPessoaJuridica, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options || {});
     return PessoaJuridica
@@ -75,10 +79,14 @@ const PessoaJuridica = Bookshelf.Model.extend({
           .save(null, optionsInsert);
       });
   },
+
+
   _buscarPorCNPJ: function(cnpj, options) {
     return PessoaJuridica.forge({ cnpj: cnpj })
       .fetch(options);
   }
+
+
 });
 Bookshelf.model('PessoaJuridica', PessoaJuridica);
 

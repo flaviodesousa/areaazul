@@ -16,6 +16,8 @@ const UsuarioAdministrativo = Bookshelf.Model.extend({
     return this.hasOne('PessoaFisica', 'id');
   }
 }, {
+
+
   _cadastrar: (camposUsuarioAdministrativo, options) => {
     let pessoaFisica;
     const optionsInsert = _.merge({ method: 'insert' }, options);
@@ -71,6 +73,8 @@ const UsuarioAdministrativo = Bookshelf.Model.extend({
           ._buscarPorId(usuarioAdministrativo.id, options);
       });
   },
+
+
   _autentico: (login, senha) => {
     let usuarioAdministrativo;
     return new UsuarioAdministrativo({ login: login })
@@ -100,6 +104,8 @@ const UsuarioAdministrativo = Bookshelf.Model.extend({
         throw err;
       });
   },
+
+
   _camposValidos: function(camposUsuAdm, usuarioAdministrativo, options) {
     let messages = [];
 
@@ -111,6 +117,8 @@ const UsuarioAdministrativo = Bookshelf.Model.extend({
         return messages.push.apply(messages, messagesUsuarioHelper);
       });
   },
+
+
   _buscarPorId: function(id, options) {
     return new UsuarioAdministrativo({ id: id })
       .fetch(_.merge({
@@ -125,6 +133,8 @@ const UsuarioAdministrativo = Bookshelf.Model.extend({
         throw err;
       });
   }
+
+
 });
 Bookshelf.model('UsuarioAdministrativo', UsuarioAdministrativo);
 

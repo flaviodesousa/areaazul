@@ -1,4 +1,5 @@
 const bcrypt = require('bcrypt-then');
+const moment = require('moment');
 
 const log = require('../logging');
 const Bookshelf = require('../database');
@@ -96,17 +97,17 @@ module.exports.alterarSenha = function(camposAlterarSenha) {
   });
 };
 
-module.exports.listaAtivacoes = (id, antesDe = new Date(), limite = 10) =>
+module.exports.listaAtivacoes = (id, antesDe = moment().utc(), limite = 10) =>
   Usuario
     ._listaAtivacoes(id, antesDe, limite)
     .then(lista => lista.toJSON());
 
-module.exports.listaVeiculos = (id, antesDe = new Date(), limite = 10) =>
+module.exports.listaVeiculos = (id, antesDe = moment().utc(), limite = 10) =>
   Usuario
     ._listaVeiculos(id, antesDe, limite)
     .then(lista => lista.toJSON());
 
-module.exports.extratoFinanceiro = (id, antesDe = new Date(), limite = 10) =>
+module.exports.extratoFinanceiro = (id, antesDe = moment().utc(), limite = 10) =>
   Usuario
     ._extratoFinanceiro(id, antesDe, limite)
     .then(lista => lista.toJSON());

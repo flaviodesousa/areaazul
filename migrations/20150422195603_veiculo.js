@@ -4,7 +4,7 @@ exports.up = function(knex) {
   return knex.schema.createTable('veiculo', function(table) {
     table.increments('id').primary();
     table.string('placa').unique().notNullable();
-    table.enu('tipo', [ 'carro', 'moto', 'camionete' ]).notNullable();
+    table.enu('tipo', [ 'carro', 'moto', 'utilitário' ]).notNullable();
     table.string('marca');
     table.string('modelo');
     table.string('cor');

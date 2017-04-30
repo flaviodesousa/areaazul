@@ -14,6 +14,8 @@ const PessoaFisica = Bookshelf.Model.extend({
     return this.hasOne('Pessoa', 'id');
   }
 }, {
+
+
   _camposValidos: function(pessoaFisicaFields, options) {
     let messages = [];
 
@@ -45,6 +47,8 @@ const PessoaFisica = Bookshelf.Model.extend({
         return messages;
       });
   },
+
+
   _camposValidosInclusao: function(pessoaFisicaFields, options) {
     let messages = [];
     return this
@@ -64,6 +68,8 @@ const PessoaFisica = Bookshelf.Model.extend({
           });
       });
   },
+
+
   __cadastrarNova: function(camposPessoaFisica, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options || {});
     return PessoaFisica
@@ -72,8 +78,8 @@ const PessoaFisica = Bookshelf.Model.extend({
         if (messages.length) {
           throw new AreaAzul
             .BusinessException(
-            'Não foi possível cadastrar nova Pessoa. Dados inválidos',
-            messages);
+              'Não foi possível cadastrar nova Pessoa. Dados inválidos',
+              messages);
         }
         return messages;
       })
@@ -83,16 +89,17 @@ const PessoaFisica = Bookshelf.Model.extend({
       })
       .then(function(pessoa) {
         return new PessoaFisica({
-            cpf: camposPessoaFisica.cpf,
-            data_nascimento: AreaAzulUtils.dataValida(
-              camposPessoaFisica.data_nascimento),
-            id: pessoa.id
-          })
+          cpf: camposPessoaFisica.cpf,
+          data_nascimento: AreaAzulUtils.dataValida(
+            camposPessoaFisica.data_nascimento),
+          id: pessoa.id
+        })
           .save(null, optionsInsert);
       });
   },
-  __atualizarExistente: function(
-    pessoaFisicaFields, pessoaFisicaRecord, options) {
+
+
+  __atualizarExistente: function(pessoaFisicaFields, pessoaFisicaRecord, options) {
     return new Pessoa({ id: pessoaFisicaRecord.id })
       .fetch(options)
       .then(function(p) {
@@ -108,7 +115,8 @@ const PessoaFisica = Bookshelf.Model.extend({
           .save({
             nome: pessoaFisicaFields.nome,
             email: pessoaFisicaFields.email,
-            telefone: pessoaFisicaFields.telefone }, options);
+            telefone: pessoaFisicaFields.telefone
+          }, options);
       })
       .then(function() {
         return pessoaFisicaRecord
@@ -118,6 +126,8 @@ const PessoaFisica = Bookshelf.Model.extend({
           }, _.merge({ method: 'update', patch: true }, options));
       });
   },
+
+
   _cadastrar: function(pessoaFisicaFields, options) {
     let PessoaFisica = this;
     return new PessoaFisica({ cpf: pessoaFisicaFields.cpf })
@@ -130,6 +140,8 @@ const PessoaFisica = Bookshelf.Model.extend({
         return PessoaFisica.__cadastrarNova(pessoaFisicaFields, options);
       });
   },
+
+
   _alterar: function(pf, id, options) {
     const optionsUpdate = _.merge({ method: 'update', patch: true }, options);
 
@@ -157,10 +169,14 @@ const PessoaFisica = Bookshelf.Model.extend({
           });
       });
   },
+
+
   _buscarPorCPF: function(cpf, options) {
     return new this({ cpf: cpf })
       .fetch(options);
   }
+
+
 });
 Bookshelf.model('PessoaFisica', PessoaFisica);
 

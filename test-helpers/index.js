@@ -364,8 +364,8 @@ module.exports = function(AreaAzul) {
       cidade_id: 1,
       placa: 'ARE4701',
       tipo: 'moto',
-      marca: 'Bentley',
-      modelo: 'Racing',
+      marca: 'Honda',
+      modelo: 'Titan',
       cor: 'Azul',
       ano_fabricado: 2013,
       ano_modelo: 2015
@@ -373,9 +373,9 @@ module.exports = function(AreaAzul) {
     {
       cidade_id: 1775,
       placa: 'GTA6266',
-      tipo: 'camionete',
-      marca: 'Fiat',
-      modelo: 'Uno',
+      tipo: 'utilitário',
+      marca: 'Ford',
+      modelo: 'F-1000',
       cor: 'Branca',
       ano_fabricado: 1984,
       ano_modelo: 1984

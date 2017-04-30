@@ -49,13 +49,15 @@ const Cidades = Bookshelf.Collection.extend({
       if (filtro.termos) {
         termos = Diacritics.remove(filtro.termos)
           .toLocaleLowerCase();
-        if (!/^[a-z ]+$/.test(termos)) {
+        if (!/^([a-z ]+|[a-z ]*(\/?[a-z]{2})?)$/.test(termos)) {
           return Promise.reject(
             new AreaAzul.BusinessException(
-              'Termos de busca devem conter apenas letras e espaços',
+              'Termos de busca devem conter apenas letras e espaços, ' +
+              'opcionalmente terminando com /UF',
               { filtro: filtro }));
         }
         termos = '%' + termos.trim()
+            .replace(/\//, ' /')
             .replace(/\s+/g, '%') + '%';
       }
     }

@@ -14,6 +14,8 @@ const Token = Bookshelf.model('Token');
 const Pessoa = Bookshelf.Model.extend({
   tableName: 'pessoa'
 }, {
+
+
   _camposValidos: function(camposPessoa/*, options*/) {
     let message = [];
 
@@ -49,6 +51,8 @@ const Pessoa = Bookshelf.Model.extend({
 
     return Promise.resolve(message);
   },
+
+
   _cadastrar: function(camposPessoa, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options);
     const Pessoa = this;
@@ -58,8 +62,8 @@ const Pessoa = Bookshelf.Model.extend({
         if (messages.length) {
           throw new AreaAzul
             .BusinessException(
-            'Não foi possível cadastrar nova Pessoa. Dados inválidos',
-            messages);
+              'Não foi possível cadastrar nova Pessoa. Dados inválidos',
+              messages);
         }
         return messages;
       })
@@ -73,6 +77,8 @@ const Pessoa = Bookshelf.Model.extend({
           .save(null, optionsInsert);
       });
   },
+
+
   _verificaEmail: function(pessoaAVerificar) {
     const _uuid = util.geradorUUIDAleatorio();
     Pessoa.forge({ email: pessoaAVerificar.email })
@@ -82,7 +88,8 @@ const Pessoa = Bookshelf.Model.extend({
           Token.cadastrar({
             uuid: _uuid,
             pessoa_id: pessoa.id,
-            proposito: 'solicitacao_nova_senha' })
+            proposito: 'solicitacao_nova_senha'
+          })
             .then(token => {
               AreaAzulMailer.enviar.emailer({
                 from: 'AreaAzul <cadastro@areaazul.org>',
@@ -101,6 +108,8 @@ sua senha.</p>
         }
       });
   }
+
+
 });
 Bookshelf.model('Pessoa', Pessoa);
 

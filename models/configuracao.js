@@ -18,17 +18,19 @@ const Configuracao = Bookshelf.Model.extend(
       return this.belongsTo('Conta', 'conta_id');
     }
   }, {
+
+
     _camposValidos: function(config) {
       let message = [];
 
-      if (!validator.isDecimal(''+config.valor_ativacao_reais)) {
+      if (!validator.isDecimal('' + config.valor_ativacao_reais)) {
         message.push(
           {
             attribute: 'valor_ativacao_reais',
             problem: 'Valor de ativação é obrigatório!'
           });
       }
-      if (!validator.isNumeric(''+config.tempo_tolerancia_minutos)) {
+      if (!validator.isNumeric('' + config.tempo_tolerancia_minutos)) {
         message.push(
           {
             attribute: 'tempo_tolerancia_minutos',
@@ -36,14 +38,14 @@ const Configuracao = Bookshelf.Model.extend(
           });
       }
 
-      if (!validator.isNumeric(''+config.franquia_minutos)) {
+      if (!validator.isNumeric('' + config.franquia_minutos)) {
         message.push(
           {
             attribute: 'franquia_minutos',
             problem: 'Franquia é obrigatória!'
           });
       }
-      if (!validator.isNumeric(''+config.ciclo_ativacao_minutos)) {
+      if (!validator.isNumeric('' + config.ciclo_ativacao_minutos)) {
         message.push(
           {
             attribute: 'ciclo_ativacao_minutos',
@@ -51,7 +53,7 @@ const Configuracao = Bookshelf.Model.extend(
           });
       }
 
-      if (!validator.isNumeric(''+config.ciclo_fiscalizacao_minutos)) {
+      if (!validator.isNumeric('' + config.ciclo_fiscalizacao_minutos)) {
         message.push(
           {
             attribute: 'ciclo_fiscalizacao_minutos',
@@ -61,6 +63,8 @@ const Configuracao = Bookshelf.Model.extend(
 
       return Promise.resolve(message);
     },
+
+
     _buscar: () =>
       new Configuracao()
         .fetch({
@@ -68,7 +72,8 @@ const Configuracao = Bookshelf.Model.extend(
           withRelated: [
             'conta',
             'cidade.estado'
-          ]})
+          ]
+        })
         .catch(Bookshelf.NotFoundError, () => {
           // TODO: Falhar neste caso, configuração via sysadmin tools
           throw new AreaAzul.BusinessException(
@@ -76,6 +81,8 @@ const Configuracao = Bookshelf.Model.extend(
             'Inicializar manualmente com seed ou sysadmin tools'
           );
         }),
+
+
     _alterar: (camposConfig, options) => Configuracao
       ._camposValidos(camposConfig)
       .then(messages => {
@@ -100,7 +107,7 @@ const Configuracao = Bookshelf.Model.extend(
             cidade_id: camposConfig.cidade_id,
             parametros: camposConfig.parametros
           }
-          );
+        );
         if (configuracao) {
           return configuracao
             .save(configuracoes,
@@ -109,6 +116,8 @@ const Configuracao = Bookshelf.Model.extend(
         return new Configuracao(configuracoes)
           .save(null, options);
       })
+
+
   });
 Bookshelf.model('Configuracao', Configuracao);
 

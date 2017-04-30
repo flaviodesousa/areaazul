@@ -1,6 +1,7 @@
 'use strict';
 
 const should = require('chai').should();
+const moment = require('moment');
 
 const AreaAzul = require('../../areaazul');
 const UsuarioHasVeiculo = AreaAzul.facade.UsuarioHasVeiculo;
@@ -30,7 +31,7 @@ describe('facade UsuarioHasVeiculo', function() {
         .cadastrar({
           usuario_id: idUsuarioComum,
           veiculo_id: idVeiculo,
-          ultima_ativacao: new Date()
+          ultima_ativacao: moment().utc()
         })
         .then(function(uv) {
           should.exist(uv);
