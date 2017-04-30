@@ -37,8 +37,8 @@ exports.seed = knex =>
             longitude: -47.887430,
             zoom: 10
           },
-          hora: 'Brazil/East',
-          horas: [
+          fuso_horario: 'Brazil/East',
+          fusos_horarios: [
             'America/Manaus', 'Brazil/West',
             'America/Noronha', 'Brazil/DeNoronha',
             'America/Rio_Branco', 'Brazil/Acre',
