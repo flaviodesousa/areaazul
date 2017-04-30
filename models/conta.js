@@ -10,15 +10,21 @@ const Conta = Bookshelf.Model.extend({
     return this.hasMany('MovimentacaoConta', 'conta_id');
   }
 }, {
+
+
   _cadastrar: function(conta, options) {
     conta = _.merge({
       saldo: 0,
-      data_abertura: moment().utc(),
-      ativo: true }, conta || {});
+      data_abertura: moment()
+        .utc(),
+      ativo: true
+    }, conta || {});
     const optionsInsert = _.merge({ method: 'insert' }, options);
     return new Conta(conta)
       .save(null, optionsInsert);
   }
+
+
 });
 Bookshelf.model('Conta', Conta);
 

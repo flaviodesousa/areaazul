@@ -13,6 +13,8 @@ const Veiculo = Bookshelf.Model.extend({
     return this.belongsTo('Cidade', 'cidade_id');
   }
 }, {
+
+
   _cadastrar: function(veiculoFields, options) {
     let veiculo = null;
     const optionsInsert = _.merge({ method: 'insert' }, options || {});
@@ -25,8 +27,8 @@ const Veiculo = Bookshelf.Model.extend({
         if (messages && messages.length) {
           throw new AreaAzul
             .BusinessException(
-            'Não foi possível cadastrar novo Veículo. Dados inválidos',
-            messages);
+              'Não foi possível cadastrar novo Veículo. Dados inválidos',
+              messages);
         }
         return messages;
       })
@@ -59,7 +61,11 @@ const Veiculo = Bookshelf.Model.extend({
         Veiculo
           ._buscarPorId(veiculo.id, options));
   },
+
+
   TIPOS: /^(carro|moto|utilitário)$/,
+
+
   _validarVeiculo: (veiculoFields, options) => {
     let message = [];
 
@@ -111,6 +117,8 @@ const Veiculo = Bookshelf.Model.extend({
       });
 
   },
+
+
   _buscarPorPlaca: (placa, options) => {
     let placaSemMascara = '';
 
@@ -120,24 +128,26 @@ const Veiculo = Bookshelf.Model.extend({
     return new Veiculo({ placa: placaSemMascara })
       .fetch(_.merge({ withRelated: [ 'cidade.estado' ] }, options));
   },
+
+
   _buscarPorId: (id, options) => new Veiculo({ id: id })
-      .fetch(_.merge({
-        withRelated: [ 'cidade.estado' ],
-        require: true
-      }, options))
-      .catch(Bookshelf.NotFoundError, () => {
-        const err = new AreaAzul.BusinessException(
-          'Veículo: id não encontrado',
-          { id: id });
-        log.warn(err.message, err.details);
-        throw err;
-      })
+    .fetch(_.merge({
+      withRelated: [ 'cidade.estado' ],
+      require: true
+    }, options))
+    .catch(Bookshelf.NotFoundError, () => {
+      const err = new AreaAzul.BusinessException(
+        'Veículo: id não encontrado',
+        { id: id });
+      log.warn(err.message, err.details);
+      throw err;
+    })
+
 
 });
 Bookshelf.model('Veiculo', Veiculo);
 
 const Veiculos = Bookshelf.Collection.extend({
   model: Veiculo
-}, {
-});
+}, {});
 Bookshelf.collection('Veiculos', Veiculos);

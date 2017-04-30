@@ -10,15 +10,20 @@ const Token = Bookshelf.Model.extend({
     return this.belongsTo('PessoaFisica');
   }
 }, {
+
+
   cadastrar: function(camposToken) {
     return new Token({
       id: camposToken.uuid,
       pessoa_id: camposToken.pessoa_id,
-      data_expiracao: moment().utc(),
+      data_expiracao: moment()
+        .utc(),
       proposito: camposToken.proposito
     })
       .save(null, { method: 'insert' });
   },
+
+
   procurar: function(camposToken) {
     new Token({ id: camposToken.id })
       .fetch({ require: true, withRelated: [ 'pessoaFisica.pessoa' ] })
@@ -28,6 +33,8 @@ const Token = Bookshelf.Model.extend({
           camposToken);
       });
   }
+
+
 });
 Bookshelf.model('Token', Token);
 

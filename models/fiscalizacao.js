@@ -21,28 +21,34 @@ const Fiscalizacao = Bookshelf.Model.extend({
     return this.belongsTo('UsuarioFiscal');
   }
 }, {
+
+
   _listar: () => Configuracao
-      ._buscar()
-      .then(configuracao => {
-        let apos = moment().utc()
-          .subtract(configuracao.get('ciclo_fiscalizacao_minutos'), 'minutes')
-          .toDate();
-        return Fiscalizacao
-          .query(function(qb) {
-            qb.where('timestamp', '>', apos)
-              .orderBy('timestamp', 'desc');
-          })
-          .fetchAll({
-            withRelated: [
-              'veiculo.cidade.estado',
-              'usuarioFiscal.pessoaFisica.pessoa' ]
-          });
-      }),
+    ._buscar()
+    .then(configuracao => {
+      let apos = moment()
+        .utc()
+        .subtract(configuracao.get('ciclo_fiscalizacao_minutos'), 'minutes')
+        .toDate();
+      return Fiscalizacao
+        .query(function(qb) {
+          qb.where('timestamp', '>', apos)
+            .orderBy('timestamp', 'desc');
+        })
+        .fetchAll({
+          withRelated: [
+            'veiculo.cidade.estado',
+            'usuarioFiscal.pessoaFisica.pessoa' ]
+        });
+    }),
+
+
   _listarAtivas: (minutos = 5) =>
     Fiscalizacao
       .query(function(qb) {
         qb.where('timestamp', '>=',
-          moment().utc()
+          moment()
+            .utc()
             .subtract(minutos, 'minutes')
             .calendar())
           .orderBy('timestamp', 'desc');
@@ -52,6 +58,8 @@ const Fiscalizacao = Bookshelf.Model.extend({
           'veiculo.cidade.estado',
           'usuarioFiscal.pessoaFisica.pessoa' ]
       }),
+
+
   _camposValidos: (camFis) => {
     let messages = [];
     const placa = AreaazulUtils.placaSemMascara(camFis.placa);
@@ -81,6 +89,8 @@ const Fiscalizacao = Bookshelf.Model.extend({
 
     return Promise.resolve(messages);
   },
+
+
   _cadastrar: (camposFiscalizacao, options) => {
     const placa = AreaazulUtils.placaSemMascara(camposFiscalizacao.placa);
     let veiculoId;
@@ -108,17 +118,18 @@ const Fiscalizacao = Bookshelf.Model.extend({
           veiculo_id: veiculoId,
           latitude: camposFiscalizacao.latitude,
           longitude: camposFiscalizacao.longitude,
-          timestamp: moment().utc(),
+          timestamp: moment()
+            .utc(),
           usuario_fiscal_id: camposFiscalizacao.usuario_fiscal_id
         })
-        .save(null, options));
+          .save(null, options));
   }
+
 
 });
 Bookshelf.model('Fiscalizacao', Fiscalizacao);
 
 const Fiscalizacoes = Bookshelf.Collection.extend({
   model: Fiscalizacao
-}, {
-});
+}, {});
 Bookshelf.collection('Fiscalizacoes', Fiscalizacoes);

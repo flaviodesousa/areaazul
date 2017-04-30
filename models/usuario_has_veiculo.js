@@ -15,6 +15,8 @@ const UsuarioHasVeiculo = Bookshelf.Model.extend(
       return this.belongsTo('Usuario', 'usuario_id');
     }
   }, {
+
+
     _salvar: function(usuarioHasVeiculo, options) {
 
       const optionsInsert = _.merge({ method: 'insert' }, options || {});
@@ -42,6 +44,8 @@ const UsuarioHasVeiculo = Bookshelf.Model.extend(
               .save({ ultima_ativacao: moment().utc() }, optionsUpdate);
           });
     }
+
+
   });
 Bookshelf.model('UsuarioHasVeiculo', UsuarioHasVeiculo);
 

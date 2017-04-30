@@ -15,6 +15,8 @@ const UsuarioFiscal = Bookshelf.Model.extend({
     return this.hasOne('PessoaFisica', 'id');
   }
 }, {
+
+
   _cadastrar: (camposUsuarioFiscal, options) => {
     let conta;
     const optionsInsert = _.merge({ method: 'insert' }, options);
@@ -24,9 +26,9 @@ const UsuarioFiscal = Bookshelf.Model.extend({
         if (messages.length) {
           throw new AreaAzul
             .BusinessException(
-            'Não foi possível cadastrar novo Usuário Fiscal.'
-            + ' Dados inválidos',
-            messages);
+              'Não foi possível cadastrar novo Usuário Fiscal.'
+              + ' Dados inválidos',
+              messages);
         }
       })
       .then(function() {
@@ -72,6 +74,8 @@ const UsuarioFiscal = Bookshelf.Model.extend({
           });
       });
   },
+
+
   _autentico: (login, senha) => {
     let usuarioFiscal;
     return new UsuarioFiscal({ login: login })
@@ -101,6 +105,8 @@ const UsuarioFiscal = Bookshelf.Model.extend({
         throw err;
       });
   },
+
+
   _camposValidos: function(camposUsuarioFiscal, usuarioFiscal, options) {
     let messages = [];
 
@@ -112,6 +118,8 @@ const UsuarioFiscal = Bookshelf.Model.extend({
         return messages.push.apply(messages, messagesUsuarioHelper);
       });
   },
+
+
   _buscarPorId: function(id, options) {
     return new UsuarioFiscal({ id: id })
       .fetch(_.merge({
@@ -126,6 +134,8 @@ const UsuarioFiscal = Bookshelf.Model.extend({
         throw err;
       });
   }
+
+
 });
 Bookshelf.model('UsuarioFiscal', UsuarioFiscal);
 

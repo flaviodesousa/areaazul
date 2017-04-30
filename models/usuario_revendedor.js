@@ -20,6 +20,8 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
     return this.belongsTo('Revendedor');
   }
 }, {
+
+
   _autentico: (login, senha) => {
     let usuarioRevendedor;
     return new UsuarioRevendedor({ login: login })
@@ -55,6 +57,8 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
       .then(() => UsuarioRevendedor
         ._buscarPorId(usuarioRevendedor.id, null));
   },
+
+
   _salvarUsuarioRevenda: function(campos, usuarioRevendedor, options) {
     let UsuarioRevendedor = this;
     let senha;
@@ -65,9 +69,9 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
         if (messages.length) {
           throw new AreaAzul
             .BusinessException(
-            'Não foi possível cadastrar novo usuário para a revenda.'
-            + ' Dados inválidos',
-            messages);
+              'Não foi possível cadastrar novo usuário para a revenda.'
+              + ' Dados inválidos',
+              messages);
         }
         return messages;
       })
@@ -109,6 +113,7 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
       .then(usuRev => UsuarioRevendedor._buscarPorId(usuRev.id, options));
   },
 
+
   _inserir: function(camposUsuarioRevendedor, options) {
     return UsuarioRevendedor._salvarUsuarioRevenda(
       camposUsuarioRevendedor, null, options);
@@ -120,6 +125,8 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
       ._salvarUsuarioRevenda(
         camposUsuarioRevendedor, usuarioRevendedor, options);
   },
+
+
   _desativar: (id, options) => {
     return new UsuarioRevendedor({ id: id })
       .fetch(_.merge({ require: true }, options))
@@ -133,6 +140,8 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
       .then(usuRev => UsuarioRevendedor._buscarPorId(usuRev.id, null));
 
   },
+
+
   _alterarSenha: function(camposTrocaSenha, options) {
     let usuarioRevendedor;
     new UsuarioRevendedor({ id: camposTrocaSenha.id })
@@ -194,6 +203,8 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
 
     return message;
   },
+
+
   validarSenhaAlteracao: function(user) {
     let message = [];
 
@@ -224,6 +235,7 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
     }
     return message;
   },
+
 
   alterarSenhaRecuperacao: function(user) {
     let usuarioRevendedor;
@@ -327,13 +339,19 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
       })
       .return(message);
   },
+
+
   validarUsuarioRevenda: function(usuarioRevendedorFields, operation) {
     return this._validarUsuarioRevenda(usuarioRevendedorFields, operation, {});
   },
+
+
   _procurarLogin: function(login, options) {
     return new this({ login: login })
       .fetch(options);
   },
+
+
   _buscarPorId: function(id, options) {
     return new UsuarioRevendedor({ id: id })
       .fetch(_.merge({
@@ -350,11 +368,12 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
         throw err;
       });
   }
+
+
 });
 Bookshelf.model('UsuarioRevendedor', UsuarioRevendedor);
 
 const UsuariosRevendedores = Bookshelf.Collection.extend({
   model: UsuarioRevendedor
-}, {
-});
+}, {});
 Bookshelf.collection('UsuariosRevendedores', UsuariosRevendedores);

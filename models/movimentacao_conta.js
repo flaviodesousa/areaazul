@@ -14,6 +14,8 @@ const MovimentacaoConta = Bookshelf.Model.extend({
     return this.belongsTo('Conta', 'conta_id');
   }
 }, {
+
+
   /**
    * Insere transação na conta e atualiza o saldo da conta
    * @param movimentacaoConta {object} - detalhes da transação
@@ -52,7 +54,8 @@ const MovimentacaoConta = Bookshelf.Model.extend({
       })
       .then(function(c) {
         return new MovimentacaoConta({
-          data: moment().utc(),
+          data: moment()
+            .utc(),
           historico: movimentacaoConta.historico,
           tipo: movimentacaoConta.tipo,
           valor: movimentacaoConta.valor,
@@ -64,6 +67,8 @@ const MovimentacaoConta = Bookshelf.Model.extend({
       .then(m => new MovimentacaoConta({ id: m.id })
         .fetch(_.merge({ withRelated: [ 'conta' ] }, options)));
   },
+
+
   /**
    * Insere transação a débito na conta e atualiza o saldo
    * @param credito {object} - detalhes da transação
@@ -85,6 +90,8 @@ const MovimentacaoConta = Bookshelf.Model.extend({
     return MovimentacaoConta
       ._inserirMovimentacaoConta(credito, options);
   },
+
+
   /**
    * Insere transação na conta e atualiza o saldo
    * @param debito {object} - detalhes da transação
@@ -107,11 +114,12 @@ const MovimentacaoConta = Bookshelf.Model.extend({
     return MovimentacaoConta
       ._inserirMovimentacaoConta(debito, options);
   }
+
+
 });
 Bookshelf.model('MovimentacaoConta', MovimentacaoConta);
 
 const MovimentacoesConta = Bookshelf.Collection.extend({
   model: MovimentacaoConta
-}, {
-});
+}, {});
 Bookshelf.collection('MovimentacoesConta', MovimentacoesConta);

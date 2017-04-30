@@ -22,6 +22,8 @@ const Revendedor = Bookshelf.Model.extend({
     return this.hasMany('UsuarioRevendedor');
   }
 }, {
+
+
   _cadastrar: function(revendedorFields, options) {
     let idPessoa = null;
 
@@ -31,8 +33,8 @@ const Revendedor = Bookshelf.Model.extend({
         if (messages.length) {
           throw new AreaAzul
             .BusinessException(
-            'Não foi possível cadastrar nova Revenda. Dados inválidos',
-            messages);
+              'Não foi possível cadastrar nova Revenda. Dados inválidos',
+              messages);
         }
         return messages;
       })
@@ -85,6 +87,8 @@ const Revendedor = Bookshelf.Model.extend({
           .return(revendedor);
       });
   },
+
+
   _salvarRevenda: function(pessoa, options) {
     return new Revendedor({ id: pessoa.id })
       .fetch(_.merge({ require: true }, options))
@@ -104,6 +108,7 @@ const Revendedor = Bookshelf.Model.extend({
       });
   },
 
+
   _camposValidos: function(revenda, options) {
     let messages = [];
 
@@ -117,8 +122,7 @@ const Revendedor = Bookshelf.Model.extend({
     if (!revenda.termo_servico) {
       messages.push({
         attribute: 'termo_servico',
-        problem:
-          'Para realizar o cadastro precisa aceitar nossos termos de serviço!'
+        problem: 'Para realizar o cadastro precisa aceitar nossos termos de serviço!'
       });
     }
 
@@ -161,19 +165,26 @@ const Revendedor = Bookshelf.Model.extend({
       })
       .then(() => messages);
   },
+
+
   _buscarPorIdUsuarioRevendedor: id => {
     return new Revendedor()
       .query(function(qb) {
         qb.whereExists(function() {
           this
-            .select('*').from('usuario_revendedor')
+            .select('*')
+            .from('usuario_revendedor')
             .where({ pessoa_fisica_id: id });
         });
       })
       .fetch({ withRelated: [ 'conta' ] });
   },
+
+
   _buscarPorId: (id, options) => new Revendedor({ id: id })
     .fetch(_.merge({ required: true, withRelated: [ 'conta' ] }, options)),
+
+
   _buscarPorCPFouCNPJ: (chave, options) => {
     if (!chave || (!chave.cpf && !chave.cnpj)) {
       throw new AreaAzul.BusinessException(
@@ -190,6 +201,8 @@ const Revendedor = Bookshelf.Model.extend({
         .then(pj => Revendedor._buscarPorId(pj.id, options));
     }
   },
+
+
   /**
    * Adiciona créditos na conta da revenda
    * @param {object} camposCompra - descrição da compra
@@ -212,11 +225,11 @@ const Revendedor = Bookshelf.Model.extend({
         revendedor = r;
       })
       .then(() => Configuracao
-          ._buscar())
+        ._buscar())
       .then(c => {
         configuracao = c;
         let cotacao = money.floatToAmount(configuracao.get('parametros')
-          .revenda.preco_credito[revendedor.get('tipo')]);
+          .revenda.preco_credito[ revendedor.get('tipo') ]);
         preco = money.mul(
           money.floatToAmount(camposCompra.creditos),
           cotacao);
@@ -240,6 +253,8 @@ const Revendedor = Bookshelf.Model.extend({
           },
           options));
   },
+
+
   /**
    * Transfere créditos da conta da revenda para conta do usuário
    * @param {object} camposVenda - descrição da venda
@@ -275,6 +290,8 @@ const Revendedor = Bookshelf.Model.extend({
           },
           options));
   }
+
+
 });
 Bookshelf.model('Revendedor', Revendedor);
 

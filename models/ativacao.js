@@ -22,6 +22,8 @@ const Configuracao = Bookshelf.model('Configuracao');
 const Ativacao = Bookshelf.Model.extend({
   tableName: 'ativacao'
 }, {
+
+
   _validarAtivacao: (ativacao) => {
     let messages = [];
 
@@ -52,10 +54,12 @@ const Ativacao = Bookshelf.Model.extend({
             math.mul(
               configuracao.get('valor_ativacao_reais'),
               math.floatToAmount(ativacao.tempo)),
-          '60.00');
+            '60.00');
       })
       .then(() => messages);
   },
+
+
   _validarAtivacaoUsuario: (ativacao, options) => {
     let messages = [];
     let semUsuarioId = false;
@@ -93,13 +97,16 @@ const Ativacao = Bookshelf.Model.extend({
       ._validarAtivacao(ativacao, options)
       .then(mensagensComuns => {
         messages.push.apply(messages, mensagensComuns);
-        if (semUsuarioId) { return; }
+        if (semUsuarioId) {
+          return;
+        }
         return Usuario
           ._buscarPorId(ativacao.usuario_id, options)
           .then(function(usuario) {
             if (!usuario ||
               math.cmp(
-                usuario.related('conta').get('saldo'),
+                usuario.related('conta')
+                  .get('saldo'),
                 ativacao.valor) < 0) {
               messages.push({
                 attribute: 'saldo',
@@ -116,7 +123,9 @@ const Ativacao = Bookshelf.Model.extend({
           });
       })
       .then(function() {
-        if (semVeiculoId) { return null; }
+        if (semVeiculoId) {
+          return null;
+        }
         return Veiculo
           ._buscarPorId(ativacao.veiculo_id, options);
       })
@@ -129,6 +138,8 @@ const Ativacao = Bookshelf.Model.extend({
       })
       .then(() => messages);
   },
+
+
   _ativar: function(camposAtivacao, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options);
     const optionsUpdate = _.merge({ method: 'update', patch: true }, options);
@@ -148,8 +159,11 @@ const Ativacao = Bookshelf.Model.extend({
       altitude = null;
     }
 
-    const dataAtivacao = moment().utc();
-    const dataExpiracao = moment().utc().add(camposAtivacao.tempo, 'minutes');
+    const dataAtivacao = moment()
+      .utc();
+    const dataExpiracao = moment()
+      .utc()
+      .add(camposAtivacao.tempo, 'minutes');
 
     return Ativacao
       ._validarAtivacaoUsuario(camposAtivacao, options)
@@ -158,8 +172,8 @@ const Ativacao = Bookshelf.Model.extend({
           debug('_ativar() ativacao invalida');
           throw new AreaAzul
             .BusinessException(
-            'Não foi possível ativar veículo. Dados inválidos',
-            messages);
+              'Não foi possível ativar veículo. Dados inválidos',
+              messages);
         }
       })
       .then(function() {
@@ -218,6 +232,7 @@ const Ativacao = Bookshelf.Model.extend({
       });
   },
 
+
   _desativar: function(desativacao, options) {
     const optionsPatch = _.merge({ patch: true }, options);
     return new AtivacaoUsuario({
@@ -238,13 +253,18 @@ const Ativacao = Bookshelf.Model.extend({
       })
       .then(function(d) {
         return d
-          .save({ data_desativacao: moment().utc() }, optionsPatch);
+          .save({
+            data_desativacao: moment()
+              .utc()
+          }, optionsPatch);
       })
       .then(function(ativacaoExistente) {
         log.info('Desativacao: sucesso', { desativacao: ativacaoExistente });
         return ativacaoExistente;
       });
   },
+
+
   _ativarPorRevenda: function(camposAtivacao, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options);
     let ativacao;
@@ -253,8 +273,11 @@ const Ativacao = Bookshelf.Model.extend({
     if (camposAtivacao.placa) {
       placaSemMascara = util.placaSemMascara(camposAtivacao.placa);
     }
-    const dataAtivacao = moment().utc();
-    const dataExpiracao = moment().utc().add(camposAtivacao.tempo, 'minutes');
+    const dataAtivacao = moment()
+      .utc();
+    const dataExpiracao = moment()
+      .utc()
+      .add(camposAtivacao.tempo, 'minutes');
     return Ativacao
       ._validarAtivacaoRevenda(camposAtivacao, placaSemMascara, options)
       .then(function(messages) {
@@ -262,8 +285,8 @@ const Ativacao = Bookshelf.Model.extend({
           debug('ativarPorRevenda() ativação inválida');
           throw new AreaAzul
             .BusinessException(
-            'Não foi possível ativar veículo. Dados inválidos',
-            messages);
+              'Não foi possível ativar veículo. Dados inválidos',
+              messages);
         }
         debug('ativarPorRevenda() ativação válida');
       })
@@ -363,6 +386,8 @@ const Ativacao = Bookshelf.Model.extend({
         return ativacao;
       });
   },
+
+
   _validarAtivacaoRevenda: function(ativacao, placa, options) {
     let messages = [];
     let idUsuarioRevendedor;
@@ -424,15 +449,18 @@ const Ativacao = Bookshelf.Model.extend({
             messages.push.apply(messages, messagesComuns);
           }))
       .then(() => {
-        if (!idUsuarioRevendedor) { return messages; }
+        if (!idUsuarioRevendedor) {
+          return messages;
+        }
         return UsuarioRevendedor
           ._buscarPorId(idUsuarioRevendedor, options)
           .then(function(usuRev) {
             if (!usuRev ||
-                math.cmp(
-                  usuRev.related('revendedor')
-                    .related('conta').get('saldo'),
-                  ativacao.valor) < 0) {
+              math.cmp(
+                usuRev.related('revendedor')
+                  .related('conta')
+                  .get('saldo'),
+                ativacao.valor) < 0) {
               messages.push({
                 attribute: 'valor',
                 problem: 'Revenda não possui saldo suficiente em conta!'
@@ -449,6 +477,8 @@ const Ativacao = Bookshelf.Model.extend({
           });
       });
   },
+
+
   _verificaAtivacao: function(placa, options) {
     return Ativacao
       .forge()
@@ -456,13 +486,16 @@ const Ativacao = Bookshelf.Model.extend({
         qb
           .innerJoin('veiculo', 'veiculo.id', 'ativacao.veiculo_id')
           .whereNull('ativacao.data_desativacao')
-          .andWhere('ativacao.data_expiracao', '>=', moment().utc())
+          .andWhere('ativacao.data_expiracao', '>=', moment()
+            .utc())
           .andWhere('veiculo.placa', '=', placa)
           .select('ativacao.*')
           .select('veiculo.*');
       })
       .fetch(options);
   },
+
+
   _lista: (idAtivador, antesDe, limite, ativador, options) =>
     Ativacao
       .query(qb => {
@@ -472,8 +505,11 @@ const Ativacao = Bookshelf.Model.extend({
           .limit(limite);
       })
       .fetchAll(options)
+
+
 });
 Bookshelf.model('Ativacao', Ativacao);
+
 
 const AtivacaoUsuario = Bookshelf.Model.extend({
   tableName: 'ativacao_usuario',
@@ -481,11 +517,13 @@ const AtivacaoUsuario = Bookshelf.Model.extend({
 });
 Bookshelf.model('AtivacaoUsuario', AtivacaoUsuario);
 
+
 const AtivacaoUsuarioRevendedor = Bookshelf.Model.extend({
   tableName: 'ativacao_usuario_revendedor',
   idAttribute: [ 'ativacao_id', 'usuario_revendedor_id' ]
 });
 Bookshelf.model('AtivacaoUsuarioRevendedor', AtivacaoUsuarioRevendedor);
+
 
 const AtivacaoUsuarioFiscal = Bookshelf.Model.extend({
   tableName: 'ativacao_usuario_fiscal',
@@ -493,9 +531,11 @@ const AtivacaoUsuarioFiscal = Bookshelf.Model.extend({
 });
 Bookshelf.model('AtivacaoUsuarioFiscal', AtivacaoUsuarioFiscal);
 
+
 const Ativacoes = Bookshelf.Collection.extend({
   model: Ativacao
 }, {
+
 
   _listarAtivacoes: function() {
     return Ativacoes
@@ -505,7 +545,8 @@ const Ativacoes = Bookshelf.Collection.extend({
           .innerJoin('veiculo', 'veiculo.id', 'ativacao.veiculo_id')
           .leftJoin('fiscalizacao',
             'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
-          .where('ativacao.data_expiracao', '>=', moment().utc())
+          .where('ativacao.data_expiracao', '>=', moment()
+            .utc())
           .select('ativacao.*')
           .select('veiculo.*');
       })
@@ -514,6 +555,7 @@ const Ativacoes = Bookshelf.Collection.extend({
         return collectionVeiculosSomenteAtivados;
       });
   },
+
 
   _listarAtivacoesExpirando: function() {
     return Ativacoes
@@ -524,9 +566,15 @@ const Ativacoes = Bookshelf.Collection.extend({
           .leftJoin('fiscalizacao',
             'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
           .where('ativacao.data_expiracao', '<=',
-            moment().utc().subtract(5, 'minutes').calendar())
+            moment()
+              .utc()
+              .subtract(5, 'minutes')
+              .calendar())
           .andWhere('ativacao.data_expiracao', '>=',
-            moment().utc().subtract(5, 'minutes').calendar())
+            moment()
+              .utc()
+              .subtract(5, 'minutes')
+              .calendar())
           .select('ativacao.*')
           .select('veiculo.*');
       })
@@ -535,6 +583,7 @@ const Ativacoes = Bookshelf.Collection.extend({
         return collectionVeiculosSomenteAtivados;
       });
   },
+
 
   _listarAtivacoesExpiraram: function() {
     return Ativacoes
@@ -545,7 +594,8 @@ const Ativacoes = Bookshelf.Collection.extend({
             'veiculo.id', 'ativacao.veiculo_id')
           .leftJoin('fiscalizacao',
             'fiscalizacao.veiculo_id', 'ativacao.veiculo_id')
-          .where('ativacao.data_expiracao', '>', moment().utc())
+          .where('ativacao.data_expiracao', '>', moment()
+            .utc())
           .select('ativacao.*')
           .select('veiculo.*');
       })
@@ -554,5 +604,7 @@ const Ativacoes = Bookshelf.Collection.extend({
         return collectionVeiculosSomenteAtivados;
       });
   }
+
+
 });
 Bookshelf.collection('Ativacoes', Ativacoes);
