@@ -315,7 +315,7 @@ describe('facade Veiculo', function() {
         usuario_id: idUsuarioComum,
         cidade_id: idCidade,
         placa: placaTeste,
-        tipo: 'caminhonete',  // Deveria ser 'camionete'
+        tipo: 'camionete',  // Deveria ser 'utilitário'
         marca: marcaTeste,
         modelo: modeloTeste,
         cor: corTeste,

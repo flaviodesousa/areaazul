@@ -3,7 +3,6 @@
 const _ = require('lodash');
 const AU = require('areaazul-utils');
 
-const moment = require('moment');
 const AreaAzul = require('../areaazul');
 const Bookshelf = require('../database');
 const log = require('../logging');
@@ -12,10 +11,6 @@ const Veiculo = Bookshelf.Model.extend({
   tableName: 'veiculo',
   cidade: function() {
     return this.belongsTo('Cidade', 'cidade_id');
-  },
-  usuarios: function() {
-    return this.belongsToMany('Usuario')
-      .through('UsuarioHasVeiculo');
   }
 }, {
   _cadastrar: function(veiculoFields, options) {
@@ -64,7 +59,7 @@ const Veiculo = Bookshelf.Model.extend({
         Veiculo
           ._buscarPorId(veiculo.id, options));
   },
-  TIPOS: /^(carro|moto|camionete)$/,
+  TIPOS: /^(carro|moto|utilitário)$/,
   _validarVeiculo: (veiculoFields, options) => {
     let message = [];
 
