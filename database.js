@@ -12,7 +12,6 @@ debug('Bookshelf loaded', Bookshelf.VERSION);
 [
   'estado', 'cidade', 'conta',
   'configuracao', 'movimentacao_conta',
-  'contrato',
   'pessoa', 'pessoa_fisica', 'pessoa_juridica',
   'funcionario', 'veiculo',
   'usuario', 'usuario_administrativo', 'usuario_fiscal',
