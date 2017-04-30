@@ -122,7 +122,7 @@ describe('fachada Ativacao', function() {
     it('falha ativação sem usuário', function(done) {
       const ativacao = {
         veiculo_id: veiculoExistente.id,
-        tempo: tempoPadrao
+        tempo_minutos: tempoPadrao
       };
 
       Ativacao
@@ -141,7 +141,7 @@ describe('fachada Ativacao', function() {
     it('falha ativação sem veículo', function(done) {
       const ativacao = {
         usuario_id: idUsuarioComum,
-        tempo: tempoPadrao
+        tempo_minutos: tempoPadrao
       };
 
       Ativacao
@@ -180,7 +180,7 @@ describe('fachada Ativacao', function() {
       const ativacao = {
         usuario_id: idUsuarioComum,
         veiculo_id: veiculoExistente.id,
-        tempo: tempoExcessivo
+        tempo_minutos: tempoExcessivo
       };
 
       Ativacao
@@ -200,7 +200,7 @@ describe('fachada Ativacao', function() {
       const ativacao = {
         usuario_id: idUsuarioComum,
         veiculo_id: veiculoExistente.id,
-        tempo: tempoPadrao
+        tempo_minutos: tempoPadrao
       };
 
       Ativacao
@@ -293,7 +293,7 @@ describe('fachada Ativacao', function() {
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: tempoPadrao
+          tempo_minutos: tempoPadrao
         })
         .then(function() {
           done(new Error('Não deve ativar sem usuário de revenda'));
@@ -322,7 +322,7 @@ describe('fachada Ativacao', function() {
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: tempoPadrao
+          tempo_minutos: tempoPadrao
         })
         .then(function() {
           done(new Error('Não deve ativar sem usuário de revenda'));
@@ -351,7 +351,7 @@ describe('fachada Ativacao', function() {
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: tempoPadrao
+          tempo_minutos: tempoPadrao
         })
         .then(function() {
           done(new Error('Não deve ativar sem usuário de revenda'));
@@ -379,7 +379,7 @@ describe('fachada Ativacao', function() {
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: tempoPadrao
+          tempo_minutos: tempoPadrao
         })
         .then(function() {
           done(new Error('Não deve ativar veículo sem cidade'));
@@ -408,7 +408,7 @@ describe('fachada Ativacao', function() {
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: tempoPadrao,
+          tempo_minutos: tempoPadrao,
           telefone: '982119222'
         })
         .then(function() {
@@ -438,7 +438,7 @@ describe('fachada Ativacao', function() {
           modelo: veiculoExistente.get('modelo'),
           cor: veiculoExistente.get('cor'),
           tipo_veiculo: veiculoExistente.get('tipo'),
-          tempo: tempoPadrao,
+          tempo_minutos: tempoPadrao,
           telefone: '61982119222'
         })
         .then(function(ativacao) {

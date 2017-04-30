@@ -27,19 +27,19 @@ const Ativacao = Bookshelf.Model.extend({
   _validarAtivacao: (ativacao) => {
     let messages = [];
 
-    if (!ativacao.tempo) {
+    if (!ativacao.tempo_minutos) {
       messages.push({
-        attribute: 'tempo',
+        attribute: 'tempo_minutos',
         problem: 'Tempo em minutos não fornecido'
       });
-    } else if (isNaN(ativacao.tempo)) {
+    } else if (isNaN(ativacao.tempo_minutos)) {
       messages.push({
-        attribute: 'tempo',
+        attribute: 'tempo_minutos',
         problem: 'Tempo em minutos deve ser um número'
       });
-    } else if (ativacao.tempo <= 0) {
+    } else if (ativacao.tempo_minutos <= 0) {
       messages.push({
-        attribute: 'tempo',
+        attribute: 'tempo_minutos',
         problem: 'Tempo deve ser superior a 0 minutos'
       });
     }
@@ -48,12 +48,12 @@ const Ativacao = Bookshelf.Model.extend({
       ._buscar()
       .then(configuracao => {
         // Tempo em minutos válido, então calculo o valor:
-        // valor = valor da ativacao (por hora) * tempo (minutos) / 60 minutos
+        // valor = valor da ativacao (por hora) * tempo_minutos / 60 minutos
         ativacao.valor =
           math.div(
             math.mul(
               configuracao.get('valor_ativacao_reais'),
-              math.floatToAmount(ativacao.tempo)),
+              math.floatToAmount(ativacao.tempo_minutos)),
             '60.00');
       })
       .then(() => messages);
@@ -161,7 +161,7 @@ const Ativacao = Bookshelf.Model.extend({
     const dataAtivacao = moment()
       .utc();
     const dataExpiracao = dataAtivacao.clone()
-      .add(camposAtivacao.tempo, 'minutes');
+      .add(camposAtivacao.tempo_minutos, 'minutes');
 
     return Ativacao
       ._validarAtivacaoUsuario(camposAtivacao, options)
@@ -263,7 +263,7 @@ const Ativacao = Bookshelf.Model.extend({
       .utc();
     const dataExpiracao = moment()
       .utc()
-      .add(camposAtivacao.tempo, 'minutes');
+      .add(camposAtivacao.tempo_minutos, 'minutes');
     return Ativacao
       ._validarAtivacaoRevenda(camposAtivacao, placaSemMascara, options)
       .then(function(messages) {

@@ -170,7 +170,7 @@ describe('facade Usuario', function() {
                   .ativar({
                     usuario_id: usuario.id,
                     veiculo_id: veiculos[i % 3].id,
-                    tempo: 60
+                    tempo_minutos: 60
                   })
                   .then(a => ativacoes[ i ] = a)
                   .then(() => Ativacao.desativar({
