@@ -142,7 +142,6 @@ const Ativacao = Bookshelf.Model.extend({
 
   _ativar: function(camposAtivacao, options) {
     const optionsInsert = _.merge({ method: 'insert' }, options);
-    const optionsUpdate = _.merge({ method: 'update', patch: true }, options);
     let ativacao = null;
 
     let latitude = camposAtivacao.latitude;
@@ -161,8 +160,7 @@ const Ativacao = Bookshelf.Model.extend({
 
     const dataAtivacao = moment()
       .utc();
-    const dataExpiracao = moment()
-      .utc()
+    const dataExpiracao = dataAtivacao.clone()
       .add(camposAtivacao.tempo, 'minutes');
 
     return Ativacao
@@ -197,26 +195,14 @@ const Ativacao = Bookshelf.Model.extend({
         })
           .save(null, optionsInsert);
       })
-      .then(() =>
-        UsuarioHasVeiculo
-          .forge({
-            usuario_id: camposAtivacao.usuario_id,
-            veiculo_id: camposAtivacao.veiculo_id
-          })
-          .fetch(_.merge({ require: true }, options)))
-      .then(usuariohasveiculo =>
-        usuariohasveiculo
-          .save({ ultima_ativacao: dataAtivacao }, optionsUpdate))
-      .catch(Bookshelf.NotFoundError, () =>
-        new UsuarioHasVeiculo({
+      .then(() => UsuarioHasVeiculo
+        ._salvar({
           usuario_id: camposAtivacao.usuario_id,
-          veiculo_id: camposAtivacao.veiculo_id,
-          ultima_ativacao: dataAtivacao
-        })
-          .save(null, optionsInsert))
+          veiculo_id: camposAtivacao.veiculo_id
+        }, options))
       .then(function() {
         return new Usuario({ id: camposAtivacao.usuario_id })
-          .fetch();
+          .fetch(options);
       })
       .then(function(usuario) {
         return MovimentacaoConta
