@@ -75,7 +75,7 @@ exports.seed = knex =>
                 preco_por_hora: 0.80
               }
             ],
-            utilitario: [
+            utilitário: [
               {
                 label: '1 hora',
                 permanencia_maxima_minutos: 60,
@@ -121,7 +121,7 @@ exports.seed = knex =>
                 fracao_minutos: 15
               }
             ],
-            utilitario: [
+            utilitário: [
               {
                 label: '1 hora',
                 permanencia_maxima_minutos: 60,
