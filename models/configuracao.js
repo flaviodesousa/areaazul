@@ -88,6 +88,8 @@ const Configuracao = Bookshelf.Model.extend(
       .then(messages => {
         if (messages && messages.length) {
           debug('_alterar() configuração inválida');
+          AreaAzul.log.warn('model:configuracao:alterar dados inválidos',
+            { camposConfig: camposConfig, messages: messages });
           throw new AreaAzul
             .BusinessException(
               'Não foi possível alterar configuração. Dados inválidos',
@@ -108,6 +110,7 @@ const Configuracao = Bookshelf.Model.extend(
             parametros: camposConfig.parametros
           }
         );
+        AreaAzul.log.info('model:configuracao:alterar alterando configuração', { configuracao: configuracoes });
         if (configuracao) {
           return configuracao
             .save(configuracoes,
