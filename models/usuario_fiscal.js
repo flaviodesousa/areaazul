@@ -76,10 +76,10 @@ const UsuarioFiscal = Bookshelf.Model.extend({
   },
 
 
-  _autentico: (login, senha) => {
+  _autentico: (login, senha, options) => {
     let usuarioFiscal;
     return new UsuarioFiscal({ login: login })
-      .fetch()
+      .fetch(options)
       .then(function(ur) {
         usuarioFiscal = ur;
         if (!usuarioFiscal) {
@@ -94,7 +94,7 @@ const UsuarioFiscal = Bookshelf.Model.extend({
       .then(function(valid) {
         if (valid) {
           return UsuarioFiscal
-            ._buscarPorId(usuarioFiscal.id, {});
+            ._buscarPorId(usuarioFiscal.id, options);
         }
         const err = new AreaAzul.AuthenticationError(
           'Usuário fiscal: senha incorreta', {

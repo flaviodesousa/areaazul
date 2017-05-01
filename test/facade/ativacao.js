@@ -1,7 +1,8 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:ativacao');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 
 const math = require('money-math');
 
@@ -33,89 +34,92 @@ describe('fachada Ativacao', function() {
   let saldoFinalEsperado;
 
   before(function() {
-    return TestHelpers
-      .pegarVeiculo()
-      .then(v => {
-        veiculoExistente = v;
-        return TestHelpers
-          .apagarVeiculoPorPlaca(placaVeiculoNovo);
-      })
-      .then(() => ConfiguracaoModel._buscar())
-      .then(configuracao => {
-        precoDaAtivacao =
-          math.div(
-            math.mul(
-              configuracao.get('valor_ativacao_reais'),
-              math.floatToAmount(tempoPadrao)),
-            '60.00');
-        saldoFinalEsperado =
-          math.subtract(saldoInicial, precoDaAtivacao);
-      })
-      .then(() => TestHelpers.pegarUsuario())
-      .then(usuario => {
-        idUsuarioComum = usuario.id;
-        return new ContaModel({ id: usuario.get('conta_id') })
-          .fetch({ require: true });
-      })
-      .then(cu => {
-        contaUsuario = cu;
-        TestHelpers.setSaldo(contaUsuario, saldoInicial);
-      })
-      .then(() => TestHelpers.pegarRevendedor())
-      .then(revendedor =>
-        new ContaModel({ id: revendedor.get('conta_id') })
-          .fetch({ require: true }))
-      .then(cr => {
-        contaRevendedor = cr;
-        TestHelpers.setSaldo(contaRevendedor, saldoInicial);
-      })
-      .then(() => TestHelpers.pegarUsuarioRevendedor())
-      .then(function(usuarioRevendedor) {
-        idUsuarioRevendedor = usuarioRevendedor.id;
-      })
-      .then(() => TestHelpers.pegarCidade())
-      .then(cidade => {
-        idCidade = cidade.id;
-      })
-      .then(() =>
-        // Apagar ativações pendentes, para não afetar testes com novas
-        // ativações.
-        AtivacaoUsuarioModel
-          .query(function(qb) {
-            qb
-              .whereExists(function() {
-                this.select('*').from('ativacao')
-                  .whereRaw('ativacao.id = ativacao_usuario.ativacao_id')
-                  .whereRaw('ativacao.data_desativacao is null');
-              });
-          })
-          .destroy())
-      .then(() =>
-        // Apagar ativações pendentes, para não afetar testes com novas
-        // ativações.
-        AtivacaoUsuarioRevendedorModel
-          .query(function(qb) {
-            qb
-              .whereExists(function() {
-                this.select('*').from('ativacao')
-                  .whereRaw(
-                    'ativacao.id = ativacao_usuario_revendedor.ativacao_id')
-                  .whereRaw('ativacao.data_desativacao is null');
-              });
-          })
-          .destroy())
-      .then(() =>
-        AtivacaoModel
-          .query(function(qb) {
-            qb
-              .whereNull('data_desativacao')
-              .andWhere({ veiculo_id: veiculoExistente.id });
-          })
-          .destroy())
-      .catch(function(e) {
-        debug('erro inesperado', e);
-        throw e;
-      });
+    return Bookshelf.transaction(trx =>
+      TestHelpers
+        .pegarVeiculo(0, trx)
+        .then(v => {
+          veiculoExistente = v;
+          return TestHelpers
+            .apagarVeiculoPorPlaca(placaVeiculoNovo, trx);
+        })
+        .then(() => ConfiguracaoModel._buscar({ transacting: trx }))
+        .then(configuracao => {
+          precoDaAtivacao =
+            math.div(
+              math.mul(
+                configuracao.get('valor_ativacao_reais'),
+                math.floatToAmount(tempoPadrao)),
+              '60.00');
+          saldoFinalEsperado =
+            math.subtract(saldoInicial, precoDaAtivacao);
+        })
+        .then(() => TestHelpers.pegarUsuario(trx))
+        .then(usuario => {
+          idUsuarioComum = usuario.id;
+          return new ContaModel({ id: usuario.get('conta_id') })
+            .fetch({ require: true, transacting: trx });
+        })
+        .then(cu => {
+          contaUsuario = cu;
+          TestHelpers.setSaldo(contaUsuario, saldoInicial, trx);
+        })
+        .then(() => TestHelpers.pegarRevendedor(trx))
+        .then(revendedor =>
+          new ContaModel({ id: revendedor.get('conta_id') })
+            .fetch({ require: true, transacting: trx }))
+        .then(cr => {
+          contaRevendedor = cr;
+          TestHelpers.setSaldo(contaRevendedor, saldoInicial, trx);
+        })
+        .then(() => TestHelpers.pegarUsuarioRevendedor(trx))
+        .then(function(usuarioRevendedor) {
+          idUsuarioRevendedor = usuarioRevendedor.id;
+        })
+        .then(() => TestHelpers.pegarCidade(trx))
+        .then(cidade => {
+          idCidade = cidade.id;
+        })
+        .then(() =>
+          // Apagar ativações pendentes, para não afetar testes com novas
+          // ativações.
+          AtivacaoUsuarioModel
+            .query(function(qb) {
+              qb
+                .whereExists(function() {
+                  this.select('*')
+                    .from('ativacao')
+                    .whereRaw('ativacao.id = ativacao_usuario.ativacao_id')
+                    .whereRaw('ativacao.data_desativacao is null');
+                });
+            })
+            .destroy({ transacting: trx }))
+        .then(() =>
+          // Apagar ativações pendentes, para não afetar testes com novas
+          // ativações.
+          AtivacaoUsuarioRevendedorModel
+            .query(function(qb) {
+              qb
+                .whereExists(function() {
+                  this.select('*')
+                    .from('ativacao')
+                    .whereRaw(
+                      'ativacao.id = ativacao_usuario_revendedor.ativacao_id')
+                    .whereRaw('ativacao.data_desativacao is null');
+                });
+            })
+            .destroy({ transacting: trx }))
+        .then(() =>
+          AtivacaoModel
+            .query(function(qb) {
+              qb
+                .whereNull('data_desativacao')
+                .andWhere({ veiculo_id: veiculoExistente.id });
+            })
+            .destroy({ transacting: trx }))
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          throw e;
+        }));
   });
 
   describe('Ativar()', function() {
@@ -213,7 +217,9 @@ describe('fachada Ativacao', function() {
             .fetch({ require: true });
         })
         .then(contaUsuario => {
-          contaUsuario.get('saldo').should.equal(saldoFinalEsperado);
+          contaUsuario.get('saldo')
+            .should
+            .equal(saldoFinalEsperado);
           done();
         })
         .catch(function(e) {
@@ -448,7 +454,9 @@ describe('fachada Ativacao', function() {
             .fetch({ require: true });
         })
         .then(contaRevendedor => {
-          contaRevendedor.get('saldo').should.equal(saldoFinalEsperado);
+          contaRevendedor.get('saldo')
+            .should
+            .equal(saldoFinalEsperado);
           done();
         })
         .catch(function(e) {

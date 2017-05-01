@@ -14,9 +14,10 @@ module.exports.cadastrar = camposUsuarioFiscal => {
 
 
 module.exports.autentico = (login, senha) =>
+Bookshelf.transaction(t =>
   UsuarioFiscal
-    ._autentico(login, senha)
-    .then(usuFis => usuFis.toJSON());
+    ._autentico(login, senha, { transacting: t })
+    .then(usuFis => usuFis.toJSON()));
 
 
 module.exports.buscarPorId = id =>

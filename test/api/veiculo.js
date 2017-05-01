@@ -7,7 +7,7 @@ const superAgent = require('superagent');
 const AreaAzul = require('../../areaazul');
 const Bookshelf = require('bookshelf');
 const TestHelpers = require('../../test-helpers')(AreaAzul, Bookshelf);
-const Veiculo = AreaAzul.facade.Veiculo;
+const Veiculo = Bookshelf.model('Veiculo');
 
 describe('/veiculo', function() {
   let server;
@@ -18,23 +18,24 @@ describe('/veiculo', function() {
   const url = `http://localhost:${port}/veiculo`;
 
   before(function(done) {
+    Bookshelf.transaction(trx =>
     TestHelpers
-      .pegarUsuario()
+      .pegarUsuario(trx)
       .then(function(u) {
         usuario = u;
         return TestHelpers
-          .pegarVeiculo();
+          .pegarVeiculo(0, trx);
       })
       .then(function(v) {
         veiculoExistente = v;
         return Veiculo
-          .buscarPorPlaca(placaVeiculoNaoExistente);
+          ._buscarPorPlaca(placaVeiculoNaoExistente, trx);
       })
       .then(function(v) {
         if (v) {
           // Apagar veiculo caso exista (para ficar não existente)
           return TestHelpers
-            .apagarVeiculoPorPlaca(placaVeiculoNaoExistente);
+            .apagarVeiculoPorPlaca(placaVeiculoNaoExistente, trx);
         }
       })
       .then(function() {
@@ -45,7 +46,7 @@ describe('/veiculo', function() {
       .catch(function(e) {
         debug('erro inesperado', e);
         done(e);
-      });
+      }));
   });
 
   describe('GET /veiculo/:id', function() {

@@ -65,15 +65,15 @@ const Configuracao = Bookshelf.Model.extend(
     },
 
 
-    _buscar: () =>
+    _buscar: (options) =>
       new Configuracao()
-        .fetch({
+        .fetch(_.merge({
           require: true,
           withRelated: [
             'conta',
             'cidade.estado'
           ]
-        })
+        }, options))
         .catch(Bookshelf.NotFoundError, () => {
           // TODO: Falhar neste caso, configuração via sysadmin tools
           throw new AreaAzul.BusinessException(

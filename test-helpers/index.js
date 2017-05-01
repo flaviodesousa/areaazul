@@ -30,8 +30,6 @@ module.exports = function(AreaAzul) {
   const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
   const Cidade = Bookshelf.model('Cidade');
 
-  const MovimentacaoContaFacade = AreaAzul.facade.MovimentacaoDeConta;
-
   function _apagarConta(idConta) {
     return new MovimentacaoConta()
       .query()
@@ -71,7 +69,8 @@ module.exports = function(AreaAzul) {
           .collection()
           .query()
           .whereExists(function() {
-            this.select('*').from('ativacao')
+            this.select('*')
+              .from('ativacao')
               .where({ veiculo_id: idVeiculo })
               .whereRaw('ativacao_id = ativacao.id');
           })
@@ -82,7 +81,8 @@ module.exports = function(AreaAzul) {
           .collection()
           .query()
           .whereExists(function() {
-            this.select('*').from('ativacao')
+            this.select('*')
+              .from('ativacao')
               .where({ veiculo_id: idVeiculo })
               .whereRaw('ativacao_id = ativacao.id');
           })
@@ -225,138 +225,136 @@ module.exports = function(AreaAzul) {
       })
       .then(function() {
         return new Usuario({ id: usuario.id })
-          .destroy();
+          .destroy({ transacting: trx });
       })
       .then(function() {
-        return _apagarConta(usuario.get('conta_id'));
+        return _apagarConta(usuario.get('conta_id'), trx);
       })
       .then(function() {
-        return _apagarPessoaFisica(usuario.id);
+        return _apagarPessoaFisica(usuario.id, trx);
       });
   }
 
-  exports.apagarUsuarioPorLogin = function(login) {
+  exports.apagarUsuarioPorLogin = function(login, trx) {
     return new Usuario({ login: login })
-      .fetch()
+      .fetch({ transacting: trx })
       .then(function(u) {
         if (!u) {
           return null;
         }
-        return _apagarUsuario(u);
+        return _apagarUsuario(u, trx);
       });
   };
 
-  function _apagarUsuarioAdministrativo(idUsuarioAdministrativo) {
+  function _apagarUsuarioAdministrativo(idUsuarioAdministrativo, trx) {
     return new UsuarioAdministrativo({ id: idUsuarioAdministrativo })
-      .destroy()
+      .destroy({ transacting: trx })
       .then(function() {
         return _apagarPessoaFisica(idUsuarioAdministrativo);
       });
   }
 
-  exports.apagarUsuarioAdministrativoPorLogin = function(login) {
+  exports.apagarUsuarioAdministrativoPorLogin = function(login, trx) {
     return new UsuarioAdministrativo({ login: login })
-      .fetch()
+      .fetch({ transacting: trx })
       .then(function(usuario) {
         if (!usuario) {
           return null;
         }
-        return _apagarUsuarioAdministrativo(usuario.id);
+        return _apagarUsuarioAdministrativo(usuario.id, trx);
       });
   };
 
-  exports.apagarRevendedorPorCPF = function(cpf) {
+  exports.apagarRevendedorPorCPF = function(cpf, trx) {
     if (!cpf) {
       return null;
     }
     return new PessoaFisica({ cpf: cpf })
-      .fetch()
+      .fetch({ transacting: trx })
       .then(function(pf) {
         if (!pf) {
           return null;
         }
-        return _apagarRevendedorFisica(pf.id);
+        return _apagarRevendedorFisica(pf.id, trx);
       });
   };
 
-  exports.apagarRevendedorPorCNPJ = function(cnpj) {
+  exports.apagarRevendedorPorCNPJ = function(cnpj, trx) {
     return new PessoaJuridica({ cnpj: cnpj })
-      .fetch()
+      .fetch({ transacting: trx })
       .then(function(pj) {
         if (!pj) {
           return null;
         }
-        return _apagarRevendedorJuridica(pj.id);
+        return _apagarRevendedorJuridica(pj.id, trx);
       });
   };
 
   exports.apagarAtivacaoId = _apagarAtivacaoId;
-  function _apagarAtivacaoId(id) {
+  function _apagarAtivacaoId(id, trx) {
     let ativacao;
     return new Ativacao({ id: id })
-      .fetch({ require: true })
+      .fetch({ require: true, transacting: trx })
       .then(at => {
         ativacao = at;
         switch (ativacao.get('ativador')) {
           case 'usuario': {
-            return AtivacaoUsuario
-              .query({ ativacao_id: id });
+            return new AtivacaoUsuario({ ativacao_id: id });
           }
           case 'revenda': {
-            return AtivacaoUsuarioRevendedor
-              .query({ ativacao_id: id });
+            return new AtivacaoUsuarioRevendedor({ ativacao_id: id });
           }
           case 'fiscal': {
-            return AtivacaoUsuarioFiscal
-              .query({ ativacao_id: id });
+            return new AtivacaoUsuarioFiscal({ ativacao_id: id });
           }
         }
       })
-      .delete()
+      .destroy({ transacting: trx })
       .then(() => ativacao)
-      .destroy();
+      .destroy({ transacting: trx });
   }
 
-  exports.apagarVeiculoPorPlaca = function(placa) {
+  exports.apagarVeiculoPorPlaca = function(placa, trx) {
     placa = aazUtils.placaSemMascara(placa);
     return new Veiculo({ placa: placa })
-      .fetch()
+      .fetch({ transacting: trx })
       .then(function(v) {
         if (!v) {
           return null;
         }
-        return _apagarVeiculo(v.id);
+        return _apagarVeiculo(v.id, trx);
       });
   };
 
-  exports.apagarMovimentacaoConta = function(movimentacaoContaId) {
+  exports.apagarMovimentacaoConta = function(movimentacaoContaId, trx) {
     return new MovimentacaoConta({ id: movimentacaoContaId })
-      .destroy();
+      .destroy({ transacting: trx });
   };
 
-  exports.apagarAtivacao = function(id) {
-    return _apagarAtivacaoId(id);
+  exports.apagarAtivacao = function(id, trx) {
+    return _apagarAtivacaoId(id, trx);
   };
 
-  exports.apagarUsuarioRevendaPorLogin = function(login) {
+  exports.apagarUsuarioRevendaPorLogin = function(login, trx) {
     return new UsuarioRevendedor({ login: login })
-      .fetch({ require: true })
+      .fetch({ require: true, transacting: trx })
       .then(usuarioRevendedor => {
-        return usuarioRevendedor.destroy();
+        return usuarioRevendedor.destroy({ transacting: trx });
       })
-      .catch(Bookshelf.NotFoundError, () => {});
+      .catch(Bookshelf.NotFoundError, () => {
+      });
   };
 
-  exports.apagarUsuarioRevenda = function(idUsuarioRevenda) {
+  exports.apagarUsuarioRevenda = function(idUsuarioRevenda, trx) {
     if (!idUsuarioRevenda) {
       return null;
     }
-    return _apagarRevendedor(idUsuarioRevenda);
+    return _apagarRevendedor(idUsuarioRevenda, trx);
   };
 
-  exports.pegarCidade = function() {
+  exports.pegarCidade = function(trx) {
     return new Cidade({ id: 1775 })
-      .fetch({ withRelated: 'estado' });
+      .fetch({ withRelated: 'estado', transacting: trx });
   };
 
   const veiculoParaTeste = [
@@ -392,20 +390,16 @@ module.exports = function(AreaAzul) {
     }
   ];
 
-  function pegarVeiculo(numero) {
-    if (isNaN(numero)) { numero = 0; }
-    return new Veiculo({ placa: veiculoParaTeste[numero].placa })
-      .fetch({
-        withRelated: [ 'cidade', 'cidade.estado' ],
-        require: true
-      })
-      .then(function(veiculo) {
-        return veiculo;
-      })
+  function pegarVeiculo(numero, trx) {
+    if (isNaN(numero)) {
+      numero = 0;
+    }
+    return Veiculo._buscarPorPlaca(veiculoParaTeste[ numero ].placa, { transacting: trx })
+      .then(veiculo => veiculo.toJSON())
       .catch(Bookshelf.NotFoundError, () => {
-        debug('cadastrando veículo de teste', veiculoParaTeste[numero]);
+        debug('cadastrando veículo de teste', veiculoParaTeste[ numero ]);
         return Veiculo
-          ._cadastrar(veiculoParaTeste[numero], {});
+          ._cadastrar(veiculoParaTeste[ numero ], { transacting: trx });
       });
   }
 
@@ -423,16 +417,17 @@ module.exports = function(AreaAzul) {
     sexo: 'feminino'
   };
 
-  function pegarUsuario() {
+  function pegarUsuario(trx) {
     return new Usuario({ login: usuarioTeste.login })
       .fetch({
         withRelated: [ 'pessoaFisica', 'pessoaFisica.pessoa', 'conta' ],
-        require: true
+        require: true,
+        transacting: trx
       })
       .catch(Bookshelf.NotFoundError, () => {
         debug('cadastrando usuario de teste', usuarioTeste);
         return Usuario
-          ._salvar(usuarioTeste, null, {});
+          ._salvar(usuarioTeste, null, { transacting: trx });
       })
       .then(function(usuario) {
         usuario.senha = usuarioTeste.nova_senha;
@@ -455,19 +450,19 @@ module.exports = function(AreaAzul) {
     termo_servico: true
   };
 
-  function pegarRevendedor() {
+  function pegarRevendedor(trx) {
     return new PessoaFisica({ cpf: revendedorPessoaFisicaTeste.cpf })
-      .fetch({ require: true })
+      .fetch({ require: true, transacting: trx })
       .then(function(pf) {
         // Caso 1: existe pessoa, vê se é revendedor
         return new Revendedor({ id: pf.id })
-          .fetch();
+          .fetch({ transacting: trx });
       })
       .catch(Bookshelf.NotFoundError, () => {
         // Caso 2: não existe pessoa ainda, cadastra tudo PF e Revendedor
         debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
         return Revendedor
-          ._cadastrar(revendedorPessoaFisicaTeste, {});
+          ._cadastrar(revendedorPessoaFisicaTeste, { transacting: trx });
       })
       .then(function(revendedor) {
         if (revendedor) {
@@ -476,9 +471,10 @@ module.exports = function(AreaAzul) {
         // Caso 3: existe pessoa, mas não é revendedor, cadastrar Revendedor
         debug('cadastrando revendedor de teste', revendedorPessoaFisicaTeste);
         return Revendedor
-          ._cadastrar(revendedorPessoaFisicaTeste, {});
+          ._cadastrar(revendedorPessoaFisicaTeste, { transacting: trx });
       });
   }
+
   exports.pegarRevendedor = pegarRevendedor;
 
   const usuarioRevendedorTeste = {
@@ -493,12 +489,13 @@ module.exports = function(AreaAzul) {
     termo_servico: '1'
   };
 
-  exports.pegarUsuarioRevendedor = function pegarUsuarioRevendedor() {
-    return pegarRevendedor()
+  exports.pegarUsuarioRevendedor = function pegarUsuarioRevendedor(trx) {
+    return pegarRevendedor(trx)
       .then(function(revendedor) {
         return new UsuarioRevendedor({ login: usuarioRevendedorTeste.login })
           .fetch({
             require: true,
+            transacting: trx,
             withRelated: [
               'pessoaFisica', 'pessoaFisica.pessoa', 'revendedor' ]
           })
@@ -507,43 +504,45 @@ module.exports = function(AreaAzul) {
               usuarioRevendedorTeste);
             return UsuarioRevendedor._salvarUsuarioRevenda(
               _.merge({ revendedor_id: revendedor.id },
-                usuarioRevendedorTeste), null, {})
+                usuarioRevendedorTeste), null, { transacting: trx })
               .then(() => {
-                return pegarUsuarioRevendedor();
+                return pegarUsuarioRevendedor(trx);
               });
           });
       });
   };
 
-  exports.setSaldo = function(conta, novoSaldo) {
+  exports.setSaldo = function(conta, novoSaldo, trx) {
     const diferenca = money.cmp(conta.get('saldo'), novoSaldo);
     if (diferenca === 0) {
       return conta;
     }
     if (diferenca < 0) {
-      return MovimentacaoContaFacade
-        .inserirCredito({
-          conta_id: conta.id,
-          historico: `Crédito teste de ${conta.get('saldo')} para ${novoSaldo}`,
-          tipo: 'teste',
-          valor: money.subtract(novoSaldo, conta.get('saldo'))
-        })
+      return MovimentacaoConta
+        ._inserirCredito({
+            conta_id: conta.id,
+            historico: `Crédito teste de ${conta.get('saldo')} para ${novoSaldo}`,
+            tipo: 'teste',
+            valor: money.subtract(novoSaldo, conta.get('saldo'))
+          },
+          { transacting: trx })
         .then(() => {
           return new Conta({ id: conta.id })
             .fetch({ require: true });
         });
     }
     // Diferença > 0
-    return MovimentacaoContaFacade
-      .inserirDebito({
-        conta_id: conta.id,
-        historico: `Débito teste de ${conta.get('saldo')} para ${novoSaldo}`,
-        tipo: 'teste',
-        valor: money.subtract(conta.get('saldo'), novoSaldo)
-      })
+    return MovimentacaoConta
+      ._inserirDebito({
+          conta_id: conta.id,
+          historico: `Débito teste de ${conta.get('saldo')} para ${novoSaldo}`,
+          tipo: 'teste',
+          valor: money.subtract(conta.get('saldo'), novoSaldo)
+        },
+        { transacting: trx })
       .then(() => {
         return new Conta({ id: conta.id })
-          .fetch({ require: true });
+          .fetch({ require: true, transacting: trx });
       });
   };
 

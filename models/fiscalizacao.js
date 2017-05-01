@@ -23,8 +23,8 @@ const Fiscalizacao = Bookshelf.Model.extend({
 }, {
 
 
-  _listar: () => Configuracao
-    ._buscar()
+  _listar: (options) => Configuracao
+    ._buscar(options)
     .then(configuracao => {
       let apos = moment()
         .utc()
@@ -43,7 +43,7 @@ const Fiscalizacao = Bookshelf.Model.extend({
     }),
 
 
-  _listarAtivas: (minutos = 5) =>
+  _listarAtivas: (minutos, options) =>
     Fiscalizacao
       .query(function(qb) {
         qb.where('timestamp', '>=',
@@ -53,14 +53,14 @@ const Fiscalizacao = Bookshelf.Model.extend({
             .calendar())
           .orderBy('timestamp', 'desc');
       })
-      .fetchAll({
+      .fetchAll(_.merge({
         withRelated: [
           'veiculo.cidade.estado',
           'usuarioFiscal.pessoaFisica.pessoa' ]
-      }),
+      }, options)),
 
 
-  _camposValidos: (camFis) => {
+  _camposValidos: (camFis, options) => {
     let messages = [];
     const placa = AreaazulUtils.placaSemMascara(camFis.placa);
 
@@ -77,7 +77,7 @@ const Fiscalizacao = Bookshelf.Model.extend({
       });
     } else {
       return UsuarioFiscal
-        ._buscarPorId(camFis.usuario_fiscal_id)
+        ._buscarPorId(camFis.usuario_fiscal_id, options)
         .catch(AreaAzul.BusinessException, () => {
           messages.push({
             attribute: 'usuario_fiscal_id',

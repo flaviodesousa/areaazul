@@ -6,6 +6,7 @@ const Promise = require('bluebird');
 const moment = require('moment');
 
 const AreaAzul = require('../../areaazul');
+const Bookshelf = require('bookshelf');
 const Usuario = AreaAzul.facade.Usuario;
 const Ativacao = AreaAzul.facade.Ativacao;
 
@@ -26,7 +27,9 @@ describe('facade Usuario', function() {
   let usuarioDeTeste = null;
 
   function apagarDadosDeTeste() {
-    return TestHelpers.apagarUsuarioPorLogin(camposUsuarioDeTeste.login);
+    return Bookshelf.transaction(t =>
+      TestHelpers.apagarUsuarioPorLogin(
+        camposUsuarioDeTeste.login, { transacting: t }));
   }
 
   before(function(done) {
@@ -36,17 +39,6 @@ describe('facade Usuario', function() {
       })
       .catch(function(e) {
         debug('erro inesperado em before()', e);
-        done(e);
-      });
-  });
-
-  after(function(done) {
-    apagarDadosDeTeste()
-      .then(function() {
-        done();
-      })
-      .catch(function(e) {
-        debug('erro inesperado em after()', e);
         done(e);
       });
   });
@@ -146,6 +138,7 @@ describe('facade Usuario', function() {
       let veiculos = [];
 
       this.timeout(5000);
+      Bookshelf.transaction((t) =>
       TestHelpers.pegarUsuario()
         .then(u => {
           usuario = u;
@@ -154,7 +147,7 @@ describe('facade Usuario', function() {
           let p = [];
           for (let i = 0; i < 3; ++i) {
             p.push(
-              TestHelpers.pegarVeiculo(i)
+              TestHelpers.pegarVeiculo(i, { transacting: t })
                 .then(v => veiculos[i] = v));
           }
           return Promise.all(p);
@@ -187,7 +180,7 @@ describe('facade Usuario', function() {
         .catch(function(e) {
           debug('erro inesperado', e);
           done(e);
-        });
+        }));
     });
 
     it('obtém lista das últimas ativações', function(done) {

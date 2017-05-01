@@ -12,20 +12,24 @@ function fiscalVerify(username, password, done) {
   process.nextTick(function() {
     UsuarioFiscal.autentico(username, password)
       .then(function(usuarioFiscal) {
-        return done(null, {
+        done(null, {
           username: username,
           id: usuarioFiscal.id,
           usuarioFiscal: usuarioFiscal
         });
+        return null;
       })
       .catch(AreaAzul.AuthenticationError, function() {
-        return done(null, false);
+        done(null, false);
+        return null;
       })
       .catch(AreaAzul.BusinessException, function() {
-        return done(null, false);
+        done(null, false);
+        return null;
       })
       .catch(function(err) {
-        return done(err);
+        done(err);
+        return null;
       });
   });
 }

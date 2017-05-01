@@ -1,7 +1,9 @@
 'use strict';
 
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 const moment = require('moment');
+const Bookshelf = require('bookshelf');
 
 const AreaAzul = require('../../areaazul');
 const UsuarioHasVeiculo = AreaAzul.facade.UsuarioHasVeiculo;
@@ -12,17 +14,18 @@ describe('facade UsuarioHasVeiculo', function() {
 
   before(function() {
     const TestHelpers = require('../../test-helpers')(AreaAzul);
-    return TestHelpers
-      .pegarVeiculo()
-      .then(function(veiculo) {
-        idVeiculo = veiculo.id;
-      })
-      .then(function() {
-        return TestHelpers.pegarUsuario();
-      })
-      .then(function(usuario) {
-        idUsuarioComum = usuario.id;
-      });
+    return Bookshelf.transaction(t =>
+      TestHelpers
+        .pegarVeiculo({ transacting: t })
+        .then(function(veiculo) {
+          idVeiculo = veiculo.id;
+        })
+        .then(function() {
+          return TestHelpers.pegarUsuario({ transacting: t });
+        })
+        .then(function(usuario) {
+          idUsuarioComum = usuario.id;
+        }));
   });
 
   describe('inserir()', function() {
@@ -31,7 +34,8 @@ describe('facade UsuarioHasVeiculo', function() {
         .cadastrar({
           usuario_id: idUsuarioComum,
           veiculo_id: idVeiculo,
-          ultima_ativacao: moment().utc()
+          ultima_ativacao: moment()
+            .utc()
         })
         .then(function(uv) {
           should.exist(uv);

@@ -5,11 +5,12 @@ const Bookshelf = require('../database');
 const Configuracao = Bookshelf.model('Configuracao');
 
 module.exports.alterar = camposConfig =>
-  Configuracao
-    ._alterar(camposConfig)
-    .then(configuracao => configuracao.toJSON());
+  Bookshelf.transaction(t => Configuracao
+    ._alterar(camposConfig, { transacting: t })
+    .then(configuracao => configuracao.toJSON()));
 
 module.exports.buscar = () =>
-  Configuracao
-    ._buscar()
-    .then(configuracao => configuracao.toJSON());
+  Bookshelf.transaction(t =>
+    Configuracao
+      ._buscar({ transacting: t })
+      .then(configuracao => configuracao.toJSON()));
