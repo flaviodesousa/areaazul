@@ -10,7 +10,7 @@ module.exports = function(AreaAzul) {
   const aazUtils = require('areaazul-utils');
 
   const Bookshelf = AreaAzul._internals.Bookshelf;
-  const Fiscalizacoes = Bookshelf.collection('Fiscalizacoes');
+  const Fiscalizacao = Bookshelf.model('Fiscalizacao');
   const UsuarioFiscal = Bookshelf.model('UsuarioFiscal');
   const Usuario = Bookshelf.model('Usuario');
   const UsuarioAdministrativo = Bookshelf.model('UsuarioAdministrativo');
@@ -24,9 +24,8 @@ module.exports = function(AreaAzul) {
   const AtivacaoUsuario = Bookshelf.model('AtivacaoUsuario');
   const AtivacaoUsuarioRevendedor = Bookshelf.model('AtivacaoUsuarioRevendedor');
   const AtivacaoUsuarioFiscal = Bookshelf.model('AtivacaoUsuarioFiscal');
-  const Ativacoes = Bookshelf.collection('Ativacoes');
   const Veiculo = Bookshelf.model('Veiculo');
-  const UsuariosHaveVeiculos = Bookshelf.collection('UsuariosHaveVeiculos');
+  const UsuarioHasVeiculo = Bookshelf.model('UsuarioHasVeiculo');
   const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
   const Cidade = Bookshelf.model('Cidade');
 
@@ -59,12 +58,11 @@ module.exports = function(AreaAzul) {
   }
 
   function _apagarVeiculo(idVeiculo, trx) {
-    return new UsuariosHaveVeiculos()
+    return new UsuarioHasVeiculo()
       .query(qb => qb.where({ veiculo_id: idVeiculo }))
       .destroy({ transacting: trx })
       .then(function() {
         return AtivacaoUsuario
-          .collection()
           .query(qb => qb.whereExists(function() {
             this.select('*')
               .from('ativacao')
@@ -75,7 +73,6 @@ module.exports = function(AreaAzul) {
       })
       .then(function() {
         return AtivacaoUsuarioRevendedor
-          .collection()
           .query(qb => qb.whereExists(function() {
             this.select('*')
               .from('ativacao')
@@ -85,12 +82,12 @@ module.exports = function(AreaAzul) {
           .destroy({ transacting: trx });
       })
       .then(function() {
-        return new Ativacoes()
+        return new Ativacao()
           .query(qb => qb.where({ veiculo_id: idVeiculo }))
           .destroy({ transacting: trx });
       })
       .then(function() {
-        return new Fiscalizacoes()
+        return new Fiscalizacao()
           .query(qb => qb.where({ veiculo_id: idVeiculo }))
           .destroy({ transacting: trx });
       })
@@ -199,7 +196,7 @@ module.exports = function(AreaAzul) {
   };
 
   function _apagarUsuario(usuario, trx) {
-    return new UsuariosHaveVeiculos()
+    return new UsuarioHasVeiculo()
       .query(qb => qb.where({ usuario_id: usuario.id }))
       .destroy({ transacting: trx })
       .then(function() {
@@ -384,7 +381,6 @@ module.exports = function(AreaAzul) {
       numero = 0;
     }
     return Veiculo._buscarPorPlaca(veiculoParaTeste[ numero ].placa, { transacting: trx })
-      .then(veiculo => veiculo.toJSON())
       .catch(Bookshelf.NotFoundError, () => {
         debug('cadastrando veículo de teste', veiculoParaTeste[ numero ]);
         return Veiculo
