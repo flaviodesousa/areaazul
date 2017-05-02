@@ -146,7 +146,7 @@ module.exports = function(AreaAzul) {
 
   function _apagarUsuarioFiscal(idUsuarioFiscal, trx) {
     let contaId;
-    return new Fiscalizacoes()
+    return new Fiscalizacao()
       .query(qb => qb.where({ usuario_fiscal_id: idUsuarioFiscal }))
       .destroy({ transacting: trx })
       .then(function() {
@@ -236,7 +236,7 @@ module.exports = function(AreaAzul) {
     return new UsuarioAdministrativo({ id: idUsuarioAdministrativo })
       .destroy({ transacting: trx })
       .then(function() {
-        return _apagarPessoaFisica(idUsuarioAdministrativo);
+        return _apagarPessoaFisica(idUsuarioAdministrativo, trx);
       });
   }
 
