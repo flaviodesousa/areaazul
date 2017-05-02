@@ -30,139 +30,131 @@ module.exports = function(AreaAzul) {
   const MovimentacaoConta = Bookshelf.model('MovimentacaoConta');
   const Cidade = Bookshelf.model('Cidade');
 
-  function _apagarConta(idConta) {
+  function _apagarConta(idConta, trx) {
     return new MovimentacaoConta()
-      .query()
-      .where({ conta_id: idConta })
-      .delete()
+      .query(qb => qb.where({ conta_id: idConta }))
+      .destroy({ transacting: trx })
       .then(function() {
-        return new Conta({ id: idConta }).destroy();
+        return new Conta({ id: idConta }).destroy({ transacting: trx });
       });
   }
 
-  function _apagarPessoaFisica(id) {
+  function _apagarPessoaFisica(id, trx) {
     return new PessoaFisica({ id: id })
-      .destroy()
+      .destroy({ transacting: trx })
       .then(function() {
         return new Pessoa({ id: id })
-          .destroy();
+          .destroy({ transacting: trx });
       });
   }
 
 
-  function _apagarPessoaJuridica(id) {
+  function _apagarPessoaJuridica(id, trx) {
     return new PessoaJuridica({ id: id })
-      .destroy()
+      .destroy({ transacting: trx })
       .then(function() {
         return new Pessoa({ id: id })
-          .destroy();
+          .destroy({ transacting: trx });
       });
   }
 
-  function _apagarVeiculo(idVeiculo) {
+  function _apagarVeiculo(idVeiculo, trx) {
     return new UsuariosHaveVeiculos()
-      .query()
-      .where({ veiculo_id: idVeiculo })
-      .delete()
+      .query(qb => qb.where({ veiculo_id: idVeiculo }))
+      .destroy({ transacting: trx })
       .then(function() {
         return AtivacaoUsuario
           .collection()
-          .query()
-          .whereExists(function() {
+          .query(qb => qb.whereExists(function() {
             this.select('*')
               .from('ativacao')
               .where({ veiculo_id: idVeiculo })
               .whereRaw('ativacao_id = ativacao.id');
-          })
-          .delete();
+          }))
+          .destroy({ transacting: trx });
       })
       .then(function() {
         return AtivacaoUsuarioRevendedor
           .collection()
-          .query()
-          .whereExists(function() {
+          .query(qb => qb.whereExists(function() {
             this.select('*')
               .from('ativacao')
               .where({ veiculo_id: idVeiculo })
               .whereRaw('ativacao_id = ativacao.id');
-          })
-          .delete();
+          }))
+          .destroy({ transacting: trx });
       })
       .then(function() {
         return new Ativacoes()
-          .query()
-          .where({ veiculo_id: idVeiculo })
-          .delete();
+          .query(qb => qb.where({ veiculo_id: idVeiculo }))
+          .destroy({ transacting: trx });
       })
       .then(function() {
         return new Fiscalizacoes()
-          .query()
-          .where({ veiculo_id: idVeiculo })
-          .delete();
+          .query(qb => qb.where({ veiculo_id: idVeiculo }))
+          .destroy({ transacting: trx });
       })
       .then(function() {
         return new Veiculo({ id: idVeiculo })
-          .destroy();
+          .destroy({ transacting: trx });
       });
   }
 
-  function _apagarRevendedor(idRevenda) {
+  function _apagarRevendedor(idRevenda, trx) {
     let idConta = null;
     return new Revendedor({ id: idRevenda })
-      .fetch()
+      .fetch({ transacting: trx })
       .then(function(r) {
         if (!r) {
           return null;
         }
         idConta = r.get('conta_id');
         return new UsuarioRevendedor()
-          .query()
-          .where({ revendedor_id: idRevenda })
-          .delete()
+          .query(qb => qb.where({ revendedor_id: idRevenda }))
+          .destroy({ transacting: trx })
           .then(function() {
             return new Revendedor({ id: idRevenda })
-              .destroy();
+              .destroy({ transacting: trx });
           })
           .then(function() {
-            return _apagarConta(idConta);
+            return _apagarConta(idConta, trx);
           });
       });
   }
 
-  function _apagarRevendedorJuridica(idRevendedor) {
-    return _apagarRevendedor(idRevendedor)
+  function _apagarRevendedorJuridica(idRevendedor, trx) {
+    return _apagarRevendedor(idRevendedor, trx)
       .then(function() {
-        return _apagarPessoaJuridica(idRevendedor);
+        return _apagarPessoaJuridica(idRevendedor, trx);
       });
   }
 
-  exports.apagarPessoaJuridica = id => {
-    return _apagarPessoaJuridica(id);
+  exports.apagarPessoaJuridica = (id, trx) => {
+    return _apagarPessoaJuridica(id, trx);
   };
 
-  exports.apagarPessoaJuridicaPeloCNPJ = cnpj => {
+  exports.apagarPessoaJuridicaPeloCNPJ = (cnpj, trx) => {
     return new PessoaJuridica({ cnpj: cnpj })
-      .fetch({ require: true })
-      .then(pj => _apagarPessoaJuridica(pj.id))
+      .fetch({ require: true, transacting: trx })
+      .then(pj => _apagarPessoaJuridica(pj.id, trx))
       .catch(Bookshelf.NotFoundError, () => null);
   };
 
-  function _apagarRevendedorFisica(idRevendedor) {
-    return _apagarRevendedor(idRevendedor)
+  function _apagarRevendedorFisica(idRevendedor, trx) {
+    return _apagarRevendedor(idRevendedor, trx)
       .then(function() {
-        return _apagarPessoaFisica(idRevendedor);
+        return _apagarPessoaFisica(idRevendedor, trx);
       });
   }
 
-  function _apagarUsuarioFiscal(idUsuarioFiscal) {
+  function _apagarUsuarioFiscal(idUsuarioFiscal, trx) {
     let contaId;
     return new Fiscalizacoes()
-      .query()
-      .where({ usuario_fiscal_id: idUsuarioFiscal })
-      .delete()
+      .query(qb => qb.where({ usuario_fiscal_id: idUsuarioFiscal }))
+      .destroy({ transacting: trx })
       .then(function() {
         return new UsuarioFiscal({ id: idUsuarioFiscal })
-          .fetch();
+          .fetch({ transacting: trx });
       })
       .then(function(usuFis) {
         if (usuFis) {
@@ -171,57 +163,54 @@ module.exports = function(AreaAzul) {
       })
       .then(function() {
         return new UsuarioFiscal({ id: idUsuarioFiscal })
-          .destroy();
+          .destroy({ transacting: trx });
       })
       .then(function() {
-        return _apagarPessoaFisica(idUsuarioFiscal);
+        return _apagarPessoaFisica(idUsuarioFiscal, trx);
       })
       .then(function() {
         if (contaId) {
-          return _apagarConta(contaId);
+          return _apagarConta(contaId, trx);
         }
         return null;
       });
   }
 
-  exports.apagarUsuarioFiscalPorCPF = function(cpf) {
+  exports.apagarUsuarioFiscalPorCPF = function(cpf, trx) {
     return new PessoaFisica({ cpf: cpf })
-      .fetch()
+      .fetch({ transacting: trx })
       .then(function(pf) {
         if (pf === null) {
           return null;
         }
-        return _apagarUsuarioFiscal(pf.id);
+        return _apagarUsuarioFiscal(pf.id, trx);
       });
   };
 
-  exports.apagarPessoaFisicaPorCPF = function(cpf) {
+  exports.apagarPessoaFisicaPorCPF = function(cpf, trx) {
     return new PessoaFisica({ cpf: cpf })
-      .fetch()
+      .fetch({ transacting: trx })
       .then(function(pf) {
         if (pf === null) {
           return null;
         }
-        return _apagarPessoaFisica(pf.id);
+        return _apagarPessoaFisica(pf.id, trx);
       });
   };
 
-  function _apagarUsuario(usuario) {
+  function _apagarUsuario(usuario, trx) {
     return new UsuariosHaveVeiculos()
-      .query()
-      .where({ usuario_id: usuario.id })
-      .delete()
+      .query(qb => qb.where({ usuario_id: usuario.id }))
+      .destroy({ transacting: trx })
       .then(function() {
         return AtivacaoUsuario
-          .query()
-          .where({ usuario_id: usuario.id })
-          .delete();
+          .query(qb => qb.where({ usuario_id: usuario.id }))
+          .destroy({ transacting: trx });
       })
       .then(() => {
         return Ativacao
-          .query()
-          .where({ ativador: 'usuario', id_ativador: usuario.id })
-          .delete();
+          .query(qb => qb.where({ ativador: 'usuario', id_ativador: usuario.id }))
+          .destroy({ transacting: trx });
       })
       .then(function() {
         return new Usuario({ id: usuario.id })
