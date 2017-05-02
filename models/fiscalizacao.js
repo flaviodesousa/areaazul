@@ -1,5 +1,6 @@
 'use strict';
 
+const _ = require('lodash');
 const Bookshelf = require('../database');
 const moment = require('moment');
 const Promise = require('bluebird');
@@ -53,11 +54,12 @@ const Fiscalizacao = Bookshelf.Model.extend({
             .calendar())
           .orderBy('timestamp', 'desc');
       })
-      .fetchAll(_.merge({
-        withRelated: [
-          'veiculo.cidade.estado',
-          'usuarioFiscal.pessoaFisica.pessoa' ]
-      }, options)),
+      .fetchAll(
+        _.merge({
+          withRelated: [
+            'veiculo.cidade.estado',
+            'usuarioFiscal.pessoaFisica.pessoa' ]
+        }, options)),
 
 
   _camposValidos: (camFis, options) => {
