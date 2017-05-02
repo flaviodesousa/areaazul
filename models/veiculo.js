@@ -119,15 +119,9 @@ const Veiculo = Bookshelf.Model.extend({
   },
 
 
-  _buscarPorPlaca: (placa, options) => {
-    let placaSemMascara = '';
-
-    if (placa) {
-      placaSemMascara = AU.placaSemMascara(placa);
-    }
-    return new Veiculo({ placa: placaSemMascara })
-      .fetch(_.merge({ withRelated: [ 'cidade.estado' ] }, options));
-  },
+  _buscarPorPlaca: (placa, options) =>
+    new Veiculo({ placa: AU.placaSemMascara(placa) })
+      .fetch(_.merge({ withRelated: [ 'cidade.estado' ] }, options)),
 
 
   _buscarPorId: (id, options) => new Veiculo({ id: id })
