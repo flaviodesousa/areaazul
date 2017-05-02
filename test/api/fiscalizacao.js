@@ -6,8 +6,6 @@ const app = require('../../app');
 const superagent = require('superagent');
 
 const AreaAzul = require('../../areaazul');
-const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
-
 const Bookshelf = AreaAzul._internals.Bookshelf;
 const UsuarioFiscalModel = Bookshelf.model('UsuarioFiscal');
 
@@ -30,7 +28,7 @@ describe('/fiscalizacao', function() {
         if (fiscal) {
           return fiscal;
         }
-        return UsuarioFiscal
+        return UsuarioFiscalModel
           ._cadastrar(fiscalTesteAPI, { transacting: trx });
       }))
       .then(function() {

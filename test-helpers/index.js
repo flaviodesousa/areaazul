@@ -377,10 +377,13 @@ module.exports = function(AreaAzul) {
       numero = 0;
     }
     return Veiculo._buscarPorPlaca(veiculoParaTeste[ numero ].placa, { transacting: trx })
-      .catch(Bookshelf.NotFoundError, () => {
-        debug('cadastrando veículo de teste', veiculoParaTeste[ numero ]);
-        return Veiculo
-          ._cadastrar(veiculoParaTeste[ numero ], { transacting: trx });
+      .then(v => {
+        if (!v) {
+          debug(`cadastrando veículo de teste #${numero}`, veiculoParaTeste[ numero ]);
+          return Veiculo
+            ._cadastrar(veiculoParaTeste[ numero ], { transacting: trx });
+        }
+        return v;
       });
   }
 
