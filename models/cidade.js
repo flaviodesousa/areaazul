@@ -33,7 +33,7 @@ Bookshelf.model('Cidade', Cidade);
 const Cidades = Bookshelf.Collection.extend({
   model: Cidade
 }, {
-  _listar: function(filtro) {
+  _listar: function(filtro, options) {
     let termos;
     let idEstado;
     if (filtro) {
@@ -49,6 +49,9 @@ const Cidades = Bookshelf.Collection.extend({
       if (filtro.termos) {
         termos = Diacritics.remove(filtro.termos)
           .toLocaleLowerCase();
+        // Aceita:
+        // - Letras e espaços
+        // - Letras e espaços terminando com /LL (barra e duas letras)
         if (!/^([a-z ]+|[a-z ]*(\/?[a-z]{2})?)$/.test(termos)) {
           return Promise.reject(
             new AreaAzul.BusinessException(
@@ -70,7 +73,7 @@ const Cidades = Bookshelf.Collection.extend({
           qb.where('nome_busca', 'like', termos);
         }
       })
-      .fetch({ withRelated: 'estado' });
+      .fetch(_.merge({ withRelated: 'estado' }, options));
   }
 });
 Bookshelf.collection('Cidades', Cidades);

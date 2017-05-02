@@ -7,12 +7,14 @@ const Cidade = Bookshelf.model('Cidade');
 const Cidades = Bookshelf.collection('Cidades');
 
 module.exports.listar = filtro =>
-  Cidades
-    ._listar(filtro)
+  Bookshelf.transaction(t =>
+    Cidades
+      ._listar(filtro, { transacting: t }))
     .then(cidades => cidades.toJSON());
 
 module.exports.buscarPorId = id =>
-  Cidade
-    ._buscarPorId(id, null)
+  Bookshelf.transaction(t =>
+    Cidade
+      ._buscarPorId(id, { transacting: t }))
     .then(cidade => cidade.toJSON());
 
