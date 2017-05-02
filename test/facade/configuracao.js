@@ -1,9 +1,11 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:configuracao');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 
 const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul._internals.Bookshelf;
 const Configuracao = AreaAzul.facade.Configuracao;
 
 describe('fachada Configuracao', function() {
@@ -11,11 +13,12 @@ describe('fachada Configuracao', function() {
 
   before(function() {
     const TestHelpers = require('../../test-helpers')(AreaAzul);
-    return TestHelpers
-      .pegarCidade()
-      .then(function(cidade) {
-        idCidade = cidade.id;
-      });
+    return Bookshelf.transaction(trx =>
+      TestHelpers
+        .pegarCidade(trx)
+        .then(function(cidade) {
+          idCidade = cidade.id;
+        }));
   });
 
   describe('buscar()', function() {

@@ -1,9 +1,11 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:usuario_revenda');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 
 const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul._internals.Bookshelf;
 const UsuarioRevendedor = AreaAzul.facade.UsuarioRevendedor;
 
 const TestHelpers = require('../../test-helpers')(AreaAzul);
@@ -16,19 +18,19 @@ describe('models.UsuarioRevendedor', function() {
   let idRevendedor = null;
   const termoDeServico = true;
 
-  function apagarDadosDeTeste() {
+  function apagarDadosDeTeste(trx) {
     return TestHelpers
-      .apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente)
+      .apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente, trx)
       .then(function() {
-        return TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente);
+        return TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente, trx);
       });
   }
 
   before(function() {
-    return apagarDadosDeTeste()
+    return Bookshelf.transaction(trx => apagarDadosDeTeste()
       .then(function() {
-        return TestHelpers.pegarRevendedor();
-      })
+        return TestHelpers.pegarRevendedor(trx);
+      }))
       .then(function(revendedor) {
         idRevendedor = revendedor.id;
       });

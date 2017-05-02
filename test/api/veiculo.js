@@ -1,13 +1,14 @@
 'use strict';
 
 const debug = require('debug')('areaazul-api-web:controller:veiculo');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 const app = require('../../app');
 const superAgent = require('superagent');
 const AreaAzul = require('../../areaazul');
-const Bookshelf = require('bookshelf');
-const TestHelpers = require('../../test-helpers')(AreaAzul, Bookshelf);
+const Bookshelf = AreaAzul._internals.Bookshelf;
 const Veiculo = Bookshelf.model('Veiculo');
+const TestHelpers = require('../../test-helpers')(AreaAzul, Bookshelf);
 
 describe('/veiculo', function() {
   let server;
@@ -19,34 +20,34 @@ describe('/veiculo', function() {
 
   before(function(done) {
     Bookshelf.transaction(trx =>
-    TestHelpers
-      .pegarUsuario(trx)
-      .then(function(u) {
-        usuario = u;
-        return TestHelpers
-          .pegarVeiculo(0, trx);
-      })
-      .then(function(v) {
-        veiculoExistente = v;
-        return Veiculo
-          ._buscarPorPlaca(placaVeiculoNaoExistente, trx);
-      })
-      .then(function(v) {
-        if (v) {
-          // Apagar veiculo caso exista (para ficar não existente)
+      TestHelpers
+        .pegarUsuario(trx)
+        .then(function(u) {
+          usuario = u;
           return TestHelpers
-            .apagarVeiculoPorPlaca(placaVeiculoNaoExistente, trx);
-        }
-      })
-      .then(function() {
-        server = app.listen(port, function() {
-          done();
-        });
-      })
-      .catch(function(e) {
-        debug('erro inesperado', e);
-        done(e);
-      }));
+            .pegarVeiculo(0, trx);
+        })
+        .then(function(v) {
+          veiculoExistente = v;
+          return Veiculo
+            ._buscarPorPlaca(placaVeiculoNaoExistente, { transacting: trx });
+        })
+        .then(function(v) {
+          if (v) {
+            // Apagar veiculo caso exista (para ficar não existente)
+            return TestHelpers
+              .apagarVeiculoPorPlaca(placaVeiculoNaoExistente, trx);
+          }
+        })
+        .then(function() {
+          server = app.listen(port, function() {
+            done();
+          });
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        }));
   });
 
   describe('GET /veiculo/:id', function() {

@@ -1,17 +1,19 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:veiculo');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 
 const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul._internals.Bookshelf;
 const Veiculo = AreaAzul.facade.Veiculo;
 
 const TestHelpers = require('../../test-helpers')(AreaAzul);
 const AreaAzulUtils = require('areaazul-utils');
 
 describe('facade Veiculo', function() {
-  function apagarDadosDeTeste(placa) {
-    return TestHelpers.apagarVeiculoPorPlaca(placa);
+  function apagarDadosDeTeste(placa, trx) {
+    return TestHelpers.apagarVeiculoPorPlaca(placa, trx);
   }
 
   const placaInexistente = 'VEI1373';
@@ -29,24 +31,25 @@ describe('facade Veiculo', function() {
   let idUsuarioComum = null;
 
   before(function() {
-    return TestHelpers.pegarCidade()
-      .then(function(cidade) {
-        debug('Usando cidade ' + cidade.id);
-        idCidade = cidade.id;
-      })
-      .then(function() {
-        return TestHelpers.pegarUsuario();
-      })
-      .then(function(usuario) {
-        debug('Usando usuario ' + usuario.id);
-        idUsuarioComum = usuario.id;
-      })
-      .then(function() {
-        return apagarDadosDeTeste(placaTeste);
-      })
-      .then(function() {
-        return apagarDadosDeTeste(placaInexistente);
-      });
+    return Bookshelf.transaction(trx =>
+      TestHelpers.pegarCidade(trx)
+        .then(function(cidade) {
+          debug('Usando cidade ' + cidade.id);
+          idCidade = cidade.id;
+        })
+        .then(function() {
+          return TestHelpers.pegarUsuario(trx);
+        })
+        .then(function(usuario) {
+          debug('Usando usuario ' + usuario.id);
+          idUsuarioComum = usuario.id;
+        })
+        .then(function() {
+          return apagarDadosDeTeste(placaTeste, trx);
+        })
+        .then(function() {
+          return apagarDadosDeTeste(placaInexistente, trx);
+        }));
   });
 
   describe('cadastrar()', function() {

@@ -1,14 +1,15 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:usuario');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 const Promise = require('bluebird');
 const moment = require('moment');
 
 const AreaAzul = require('../../areaazul');
-const Bookshelf = require('bookshelf');
+const Bookshelf = AreaAzul._internals.Bookshelf;
 const Usuario = AreaAzul.facade.Usuario;
-const Ativacao = AreaAzul.facade.Ativacao;
+const Ativacao = Bookshelf.model('Ativacao');
 
 const TestHelpers = require('../../test-helpers')(AreaAzul);
 
@@ -27,9 +28,9 @@ describe('facade Usuario', function() {
   let usuarioDeTeste = null;
 
   function apagarDadosDeTeste() {
-    return Bookshelf.transaction(t =>
+    return Bookshelf.transaction(trx =>
       TestHelpers.apagarUsuarioPorLogin(
-        camposUsuarioDeTeste.login, { transacting: t }));
+        camposUsuarioDeTeste.login, trx));
   }
 
   before(function(done) {
@@ -38,7 +39,7 @@ describe('facade Usuario', function() {
         done();
       })
       .catch(function(e) {
-        debug('erro inesperado em before()', e);
+        debug('erro inesperado', e);
         done(e);
       });
   });
@@ -65,7 +66,9 @@ describe('facade Usuario', function() {
         camposUsuarioDeTeste.nova_senha)
         .then(function(usuario) {
           should.exist(usuario);
-          usuario.get('login').should.equal(camposUsuarioDeTeste.login);
+          usuario.get('login')
+            .should
+            .equal(camposUsuarioDeTeste.login);
           done();
         })
         .catch(function(e) {
@@ -138,49 +141,49 @@ describe('facade Usuario', function() {
       let veiculos = [];
 
       this.timeout(5000);
-      Bookshelf.transaction((t) =>
-      TestHelpers.pegarUsuario()
-        .then(u => {
-          usuario = u;
-        })
-        .then(() => {
-          let p = [];
-          for (let i = 0; i < 3; ++i) {
-            p.push(
-              TestHelpers.pegarVeiculo(i, { transacting: t })
-                .then(v => veiculos[i] = v));
-          }
-          return Promise.all(p);
-        })
-        .then(() =>
-          TestHelpers.setSaldo(usuario.related('conta'), '88.88'))
-        .then(() => {
-          let variasAtivacoes = [];
-          for (let i = 0; i < 10; ++i) {
-            variasAtivacoes.push(new Promise((resolve, reject) =>
-              setTimeout(
-                () => Ativacao
-                  .ativar({
-                    usuario_id: usuario.id,
-                    veiculo_id: veiculos[i % 3].id,
-                    tempo_minutos: 60
-                  })
-                  .then(a => ativacoes[ i ] = a)
-                  .then(() => Ativacao.desativar({
-                    ativacao_id: ativacoes[ i ].id,
-                    usuario_id: usuario.id
-                  }))
-                  .then(() => resolve(ativacoes[ i ]))
-                  .catch((e) => reject(e)),
-                50 * i)));
-          }
-          return Promise.all(variasAtivacoes);
-        })
+      Bookshelf.transaction(trx =>
+        TestHelpers.pegarUsuario(trx)
+          .then(u => {
+            usuario = u;
+          })
+          .then(() => {
+            let p = [];
+            for (let i = 0; i < 3; ++i) {
+              p.push(
+                TestHelpers.pegarVeiculo(i, trx)
+                  .then(v => veiculos[ i ] = v));
+            }
+            return Promise.all(p);
+          })
+          .then(() =>
+            TestHelpers.setSaldo(usuario.related('conta'), '88.88', trx))
+          .then(() => {
+            let variasAtivacoes = [];
+            for (let i = 0; i < 10; ++i) {
+              variasAtivacoes.push(new Promise((resolve, reject) =>
+                setTimeout(
+                  () => Ativacao
+                    ._ativar({
+                      usuario_id: usuario.id,
+                      veiculo_id: veiculos[ i % 3 ].id,
+                      tempo_minutos: 60
+                    }, { transacting: trx })
+                    .then(a => ativacoes[ i ] = a.toJSON())
+                    .then(() => Ativacao._desativar({
+                      ativacao_id: ativacoes[ i ].id,
+                      usuario_id: usuario.id
+                    }, { transacting: trx }))
+                    .then(() => resolve(ativacoes[ i ]))
+                    .catch((e) => reject(e)),
+                  50 * i)));
+            }
+            return Promise.all(variasAtivacoes);
+          }))
         .then(() => done())
         .catch(function(e) {
           debug('erro inesperado', e);
           done(e);
-        }));
+        });
     });
 
     it('obtém lista das últimas ativações', function(done) {
@@ -197,7 +200,8 @@ describe('facade Usuario', function() {
     });
     it('obtém lista com apenas as 5 últimas ativações', function(done) {
       Usuario
-        .listaAtivacoes(usuario.id, moment().utc(), 5)
+        .listaAtivacoes(usuario.id, moment()
+          .utc(), 5)
         .then(lista => {
           should.exist(lista);
           lista.length.should.equal(5);
@@ -210,13 +214,13 @@ describe('facade Usuario', function() {
     });
     it('obtém lista com apenas as 2 ativações anteriores à 5a', function(done) {
       Usuario
-        .listaAtivacoes(usuario.id, ativacoes[4].data_ativacao, 2)
+        .listaAtivacoes(usuario.id, ativacoes[ 4 ].data_ativacao, 2)
         .then(lista => {
           should.exist(lista);
           lista.length.should.equal(2);
-          lista[0].data_ativacao.should.be.below(ativacoes[4].data_ativacao);
-          lista[1].data_ativacao.should.be.below(ativacoes[4].data_ativacao);
-          lista[1].data_ativacao.should.be.below(lista[0].data_ativacao);
+          lista[ 0 ].data_ativacao.should.be.below(ativacoes[ 4 ].data_ativacao);
+          lista[ 1 ].data_ativacao.should.be.below(ativacoes[ 4 ].data_ativacao);
+          lista[ 1 ].data_ativacao.should.be.below(lista[ 0 ].data_ativacao);
           done();
         })
         .catch(e => {
@@ -231,7 +235,8 @@ describe('facade Usuario', function() {
     let dataAtivacaoMaisRecente;
 
     before(function(done) {
-      TestHelpers.pegarUsuario()
+      Bookshelf.transaction(trx =>
+        TestHelpers.pegarUsuario(trx))
         .then(usu => {
           usuario = usu;
         })
@@ -256,11 +261,12 @@ describe('facade Usuario', function() {
     });
     it('obtém lista com apenas o último veículo ativado', function(done) {
       Usuario
-        .listaVeiculos(usuario.id, moment().utc(), 1)
+        .listaVeiculos(usuario.id, moment()
+          .utc(), 1)
         .then(lista => {
           should.exist(lista);
           lista.length.should.equal(1);
-          dataAtivacaoMaisRecente = lista[0].ultima_ativacao;
+          dataAtivacaoMaisRecente = lista[ 0 ].ultima_ativacao;
           done();
         })
         .catch(e => {
@@ -274,7 +280,7 @@ describe('facade Usuario', function() {
         .then(lista => {
           should.exist(lista);
           lista.length.should.equal(1);
-          lista[0].ultima_ativacao.should.be.below(dataAtivacaoMaisRecente);
+          lista[ 0 ].ultima_ativacao.should.be.below(dataAtivacaoMaisRecente);
           done();
         })
         .catch(e => {
@@ -289,10 +295,9 @@ describe('facade Usuario', function() {
     let transacaoMaisRecente;
 
     before(function(done) {
-      TestHelpers.pegarUsuario()
-        .then(usu => {
-          usuario = usu;
-        })
+      Bookshelf.transaction(trx =>
+        TestHelpers.pegarUsuario(trx))
+        .then(usu => usuario = usu)
         .then(() => done())
         .catch(function(e) {
           debug('erro inesperado', e);
@@ -314,11 +319,12 @@ describe('facade Usuario', function() {
     });
     it('obtém extrato com apenas a transação mais recente', function(done) {
       Usuario
-        .extratoFinanceiro(usuario.id, moment().utc(), 1)
+        .extratoFinanceiro(usuario.id, moment()
+          .utc(), 1)
         .then(lista => {
           should.exist(lista);
           lista.length.should.equal(1);
-          transacaoMaisRecente = lista[0].data;
+          transacaoMaisRecente = lista[ 0 ].data;
           done();
         })
         .catch(e => {
@@ -332,7 +338,7 @@ describe('facade Usuario', function() {
         .then(lista => {
           should.exist(lista);
           lista.length.should.equal(8);
-          lista[0].data.should.be.below(transacaoMaisRecente);
+          lista[ 0 ].data.should.be.below(transacaoMaisRecente);
           done();
         })
         .catch(e => {

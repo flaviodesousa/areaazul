@@ -1,7 +1,8 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:pessoa_fisica');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 
 const AreaAzul = require('../../areaazul');
 const PessoaFisica = AreaAzul.facade.PessoaFisica;
@@ -14,23 +15,24 @@ describe('facade PessoaFisica', function() {
     const Pessoa = Bookshelf.model('Pessoa');
     const PessoaFisica = Bookshelf.model('PessoaFisica');
     let pessoaId = null;
-    new PessoaFisica({ cpf: cpfTeste })
-      .fetch()
-      .then(function(pf) {
-        if (pf) {
-          pessoaId = pf.id;
-          return pf.destroy();
-        }
-      })
-      .then(function() {
-        if (pessoaId !== null) {
-          return Pessoa
-            .forge({
-              id: pessoaId
-            })
-            .destroy();
-        }
-      })
+    Bookshelf.transaction(trx =>
+      new PessoaFisica({ cpf: cpfTeste })
+        .fetch({ transacting: trx })
+        .then(function(pf) {
+          if (pf) {
+            pessoaId = pf.id;
+            return pf.destroy({ transacting: trx });
+          }
+        })
+        .then(function() {
+          if (pessoaId !== null) {
+            return Pessoa
+              .forge({
+                id: pessoaId
+              })
+              .destroy({ transacting: trx });
+          }
+        }))
       .then(function() {
         return done();
       })

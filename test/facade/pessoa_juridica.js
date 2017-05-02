@@ -1,10 +1,12 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:pessoa_juridica');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 const Promise = require('bluebird');
 
 const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul._internals.Bookshelf;
 const PessoaJuridica = AreaAzul.facade.PessoaJuridica;
 
 describe('facade PessoaJuridica', function() {
@@ -13,13 +15,15 @@ describe('facade PessoaJuridica', function() {
   const cnpjTesteSemTelefone = '13345236000101';
 
   function deleteTestData(done) {
-    const AreaazulTestHelpers =
+    const TestHelpers =
       require('../../test-helpers')(AreaAzul);
-    Promise.all([
-      AreaazulTestHelpers.apagarPessoaJuridicaPeloCNPJ(cnpjTeste),
-      AreaazulTestHelpers.apagarPessoaJuridicaPeloCNPJ(cnpjTesteSemContato),
-      AreaazulTestHelpers.apagarPessoaJuridicaPeloCNPJ(cnpjTesteSemTelefone)
-    ])
+
+    Bookshelf.transaction(trx =>
+      Promise.all([
+        TestHelpers.apagarPessoaJuridicaPeloCNPJ(cnpjTeste, trx),
+        TestHelpers.apagarPessoaJuridicaPeloCNPJ(cnpjTesteSemContato, trx),
+        TestHelpers.apagarPessoaJuridicaPeloCNPJ(cnpjTesteSemTelefone, trx)
+      ]))
       .then(function() {
         return done();
       })

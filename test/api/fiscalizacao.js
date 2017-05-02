@@ -1,19 +1,19 @@
 'use strict';
 
 const debug = require('debug')('areaazul-api-web:controller:fiscalizacao');
-var should = require('chai').should();
-var app = require('../../app');
-var superagent = require('superagent');
+const should = require('chai').should();
+const app = require('../../app');
+const superagent = require('superagent');
 
-var AreaAzul = require('../../areaazul');
+const AreaAzul = require('../../areaazul');
 const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
 
 const Bookshelf = AreaAzul._internals.Bookshelf;
 const UsuarioFiscalModel = Bookshelf.model('UsuarioFiscal');
 
 describe('/fiscalizacao', function() {
-  var server;
-  var fiscalTesteAPI = {
+  let server;
+  const fiscalTesteAPI = {
     login: 'fiscalAPIlogin',
     nova_senha: 'senhaapi',
     conf_senha: 'senhaapi',
@@ -23,15 +23,16 @@ describe('/fiscalizacao', function() {
   };
 
   before(function(done) {
-    new UsuarioFiscalModel({ login: fiscalTesteAPI.login })
-      .fetch()
+    Bookshelf.transaction(trx =>
+      new UsuarioFiscalModel({ login: fiscalTesteAPI.login })
+      .fetch({ transacting: trx })
       .then(function(fiscal) {
         if (fiscal) {
           return fiscal;
         }
         return UsuarioFiscal
-          .cadastrar(fiscalTesteAPI);
-      })
+          ._cadastrar(fiscalTesteAPI, { transacting: trx });
+      }))
       .then(function() {
         server = app.listen(8080, function() {
           done();

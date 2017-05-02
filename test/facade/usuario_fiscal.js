@@ -1,9 +1,11 @@
 'use strict';
 
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 const debug = require('debug')('areaazul:test:usuario_fiscal');
 
 const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul._internals.Bookshelf;
 const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
 const PessoaFisica = AreaAzul.facade.PessoaFisica;
 
@@ -35,24 +37,25 @@ describe('facade UsuarioFiscal', function() {
   let usuarioFiscalNaoExistente;
 
   function apagarDadosDeTeste() {
-    return TestHelpers
-      .apagarUsuarioFiscalPorCPF(
-        camposUsuarioFiscalPreExistente.cpf)
-      .then(function() {
-        return TestHelpers
-          .apagarUsuarioFiscalPorCPF(
-            camposUsuarioFiscalNaoExistente.cpf);
-      })
-      .then(function() {
-        return TestHelpers
-          .apagarPessoaFisicaPorCPF(
-            camposUsuarioFiscalPreExistente.cpf);
-      })
-      .then(function() {
-        return TestHelpers
-          .apagarPessoaFisicaPorCPF(
-            camposUsuarioFiscalNaoExistente.cpf);
-      });
+    return Bookshelf.transaction(trx =>
+      TestHelpers
+        .apagarUsuarioFiscalPorCPF(
+          camposUsuarioFiscalPreExistente.cpf, trx)
+        .then(function() {
+          return TestHelpers
+            .apagarUsuarioFiscalPorCPF(
+              camposUsuarioFiscalNaoExistente.cpf, trx);
+        })
+        .then(function() {
+          return TestHelpers
+            .apagarPessoaFisicaPorCPF(
+              camposUsuarioFiscalPreExistente.cpf, trx);
+        })
+        .then(function() {
+          return TestHelpers
+            .apagarPessoaFisicaPorCPF(
+              camposUsuarioFiscalNaoExistente.cpf, trx);
+        }));
   }
 
   before(function(done) {

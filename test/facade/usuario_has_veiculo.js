@@ -3,9 +3,9 @@
 const should = require('chai')
   .should();
 const moment = require('moment');
-const Bookshelf = require('bookshelf');
 
 const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul._internals.Bookshelf;
 const UsuarioHasVeiculo = AreaAzul.facade.UsuarioHasVeiculo;
 
 describe('facade UsuarioHasVeiculo', function() {
@@ -14,14 +14,14 @@ describe('facade UsuarioHasVeiculo', function() {
 
   before(function() {
     const TestHelpers = require('../../test-helpers')(AreaAzul);
-    return Bookshelf.transaction(t =>
+    return Bookshelf.transaction(trx =>
       TestHelpers
-        .pegarVeiculo({ transacting: t })
+        .pegarVeiculo(trx)
         .then(function(veiculo) {
           idVeiculo = veiculo.id;
         })
         .then(function() {
-          return TestHelpers.pegarUsuario({ transacting: t });
+          return TestHelpers.pegarUsuario(trx);
         })
         .then(function(usuario) {
           idUsuarioComum = usuario.id;

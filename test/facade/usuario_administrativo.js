@@ -1,9 +1,12 @@
 'use strict';
 
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 const debug = require('debug')('areaazul:test:usuario_administrativo');
+const Promise = require('bluebird');
 
 const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul._internals.Bookshelf;
 const UsuarioAdministrativo = AreaAzul.facade.UsuarioAdministrativo;
 const PessoaFisica = AreaAzul.facade.PessoaFisica;
 
@@ -35,24 +38,12 @@ describe('facade UsuarioAdministrativo', function() {
   let usuarioAdministrativoNaoExistente;
 
   function apagarDadosDeTeste() {
-    return TestHelpers
-      .apagarUsuarioAdministrativoPorLogin(
-        camposUsuarioAdministrativoPreExistente.login)
-      .then(function() {
-        return TestHelpers
-          .apagarUsuarioAdministrativoPorLogin(
-            camposUsuarioAdministrativoNaoExistente.login);
-      })
-      .then(function() {
-        return TestHelpers
-          .apagarPessoaFisicaPorCPF(
-            camposUsuarioAdministrativoPreExistente.cpf);
-      })
-      .then(function() {
-        return TestHelpers
-          .apagarPessoaFisicaPorCPF(
-            camposUsuarioAdministrativoNaoExistente.cpf);
-      });
+    return Bookshelf.transaction(trx => Promise.all([
+      TestHelpers.apagarUsuarioAdministrativoPorLogin(camposUsuarioAdministrativoPreExistente.login, trx),
+      TestHelpers.apagarUsuarioAdministrativoPorLogin(camposUsuarioAdministrativoNaoExistente.login, trx),
+      TestHelpers.apagarPessoaFisicaPorCPF(camposUsuarioAdministrativoPreExistente.cpf, trx),
+      TestHelpers.apagarPessoaFisicaPorCPF(camposUsuarioAdministrativoNaoExistente.cpf, trx)
+    ]));
   }
 
   before(function(done) {

@@ -1,9 +1,11 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:revendedor');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 
 const AreaAzul = require('../../areaazul');
+const Bookshelf = AreaAzul._internals.Bookshelf;
 const TestHelpers = require('../../test-helpers')(AreaAzul);
 const Revendedor = AreaAzul.facade.Revendedor;
 const UsuarioRevendedor = AreaAzul.facade.UsuarioRevendedor;
@@ -40,12 +42,12 @@ describe('facade Revendedor', function() {
   let idRevendedorPessoaJuridica;
 
   function apagarRevendedoresDeTeste() {
-    const TestHelpers = require('../../test-helpers')(AreaAzul);
-    return TestHelpers
-      .apagarRevendedorPorCPF(revendedorPF.cpf)
-      .then(function() {
-        return TestHelpers.apagarRevendedorPorCNPJ(revendedorPJ.cnpj);
-      })
+    return Bookshelf.transaction(trx =>
+      TestHelpers
+        .apagarRevendedorPorCPF(revendedorPF.cpf, trx)
+        .then(function() {
+          return TestHelpers.apagarRevendedorPorCNPJ(revendedorPJ.cnpj, trx);
+        }))
       .catch(function(e) {
         debug('erro inesperado', e);
         throw e;
@@ -152,7 +154,8 @@ describe('facade Revendedor', function() {
       Revendedor
         .comprarCreditos({
           cpf: revendedorPF.cpf,
-          creditos: '937.00' })
+          creditos: '937.00'
+        })
         .then(movimentacao => {
           should.exist(movimentacao);
           movimentacao.should.have.property('conta');
@@ -168,7 +171,8 @@ describe('facade Revendedor', function() {
       Revendedor
         .comprarCreditos({
           cnpj: revendedorPJ.cnpj,
-          creditos: '937.00' })
+          creditos: '937.00'
+        })
         .then(movimentacao => {
           should.exist(movimentacao);
           movimentacao.should.have.property('conta');
@@ -186,7 +190,9 @@ describe('facade Revendedor', function() {
     let idUsuario = null;
 
     before(function() {
-      return TestHelpers.pegarUsuario()
+      return Bookshelf.transaction(trx =>
+        TestHelpers.pegarUsuario(trx)
+      )
         .then(usuario => {
           idUsuario = usuario.id;
         });

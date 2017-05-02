@@ -1,7 +1,8 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:movimentacao_conta');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 const money = require('money-math');
 
 const AreaAzul = require('../../areaazul');
@@ -14,9 +15,9 @@ describe('facade MovimentacaoDeConta', function() {
   let revendedor = null;
   let conta = null;
 
-  function buscarConta(id) {
+  function buscarConta(id, trx) {
     return new ContaModel({ id: id })
-      .fetch({ require: true })
+      .fetch({ require: true, transacting: trx })
       .then(conta => {
         return conta.toJSON();
       });
@@ -24,11 +25,12 @@ describe('facade MovimentacaoDeConta', function() {
 
   before(function(done) {
     const TestHelpers = require('../../test-helpers')(AreaAzul);
-    TestHelpers.pegarRevendedor()
-      .then(function(r) {
-        revendedor = r;
-        return buscarConta(r.get('conta_id'));
-      })
+    Bookshelf.transaction(trx =>
+      TestHelpers.pegarRevendedor(trx)
+        .then(function(r) {
+          revendedor = r;
+          return buscarConta(r.get('conta_id'), trx);
+        }))
       .then(function(c) {
         conta = c;
         done();

@@ -1,7 +1,8 @@
 'use strict';
 
 const debug = require('debug')('areaazul:test:fiscalizacao');
-const should = require('chai').should();
+const should = require('chai')
+  .should();
 const moment = require('moment');
 
 const Bookshelf = require('../../database');
@@ -16,33 +17,32 @@ describe('facade Fiscalizacao', function() {
 
   before(function(done) {
     const UsuarioFiscalModel = Bookshelf.model('UsuarioFiscal');
-    const UsuarioFiscal = AreaAzul.facade.UsuarioFiscal;
-    UsuarioFiscalModel
-      .forge({ login: fiscalLogin })
-      .fetch()
-      .then(function(f) {
-        if (f) {
-          fiscalId = f.id;
-          done();
-        } else {
-          UsuarioFiscal.cadastrar({
+    Bookshelf.transaction(trx =>
+      UsuarioFiscalModel
+        .forge({ login: fiscalLogin })
+        .fetch({ transacting: trx })
+        .then(function(f) {
+          if (f) {
+            fiscalId = f.id;
+            return f;
+          }
+          return UsuarioFiscalModel._cadastrar({
             login: fiscalLogin,
             nome: 'Fiscal Fiscalizacao Teste',
             nova_senha: 'senha-fiscal-teste',
             conf_senha: 'senha-fiscal-teste',
             email: fiscalLogin + '@areaazul.org',
             cpf: '58392095707'
-          })
-            .then(function(f) {
-              fiscalId = f.id;
-              done();
-            })
-            .catch(function(e) {
-              debug('erro inesperado', e);
-              done(e);
-            });
-        }
-      });
+          }, { transacting: trx });
+        })
+        .then(function(f) {
+          fiscalId = f.id;
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        }));
   });
 
   describe('cadastrar()', function() {
@@ -172,9 +172,13 @@ describe('facade Fiscalizacao', function() {
         })
         .then(function(f) {
           f.get('latitude')
-            .should.be.equal('-89.9999999999', 'Latitude');
+            .should
+            .be
+            .equal('-89.9999999999', 'Latitude');
           f.get('longitude')
-            .should.be.equal('-179.9999999999', 'Longitude');
+            .should
+            .be
+            .equal('-179.9999999999', 'Longitude');
           done();
         })
         .catch(function(e) {
@@ -197,9 +201,13 @@ describe('facade Fiscalizacao', function() {
         })
         .then(function(f) {
           f.get('latitude')
-            .should.be.equal('-90.0000000000', 'Latitude');
+            .should
+            .be
+            .equal('-90.0000000000', 'Latitude');
           f.get('longitude')
-            .should.be.equal('-180.0000000000', 'Longitude');
+            .should
+            .be
+            .equal('-180.0000000000', 'Longitude');
           done();
         })
         .catch(function(e) {
