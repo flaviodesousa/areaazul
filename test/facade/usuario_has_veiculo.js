@@ -16,7 +16,7 @@ describe('facade UsuarioHasVeiculo', function() {
     const TestHelpers = require('../../test-helpers')(AreaAzul);
     return Bookshelf.transaction(trx =>
       TestHelpers
-        .pegarVeiculo(trx)
+        .pegarVeiculo(0, trx)
         .then(function(veiculo) {
           idVeiculo = veiculo.id;
         })

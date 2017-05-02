@@ -322,13 +322,9 @@ module.exports = function(AreaAzul) {
   };
 
   exports.apagarUsuarioRevendaPorLogin = function(login, trx) {
-    return new UsuarioRevendedor({ login: login })
-      .fetch({ require: true, transacting: trx })
-      .then(usuarioRevendedor => {
-        return usuarioRevendedor.destroy({ transacting: trx });
-      })
-      .catch(Bookshelf.NotFoundError, () => {
-      });
+    return new UsuarioRevendedor()
+      .query(qb => qb.where({ login: login }))
+      .destroy({ transacting: trx });
   };
 
   exports.apagarUsuarioRevenda = function(idUsuarioRevenda, trx) {
@@ -513,7 +509,7 @@ module.exports = function(AreaAzul) {
           { transacting: trx })
         .then(() => {
           return new Conta({ id: conta.id })
-            .fetch({ require: true });
+            .fetch({ require: true, transacting: trx });
         });
     }
     // Diferença > 0

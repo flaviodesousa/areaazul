@@ -3,6 +3,7 @@
 const debug = require('debug')('areaazul:test:usuario_revenda');
 const should = require('chai')
   .should();
+const Promise = require('bluebird');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul._internals.Bookshelf;
@@ -19,11 +20,10 @@ describe('models.UsuarioRevendedor', function() {
   const termoDeServico = true;
 
   function apagarDadosDeTeste(trx) {
-    return TestHelpers
-      .apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente, trx)
-      .then(function() {
-        return TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente, trx);
-      });
+    return Promise.all([
+      TestHelpers.apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente, trx),
+      TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente, trx)
+    ]);
   }
 
   before(function() {
