@@ -36,11 +36,11 @@ const Fiscalizacao = Bookshelf.Model.extend({
           qb.where('timestamp', '>', apos)
             .orderBy('timestamp', 'desc');
         })
-        .fetchAll({
+        .fetchAll(_.merge({
           withRelated: [
             'veiculo.cidade.estado',
             'usuarioFiscal.pessoaFisica.pessoa' ]
-        });
+        }, options));
     }),
 
 

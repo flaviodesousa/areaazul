@@ -60,7 +60,7 @@ const Usuario = Bookshelf.Model.extend({
           .forge({
             cpf: camposUsuario.cpf
           })
-          .fetch()
+          .fetch(options)
           .then(function(pessoaFisica) {
             if (pessoaFisica !== null) {
               return PessoaFisica._alterar(

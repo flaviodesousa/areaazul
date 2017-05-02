@@ -225,7 +225,7 @@ const Revendedor = Bookshelf.Model.extend({
         revendedor = r;
       })
       .then(() => Configuracao
-        ._buscar())
+        ._buscar(options))
       .then(c => {
         configuracao = c;
         let cotacao = money.floatToAmount(configuracao.get('parametros')

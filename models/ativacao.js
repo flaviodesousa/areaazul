@@ -25,7 +25,7 @@ const Ativacao = Bookshelf.Model.extend({
 }, {
 
 
-  _validarAtivacao: (ativacao) => {
+  _validarAtivacao: (ativacao, options) => {
     let messages = [];
 
     if (!ativacao.tempo_minutos) {
@@ -46,7 +46,7 @@ const Ativacao = Bookshelf.Model.extend({
     }
 
     return Configuracao
-      ._buscar()
+      ._buscar(options)
       .then(configuracao => {
         // Tempo em minutos válido, então calculo o valor:
         // valor = valor da ativacao (por hora) * tempo_minutos / 60 minutos
@@ -262,7 +262,7 @@ const Ativacao = Bookshelf.Model.extend({
     const dataExpiracao = dataAtivacao.clone()
       .add(camposAtivacao.tempo_minutos, 'minutes');
     return Configuracao
-      ._buscar()
+      ._buscar(options)
       .then(c => {
         configuracao = c;
         return Ativacao

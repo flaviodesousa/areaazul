@@ -95,7 +95,7 @@ const Configuracao = Bookshelf.Model.extend(
               'Não foi possível alterar configuração. Dados inválidos',
               messages);
         }
-        return new Configuracao().fetch();
+        return new Configuracao().fetch(options);
       })
       .then(configuracao => {
         const configuracoes = _.merge(
