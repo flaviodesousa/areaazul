@@ -136,8 +136,8 @@ const UsuarioRevendedor = Bookshelf.Model.extend({
           { id: id });
       })
       .then(usuRev => usuRev
-        .save({ ativo: false }, { patch: true }))
-      .then(usuRev => UsuarioRevendedor._buscarPorId(usuRev.id, null));
+        .save({ ativo: false }, _.merge({ patch: true }, options)))
+      .then(usuRev => UsuarioRevendedor._buscarPorId(usuRev.id, options));
 
   },
 

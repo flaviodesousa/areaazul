@@ -3,7 +3,6 @@
 const debug = require('debug')('areaazul:test:usuario_revenda');
 const should = require('chai')
   .should();
-const Promise = require('bluebird');
 
 const AreaAzul = require('../../areaazul');
 const Bookshelf = AreaAzul._internals.Bookshelf;
@@ -20,17 +19,16 @@ describe('models.UsuarioRevendedor', function() {
   const termoDeServico = true;
 
   function apagarDadosDeTeste(trx) {
-    return Promise.all([
-      TestHelpers.apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente, trx),
-      TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente, trx)
-    ]);
+    return TestHelpers.apagarUsuarioRevendaPorLogin(loginRevendaNaoExistente, trx)
+      .then(() => TestHelpers.apagarPessoaFisicaPorCPF(cpfNaoExistente, trx));
   }
 
   before(function() {
-    return Bookshelf.transaction(trx => apagarDadosDeTeste()
-      .then(function() {
-        return TestHelpers.pegarRevendedor(trx);
-      }))
+    return Bookshelf.transaction(trx =>
+      apagarDadosDeTeste(trx)
+        .then(function() {
+          return TestHelpers.pegarRevendedor(trx);
+        }))
       .then(function(revendedor) {
         idRevendedor = revendedor.id;
       });
@@ -197,10 +195,6 @@ describe('models.UsuarioRevendedor', function() {
           done(e);
         });
     });
-  });
-
-  after(function() {
-    return apagarDadosDeTeste();
   });
 
 });
