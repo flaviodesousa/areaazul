@@ -91,7 +91,7 @@ const Pessoa = Bookshelf.Model.extend({
             proposito: 'solicitacao_nova_senha'
           })
             .then(token => {
-              AreaAzulMailer.enviar.emailer({
+              AreaAzulMailer.enviarEmail({
                 from: 'AreaAzul <cadastro@areaazul.org>',
                 to: pessoaAVerificar.email,
                 cc: 'cadastro@areaazul.org',

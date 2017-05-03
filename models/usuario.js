@@ -112,7 +112,7 @@ const Usuario = Bookshelf.Model.extend({
           '<a href="http://usuario.demo.areaazul.org">Área Azul</a></br>' +
           'Usuario: ' + login
         };
-        AreaAzulMailer.enviar.emailer(message);
+        AreaAzulMailer.enviarEmail(message);
         return u;
       })
       .then(usuario => Usuario._buscarPorId(usuario.id, options));
