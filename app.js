@@ -66,8 +66,7 @@ app.use(function(req, res, next) {
 
 // Controllers - Rotas
 consign()
-  .include('controllers')
-  .then('routes')
+  .include('routes')
   .into(app, passport);
 
 module.exports = app;
