@@ -61,7 +61,7 @@ describe('fachada Ativacao', function() {
         })
         .then(cu => {
           contaUsuario = cu;
-          TestHelpers.setSaldo(contaUsuario, saldoInicial, trx);
+          return TestHelpers.setSaldo(contaUsuario, saldoInicial, trx);
         })
         .then(() => TestHelpers.pegarRevendedor(trx))
         .then(revendedor =>
@@ -69,7 +69,7 @@ describe('fachada Ativacao', function() {
             .fetch({ require: true, transacting: trx }))
         .then(cr => {
           contaRevendedor = cr;
-          TestHelpers.setSaldo(contaRevendedor, saldoInicial, trx);
+          return TestHelpers.setSaldo(contaRevendedor, saldoInicial, trx);
         })
         .then(() => TestHelpers.pegarUsuarioRevendedor(trx))
         .then(function(usuarioRevendedor) {
