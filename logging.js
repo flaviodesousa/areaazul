@@ -10,23 +10,28 @@ const logFileBase = process.env.AREAAZUL_LOG_FILE_BASE;
 if (!fs.existsSync(logDir)) {
   fs.mkdirSync(logDir);
 }
-const tsFormat = () => moment().utc().format();
-const logger = new (winston.Logger)({
-  transports: [
+function tsFormat() { return moment().utc().format(); }
+let transports = [
+  new (require('winston-daily-rotate-file'))({
+    filename: `${logDir}/-${logFileBase}.log`,
+    timestamp: tsFormat,
+    datePattern: 'yyyy-MM-dd',
+    prepend: true,
+    level: level
+  })
+];
+if (process.env.AREAAZUL_LOG_CONSOLE) {
+  transports.push(
     // Colorize the output to the console
     new (winston.transports.Console)({
       timestamp: tsFormat,
       colorize: true,
       level: 'info'
-    }),
-    new (require('winston-daily-rotate-file'))({
-      filename: `${logDir}/-${logFileBase}.log`,
-      timestamp: tsFormat,
-      datePattern: 'yyyy-MM-dd',
-      prepend: true,
-      level: level
     })
-  ]
+  );
+}
+const logger = new (winston.Logger)({
+  transports: transports
 });
 
 module.exports = logger;
