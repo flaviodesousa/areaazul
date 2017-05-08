@@ -11,42 +11,20 @@ const Revendedor = AreaAzul.facade.Revendedor;
 const UsuarioRevendedor = AreaAzul.facade.UsuarioRevendedor;
 
 describe('facade Revendedor', function() {
-  const revendedorPF = {
-    nome: 'Nome PF Teste Revendedor',
-    email: 'pf-teste-revendedor@areaazul.org',
-    telefone: '000 0000-0000',
-    cpf: '96818717748',
-    data_nascimento: '31/10/1967',
-    autorizacao: 'autorizacao',
-    login: 'teste-revendedor-pf',
-    nova_senha: 'senha-teste',
-    conf_senha: 'senha-teste',
-    termo_servico: 'Sim'
-  };
-  const revendedorPJ = {
-    cnpj: '31604743000102',
-    nome: 'Nome PJ Teste Revendedor',
-    nome_fantasia: 'nome-fantasia-teste',
-    razao_social: 'razao-social-teste',
-    contato: 'contato-teste',
-    email: 'teste-revendedor@areaazul.org',
-    telefone: '000 0000-0000',
-    cpf: '54800416493',
-    login: 'teste-revendedor-pj',
-    autorizacao: 'autorizacao teste',
-    nova_senha: 'senha-teste',
-    conf_senha: 'senha-teste',
-    termo_servico: 'Sim'
-  };
+  const cpfRevendedorPF = '96818717748';
+  const cnpjRevendedorPJ = '31604743000102';
+  const loginRevendedorPF = 'teste-revendedor-pf';
+  const loginUsuarioRevendedorPJ = 'teste-revendedor-pj';
+  const cpfUsuarioRevendedorPJ = '54800416493';
   let idRevendedorPessoaFisica;
   let idRevendedorPessoaJuridica;
 
   function apagarRevendedoresDeTeste() {
     return Bookshelf.transaction(trx =>
       TestHelpers
-        .apagarRevendedorPorCPF(revendedorPF.cpf, trx)
+        .apagarRevendedorPorCPF(cpfRevendedorPF, trx)
         .then(function() {
-          return TestHelpers.apagarRevendedorPorCNPJ(revendedorPJ.cnpj, trx);
+          return TestHelpers.apagarRevendedorPorCNPJ(cnpjRevendedorPJ, trx);
         }))
       .catch(function(e) {
         debug('erro inesperado', e);
@@ -60,13 +38,24 @@ describe('facade Revendedor', function() {
 
   describe('cadastrar()', function() {
     it('cadastrar pessoa fisica funciona', function(done) {
-      Revendedor.cadastrar(revendedorPF)
+      Revendedor.cadastrar({
+        nome: 'Nome PF Teste Revendedor',
+        email: 'pf-teste-revendedor@areaazul.org',
+        telefone: '000 0000-0000',
+        cpf: cpfRevendedorPF,
+        data_nascimento: '31/10/1967',
+        autorizacao: 'autorizacao',
+        login: loginRevendedorPF,
+        nova_senha: 'senha-teste',
+        conf_senha: 'senha-teste',
+        termo_servico: 'Sim'
+      })
         .then(function(revenda) {
           should.exist(revenda);
           revenda.should.have.property('id');
           idRevendedorPessoaFisica = revenda.id;
           return UsuarioRevendedor
-            .buscarPorLogin(revendedorPF.login);
+            .buscarPorLogin(loginRevendedorPF);
         })
         .then(function(urpf) {
           should.exist(urpf);
@@ -79,7 +68,21 @@ describe('facade Revendedor', function() {
     });
 
     it('cadastrar pessoa juridica funciona', function(done) {
-      Revendedor.cadastrar(revendedorPJ)
+      Revendedor.cadastrar({
+        cnpj: cnpjRevendedorPJ,
+        nome: 'Nome PJ Teste Revendedor',
+        nome_fantasia: 'nome-fantasia-teste',
+        razao_social: 'razao-social-teste',
+        contato: 'contato-teste',
+        email: 'teste-revendedor@areaazul.org',
+        telefone: '000 0000-0000',
+        cpf: cpfUsuarioRevendedorPJ,
+        login: loginUsuarioRevendedorPJ,
+        autorizacao: 'autorizacao teste',
+        nova_senha: 'senha-teste',
+        conf_senha: 'senha-teste',
+        termo_servico: 'Sim'
+      })
         .then(function(revenda) {
           should.exist(revenda);
           revenda.should.have.property('id');
@@ -127,7 +130,7 @@ describe('facade Revendedor', function() {
 
     before(function() {
       return UsuarioRevendedor
-        .buscarPorLogin(revendedorPJ.login)
+        .buscarPorLogin(loginUsuarioRevendedorPJ)
         .then(function(usuarioRevenda) {
           should.exist(usuarioRevenda);
           idUsuarioRevenda = usuarioRevenda.pessoa_fisica_id;
@@ -153,7 +156,7 @@ describe('facade Revendedor', function() {
     it('compra créditos PF', function(done) {
       Revendedor
         .comprarCreditos({
-          cpf: revendedorPF.cpf,
+          cpf: cpfRevendedorPF,
           creditos: '937.00'
         })
         .then(movimentacao => {
@@ -170,7 +173,7 @@ describe('facade Revendedor', function() {
     it('compra créditos PJ', function(done) {
       Revendedor
         .comprarCreditos({
-          cnpj: revendedorPJ.cnpj,
+          cnpj: cnpjRevendedorPJ,
           creditos: '937.00'
         })
         .then(movimentacao => {
