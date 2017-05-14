@@ -27,12 +27,17 @@ const debug = require('debug')('areaazul:app');
 })();
 
 const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
 const consign = require('consign');
 const logger = require('morgan');
 const bodyParser = require('body-parser');
 const app = express();
 const passport = require('passport');
 const basicAuthentication = require('./basic-authentication');
+
+app.use(cors());
+app.use(helmet());
 
 app.get('/robots.txt', function(req, res) {
   res.type('text/plain');
@@ -47,22 +52,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use(passport.initialize());
-
-// CORS API
-app.use(function(req, res, next) {
-  // Solution from [http://stackoverflow.com/questions/30761154]
-  res.set({
-    'Access-Control-Allow-Origin': req.get('Origin') || '*',
-    'Access-Control-Allow-Credentials': 'true',
-    'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
-    'Access-Control-Expose-Headers': 'Content-Length',
-    'Access-Control-Allow-Headers': 'Accept, Authorization, Content-Type, X-Requested-With, Range'
-  });
-  if (req.method === 'OPTIONS') {
-    return res.send(200);
-  }
-  return next();
-});
 
 // Controllers - Rotas
 consign()
