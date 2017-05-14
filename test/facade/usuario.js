@@ -14,6 +14,8 @@ const Ativacao = Bookshelf.model('Ativacao');
 const TestHelpers = require('../../test-helpers')(AreaAzul);
 
 describe('facade Usuario', function() {
+  const cpfValido = '32807868193';
+  const cpfInvalido = '32807868192';
   const camposUsuarioDeTeste = {
     login: 'login-teste-unitario-usuario',
     nova_senha: 'senha-teste-unitario-usuario',
@@ -21,7 +23,7 @@ describe('facade Usuario', function() {
     nome: 'Teste Unitário Usuário',
     email: 'teste-unitario-usuario@areaazul.org',
     telefone: '00 0000 0000',
-    cpf: '32807868193',
+    cpf: cpfValido,
     data_nascimento: '10/04/1980',
     sexo: 'feminino'
   };
