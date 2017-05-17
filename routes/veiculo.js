@@ -1,6 +1,7 @@
 'use strict';
 
 const AreaAzul = require('../areaazul');
+const APIHelper = require('../helpers/api_helpers');
 
 module.exports = function(app) {
 
@@ -22,14 +23,8 @@ module.exports = function(app) {
         }
         res.send(veiculo);
       })
-      .catch(AreaAzul.BusinessException, () => {
-        res.status(404)
-          .end();
-      })
-      .catch(function(error) {
-        res.status(400)
-          .send('' + error);
-      });
+      .catch(AreaAzul.BusinessException, be => APIHelper.status400(res, be))
+      .catch(e => APIHelper.status500(res, e, 'erro em GET /veiculo'));
   });
 
 
@@ -39,9 +34,7 @@ module.exports = function(app) {
       .then(function(veiculo) {
         res.send(veiculo);
       })
-      .catch(AreaAzul.BusinessException, function() {
-        res.status(404)
-          .end();
-      });
+      .catch(AreaAzul.BusinessException, be => APIHelper.status400(res, be))
+      .catch(e => APIHelper.status500(res, e, 'erro em GET /veiculo/:veiculo_id'));
   });
 };

@@ -1,6 +1,7 @@
 'use strict';
 
 const AreaAzul = require('../areaazul');
+const APIHelper = require('../helpers/api_helpers');
 
 module.exports = function(app) {
 
@@ -18,10 +19,8 @@ module.exports = function(app) {
       .then(function(listaCidades) {
         res.send(listaCidades);
       })
-      .catch(function(result) {
-        res.status(400)
-          .send('' + result);
-      });
+      .catch(AreaAzul.BusinessException, be => APIHelper.status400(res, be))
+      .catch(e => APIHelper.status500(res, e, 'erro em GET /cidade'));
   });
 
 

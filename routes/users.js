@@ -1,6 +1,8 @@
 'use strict';
 
 const passport = require('passport');
+const AreaAzul = require('../areaazul');
+const APIHelper = require('../helpers/api_helpers');
 
 module.exports = function(app) {
 
@@ -10,6 +12,14 @@ module.exports = function(app) {
     function(req, res) {
       res.send(req.user);
     });
+
+
+  app.post('/usuario',
+    (req, res) => AreaAzul.facade.Usuario
+      .cadastrar(req.body)
+      .then(usuario => res.send(usuario).status(201))
+      .catch(AreaAzul.BusinessException, be => APIHelper.status400(res, be))
+      .catch(e => APIHelper.status500(res, e, 'erro em GET /usuario')));
 
 
   app.get('/usuario/:id_usuario/veiculo',

@@ -4,25 +4,19 @@
 'use strict';
 
 const AreaAzul = require('../areaazul');
-const log = require('../logging');
-const UUID = require('uuid');
+const APIHelper = require('../helpers/api_helpers');
 
 module.exports = function(app) {
 
 
-  app.get('/configuracao', function(req, res) {
+  app.get('/configuracao', (req, res) =>
     AreaAzul.facade.Configuracao
       .buscar()
       .then(function(configuracao) {
         res.send(configuracao);
       })
-      .catch(function(err) {
-        const uuid = UUID.v4();
-        log.error('erro em GET /configuracao', { err: err, uuid: uuid });
-        res.status(400)
-          .send(`Error ${uuid}`);
-      });
-  });
+      .catch(AreaAzul.BusinessException, be => APIHelper.status400(res, be))
+      .catch(e => APIHelper.status500(res, e, 'erro em GET /configuracao')));
 
 
 };
