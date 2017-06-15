@@ -47,9 +47,41 @@ describe('facade Usuario', function() {
   });
 
   describe('cadastrar()', function() {
+    it('falha com CPF inválido', function(done) {
+      Usuario
+        .inserir({
+          login: 'login-teste-unitario-usuario',
+          nova_senha: 'senha-teste-unitario-usuario',
+          conf_senha: 'senha-teste-unitario-usuario',
+          nome: 'Teste Unitário Usuário',
+          email: 'teste-unitario-usuario@areaazul.org',
+          telefone: '00 0000 0000',
+          cpf: cpfInvalido,
+          data_nascimento: '10/04/1980',
+          sexo: 'feminino'
+        })
+        .then(function(usuario) {
+          usuarioDeTeste = usuario;
+          done();
+        })
+        .catch(function(e) {
+          debug('erro inesperado', e);
+          done(e);
+        });
+    });
     it('grava usuario', function(done) {
       Usuario
-        .inserir(camposUsuarioDeTeste)
+        .inserir({
+          login: 'login-teste-unitario-usuario',
+          nova_senha: 'senha-teste-unitario-usuario',
+          conf_senha: 'senha-teste-unitario-usuario',
+          nome: 'Teste Unitário Usuário',
+          email: 'teste-unitario-usuario@areaazul.org',
+          telefone: '00 0000 0000',
+          cpf: cpfValido,
+          data_nascimento: '10/04/1980',
+          sexo: 'feminino'
+        })
         .then(function(usuario) {
           usuarioDeTeste = usuario;
           done();
