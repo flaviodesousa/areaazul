@@ -60,8 +60,11 @@ describe('facade Usuario', function() {
           data_nascimento: '10/04/1980',
           sexo: 'feminino'
         })
-        .then(function(usuario) {
-          usuarioDeTeste = usuario;
+        .then(function() {
+          done(new Error('Não deveria aceitar CPF inválido'));
+        })
+        .catch(AreaAzul.BusinessException, err => {
+          should.exist(err);
           done();
         })
         .catch(function(e) {
