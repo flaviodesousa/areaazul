@@ -185,10 +185,21 @@ describe('facade Usuario', function() {
           })
           .then(() => {
             let p = [];
+
+            /**
+             * Retorna uma funcao que atribui argumento ao elemento
+             * do array veiculos[i]
+             * @param i posicao do array que sera atribuida pela funcao
+             * @returns {function(*): *} funcao que atribui `v` ao elemento
+             */
+            function salvarReferenciaVeiculoDeTeste(i) {
+              return v => veiculos[ i ] = v;
+            }
+
             for (let i = 0; i < 3; ++i) {
               p.push(
                 TestHelpers.pegarVeiculo(i, trx)
-                  .then(v => veiculos[ i ] = v));
+                  .then(salvarReferenciaVeiculoDeTeste(i)));
             }
             return Promise.all(p);
           })
