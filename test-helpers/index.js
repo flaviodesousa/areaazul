@@ -32,35 +32,36 @@ module.exports = function(AreaAzul) {
   function _apagarConta(idConta, trx) {
     return new MovimentacaoConta()
       .query(qb => qb.where({ conta_id: idConta }))
-      .destroy({ transacting: trx })
+      .destroy({ transacting: trx, require: false })
       .then(function() {
-        return new Conta({ id: idConta }).destroy({ transacting: trx });
+        return new Conta({ id: idConta })
+          .destroy({ transacting: trx, require: false });
       });
   }
 
   function _apagarPessoaFisica(id, trx) {
     return new PessoaFisica({ id: id })
-      .destroy({ transacting: trx })
+      .destroy({ transacting: trx, require: false })
       .then(function() {
         return new Pessoa({ id: id })
-          .destroy({ transacting: trx });
+          .destroy({ transacting: trx, require: false });
       });
   }
 
 
   function _apagarPessoaJuridica(id, trx) {
     return new PessoaJuridica({ id: id })
-      .destroy({ transacting: trx })
+      .destroy({ transacting: trx, require: false })
       .then(function() {
         return new Pessoa({ id: id })
-          .destroy({ transacting: trx });
+          .destroy({ transacting: trx, require: false });
       });
   }
 
   function _apagarVeiculo(idVeiculo, trx) {
     return new UsuarioHasVeiculo()
       .query(qb => qb.where({ veiculo_id: idVeiculo }))
-      .destroy({ transacting: trx })
+      .destroy({ transacting: trx, require: false })
       .then(function() {
         return AtivacaoUsuario
           .query(qb => qb.whereExists(function() {
@@ -69,7 +70,7 @@ module.exports = function(AreaAzul) {
               .where({ veiculo_id: idVeiculo })
               .whereRaw('ativacao_id = ativacao.id');
           }))
-          .destroy({ transacting: trx });
+          .destroy({ transacting: trx, require: false });
       })
       .then(function() {
         return AtivacaoUsuarioRevendedor
@@ -79,21 +80,21 @@ module.exports = function(AreaAzul) {
               .where({ veiculo_id: idVeiculo })
               .whereRaw('ativacao_id = ativacao.id');
           }))
-          .destroy({ transacting: trx });
+          .destroy({ transacting: trx, require: false });
       })
       .then(function() {
         return new Ativacao()
           .query(qb => qb.where({ veiculo_id: idVeiculo }))
-          .destroy({ transacting: trx });
+          .destroy({ transacting: trx, require: false });
       })
       .then(function() {
         return new Fiscalizacao()
           .query(qb => qb.where({ veiculo_id: idVeiculo }))
-          .destroy({ transacting: trx });
+          .destroy({ transacting: trx, require: false });
       })
       .then(function() {
         return new Veiculo({ id: idVeiculo })
-          .destroy({ transacting: trx });
+          .destroy({ transacting: trx, require: false });
       });
   }
 
@@ -108,10 +109,10 @@ module.exports = function(AreaAzul) {
         idConta = r.get('conta_id');
         return new UsuarioRevendedor()
           .query(qb => qb.where({ revendedor_id: idRevenda }))
-          .destroy({ transacting: trx })
+          .destroy({ transacting: trx, require: false })
           .then(function() {
             return new Revendedor({ id: idRevenda })
-              .destroy({ transacting: trx });
+              .destroy({ transacting: trx, require: false });
           })
           .then(function() {
             return _apagarConta(idConta, trx);
@@ -148,10 +149,10 @@ module.exports = function(AreaAzul) {
     let contaId;
     return new Fiscalizacao()
       .query(qb => qb.where({ usuario_fiscal_id: idUsuarioFiscal }))
-      .destroy({ transacting: trx })
+      .destroy({ transacting: trx, require: false })
       .then(function() {
         return new UsuarioFiscal({ id: idUsuarioFiscal })
-          .fetch({ transacting: trx });
+          .fetch({ transacting: trx, require: false });
       })
       .then(function(usuFis) {
         if (usuFis) {
@@ -160,7 +161,7 @@ module.exports = function(AreaAzul) {
       })
       .then(function() {
         return new UsuarioFiscal({ id: idUsuarioFiscal })
-          .destroy({ transacting: trx });
+          .destroy({ transacting: trx, require: false });
       })
       .then(function() {
         return _apagarPessoaFisica(idUsuarioFiscal, trx);
@@ -198,20 +199,20 @@ module.exports = function(AreaAzul) {
   function _apagarUsuario(usuario, trx) {
     return new UsuarioHasVeiculo()
       .query(qb => qb.where({ usuario_id: usuario.id }))
-      .destroy({ transacting: trx })
+      .destroy({ transacting: trx, require: false })
       .then(function() {
         return AtivacaoUsuario
           .query(qb => qb.where({ usuario_id: usuario.id }))
-          .destroy({ transacting: trx });
+          .destroy({ transacting: trx, require: false });
       })
       .then(() => {
         return Ativacao
           .query(qb => qb.where({ ativador: 'usuario', id_ativador: usuario.id }))
-          .destroy({ transacting: trx });
+          .destroy({ transacting: trx, require: false });
       })
       .then(function() {
         return new Usuario({ id: usuario.id })
-          .destroy({ transacting: trx });
+          .destroy({ transacting: trx, require: false });
       })
       .then(function() {
         return _apagarConta(usuario.get('conta_id'), trx);
@@ -234,7 +235,7 @@ module.exports = function(AreaAzul) {
 
   function _apagarUsuarioAdministrativo(idUsuarioAdministrativo, trx) {
     return new UsuarioAdministrativo({ id: idUsuarioAdministrativo })
-      .destroy({ transacting: trx })
+      .destroy({ transacting: trx, require: false })
       .then(function() {
         return _apagarPessoaFisica(idUsuarioAdministrativo, trx);
       });
@@ -295,9 +296,9 @@ module.exports = function(AreaAzul) {
           }
         }
       })
-      .destroy({ transacting: trx })
+      .destroy({ transacting: trx, require: false })
       .then(() => ativacao)
-      .destroy({ transacting: trx });
+      .destroy({ transacting: trx, require: false });
   }
 
   exports.apagarVeiculoPorPlaca = function(placa, trx) {
@@ -314,7 +315,7 @@ module.exports = function(AreaAzul) {
 
   exports.apagarMovimentacaoConta = function(movimentacaoContaId, trx) {
     return new MovimentacaoConta({ id: movimentacaoContaId })
-      .destroy({ transacting: trx });
+      .destroy({ transacting: trx, require: false });
   };
 
   exports.apagarAtivacao = function(id, trx) {
@@ -324,7 +325,7 @@ module.exports = function(AreaAzul) {
   exports.apagarUsuarioRevendaPorLogin = function(login, trx) {
     return new UsuarioRevendedor()
       .query(qb => qb.where({ login: login }))
-      .destroy({ transacting: trx });
+      .destroy({ transacting: trx, require: false });
   };
 
   exports.apagarUsuarioRevenda = function(idUsuarioRevenda, trx) {

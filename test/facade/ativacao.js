@@ -92,7 +92,7 @@ describe('fachada Ativacao', function() {
                     .whereRaw('ativacao.data_desativacao is null');
                 });
             })
-            .destroy({ transacting: trx }))
+            .destroy({ transacting: trx, require: false }))
         .then(() =>
           // Apagar ativações pendentes, para não afetar testes com novas
           // ativações.
@@ -107,7 +107,7 @@ describe('fachada Ativacao', function() {
                     .whereRaw('ativacao.data_desativacao is null');
                 });
             })
-            .destroy({ transacting: trx }))
+            .destroy({ transacting: trx, require: false }))
         .then(() =>
           AtivacaoModel
             .query(function(qb) {
@@ -115,7 +115,7 @@ describe('fachada Ativacao', function() {
                 .whereNull('data_desativacao')
                 .andWhere({ veiculo_id: veiculoExistente.id });
             })
-            .destroy({ transacting: trx }))
+            .destroy({ transacting: trx, require: false }))
         .catch(function(e) {
           debug('erro inesperado', e);
           throw e;
