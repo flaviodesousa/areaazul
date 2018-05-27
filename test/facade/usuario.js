@@ -207,8 +207,9 @@ describe('facade Usuario', function() {
             TestHelpers.setSaldo(usuario.related('conta'), '88.88', trx))
           .then(() => {
             let variasAtivacoes = [];
-            for (let i = 0; i < 10; ++i) {
-              variasAtivacoes.push(new Promise((resolve, reject) =>
+
+            function gerarFuncaoQueSalvaElementoAtivacoes(i) {
+              return new Promise((resolve, reject) =>
                 setTimeout(
                   () => Ativacao
                     ._ativar({
@@ -223,7 +224,12 @@ describe('facade Usuario', function() {
                     }, { transacting: trx }))
                     .then(() => resolve(ativacoes[ i ]))
                     .catch((e) => reject(e)),
-                  50 * i)));
+                  50 * i));
+            }
+
+            for (let i = 0; i < 10; ++i) {
+              variasAtivacoes.push(
+                gerarFuncaoQueSalvaElementoAtivacoes(i));
             }
             return Promise.all(variasAtivacoes);
           }))
