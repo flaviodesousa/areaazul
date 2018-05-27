@@ -8,3 +8,4 @@
 gulpfile.js
 test
 coverage
+isolate-*.log
