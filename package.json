@@ -38,7 +38,7 @@
     "moment-timezone": "^0.5.17",
     "money-math": "^2.5.1",
     "morgan": "^1.9.0",
-    "passport": "^0.4.0",
+    "passport": "^0.6.0",
     "passport-http": "^0.3.0",
     "pg": "^7.4.3",
     "superagent": "^3.8.3",
